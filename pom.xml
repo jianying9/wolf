@@ -90,6 +90,11 @@
                 <version>10.6.2.1</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>10.6.2.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.main.ejb</groupId>
                 <artifactId>javax.ejb</artifactId>
                 <version>3.1.2.2</version>
@@ -169,9 +174,9 @@
             </plugin>
         </plugins>
     </build>
-  <modules>
-    <module>wolf-remote-api</module>
-    <module>wolf-remote</module>
-    <module>wolf-framework</module>
-  </modules>
+    <modules>
+        <module>wolf-remote-api</module>
+        <module>wolf-remote</module>
+        <module>wolf-framework</module>
+    </modules>
 </project>

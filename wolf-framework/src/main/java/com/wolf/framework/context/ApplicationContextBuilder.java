@@ -11,6 +11,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import org.apache.derby.jdbc.ClientDataSource;
 import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -94,12 +95,21 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
             this.logger.error("get dataSource from JNDI error:", ex);
             throw new RuntimeException(ex);
         }
-        } else {
+        } else if(dataBaseType.equals("EMBEDDED")) {
             this.embeddedSimpleDataSource = new EmbeddedSimpleDataSource();
             this.embeddedSimpleDataSource.setDatabaseName(dataBaseName);
             this.embeddedSimpleDataSource.setCreateDatabase("create");
             dataSource = this.embeddedSimpleDataSource;
             ApplicationContext.CONTEXT.setEmbeddedSimpleDataSource(this.embeddedSimpleDataSource);
+        } else {
+            String serverName = this.properties.getProperty("dataServerName");
+            String serverPort = this.properties.getProperty("dataServerPort");
+            ClientDataSource clientDataSource = new ClientDataSource();
+            clientDataSource.setCreateDatabase("create");
+            clientDataSource.setDatabaseName(dataBaseName);
+            clientDataSource.setServerName(serverName);
+            clientDataSource.setPortNumber(Integer.parseInt(serverPort));
+            dataSource = clientDataSource;
         }
         return dataSource;
     }
