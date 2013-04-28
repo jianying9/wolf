@@ -3,7 +3,6 @@ package com.wolf.framework.dao.inquire;
 import com.wolf.framework.dao.AbstractDaoHandler;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.condition.InquireContext;
-import com.wolf.framework.dao.parser.ColumnHandler;
 import com.wolf.framework.derby.DerbyHandler;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,8 @@ public final class InquireByConditionFromDataHandlerImpl<T extends Entity> exten
 
     private final DerbyHandler derbyHandler;
 
-    public InquireByConditionFromDataHandlerImpl(DerbyHandler derbyHandler, String tableName, Class<T> clazz, List<ColumnHandler> columnHandlerList, ColumnHandler keyHandler) {
-        super(tableName, clazz, columnHandlerList, keyHandler);
+    public InquireByConditionFromDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
+        super(clazz);
         this.derbyHandler = derbyHandler;
     }
 

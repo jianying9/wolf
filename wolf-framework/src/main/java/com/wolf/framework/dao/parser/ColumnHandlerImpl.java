@@ -26,14 +26,17 @@ public class ColumnHandlerImpl implements ColumnHandler {
         return this.columnName;
     }
 
+    @Override
     public ColumnTypeEnum getColumnType() {
         return this.columnTypeEnum;
     }
 
+    @Override
     public String getDesc() {
         return this.desc;
     }
 
+    @Override
     public DataHandler getDataHandler() {
         return this.dataHandler;
     }

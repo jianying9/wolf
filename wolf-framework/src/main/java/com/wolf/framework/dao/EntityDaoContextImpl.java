@@ -2,14 +2,12 @@ package com.wolf.framework.dao;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.hbase.HTableHandler;
 import com.wolf.framework.task.TaskExecutor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
 import net.sf.ehcache.CacheManager;
-import org.apache.hadoop.fs.FileSystem;
 
 /**
  * 全局信息构造类
@@ -20,7 +18,7 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
 
     //缓存管理对象
     private final CacheManager cacheManager;
-    private final HTableHandler hTableHandler;
+//    private final HTableHandler hTableHandler;
     private final Map<String, String> existClassMap = new HashMap<String, String>(128);
 //    private final FileSystem fileSystem;
 //    private final String indexRoot = "/lucene";
@@ -28,7 +26,7 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
 //    private final IndexWriterConfig iwc;
 //    private final IndexWriterConfig ramIwc;
     private final TaskExecutor taskExecutor;
-    private final String ip;
+//    private final String ip;
     private final DataSource dataSource;
     private final DataHandlerFactory dataHandlerFactory;
     //entity处理类集合
@@ -82,15 +80,15 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
      *
      * @param properties
      */
-    public EntityDaoContextImpl(ApplicationContext applicationContext, final HTableHandler hTableHandler, final CacheManager cacheManager, final FileSystem fileSystem, final TaskExecutor taskExecutor, final String ip, final DataSource dataSource, final DataHandlerFactory dataHandlerFactory) {
+    public EntityDaoContextImpl(ApplicationContext applicationContext, final CacheManager cacheManager, final TaskExecutor taskExecutor, final DataSource dataSource, final DataHandlerFactory dataHandlerFactory) {
         this.entityDaoMap = new HashMap<Class<T>, EntityDao<T>>(64, 1);
         this.dataHandlerFactory = dataHandlerFactory;
         this.applicationContext = applicationContext;
-        this.hTableHandler = hTableHandler;
+//        this.hTableHandler = hTableHandler;
         this.cacheManager = cacheManager;
 //        this.fileSystem = fileSystem;
         this.taskExecutor = taskExecutor;
-        this.ip = ip;
+//        this.ip = ip;
         //创建sql cache
 //        final CacheConfiguration sqlCacheConfig = new DefaultCacheConfiguration().getDefault();
 //        String uuid = UUID.randomUUID().toString();
@@ -144,10 +142,10 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
         return this.entityDaoMap.get(clazz);
     }
 
-    @Override
-    public HTableHandler getHTableHandler() {
-        return this.hTableHandler;
-    }
+//    @Override
+//    public HTableHandler getHTableHandler() {
+//        return this.hTableHandler;
+//    }
 
 //    @Override
 //    public FileSystem getFileSystem() {
@@ -179,10 +177,10 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
         return this.taskExecutor;
     }
 
-    @Override
-    public String getIP() {
-        return this.ip;
-    }
+//    @Override
+//    public String getIP() {
+//        return this.ip;
+//    }
 
     @Override
     public ApplicationContext getApplicationContext() {
@@ -194,6 +192,7 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
         return this.dataSource;
     }
 
+    @Override
     public DataHandlerFactory getDataHandlerFactory() {
         return this.dataHandlerFactory;
     }

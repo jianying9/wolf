@@ -33,7 +33,6 @@ public final class HTableHandlerImpl implements HTableHandler {
     public HTableHandlerImpl(Configuration config) {
         this.config = config;
         this.hTablePool = new HTablePool(this.config, 1);
-//        this.hTablePool = new HTablePool(this.config, 2, PoolType.ThreadLocal);
     }
 
     private HTableInterface getHTable(String tableName) {
@@ -208,8 +207,7 @@ public final class HTableHandlerImpl implements HTableHandler {
     @Override
     public void createTable(String tableName) {
         HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
-        byte[] columnFamily = Bytes.toBytes(tableName.toLowerCase());
-        HColumnDescriptor columnFamilyDescriptor = new HColumnDescriptor(columnFamily);
+        HColumnDescriptor columnFamilyDescriptor = new HColumnDescriptor(HTableHandler.COLUMN_FAMILY);
         hTableDescriptor.addFamily(columnFamilyDescriptor);
         try {
             HBaseAdmin hbaseAdmin = new HBaseAdmin(config);

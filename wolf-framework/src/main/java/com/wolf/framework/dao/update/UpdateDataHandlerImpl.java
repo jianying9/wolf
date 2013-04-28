@@ -11,14 +11,16 @@ import java.util.Map;
  * @author aladdin
  */
 public class UpdateDataHandlerImpl extends AbstractDaoHandler implements UpdateHandler {
-    
+
     private final DerbyHandler derbyHandler;
-    
-    public UpdateDataHandlerImpl(DerbyHandler derbyHandler, String tableName, Class clazz, List<ColumnHandler> columnHandlerList, ColumnHandler keyHandler) {
-        super(tableName, clazz, columnHandlerList, keyHandler);
+    private final ColumnHandler keyHandler;
+
+    public UpdateDataHandlerImpl(DerbyHandler derbyHandler, Class clazz, ColumnHandler keyHandler) {
+        super(clazz);
         this.derbyHandler = derbyHandler;
+        this.keyHandler = keyHandler;
     }
-    
+
     @Override
     public String update(Map<String, String> entityMap) {
         final String keyName = this.keyHandler.getColumnName();
@@ -26,7 +28,7 @@ public class UpdateDataHandlerImpl extends AbstractDaoHandler implements UpdateH
         this.derbyHandler.update(entityMap);
         return keyValue;
     }
-    
+
     @Override
     public void batchUpdate(List<Map<String, String>> entityMapList) {
         this.derbyHandler.batchUpdate(entityMapList);

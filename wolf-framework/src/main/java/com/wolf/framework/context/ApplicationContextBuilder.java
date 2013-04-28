@@ -5,7 +5,6 @@ import com.wolf.framework.dao.Entity;
 import com.wolf.framework.hbase.HTableHandler;
 import com.wolf.framework.hbase.HTableHandlerImpl;
 import com.wolf.framework.service.Service;
-import java.io.IOException;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -14,7 +13,6 @@ import javax.sql.DataSource;
 import org.apache.derby.jdbc.ClientDataSource;
 import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 
 /**
@@ -65,21 +63,6 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
         config.set("hbase.zookeeper.quorum", hbaseZookeeperQuorum);
         HTableHandler hTableHandler = new HTableHandlerImpl(config);
         return hTableHandler;
-    }
-
-    @Override
-    protected FileSystem fileSystemBuild() {
-        String fsDefaultName = this.properties.getProperty("fsDefaultName");
-        Configuration config = new Configuration();
-        config.set("fs.default.name", fsDefaultName);
-        FileSystem dfs;
-        try {
-            dfs = FileSystem.get(config);
-        } catch (IOException ex) {
-            this.logger.error("init hdfs file system error....see log");
-            throw new RuntimeException(ex);
-        }
-        return dfs;
     }
 
     @Override

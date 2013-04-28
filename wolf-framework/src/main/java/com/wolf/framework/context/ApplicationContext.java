@@ -13,12 +13,12 @@ import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
  */
 public final class ApplicationContext {
     
+    public final static ApplicationContext CONTEXT = new ApplicationContext() ;
+    
     private boolean ready = false;
     
     private EmbeddedSimpleDataSource embeddedSimpleDataSource;
     
-    public final static ApplicationContext CONTEXT = new ApplicationContext() ;
-
     private CacheManager cacheManager;
     
     private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(16, 1);

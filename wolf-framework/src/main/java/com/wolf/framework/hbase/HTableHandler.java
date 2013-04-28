@@ -4,12 +4,15 @@ import java.util.List;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  *
  * @author aladdin
  */
 public interface HTableHandler {
+    
+    public byte[] COLUMN_FAMILY = Bytes.toBytes("base");
 
     public void put(String tableName, Put put);
 

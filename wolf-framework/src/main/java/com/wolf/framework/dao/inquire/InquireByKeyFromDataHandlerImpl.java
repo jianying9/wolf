@@ -2,7 +2,6 @@ package com.wolf.framework.dao.inquire;
 
 import com.wolf.framework.dao.AbstractDaoHandler;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.parser.ColumnHandler;
 import com.wolf.framework.derby.DerbyHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +15,8 @@ public final class InquireByKeyFromDataHandlerImpl<T extends Entity> extends Abs
 
     private final DerbyHandler derbyHandler;
 
-    public InquireByKeyFromDataHandlerImpl(DerbyHandler derbyHandler, String tableName, Class<T> clazz, List<ColumnHandler> columnHandlerList, ColumnHandler keyHandler) {
-        super(tableName, clazz, columnHandlerList, keyHandler);
+    public InquireByKeyFromDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
+        super(clazz);
         this.derbyHandler = derbyHandler;
     }
 

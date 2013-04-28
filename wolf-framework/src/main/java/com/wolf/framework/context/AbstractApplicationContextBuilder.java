@@ -5,12 +5,17 @@ import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.EntityDaoContext;
 import com.wolf.framework.dao.EntityDaoContextImpl;
+import com.wolf.framework.dao.HEntityDaoContext;
+import com.wolf.framework.dao.HEntityDaoContextImpl;
 import com.wolf.framework.dao.annotation.DaoConfig;
-import com.wolf.framework.dao.parser.EntityConfigDaoParser;
+import com.wolf.framework.dao.annotation.HDaoConfig;
+import com.wolf.framework.dao.parser.DaoConfigParser;
+import com.wolf.framework.dao.parser.HDaoConfigParser;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataHandlerFactoryImpl;
 import com.wolf.framework.hbase.HTableHandler;
 import com.wolf.framework.injecter.DaoInjecterImpl;
+import com.wolf.framework.injecter.HDaoInjecterImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.injecter.LocalServiceInjecterImpl;
@@ -41,7 +46,6 @@ import java.util.List;
 import javax.sql.DataSource;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.slf4j.Logger;
 
 /**
@@ -53,11 +57,13 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     protected final List<Class<T>> entityClassList = new ArrayList<Class<T>>();
+    protected final List<Class<T>> hEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<?>> parameterClassList = new ArrayList<Class<?>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<?>> localServiceClassList = new ArrayList<Class<?>>();
     protected final List<Class<?>> allClassList = new ArrayList<Class<?>>();
     protected EntityDaoContext<T> entityDaoContext;
+    protected HEntityDaoContext<T> hEntityDaoContext;
     protected ParametersContext parametersContext;
     protected ServiceWorkerContext serviceWorkerContext;
 
@@ -66,8 +72,6 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
     protected abstract String getAppPath();
 
     protected abstract HTableHandler hTableHandlerBuild();
-
-    protected abstract FileSystem fileSystemBuild();
 
     protected abstract String getCompileModel();
 
@@ -130,25 +134,36 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         final HTableHandler hTableHandler = this.hTableHandlerBuild();
         //实例化hdfs文件管理对象
 //        final FileSystem fileSystem = this.fileSystemBuild();
-        final FileSystem fileSystem = null;
+//        final FileSystem fileSystem = null;
         //初始化data类型工厂对象
         final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
         //解析entityDao
-        this.logger.info("parsing annotation EntityConfig DAO...");
+        this.logger.info("parsing annotation DaoConfig...");
         this.entityDaoContext = new EntityDaoContextImpl<T>(
                 ApplicationContext.CONTEXT,
-                hTableHandler,
+                //                hTableHandler,
                 cacheManager,
-                fileSystem,
+                //                fileSystem,
                 taskExecutor,
-                ip,
+                //                ip,
                 dataSource,
                 dataHanlderFactory);
-        final EntityConfigDaoParser<T> entityConfigDaoParser = new EntityConfigDaoParser<T>(this.entityDaoContext);
+        final DaoConfigParser<T> entityConfigDaoParser = new DaoConfigParser<T>(this.entityDaoContext);
         for (Class<T> clazz : this.entityClassList) {
             entityConfigDaoParser.parse(clazz);
         }
-        this.logger.info("parse annotation EntityConfig DAO finished.");
+        this.logger.info("parse annotation DaoConfig finished.");
+        //解析hEntityDao
+        this.logger.info("parsing annotation HDaoConfig...");
+        this.hEntityDaoContext = new HEntityDaoContextImpl<T>(
+                ApplicationContext.CONTEXT,
+                hTableHandler,
+                taskExecutor);
+        final HDaoConfigParser<T> hEntityConfigDaoParser = new HDaoConfigParser<T>(this.hEntityDaoContext);
+        for (Class<T> clazz : this.hEntityClassList) {
+            hEntityConfigDaoParser.parse(clazz);
+        }
+        this.logger.info("parse annotation HDaoConfig finished.");
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
         final LocalServiceContextBuilder localServiceContextBuilder = new LocalServiceContextBuilderImpl();
@@ -159,11 +174,14 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         this.logger.info("parse annotation LocalServiceConfig finished.");
         //DAO注入管理对象
         final Injecter daoInjecter = new DaoInjecterImpl(this.entityDaoContext);
+        //HDAO注入管理对象
+        final Injecter hDaoInjecter = new HDaoInjecterImpl(this.hEntityDaoContext);
         //LocalService注入管理对象
         final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextBuilder);
         //创建复合注入解析对象
         InjecterListImpl injecterListImpl = new InjecterListImpl();
         injecterListImpl.addInjecter(daoInjecter);
+        injecterListImpl.addInjecter(hDaoInjecter);
         injecterListImpl.addInjecter(localServiceInjecter);
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
@@ -205,31 +223,38 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         Class<K> clazzk;
         this.allClassList.add(clazz);
         //是否是实体
-        if (Entity.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(DaoConfig.class)) {
+        if (Entity.class.isAssignableFrom(clazz)) {
             clazzt = (Class<T>) clazz;
-            if (!this.entityClassList.contains(clazzt)) {
-                this.entityClassList.add(clazzt);
-                this.logger.debug("find entity class ".concat(className));
+            if (clazzt.isAnnotationPresent(DaoConfig.class)) {
+                if (this.entityClassList.contains(clazzt) == false) {
+                    this.entityClassList.add(clazzt);
+                    this.logger.debug("find entity class ".concat(className));
+                }
+            } else if (clazzt.isAnnotationPresent(HDaoConfig.class)) {
+                if (this.hEntityClassList.contains(clazzt) == false) {
+                    this.hEntityClassList.add(clazzt);
+                    this.logger.debug("find H entity class ".concat(className));
+                }
             }
         }
         //是否是服务
         if (Service.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(ServiceConfig.class)) {
             clazzk = (Class<K>) clazz;
-            if (!this.serviceClassList.contains(clazzk)) {
+            if (this.serviceClassList.contains(clazzk) == false) {
                 this.serviceClassList.add(clazzk);
                 this.logger.debug("find service class ".concat(className));
             }
         }
         //是否是参数配置
         if (clazz.isAnnotationPresent(ParametersConfig.class)) {
-            if (!this.parameterClassList.contains(clazz)) {
+            if (this.parameterClassList.contains(clazz) == false) {
                 this.parameterClassList.add(clazz);
                 this.logger.debug("find parameter class ".concat(className));
             }
         }
         //是否是内部服务
         if (clazz.isAnnotationPresent(LocalServiceConfig.class)) {
-            if (!this.localServiceClassList.contains(clazz)) {
+            if (this.localServiceClassList.contains(clazz) == false) {
                 this.localServiceClassList.add(clazz);
                 this.logger.debug("find local service class ".concat(className));
             }

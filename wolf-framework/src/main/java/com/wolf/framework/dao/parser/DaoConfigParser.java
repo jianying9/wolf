@@ -18,16 +18,16 @@ import java.util.List;
 import org.slf4j.Logger;
 
 /**
- * 负责解析annotation EntityConfig
+ * 负责解析 DaoConfig
  *
  * @author aladdin
  */
-public class EntityConfigDaoParser<T extends Entity> {
+public class DaoConfigParser<T extends Entity> {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final EntityDaoContext<T> entityDaoContext;
 
-    public EntityConfigDaoParser(EntityDaoContext<T> entityDaoContext) {
+    public DaoConfigParser(EntityDaoContext<T> entityDaoContext) {
         this.entityDaoContext = entityDaoContext;
     }
 
@@ -101,7 +101,7 @@ public class EntityConfigDaoParser<T extends Entity> {
             entityDaoContext.putEntityDao(clazz, entityDao, tableName);
             this.logger.debug("--parse entity DAO {} finished--", clazz.getName());
         } else {
-            this.logger.error("--parse entity DAO {} missing annotation EntityConfig--", clazz.getName());
+            this.logger.error("--parse entity DAO {} missing annotation DaoConfig--", clazz.getName());
         }
     }
 }

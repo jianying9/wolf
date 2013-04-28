@@ -15,10 +15,12 @@ import java.util.Map;
 public class InsertDataHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InsertHandler<T> {
     
     private final DerbyHandler derbyHandler;
+    private final ColumnHandler keyHandler;
     
-    public InsertDataHandlerImpl(DerbyHandler derbyHandler, String tableName, Class<T> clazz, List<ColumnHandler> columnHandlerList, ColumnHandler keyHandler) {
-        super(tableName, clazz, columnHandlerList, keyHandler);
+    public InsertDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz, ColumnHandler keyHandler) {
+        super(clazz);
         this.derbyHandler = derbyHandler;
+        this.keyHandler = keyHandler;
     }
     
     @Override

@@ -12,6 +12,21 @@ public final class JsonUtils {
 
     private JsonUtils() {
     }
+    
+    public static String listToJSON(List<String> list) {
+        String result = "[]";
+        if(list.isEmpty() == false) {
+            StringBuilder jsonBuilder = new StringBuilder(list.size() * 36);
+            jsonBuilder.append('[');
+            for (String text : list) {
+                jsonBuilder.append('"').append(text).append("\",");
+            }
+            jsonBuilder.setLength(jsonBuilder.length() - 1);
+            jsonBuilder.append(']');
+            result = jsonBuilder.toString();
+        }
+        return result;
+    }
 
     public static String valueToJSON(final String value, final ParameterHandler fieldHandler) {
         StringBuilder jsonBuilder = new StringBuilder(32);

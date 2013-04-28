@@ -1,17 +1,11 @@
 package com.wolf.framework.dao;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.dao.cache.InquireCache;
 import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.hbase.HTableHandler;
-import com.wolf.framework.lucene.DeleteFilterCache;
 import com.wolf.framework.task.TaskExecutor;
 import java.util.Map;
 import javax.sql.DataSource;
 import net.sf.ehcache.CacheManager;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriterConfig;
 
 /**
  *
@@ -33,7 +27,7 @@ public interface EntityDaoContext<T extends Entity> {
 
     public boolean assertExistEntity(final Class<T> clazz);
 
-    public HTableHandler getHTableHandler();
+//    public HTableHandler getHTableHandler();
 
 //    public FileSystem getFileSystem();
 
@@ -47,7 +41,7 @@ public interface EntityDaoContext<T extends Entity> {
 
     public TaskExecutor getTaskExecutor();
 
-    public String getIP();
+//    public String getIP();
     
     public ApplicationContext getApplicationContext();
     

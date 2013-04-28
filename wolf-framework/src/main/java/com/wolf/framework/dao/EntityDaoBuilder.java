@@ -114,10 +114,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDataHandlerImpl<T>(
                 derbyHandler,
-                tableName,
-                this.clazz,
-                this.columnHandlerList,
-                this.keyHandler);
+                this.clazz);
         if (entityCache != null) {
             //构造根据key查询缓存处理对象
             inquireByKeyHandler = new InquireByKeyFromCacheHandlerImpl<T>(inquireByKeyHandler, entityCache);
@@ -126,16 +123,12 @@ public final class EntityDaoBuilder<T extends Entity> {
         //构造插入数据库处理对象
         InsertHandler<T> insertHandler = new InsertDataHandlerImpl<T>(
                 derbyHandler,
-                tableName,
                 this.clazz,
-                this.columnHandlerList,
                 this.keyHandler);
         //构造更新数据库处理对象
         UpdateHandler updateHandler = new UpdateDataHandlerImpl(
                 derbyHandler,
-                tableName,
                 this.clazz,
-                this.columnHandlerList,
                 this.keyHandler);
         //构造删除数据库处理对象
         DeleteHandler deleteHandler = new DeleteDataHandlerImpl(derbyHandler);
@@ -174,10 +167,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         //根据条件查询数据库entity集合处理对象
         InquireByConditionHandler<T> inquireByConditionHandler = new InquireByConditionFromDataHandlerImpl<T>(
                 derbyHandler,
-                tableName,
-                this.clazz,
-                this.columnHandlerList,
-                this.keyHandler);
+                this.clazz);
         //根据条件查询缓存entity处理对象
         inquireByConditionHandler = new InquireByConditionFromCacheHandlerImpl<T>(
                 this.tableName,

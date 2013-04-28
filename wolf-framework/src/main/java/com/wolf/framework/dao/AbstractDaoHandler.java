@@ -1,7 +1,6 @@
 package com.wolf.framework.dao;
 
 import com.wolf.framework.config.FrameworkLoggerEnum;
-import com.wolf.framework.dao.parser.ColumnHandler;
 import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +16,10 @@ public abstract class AbstractDaoHandler<T extends Entity> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.DAO);
     //实体class
-    protected final Class<T> clazz;
-    protected final ColumnHandler keyHandler;
-    protected final List<ColumnHandler> columnHandlerList;
-    protected final String tableName;
+    private final Class<T> clazz;
 
-    public AbstractDaoHandler(String tableName, Class<T> clazz, List<ColumnHandler> columnHandlerList, ColumnHandler keyHandler) {
+    public AbstractDaoHandler(Class<T> clazz) {
         this.clazz = clazz;
-        this.columnHandlerList = columnHandlerList;
-        this.keyHandler = keyHandler;
-        this.tableName = tableName;
     }
 
     /**
@@ -46,11 +39,11 @@ public abstract class AbstractDaoHandler<T extends Entity> {
         t.parseMap(entityMap);
         return t;
     }
-    
+
     protected List<T> newInstance(List<Map<String, String>> entityMapList) {
         List<T> tList = new ArrayList<T>(entityMapList.size());
         T t;
-        for (Map<String, String> entityMap: entityMapList) {
+        for (Map<String, String> entityMap : entityMapList) {
             t = this.newInstance(entityMap);
             tList.add(t);
         }

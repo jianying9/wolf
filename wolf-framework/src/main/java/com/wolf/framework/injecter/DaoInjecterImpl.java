@@ -1,11 +1,10 @@
 package com.wolf.framework.injecter;
 
-import com.wolf.framework.dao.annotation.DAO;
 import com.wolf.framework.dao.EntityDaoContext;
+import com.wolf.framework.dao.annotation.DAO;
 import java.lang.reflect.Field;
 
 /**
- * 解析对象是否需要注入其他对象
  *
  * @author aladdin
  */
