@@ -19,6 +19,7 @@ import com.wolf.framework.injecter.HDaoInjecterImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.injecter.LocalServiceInjecterImpl;
+import com.wolf.framework.injecter.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceConfigParser;
 import com.wolf.framework.local.LocalServiceContextBuilder;
@@ -178,11 +179,14 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         final Injecter hDaoInjecter = new HDaoInjecterImpl(this.hEntityDaoContext);
         //LocalService注入管理对象
         final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextBuilder);
+        //TaskExecutor注入管理对象
+        final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
         InjecterListImpl injecterListImpl = new InjecterListImpl();
         injecterListImpl.addInjecter(daoInjecter);
         injecterListImpl.addInjecter(hDaoInjecter);
         injecterListImpl.addInjecter(localServiceInjecter);
+        injecterListImpl.addInjecter(taskExecutorInjecter);
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
         localServiceContextBuilder.inject(injecterList);
@@ -197,10 +201,13 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         this.logger.info("parse annotation ParametersConfig finished.");
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
+        injecterListImpl = new InjecterListImpl();
+        injecterListImpl.addInjecter(localServiceInjecter);
+        injecterListImpl.addInjecter(taskExecutorInjecter);
         this.serviceWorkerContext = new ServiceWorkerContextImpl(
                 usePseudo,
                 this.parametersContext,
-                localServiceInjecter,
+                injecterListImpl,
                 compilerModel);
         final ServiceConfigParser<K, T> serviceConfigParser = new ServiceConfigParser<K, T>(this.serviceWorkerContext);
         for (Class<K> clazz : this.serviceClassList) {

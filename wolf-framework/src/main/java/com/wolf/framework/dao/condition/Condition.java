@@ -13,7 +13,13 @@ public final class Condition {
     public Condition(String columnName, OperateTypeEnum operateTypeEnum, String columnValue) {
         this.columnName = columnName;
         this.operateTypeEnum = operateTypeEnum;
-        this.columnValue = columnValue;
+        if (this.operateTypeEnum == OperateTypeEnum.LIKE) {
+            StringBuilder builder = new StringBuilder(columnValue.length() + 2);
+            builder.append('%').append(columnValue).append('%');
+            this.columnValue = builder.toString();
+        } else {
+            this.columnValue = columnValue;
+        }
     }
 
     public String getColumnName() {

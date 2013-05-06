@@ -333,10 +333,6 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
                     break;
                 case LIKE:
                     sqlBuilder.append(this.LIKE);
-                    String tempValue = condition.getColumnValue();
-                    StringBuilder builder = new StringBuilder(tempValue.length() + 2);
-                    builder.append('%').append(tempValue).append('%');
-                    condition.setColumnValue(builder.toString());
                     break;
                 case NOT_EQUAL:
                     sqlBuilder.append(this.NOT_EQUAL);
@@ -358,8 +354,8 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
                     break;
             }
             sqlBuilder.append('?').append(this.AND);
-            sqlBuilder.setLength(sqlBuilder.length() - this.AND.length());
         }
+        sqlBuilder.setLength(sqlBuilder.length() - this.AND.length());
     }
 
     private void createInquireSql(StringBuilder sqlBuilder, InquireContext inquireContext) {

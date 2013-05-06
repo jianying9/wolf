@@ -11,6 +11,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.derby.jdbc.ClientDataSource;
+import org.apache.derby.jdbc.ClientDataSource40;
 import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -87,7 +88,7 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
         } else {
             String serverName = this.properties.getProperty("dataServerName");
             String serverPort = this.properties.getProperty("dataServerPort");
-            ClientDataSource clientDataSource = new ClientDataSource();
+            ClientDataSource clientDataSource = new ClientDataSource40();
             clientDataSource.setCreateDatabase("create");
             clientDataSource.setDatabaseName(dataBaseName);
             clientDataSource.setServerName(serverName);

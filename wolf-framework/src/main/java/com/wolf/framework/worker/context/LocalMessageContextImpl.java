@@ -16,25 +16,32 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
         this.session = session;
     }
 
+    @Override
     public Session getSession() {
         return this.session;
     }
 
+    @Override
     public void sendMessage() {
     }
 
+    @Override
     public void broadcastMessage() {
     }
 
+    @Override
     public void close() {
     }
 
+    @Override
     public void saveNewSession() {
     }
 
+    @Override
     public void removeSession() {
     }
 
+    @Override
     public boolean isOnline(String userId) {
         return false;
     }

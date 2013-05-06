@@ -1,6 +1,6 @@
 package com.wolf.framework.injecter;
 
-import com.wolf.framework.local.LocalService;
+import com.wolf.framework.local.InjectLocalService;
 import com.wolf.framework.local.LocalServiceContextBuilder;
 import java.lang.reflect.Field;
 
@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
  *
  * @author aladdin
  */
-public class LocalServiceInjecterImpl extends AbstractInjecter<LocalService> implements Injecter {
+public class LocalServiceInjecterImpl extends AbstractInjecter<InjectLocalService> implements Injecter {
 
     private final LocalServiceContextBuilder localServiceContextBuilder;
 
@@ -18,8 +18,8 @@ public class LocalServiceInjecterImpl extends AbstractInjecter<LocalService> imp
     }
 
     @Override
-    protected Class<LocalService> getAnnotation() {
-        return LocalService.class;
+    protected Class<InjectLocalService> getAnnotation() {
+        return InjectLocalService.class;
     }
 
     @Override

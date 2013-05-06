@@ -54,26 +54,6 @@ public interface EntityDao<T extends Entity> {
      * @return
      */
     public List<T> inquireByCondition(final InquireContext inquireContext);
-    
-    /**
-     * 单个条件分页查询
-     *
-     * @param columnName 列名
-     * @param columnValue 值
-     * @return
-     */
-    public InquireResult<T> inquirePageByColumn(final String columnName, final String columnValue);
-
-    /**
-     * 两个条件分页查询
-     *
-     * @param columnName 列1
-     * @param columnValue 值1
-     * @param columnNameTwo 列2
-     * @param columnValueTwo 值2
-     * @return
-     */
-    public InquireResult<T> inquirePageByColumns(final String columnName, final String columnValue, final String columnNameTwo, final String columnValueTwo);
 
     /**
      * 复合条件分页查询
@@ -167,26 +147,6 @@ public interface EntityDao<T extends Entity> {
      * @return
      */
     public List<String> inquireKeysByCondition(final InquireContext inquireContext);
-
-    /**
-     * 单个条件分页查询主键集合
-     *
-     * @param columnName
-     * @param columnValue
-     * @return
-     */
-    public InquireKeyResult inquirePageKeysByColumn(final String columnName, final String columnValue);
-
-    /**
-     * 两个条件分页查询主键集合
-     *
-     * @param columnName 列1
-     * @param columnValue 值1
-     * @param columnNameTwo 列2
-     * @param columnValueTwo 值2
-     * @return
-     */
-    public InquireKeyResult inquirePageKeysByColumns(final String columnName, final String columnValue, final String columnNameTwo, final String columnValueTwo);
 
     /**
      * 复合条件分页查询主键集合

@@ -23,7 +23,7 @@ public abstract class AbstractInjecter<A extends Annotation> {
     public final void parse(Object object) {
         Class<?> clazz = object.getClass();
         Class<A> annotation = this.getAnnotation();
-        this.logger.debug("----njecting instance {}{}--", annotation.getName(), clazz.getName());
+        this.logger.debug("----injecting instance {}{}--", annotation.getName(), clazz.getName());
         Field[] fileds = clazz.getDeclaredFields();
         Class<?> key;
         Object value;

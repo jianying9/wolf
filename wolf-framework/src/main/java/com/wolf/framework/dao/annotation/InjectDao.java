@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface HDAO {
+public @interface InjectDao {
 
     Class<? extends Entity> clazz();
 }

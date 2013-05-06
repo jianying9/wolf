@@ -19,14 +19,17 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
         this.globalWebSocket = globalWebSocket;
     }
 
+    @Override
     public Session getSession() {
         return this.globalWebSocket.getSession();
     }
 
+    @Override
     public void sendMessage() {
         this.globalWebSocket.send(this.responseMessage);
     }
 
+    @Override
     public void broadcastMessage() {
         if (this.broadcastUserIdList != null) {
             GlobalWebSocket webocket;
@@ -39,10 +42,12 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
         }
     }
 
+    @Override
     public void close() {
         this.globalWebSocket.close();
     }
 
+    @Override
     public void saveNewSession() {
         if (this.newSession == null) {
             throw new RuntimeException("session is null when save session.please check you code.");
@@ -70,10 +75,12 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
         }
     }
 
+    @Override
     public void removeSession() {
         this.globalWebSocket.setSession(null);
     }
 
+    @Override
     public boolean isOnline(String userId) {
         boolean result = false;
         GlobalWebSocket socket = this.globalApplication.getGlobalWebSocket(userId);

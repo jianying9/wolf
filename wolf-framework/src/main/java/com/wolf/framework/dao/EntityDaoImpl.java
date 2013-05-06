@@ -51,34 +51,16 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
     }
 
     @Override
-    public InquireResult<T> inquirePageByColumn(String columnName, String columnValue) {
-        InquireContext inquireContext = new InquireContext();
-        Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
-        inquireContext.addCondition(condition);
-        return this.inquirePageByCondition(inquireContext);
-    }
-
-    @Override
-    public InquireResult<T> inquirePageByColumns(String columnName, String columnValue, String columnNameTwo, String columnValueTwo) {
-        InquireContext inquireContext = new InquireContext();
-        Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
-        inquireContext.addCondition(condition);
-        condition = new Condition(columnNameTwo, OperateTypeEnum.EQUAL, columnValueTwo);
-        inquireContext.addCondition(condition);
-        return this.inquirePageByCondition(inquireContext);
-    }
-
-    @Override
     public InquireResult<T> inquirePageByCondition(InquireContext inquireContext) {
         int total = this.countByConditionHandler.count(inquireContext.getConditionList());
         int pageIndex = inquireContext.getPageIndex();
         int pageSize = inquireContext.getPageSize();
         int pageNum = total / pageSize;
-        if(total % pageSize > 0) {
+        if (total % pageSize > 0) {
             pageNum++;
         }
         List<T> tList;
-        if((pageIndex - 1) * pageSize < total) {
+        if ((pageIndex - 1) * pageSize < total) {
             //当前页存在
             tList = this.inquireByConditionHandler.inquireByConditon(inquireContext);
         } else {
@@ -158,34 +140,16 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
     }
 
     @Override
-    public InquireKeyResult inquirePageKeysByColumn(String columnName, String columnValue) {
-        InquireContext inquireContext = new InquireContext();
-        Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
-        inquireContext.addCondition(condition);
-        return this.inquirePageKeysByCondition(inquireContext);
-    }
-
-    @Override
-    public InquireKeyResult inquirePageKeysByColumns(String columnName, String columnValue, String columnNameTwo, String columnValueTwo) {
-        InquireContext inquireContext = new InquireContext();
-        Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
-        inquireContext.addCondition(condition);
-        condition = new Condition(columnNameTwo, OperateTypeEnum.EQUAL, columnValueTwo);
-        inquireContext.addCondition(condition);
-        return this.inquirePageKeysByCondition(inquireContext);
-    }
-
-    @Override
     public InquireKeyResult inquirePageKeysByCondition(InquireContext inquireContext) {
         int total = this.countByConditionHandler.count(inquireContext.getConditionList());
         int pageIndex = inquireContext.getPageIndex();
         int pageSize = inquireContext.getPageSize();
         int pageNum = total / pageSize;
-        if(total % pageSize > 0) {
+        if (total % pageSize > 0) {
             pageNum++;
         }
         List<String> keyList;
-        if((pageIndex - 1) * pageSize < total) {
+        if ((pageIndex - 1) * pageSize < total) {
             //当前页存在
             keyList = this.inquireKeyByConditionHandler.inquireByConditon(inquireContext);
         } else {
@@ -196,6 +160,7 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return inquireKeyResult;
     }
 
+    @Override
     public List<T> inquireByColumn(String columnName, String columnValue) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -203,6 +168,7 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.inquireByCondition(inquireContext);
     }
 
+    @Override
     public List<T> inquireByColumns(String columnName, String columnValue, String columnNameTwo, String columnValueTwo) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -212,12 +178,14 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.inquireByCondition(inquireContext);
     }
 
+    @Override
     public List<T> inquireByCondition(InquireContext inquireContext) {
         //设置pageIndex:0代表无分页
         inquireContext.setPageIndex(0);
         return this.inquireByConditionHandler.inquireByConditon(inquireContext);
     }
 
+    @Override
     public List<String> inquireKeysByColumn(String columnName, String columnValue) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -225,6 +193,7 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.inquireKeysByCondition(inquireContext);
     }
 
+    @Override
     public List<String> inquireKeysByColumns(String columnName, String columnValue, String columnNameTwo, String columnValueTwo) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -234,12 +203,14 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.inquireKeysByCondition(inquireContext);
     }
 
+    @Override
     public List<String> inquireKeysByCondition(InquireContext inquireContext) {
         //设置pageIndex:0代表无分页
         inquireContext.setPageIndex(0);
         return this.inquireKeyByConditionHandler.inquireByConditon(inquireContext);
     }
 
+    @Override
     public int count(String columnName, String columnValue) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -247,6 +218,7 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.count(inquireContext);
     }
 
+    @Override
     public int count(String columnName, String columnValue, String columnNameTwo, String columnValueTwo) {
         InquireContext inquireContext = new InquireContext();
         Condition condition = new Condition(columnName, OperateTypeEnum.EQUAL, columnValue);
@@ -256,6 +228,7 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
         return this.count(inquireContext);
     }
 
+    @Override
     public int count(InquireContext inquireContext) {
         return this.countByConditionHandler.count(inquireContext.getConditionList());
     }
