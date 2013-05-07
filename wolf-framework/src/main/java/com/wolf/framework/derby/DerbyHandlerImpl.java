@@ -262,7 +262,7 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
         sqlBuilder.append(this.selectSqlModel).append('"')
                 .append(this.keyHandler.getColumnName()).append('"').append(this.IN).append('(');
         for (String keyValue : keyValueList) {
-            sqlBuilder.append(keyValue).append(',');
+            sqlBuilder.append("'").append(keyValue).append("',");
         }
         sqlBuilder.setLength(sqlBuilder.length() - 1);
         sqlBuilder.append(')');
@@ -275,7 +275,7 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
         List<Map<String, String>> resultMapList;
         try {
             conn = this.dataSource.getConnection();
-            PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = stat.executeQuery();
             int rowCount = 0;
             while (rs.next()) {
