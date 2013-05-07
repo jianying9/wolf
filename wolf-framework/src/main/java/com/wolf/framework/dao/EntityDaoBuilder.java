@@ -15,6 +15,7 @@ import com.wolf.framework.dao.inquire.InquireByConditionFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByConditionFromCacheHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByConditionFromDataHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByConditionHandler;
+import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyFromCacheHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyFromDataHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
@@ -119,6 +120,8 @@ public final class EntityDaoBuilder<T extends Entity> {
             //构造根据key查询缓存处理对象
             inquireByKeyHandler = new InquireByKeyFromCacheHandlerImpl<T>(inquireByKeyHandler, entityCache);
         }
+        inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
+        //
         //----------------------------------构造数据增、删、改操作对象
         //构造插入数据库处理对象
         InsertHandler<T> insertHandler = new InsertDataHandlerImpl<T>(
@@ -170,7 +173,6 @@ public final class EntityDaoBuilder<T extends Entity> {
                 this.clazz);
         //根据条件查询缓存entity处理对象
         inquireByConditionHandler = new InquireByConditionFromCacheHandlerImpl<T>(
-                this.tableName,
                 inquireCache,
                 inquireByKeyHandler,
                 inquireByConditionHandler);
@@ -183,7 +185,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         CountByConditionHandler countByConditionHandler = new CountByConditionFromDataHandlerImpl(derbyHandler);
         //根据条件查询总记录数处理对象
         countByConditionHandler = new CountByConditionFromCacheHandlerImpl(
-                 inquireCache,
+                inquireCache,
                 countByConditionHandler);
         //条件查询，有效条件过滤对象
         countByConditionHandler = new CountByConditionFilterHandlerImpl(

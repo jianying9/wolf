@@ -12,13 +12,11 @@ import java.util.List;
  */
 public final class InquireByConditionFromCacheHandlerImpl<T extends Entity> implements InquireByConditionHandler<T> {
     
-    private final String tableName;
     private final InquireCache inquireCache;
     private final InquireByKeyHandler<T> inquireByKeyHandler;
     private final InquireByConditionHandler<T> inquireByConditionHandler;
     
-    public InquireByConditionFromCacheHandlerImpl(String tableName, InquireCache inquireCache, InquireByKeyHandler<T> inquireByKeyHandler, InquireByConditionHandler<T> inquireByConditionHandler) {
-        this.tableName = tableName;
+    public InquireByConditionFromCacheHandlerImpl(InquireCache inquireCache, InquireByKeyHandler<T> inquireByKeyHandler, InquireByConditionHandler<T> inquireByConditionHandler) {
         this.inquireCache = inquireCache;
         this.inquireByKeyHandler = inquireByKeyHandler;
         this.inquireByConditionHandler = inquireByConditionHandler;
