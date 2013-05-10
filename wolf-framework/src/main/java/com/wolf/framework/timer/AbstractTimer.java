@@ -14,7 +14,8 @@ import org.slf4j.Logger;
  */
 public class AbstractTimer {
 
-    protected void executeService(final String act, final Map<String, String> parameterMap) {
+    protected String executeService(final String act, final Map<String, String> parameterMap) {
+        String result = "";
         if (ApplicationContext.CONTEXT.isReady()) {
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
             if (serviceWorker == null) {
@@ -23,10 +24,12 @@ public class AbstractTimer {
             } else {
                 LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap);
                 serviceWorker.doWork(localMessageContextImpl);
+                result = localMessageContextImpl.getResponseMessage();
             }
         } else {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
             logger.warn("timer:System is not ready! Wait for next time.");
         }
+        return result;
     }
 }

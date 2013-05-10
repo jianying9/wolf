@@ -76,7 +76,7 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
 
     protected abstract String getCompileModel();
 
-    protected abstract DataSource dataSourceBuild();
+    public abstract DataSource dataSourceBuild();
 
     public abstract void build();
 

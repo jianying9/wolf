@@ -36,8 +36,14 @@ public class AbstractDerbyHandler {
     protected final String KEY = "PRIMARY KEY ";
     protected final String CREATE_INDEX = "CREATE INDEX ";
     protected final String OFFSET = " OFFSET ? ROWS ";
+    protected final String OFFSET_PREFIX = " OFFSET ";
+    protected final String OFFSET_SURFIX = " ROWS ";
     protected final String FETCH_FIRST = " FETCH FIRST ? ROWS ONLY";
+    protected final String FETCH_FIRST_PREFIX = " FETCH FIRST ";
+    protected final String FETCH_FIRST_SURFIX= " ROWS ONLY";
     protected final String FETCH_NEXT = " FETCH NEXT ? ROWS ONLY";
+    protected final String FETCH_NEXT_PREFIX = " FETCH NEXT ";
+    protected final String FETCH_NEXT_SURFIX = " ROWS ONLY";
     //
     protected final String INT = " INT ";
     protected final String BIGINT = " BIGINT ";

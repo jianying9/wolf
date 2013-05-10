@@ -32,7 +32,7 @@ import com.wolf.framework.dao.update.UpdateEntityCacheHandlerImpl;
 import com.wolf.framework.dao.update.UpdateHandler;
 import com.wolf.framework.dao.update.UpdateInquireCacheHandlerImpl;
 import com.wolf.framework.derby.DerbyHandler;
-import com.wolf.framework.derby.DerbyHandlerImpl;
+import com.wolf.framework.derby.DerbyTestHandlerImpl;
 import java.util.ArrayList;
 import java.util.List;
 import net.sf.ehcache.Cache;
@@ -110,7 +110,7 @@ public final class EntityDaoBuilder<T extends Entity> {
             entityDaoContext.getCacheManager().addCache(entityCache);
         }
         //初始化derby数据库处理对象
-        final DerbyHandler derbyHandler = new DerbyHandlerImpl(this.entityDaoContext.getDataSource(), this.tableName, this.keyHandler, this.columnHandlerList);
+        final DerbyHandler derbyHandler = new DerbyTestHandlerImpl(this.entityDaoContext.getDataSource(), this.tableName, this.keyHandler, this.columnHandlerList);
         //
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDataHandlerImpl<T>(

@@ -44,7 +44,7 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
     @Override
     protected String getCompileModel() {
         String compileModel = this.properties.getProperty("compileModel");
-        if(compileModel == null) {
+        if (compileModel == null) {
             compileModel = FrameworkConfig.SERVER;
         }
         return compileModel;
@@ -67,19 +67,19 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
     }
 
     @Override
-    protected DataSource dataSourceBuild() {
+    public DataSource dataSourceBuild() {
         DataSource dataSource;
         String dataBaseType = this.properties.getProperty("dataBaseType");
         String dataBaseName = this.properties.getProperty("dataBaseName");
         if (dataBaseType.equals("JNDI")) {
             try {
-            Context context = new InitialContext();
-            dataSource = (DataSource) context.lookup(dataBaseName);
-        } catch (NamingException ex) {
-            this.logger.error("get dataSource from JNDI error:", ex);
-            throw new RuntimeException(ex);
-        }
-        } else if(dataBaseType.equals("EMBEDDED")) {
+                Context context = new InitialContext();
+                dataSource = (DataSource) context.lookup(dataBaseName);
+            } catch (NamingException ex) {
+                this.logger.error("get dataSource from JNDI error:", ex);
+                throw new RuntimeException(ex);
+            }
+        } else if (dataBaseType.equals("EMBEDDED")) {
             this.embeddedSimpleDataSource = new EmbeddedSimpleDataSource();
             this.embeddedSimpleDataSource.setDatabaseName(dataBaseName);
             this.embeddedSimpleDataSource.setCreateDatabase("create");

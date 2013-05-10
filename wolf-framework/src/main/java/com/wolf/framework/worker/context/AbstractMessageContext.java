@@ -227,10 +227,10 @@ public abstract class AbstractMessageContext {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"flag\":\"").append(this.flag.getFlagName());
         jsonBuilder.append("\",\"act\":\"").append(this.act);
-        jsonBuilder.append("\",\"pageTotal\":\"").append(this.pageTotal);
-        jsonBuilder.append("\",\"pageIndex\":\"").append(this.pageIndex);
-        jsonBuilder.append("\",\"pageSize\":\"").append(this.pageSize);
-        jsonBuilder.append("\",\"pageNum\":\"").append(this.pageNum);
+        jsonBuilder.append("\",\"pageTotal\":").append(this.pageTotal);
+        jsonBuilder.append(",\"pageIndex\":").append(this.pageIndex);
+        jsonBuilder.append(",\"pageSize\":").append(this.pageSize);
+        jsonBuilder.append(",\"pageNum\":").append(this.pageNum);
         String data = "";
         if (parameterNames.length > 0) {
             if (this.mapData != null) {
@@ -239,7 +239,7 @@ public abstract class AbstractMessageContext {
                 data = JsonUtils.mapListToJSON(this.mapListData, parameterNames, parameterHandlerMap);
             }
         }
-        jsonBuilder.append("\",\"data\":[").append(data).append("]}");
+        jsonBuilder.append(",\"data\":[").append(data).append("]}");
         this.responseMessage = jsonBuilder.toString();
     }
 }

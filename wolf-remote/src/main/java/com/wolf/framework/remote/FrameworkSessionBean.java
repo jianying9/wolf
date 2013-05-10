@@ -15,10 +15,10 @@ import javax.ejb.TransactionAttributeType;
  */
 @Stateless
 @Startup
-@TransactionAttribute(TransactionAttributeType.NEVER)
 public class FrameworkSessionBean implements FrameworkSessionBeanRemote {
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public String execute(String act, Map<String, String> parameterMap) {
         String result;
         if (ApplicationContext.CONTEXT.isReady()) {
