@@ -16,14 +16,14 @@ public class TaskExecutorImpl implements TaskExecutor {
     private final LinkedBlockingQueue<Runnable> linkedBlockingQueue;
 
     public TaskExecutorImpl(int corePoolSize) {
-        if(corePoolSize < 0 || corePoolSize > 200) {
-            corePoolSize = 50;
+        if(corePoolSize < 0 || corePoolSize > 500) {
+            corePoolSize = 500;
         }
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
         this.linkedBlockingQueue = new LinkedBlockingQueue<Runnable>(1000);
         this.threadPoolExecutor = new ThreadPoolExecutor(
                 corePoolSize,
-                100,
+                500,
                 60000,
                 TimeUnit.MILLISECONDS,
                 this.linkedBlockingQueue,
