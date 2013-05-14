@@ -1,6 +1,5 @@
 package com.wolf.framework.local;
 
-import com.wolf.framework.dao.Entity;
 import com.wolf.framework.injecter.Injecter;
 import java.util.Map;
 
@@ -8,13 +7,13 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public interface LocalServiceContextBuilder<T extends Entity> {
+public interface LocalServiceContextBuilder {
 
-    public void putLocalService(final Class<?> clazz, final Object object);
+    public void putLocalService(final Class<? extends Local> clazz, final Local local);
 
-    public Object getLocalService(Class<?> clazz);
+    public Local getLocalService(Class<? extends Local> clazz);
 
-    public Map<Class<?>, Object> getLocalServiceMap();
+    public Map<Class<? extends Local>, Local> getLocalServiceMap();
     
     public void inject(Injecter injecter);
 }

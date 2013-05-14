@@ -97,4 +97,14 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
         }
         return dataSource;
     }
+
+    @Override
+    protected int getTaskPoolSize() {
+        String taskCorePoolSize = this.properties.getProperty("taskCorePoolSize");
+        int corePoolSize = 50;
+        if(taskCorePoolSize != null) {
+            corePoolSize = Integer.parseInt(taskCorePoolSize);
+        }
+        return corePoolSize;
+    }
 }

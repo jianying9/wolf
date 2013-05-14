@@ -20,6 +20,7 @@ import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.injecter.LocalServiceInjecterImpl;
 import com.wolf.framework.injecter.TaskExecutorInjecterImpl;
+import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceConfigParser;
 import com.wolf.framework.local.LocalServiceContextBuilder;
@@ -29,6 +30,7 @@ import com.wolf.framework.paser.ClassParser;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
+import com.wolf.framework.service.parameter.Parameter;
 import com.wolf.framework.service.parameter.ParameterContextBuilder;
 import com.wolf.framework.service.parameter.ParameterContextBuilderImpl;
 import com.wolf.framework.service.parameter.ParametersConfig;
@@ -59,9 +61,9 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     protected final List<Class<T>> entityClassList = new ArrayList<Class<T>>();
     protected final List<Class<T>> hEntityClassList = new ArrayList<Class<T>>();
-    protected final List<Class<?>> parameterClassList = new ArrayList<Class<?>>();
+    protected final List<Class<Parameter>> parameterClassList = new ArrayList<Class<Parameter>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
-    protected final List<Class<?>> localServiceClassList = new ArrayList<Class<?>>();
+    protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<Class<?>> allClassList = new ArrayList<Class<?>>();
     protected EntityDaoContext<T> entityDaoContext;
     protected HEntityDaoContext<T> hEntityDaoContext;
@@ -75,6 +77,8 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
     protected abstract HTableHandler hTableHandlerBuild();
 
     protected abstract String getCompileModel();
+
+    protected abstract int getTaskPoolSize();
 
     public abstract DataSource dataSourceBuild();
 
@@ -129,7 +133,8 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         if (compilerModel.equals(FrameworkConfig.UNIT_TEST)) {
             taskExecutor = new TaskExecutorUnitTestImpl();
         } else {
-            taskExecutor = new TaskExecutorImpl();
+            int corePoolSize = this.getTaskPoolSize();
+            taskExecutor = new TaskExecutorImpl(corePoolSize);
         }
         //实例化HTableFactory
         final HTableHandler hTableHandler = this.hTableHandlerBuild();
@@ -169,7 +174,7 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         this.logger.info("parsing annotation LocalServiceConfig...");
         final LocalServiceContextBuilder localServiceContextBuilder = new LocalServiceContextBuilderImpl();
         final LocalServiceConfigParser localServiceConfigParser = new LocalServiceConfigParser(localServiceContextBuilder);
-        for (Class<?> clazz : this.localServiceClassList) {
+        for (Class<Local> clazz : this.localServiceClassList) {
             localServiceConfigParser.parse(clazz);
         }
         this.logger.info("parse annotation LocalServiceConfig finished.");
@@ -195,7 +200,7 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         this.logger.info("parsing annotation ParametersConfig start...");
         this.parametersContext = new ParametersContextImpl(fieldContextBuilder);
         final ParametersConfigParser parametersConfigParser = new ParametersConfigParser(this.parametersContext);
-        for (Class<?> clazz : this.parameterClassList) {
+        for (Class<Parameter> clazz : this.parameterClassList) {
             parametersConfigParser.parse(clazz);
         }
         this.logger.info("parse annotation ParametersConfig finished.");
@@ -228,6 +233,8 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
         Class<?> clazz = classloader.loadClass(className);
         Class<T> clazzt;
         Class<K> clazzk;
+        Class<Local> clazzl;
+        Class<Parameter> clazzp;
         this.allClassList.add(clazz);
         //是否是实体
         if (Entity.class.isAssignableFrom(clazz)) {
@@ -253,16 +260,18 @@ public abstract class AbstractApplicationContextBuilder<T extends Entity, K exte
             }
         }
         //是否是参数配置
-        if (clazz.isAnnotationPresent(ParametersConfig.class)) {
-            if (this.parameterClassList.contains(clazz) == false) {
-                this.parameterClassList.add(clazz);
+        if (clazz.isAnnotationPresent(ParametersConfig.class) && Parameter.class.isAssignableFrom(clazz)) {
+            clazzp = (Class<Parameter>) clazz;
+            if (this.parameterClassList.contains(clazzp) == false) {
+                this.parameterClassList.add(clazzp);
                 this.logger.debug("find parameter class ".concat(className));
             }
         }
         //是否是内部服务
-        if (clazz.isAnnotationPresent(LocalServiceConfig.class)) {
-            if (this.localServiceClassList.contains(clazz) == false) {
-                this.localServiceClassList.add(clazz);
+        if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
+            clazzl = (Class<Local>) clazz;
+            if (this.localServiceClassList.contains(clazzl) == false) {
+                this.localServiceClassList.add(clazzl);
                 this.logger.debug("find local service class ".concat(className));
             }
         }

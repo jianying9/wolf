@@ -11,15 +11,15 @@ import java.util.Map;
  */
 public final class LocalServiceContextBuilderImpl implements LocalServiceContextBuilder {
 
-    private final Map<Class<?>, Object> localServiceMap;
+    private final Map<Class<? extends Local>, Local> localServiceMap;
 
     public LocalServiceContextBuilderImpl() {
-        this.localServiceMap = new HashMap<Class<?>, Object>(16, 1);
+        this.localServiceMap = new HashMap<Class<? extends Local>, Local>(16, 1);
     }
 
     @Override
-    public void putLocalService(Class clazz, Object object) {
-        this.localServiceMap.put(clazz, object);
+    public void putLocalService(Class<? extends Local> clazz, Local local) {
+        this.localServiceMap.put(clazz, local);
     }
 
     @Override
@@ -28,14 +28,17 @@ public final class LocalServiceContextBuilderImpl implements LocalServiceContext
     }
 
     @Override
-    public Object getLocalService(Class clazz) {
+    public Local getLocalService(Class<? extends Local> clazz) {
         return this.localServiceMap.get(clazz);
     }
 
     @Override
     public void inject(Injecter injecter) {
-        for (Object object : localServiceMap.values()) {
-            injecter.parse(object);
+        for (Local local : localServiceMap.values()) {
+            injecter.parse(local);
+        }
+        for (Local local : localServiceMap.values()) {
+            local.init();
         }
     }
 }
