@@ -3,6 +3,7 @@ package com.wolf.framework.utils;
 import com.wolf.framework.service.parameter.ParameterHandler;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -14,6 +15,21 @@ public final class JsonUtils {
     }
     
     public static String listToJSON(List<String> list) {
+        String result = "[]";
+        if(list.isEmpty() == false) {
+            StringBuilder jsonBuilder = new StringBuilder(list.size() * 36);
+            jsonBuilder.append('[');
+            for (String text : list) {
+                jsonBuilder.append('"').append(text).append("\",");
+            }
+            jsonBuilder.setLength(jsonBuilder.length() - 1);
+            jsonBuilder.append(']');
+            result = jsonBuilder.toString();
+        }
+        return result;
+    }
+    
+    public static String setToJSON(Set<String> list) {
         String result = "[]";
         if(list.isEmpty() == false) {
             StringBuilder jsonBuilder = new StringBuilder(list.size() * 36);

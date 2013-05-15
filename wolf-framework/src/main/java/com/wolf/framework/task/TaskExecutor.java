@@ -8,9 +8,11 @@ import java.util.List;
  */
 public interface TaskExecutor {
 
-    public void shutdown();
-    
-    public void submet(Task task);
-    
-    public void get();
+    public void submit(Task task);
+
+    public void submit(List<Task> taskList);
+
+    public void syncSubmit(Task task);
+
+    public void syncSubmit(List<Task> taskList);
 }

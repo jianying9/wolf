@@ -298,7 +298,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         if (!this.rotateLock) {
             this.rotateLock = true;
             Task task = new LuceneRotateTaskImpl(this);
-            this.taskExecutor.submet(task);
+            this.taskExecutor.submit(task);
         }
     }
 
@@ -307,7 +307,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         if (!this.mergeLock) {
             this.mergeLock = true;
             Task task = new LuceneMergeTaskImpl(this);
-            this.taskExecutor.submet(task);
+            this.taskExecutor.submit(task);
         }
     }
 

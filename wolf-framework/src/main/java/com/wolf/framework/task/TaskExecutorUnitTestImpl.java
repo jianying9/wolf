@@ -18,7 +18,6 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
 
     private final ThreadPoolExecutor threadPoolExecutor;
     private final LinkedBlockingQueue<Runnable> linkedBlockingQueue;
-    private final List<Future<String>> taskList = new ArrayList<Future<String>>(10);
 
     public TaskExecutorUnitTestImpl() {
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
@@ -26,7 +25,7 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
         this.threadPoolExecutor = new ThreadPoolExecutor(
                 20,
                 100,
-                60000,
+                360000,
                 TimeUnit.MILLISECONDS,
                 this.linkedBlockingQueue,
                 Executors.defaultThreadFactory(),
@@ -34,26 +33,41 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
     }
 
     @Override
-    public void shutdown() {
-        this.threadPoolExecutor.shutdown();
+    public void submit(Task task) {
+        this.syncSubmit(task);
     }
 
     @Override
-    public void submet(Task task) {
+    public void submit(List<Task> taskList) {
+        this.syncSubmit(taskList);
+    }
+
+    @Override
+    public void syncSubmit(Task task) {
         String result = "";
         Future<String> futureTask = this.threadPoolExecutor.submit(task, result);
-        this.taskList.add(futureTask);
+        try {
+            futureTask.get();
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
     }
 
     @Override
-    public void get() {
+    public void syncSubmit(List<Task> taskList) {
+        String result = "";
+        Future<String> futureTask;
+        List<Future<String>> futureTaskList = new ArrayList<Future<String>>(taskList.size());
+        for (Task task : taskList) {
+            futureTask = this.threadPoolExecutor.submit(task, result);
+            futureTaskList.add(futureTask);
+        }
         try {
-            for (Future<String> futureTask : this.taskList) {
-                futureTask.get();
+            for (Future<String> future : futureTaskList) {
+                future.get();
             }
         } catch (InterruptedException ex) {
         } catch (ExecutionException ex) {
         }
-        this.taskList.clear();
     }
 }
