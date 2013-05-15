@@ -11,7 +11,7 @@ import com.wolf.framework.worker.workhandler.WorkHandler;
 public final class ServiceWorkerImpl implements ServiceWorker {
 
     private final WorkHandler nextWorkHandler;
-
+    
     public ServiceWorkerImpl(final WorkHandler workHandler) {
         this.nextWorkHandler = workHandler;
     }

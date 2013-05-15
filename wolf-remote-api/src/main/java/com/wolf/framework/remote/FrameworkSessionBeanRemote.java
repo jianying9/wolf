@@ -9,6 +9,6 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface FrameworkSessionBeanRemote {
-    
+
     public String execute(String act, Map<String, String> parameterMap);
 }
