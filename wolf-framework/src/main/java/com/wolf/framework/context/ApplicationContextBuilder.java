@@ -37,6 +37,7 @@ public final class ApplicationContextBuilder<T extends Entity, K extends Service
 
     @Override
     public void build() {
+        ApplicationContext.CONTEXT.setProperties(this.properties);
         this.baseBuild();
         ApplicationContext.CONTEXT.ready();
     }

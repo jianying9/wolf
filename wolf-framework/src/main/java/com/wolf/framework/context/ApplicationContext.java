@@ -4,6 +4,7 @@ import com.wolf.framework.worker.ServiceWorker;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import net.sf.ehcache.CacheManager;
 import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
 
@@ -21,6 +22,8 @@ public final class ApplicationContext {
     
     private CacheManager cacheManager;
     
+    private Properties properties;
+    
     private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(16, 1);
 
     public CacheManager getCacheManager() {
@@ -34,9 +37,17 @@ public final class ApplicationContext {
     public ServiceWorker getServiceWorker(String act) {
         return this.serviceWorkerMap.get(act);
     }
-
+    
     void setServiceWorkerMap(Map<String, ServiceWorker> serviceWorkerMap) {
         this.serviceWorkerMap.putAll(serviceWorkerMap);
+    }
+
+    public String getProperty(String key) {
+        return this.properties.getProperty(key);
+    }
+
+    void setProperties(Properties properties) {
+        this.properties = properties;
     }
     
     public boolean isReady() {
