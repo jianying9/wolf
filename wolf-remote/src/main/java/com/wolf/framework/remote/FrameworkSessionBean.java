@@ -18,7 +18,7 @@ import javax.ejb.TransactionAttributeType;
 public class FrameworkSessionBean implements FrameworkSessionBeanRemote {
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.NEVER)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public String execute(String act, Map<String, String> parameterMap) {
         String result;
         if (ApplicationContext.CONTEXT.isReady()) {
