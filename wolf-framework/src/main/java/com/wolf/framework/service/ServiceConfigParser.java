@@ -174,6 +174,33 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //异常处理
             workHandler = new ExceptionWorkHandlerImpl(workHandler);
+            //--------------------------------after------------------
+            if (response || broadcast) {
+                //是否有输出
+                //生成消息
+                if (page) {
+                    workHandler = new CreatePageJsonMessageHandlerImpl(returnParameter, parameterHandlerMap, workHandler);
+                } else {
+                    workHandler = new CreateJsonMessageHandlerImpl(returnParameter, parameterHandlerMap, workHandler);
+                }
+                //是否响应消息
+                if (response) {
+                    workHandler = new SendMessageWorkHandlerImpl(workHandler);
+                }
+                //是否广播消息
+                if (broadcast) {
+                    workHandler = new BroadcastMessageHandlerImpl(workHandler);
+                }
+            }
+            //session处理
+            switch (sessionHandleTypeEnum) {
+                case SAVE:
+                    workHandler = new SaveNewSessionWorkHandlerImpl(workHandler);
+                    break;
+                case REMOVE:
+                    workHandler = new RemoveSessionWorkHandlerImpl(workHandler);
+                    break;
+            }
             //-----------------------before-----------------
             //是否获取分页参数
             if (page) {
@@ -205,33 +232,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //是否验证session
             if (validateSession) {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
-            }
-            //--------------------------------after------------------
-            if (response || broadcast) {
-                //是否有输出
-                //生成消息
-                if (page) {
-                    workHandler = new CreatePageJsonMessageHandlerImpl(returnParameter, parameterHandlerMap, workHandler);
-                } else {
-                    workHandler = new CreateJsonMessageHandlerImpl(returnParameter, parameterHandlerMap, workHandler);
-                }
-                //是否响应消息
-                if (response) {
-                    workHandler = new SendMessageWorkHandlerImpl(workHandler);
-                }
-                //是否广播消息
-                if (broadcast) {
-                    workHandler = new BroadcastMessageHandlerImpl(workHandler);
-                }
-            }
-            //session处理
-            switch (sessionHandleTypeEnum) {
-                case SAVE:
-                    workHandler = new SaveNewSessionWorkHandlerImpl(workHandler);
-                    break;
-                case REMOVE:
-                    workHandler = new RemoveSessionWorkHandlerImpl(workHandler);
-                    break;
             }
             //关闭连接
             workHandler = new CloseWorkHandlerImpl(workHandler);
