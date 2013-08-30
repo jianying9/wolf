@@ -13,6 +13,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <repositories>
+        <repository>
+            <id>cloudera</id>
+            <name>cloudera maven repository</name>
+            <url>https://repository.cloudera.com/content/repositories/releases</url>
+        </repository>
+    </repositories>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,28 +50,33 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-examples</artifactId>
+                <version>2.0.0-mr1-cdh4.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.mrunit</groupId>
+                <artifactId>mrunit</artifactId>
+                <version>1.0.0</version>
+                <type>jar</type>
+                <classifier>hadoop2</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-core</artifactId>
-                <version>1.1.2</version>
+                <version>2.0.0-mr1-cdh4.2.1</version>
+                <type>jar</type>
                 <exclusions>
                     <exclusion>
                         <artifactId>jetty</artifactId>
                         <groupId>org.mortbay.jetty</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>jsp-2.1</artifactId>
+                        <artifactId>jetty-util</artifactId>
                         <groupId>org.mortbay.jetty</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>core</artifactId>
-                        <groupId>org.eclipse.jdt</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-digester</artifactId>
-                        <groupId>commons-digester</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-beanutils-core</artifactId>
-                        <groupId>commons-beanutils</groupId>
+                        <artifactId>jsp-api</artifactId>
+                        <groupId>javax.servlet.jsp</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>commons-cli</artifactId>
@@ -74,8 +87,88 @@
                         <groupId>commons-codec</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>commons-collections</artifactId>
-                        <groupId>commons-collections</groupId>
+                        <artifactId>jasper-runtime</artifactId>
+                        <groupId>tomcat</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-el</artifactId>
+                        <groupId>commons-el</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-httpclient</artifactId>
+                        <groupId>commons-httpclient</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-net</artifactId>
+                        <groupId>commons-net</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jets3t</artifactId>
+                        <groupId>net.java.dev.jets3t</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>core</artifactId>
+                        <groupId>org.eclipse.jdt</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>hsqldb</artifactId>
+                        <groupId>hsqldb</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jasper-compiler</artifactId>
+                        <groupId>tomcat</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>xmlenc</artifactId>
+                        <groupId>xmlenc</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jline</artifactId>
+                        <groupId>jline</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-common</artifactId>
+                <version>2.0.0-cdh4.2.1</version>
+                <type>jar</type>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>paranamer</artifactId>
+                        <groupId>com.thoughtworks.paranamer</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>snappy-java</artifactId>
+                        <groupId>org.xerial.snappy</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsr305</artifactId>
+                        <groupId>com.google.code.findbugs</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jetty</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jetty-util</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsp-api</artifactId>
+                        <groupId>javax.servlet.jsp</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-cli</artifactId>
+                        <groupId>commons-cli</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-codec</artifactId>
+                        <groupId>commons-codec</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>jasper-runtime</artifactId>
@@ -106,32 +199,12 @@
                         <groupId>net.java.dev.jets3t</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>hsqldb</artifactId>
-                        <groupId>hsqldb</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty-util</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>jasper-compiler</artifactId>
                         <groupId>tomcat</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>jsp-api-2.1</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>oro</artifactId>
-                        <groupId>oro</groupId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>xmlenc</artifactId>
                         <groupId>xmlenc</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>jersey-server</artifactId>
@@ -145,44 +218,53 @@
                         <artifactId>jersey-core</artifactId>
                         <groupId>com.sun.jersey</groupId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jdk.tools</artifactId>
+                        <groupId>jdk.tools</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>mockito-all</artifactId>
+                        <groupId>org.mockito</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>kfs</artifactId>
+                        <groupId>net.sf.kosmosfs</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsch</artifactId>
+                        <groupId>com.jcraft</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-collections</artifactId>
+                        <groupId>commons-collections</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-digester</artifactId>
+                        <groupId>commons-digester</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-beanutils-core</artifactId>
+                        <groupId>commons-beanutils</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase</artifactId>
-                <version>0.94.6.1</version>
+                <version>0.94.2-cdh4.2.1</version>
+                <type>jar</type>
                 <exclusions>
                     <exclusion>
-                        <artifactId>jaxb-api</artifactId>
-                        <groupId>javax.xml.bind</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jersey-json</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jsp-2.1</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>httpclient</artifactId>
-                        <groupId>org.apache.httpcomponents</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jersey-server</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>avro</artifactId>
-                        <groupId>org.apache.avro</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>avro-ipc</artifactId>
-                        <groupId>org.apache.avro</groupId>
+                        <artifactId>jsr305</artifactId>
+                        <groupId>com.google.code.findbugs</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>commons-cli</artifactId>
@@ -201,24 +283,64 @@
                         <groupId>commons-httpclient</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>libthrift</artifactId>
-                        <groupId>org.apache.thrift</groupId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>commons-io</artifactId>
                         <groupId>commons-io</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>commons-lang</artifactId>
-                        <groupId>commons-lang</groupId>
+                        <artifactId>jetty</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jetty-util</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsp-2.1</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jsp-api-2.1</artifactId>
+                        <groupId>org.mortbay.jetty</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-digester</artifactId>
+                        <groupId>commons-digester</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-beanutils-core</artifactId>
+                        <groupId>commons-beanutils</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>commons-collections</artifactId>
+                        <groupId>commons-collections</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jasper-compiler</artifactId>
+                        <groupId>tomcat</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jersey-server</artifactId>
+                        <groupId>com.sun.jersey</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jersey-json</artifactId>
+                        <groupId>com.sun.jersey</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jersey-core</artifactId>
+                        <groupId>com.sun.jersey</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jaxb-api</artifactId>
+                        <groupId>javax.xml.bind</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>libthrift</artifactId>
+                        <groupId>org.apache.thrift</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>high-scale-lib</artifactId>
                         <groupId>com.github.stephenc.high-scale-lib</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>guava</artifactId>
-                        <groupId>com.google.guava</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>jackson-xc</artifactId>
@@ -233,14 +355,6 @@
                         <groupId>org.jamon</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>jersey-core</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jetty-util</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>jruby-complete</artifactId>
                         <groupId>org.jruby</groupId>
                     </exclusion>
@@ -249,24 +363,8 @@
                         <groupId>com.yammer.metrics</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>jasper-compiler</artifactId>
-                        <groupId>tomcat</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jsp-api-2.1</artifactId>
-                        <groupId>org.mortbay.jetty</groupId>
-                    </exclusion>
-                    <exclusion>
                         <artifactId>stax-api</artifactId>
                         <groupId>stax</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>slf4j-log4j12</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>log4j</artifactId>
-                        <groupId>log4j</groupId>
                     </exclusion>
                     <exclusion>
                         <artifactId>servlet-api-2.5</artifactId>
@@ -277,8 +375,12 @@
                         <groupId>commons-logging</groupId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>netty</artifactId>
-                        <groupId>org.jboss.netty</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>slf4j-log4j12</artifactId>
+                        <groupId>org.slf4j</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -390,7 +492,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -398,6 +500,20 @@
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

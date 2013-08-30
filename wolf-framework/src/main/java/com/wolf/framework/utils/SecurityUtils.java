@@ -43,9 +43,9 @@ public final class SecurityUtils {
         for (byte bt : textByte) {
             byteValue = 0xFF & bt;
             if (byteValue < 16) {
-                hexString.append("0").append(Integer.toHexString(0xFF & bt));
+                hexString.append("0").append(Integer.toHexString(byteValue));
             } else {
-                hexString.append(Integer.toHexString(0xFF & bt));
+                hexString.append(Integer.toHexString(byteValue));
             }
         }
         return hexString.toString();

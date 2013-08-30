@@ -4,3 +4,6 @@
 *.jar
 *.war
 *.ear
+/wolf-remote-api/target/
+/wolf-framework/target/
+/wolf-remote/target/
