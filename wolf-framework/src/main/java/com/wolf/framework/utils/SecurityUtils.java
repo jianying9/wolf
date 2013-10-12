@@ -38,12 +38,12 @@ public final class SecurityUtils {
     }
 
     private static String byteToHexString(byte[] textByte) {
-        StringBuilder hexString = new StringBuilder(64);
+        StringBuilder hexString = new StringBuilder(32);
         int byteValue;
         for (byte bt : textByte) {
             byteValue = 0xFF & bt;
             if (byteValue < 16) {
-                hexString.append("0").append(Integer.toHexString(byteValue));
+                hexString.append('0').append(Integer.toHexString(byteValue));
             } else {
                 hexString.append(Integer.toHexString(byteValue));
             }

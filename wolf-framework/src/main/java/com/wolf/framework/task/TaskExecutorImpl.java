@@ -19,15 +19,24 @@ public class TaskExecutorImpl implements TaskExecutor {
     private final ThreadPoolExecutor threadPoolExecutor;
     private final LinkedBlockingQueue<Runnable> linkedBlockingQueue;
 
-    public TaskExecutorImpl(int corePoolSize) {
-        if(corePoolSize < 0 || corePoolSize > 500) {
-            corePoolSize = 500;
+    public TaskExecutorImpl(int corePoolSize, int maxPoolSize) {
+        if (maxPoolSize < 0) {
+            maxPoolSize = 20;
+        }
+        if (maxPoolSize > 1000) {
+            maxPoolSize = 1000;
+        }
+        if (corePoolSize < 0) {
+            corePoolSize = 5;
+        }
+        if (corePoolSize > maxPoolSize) {
+            corePoolSize = maxPoolSize;
         }
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
         this.linkedBlockingQueue = new LinkedBlockingQueue<Runnable>(1000);
         this.threadPoolExecutor = new ThreadPoolExecutor(
                 corePoolSize,
-                500,
+                maxPoolSize,
                 360000,
                 TimeUnit.MILLISECONDS,
                 this.linkedBlockingQueue,

@@ -35,7 +35,7 @@ public final class TestHandler {
     }
 
     public String execute(String act, Map<String, String> parameterMap) {
-        String result = "";
+        String result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
         if (serviceWorker == null) {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);

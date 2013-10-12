@@ -23,8 +23,8 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
         this.linkedBlockingQueue = new LinkedBlockingQueue<Runnable>(1000);
         this.threadPoolExecutor = new ThreadPoolExecutor(
-                20,
-                100,
+                2,
+                10,
                 360000,
                 TimeUnit.MILLISECONDS,
                 this.linkedBlockingQueue,

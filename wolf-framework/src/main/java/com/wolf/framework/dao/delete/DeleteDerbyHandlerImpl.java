@@ -7,11 +7,11 @@ import java.util.List;
  *
  * @author aladdin
  */
-public class DeleteDataHandlerImpl implements DeleteHandler {
+public class DeleteDerbyHandlerImpl implements DeleteHandler {
     
     private final DerbyHandler derbyHandler;
 
-    public DeleteDataHandlerImpl(DerbyHandler derbyHandler) {
+    public DeleteDerbyHandlerImpl(DerbyHandler derbyHandler) {
         this.derbyHandler = derbyHandler;
     }
     

@@ -1,13 +1,26 @@
 package com.wolf.framework.dao;
 
+import com.wolf.framework.config.FrameworkConfig;
+import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.context.Resource;
 import com.wolf.framework.data.DataHandlerFactory;
+import com.wolf.framework.derby.DerbyResourceImpl;
+import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.task.TaskExecutor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.Configuration;
+import org.apache.derby.jdbc.ClientDataSource;
+import org.apache.derby.jdbc.ClientDataSource40;
+import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
+import org.slf4j.Logger;
 
 /**
  * 全局信息构造类
@@ -16,17 +29,11 @@ import net.sf.ehcache.CacheManager;
  */
 public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<T> {
 
+    protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     //缓存管理对象
     private final CacheManager cacheManager;
-//    private final HTableHandler hTableHandler;
     private final Map<String, String> existClassMap = new HashMap<String, String>(128);
-//    private final FileSystem fileSystem;
-//    private final String indexRoot = "/lucene";
-//    private final Analyzer analyzer;
-//    private final IndexWriterConfig iwc;
-//    private final IndexWriterConfig ramIwc;
     private final TaskExecutor taskExecutor;
-//    private final String ip;
     private final DataSource dataSource;
     private final DataHandlerFactory dataHandlerFactory;
     //entity处理类集合
@@ -38,20 +45,6 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
     public final CacheManager getCacheManager() {
         return cacheManager;
     }
-    //sql查询缓存对象
-//    private final InquireCache inquireCache;
-
-//    @Override
-//    public final InquireCache getInquireCache() {
-//        return this.inquireCache;
-//    }
-    //lucene filter 缓存
-//    private final DeleteFilterCache deleteFilterCache;
-
-//    @Override
-//    public DeleteFilterCache getDeleteFilterCache() {
-//        return deleteFilterCache;
-//    }
 
     @Override
     public final void putEntityDao(final Class<T> clazz, final EntityDao<T> entityDao, final String entityName) {
@@ -61,7 +54,7 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
                 existClassName = "NULL";
             }
             StringBuilder errBuilder = new StringBuilder(1024);
-            errBuilder.append("There was an error putting entityDao. Cause: entityName reduplicated : ")
+            errBuilder.append("There was an error putting EntityDao. Cause: entityName reduplicated : ")
                     .append(entityName).append("\n").append("exist class : ").append(existClassName).append("\n")
                     .append("this class : ").append(clazz.getName());
             throw new RuntimeException(errBuilder.toString());
@@ -80,56 +73,67 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
      *
      * @param properties
      */
-    public EntityDaoContextImpl(ApplicationContext applicationContext, final CacheManager cacheManager, final TaskExecutor taskExecutor, final DataSource dataSource, final DataHandlerFactory dataHandlerFactory) {
-        this.entityDaoMap = new HashMap<Class<T>, EntityDao<T>>(64, 1);
+    public EntityDaoContextImpl(ApplicationContext applicationContext, final TaskExecutor taskExecutor, final DataHandlerFactory dataHandlerFactory) {
+        this.entityDaoMap = new HashMap<Class<T>, EntityDao<T>>(8, 1);
         this.dataHandlerFactory = dataHandlerFactory;
         this.applicationContext = applicationContext;
-//        this.hTableHandler = hTableHandler;
-        this.cacheManager = cacheManager;
-//        this.fileSystem = fileSystem;
         this.taskExecutor = taskExecutor;
-//        this.ip = ip;
-        //创建sql cache
-//        final CacheConfiguration sqlCacheConfig = new DefaultCacheConfiguration().getDefault();
-//        String uuid = UUID.randomUUID().toString();
-//        String inquireAndCountCacheName = "InquireAndCount-cache-".concat(uuid);
-//        sqlCacheConfig.name(inquireAndCountCacheName).maxEntriesLocalHeap(20000);
-//        final Cache sqlCache = new Cache(sqlCacheConfig);
-//        this.cacheManager.addCache(sqlCache);
-//        this.inquireCache = new InquireCacheImpl(sqlCache);
-        //创建lucene delete filter cache
-//        final CacheConfiguration luceneCacheConfig = new DefaultCacheConfiguration().getDefault();
-//        String deleteFilterCacheName = "Lucene-Delete-cache-".concat(uuid);
-//        luceneCacheConfig.name(deleteFilterCacheName).maxEntriesLocalHeap(20000);
-//        final Cache luceneCache = new Cache(luceneCacheConfig);
-//        this.cacheManager.addCache(luceneCache);
-//        this.deleteFilterCache = new DeleteFilterCacheImpl(luceneCache);
-        //检测lucene索引目录是否存在，如果不存在，则创建
-//        Path indexRootPath = new Path(this.indexRoot);
-//        try {
-//            boolean flag = this.fileSystem.exists(indexRootPath);
-//            if (!flag) {
-//                this.fileSystem.mkdirs(indexRootPath);
-//            }
-//        } catch (IOException ex) {
-//            Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.DAO);
-//            logger.error("DAO:create lucene index directory error...see log");
-//            throw new RuntimeException(ex);
-//        }
-        //创建索引分词对象
-//        this.analyzer = new StandardAnalyzer(Version.LUCENE_41);
-        //hdfs写入配置对象
-//        this.iwc = new IndexWriterConfig(Version.LUCENE_41, analyzer);
-//        this.iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-//        this.iwc.setMaxThreadStates(1);
-//        this.iwc.setMergeScheduler(new SerialMergeScheduler());
-        //ram写入配置对象
-//        this.ramIwc = new IndexWriterConfig(Version.LUCENE_41, analyzer);
-//        this.ramIwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-//        this.ramIwc.setMaxThreadStates(1);
-//        this.ramIwc.setMergeScheduler(NoMergeScheduler.INSTANCE);
-        //
-        this.dataSource = dataSource;
+        //创建缓存管理对象
+        final Configuration ehcacheConfig = new Configuration();
+        ehcacheConfig.setName("EntityDao-cache");
+        ehcacheConfig.setDynamicConfig(false);
+        ehcacheConfig.setUpdateCheck(false);
+        ehcacheConfig.setMonitoring("OFF");
+        this.cacheManager = CacheManager.create(ehcacheConfig);
+        cacheManager.removalAll();
+        //创建数据源
+        String type = this.applicationContext.getParameter(FrameworkConfig.DERBY_TYPE);
+        if (type == null) {
+            type = "";
+        }
+        if (type.equals(FrameworkConfig.JNDI)) {
+            String jndiName = this.applicationContext.getParameter(FrameworkConfig.DERBY_JNDI_NAME);
+            if (jndiName == null) {
+                throw new RuntimeException("Error when init derby DataSource. Cause:can not find " + FrameworkConfig.DERBY_JNDI_NAME);
+            }
+            try {
+                Context context = new InitialContext();
+                this.dataSource = (DataSource) context.lookup(jndiName);
+            } catch (NamingException ex) {
+                this.logger.error("Error when lookup JNDI:" + jndiName, ex);
+                throw new RuntimeException(ex);
+            }
+        } else {
+            String databaseName = this.applicationContext.getParameter(FrameworkConfig.DERBY_DATABASE_NAME);
+            if (databaseName == null) {
+                throw new RuntimeException("Error when init derby DataSource. Cause:can not find " + FrameworkConfig.DERBY_DATABASE_NAME);
+            }
+            if (type.equals(FrameworkConfig.EMBEDDED)) {
+                EmbeddedSimpleDataSource embeddedSimpleDataSource = new EmbeddedSimpleDataSource();
+                embeddedSimpleDataSource.setDatabaseName(databaseName);
+                embeddedSimpleDataSource.setCreateDatabase("create");
+                Resource derbyResource = new DerbyResourceImpl(embeddedSimpleDataSource);
+                this.applicationContext.addResource(derbyResource);
+                this.dataSource = embeddedSimpleDataSource;
+            } else if (type.equals(FrameworkConfig.REMOTE)) {
+                String serverName = this.applicationContext.getParameter(FrameworkConfig.DERBY_SERVER_NAME);
+                if (serverName == null) {
+                    throw new RuntimeException("Error when init derby DataSource. Cause:can not find " + FrameworkConfig.DERBY_SERVER_NAME);
+                }
+                String serverPort = this.applicationContext.getParameter(FrameworkConfig.DERBY_SERVER_PORT);
+                if (serverPort == null) {
+                    throw new RuntimeException("Error when init derby DataSource. Cause:can not find " + FrameworkConfig.DERBY_SERVER_PORT);
+                }
+                ClientDataSource clientDataSource = new ClientDataSource40();
+                clientDataSource.setCreateDatabase("create");
+                clientDataSource.setDatabaseName(databaseName);
+                clientDataSource.setServerName(serverName);
+                clientDataSource.setPortNumber(Integer.parseInt(serverPort));
+                this.dataSource = clientDataSource;
+            } else {
+                throw new RuntimeException("Error when init derby DataSource. Cause: invalid " + FrameworkConfig.DERBY_TYPE);
+            }
+        }
     }
 
     @Override
@@ -142,45 +146,10 @@ public class EntityDaoContextImpl<T extends Entity> implements EntityDaoContext<
         return this.entityDaoMap.get(clazz);
     }
 
-//    @Override
-//    public HTableHandler getHTableHandler() {
-//        return this.hTableHandler;
-//    }
-
-//    @Override
-//    public FileSystem getFileSystem() {
-//        return this.fileSystem;
-//    }
-
-//    @Override
-//    public String getIndexRoot() {
-//        return this.indexRoot;
-//    }
-
-//    @Override
-//    public Analyzer getAnalyzer() {
-//        return this.analyzer;
-//    }
-
-//    @Override
-//    public IndexWriterConfig getIndexWriterConfig() {
-//        return this.iwc;
-//    }
-
-//    @Override
-//    public IndexWriterConfig getRamIndexWriterConfig() {
-//        return this.ramIwc;
-//    }
-
     @Override
     public TaskExecutor getTaskExecutor() {
         return this.taskExecutor;
     }
-
-//    @Override
-//    public String getIP() {
-//        return this.ip;
-//    }
 
     @Override
     public ApplicationContext getApplicationContext() {

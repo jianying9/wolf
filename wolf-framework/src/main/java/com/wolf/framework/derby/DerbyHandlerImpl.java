@@ -103,15 +103,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("count", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when check table:").append(this.tableName)
-                    .append(".Cause:").append(throwable.getMessage());
+                    .append(".Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -148,15 +142,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
                 stat.execute();
                 stat.close();
             } catch (SQLException e) {
-                Throwable throwable = null;
-                for (Throwable t : e) {
-                    logger.error("create table sql", t);
-                    throwable = t;
-                    break;
-                }
                 StringBuilder mesBuilder = new StringBuilder(200);
                 mesBuilder.append("There was an error when create table:").append(this.tableName)
-                        .append(".Cause:").append(throwable.getMessage());
+                        .append(".Cause:").append(e.getMessage());
                 throw new RuntimeException(mesBuilder.toString());
             } finally {
                 if (conn != null) {
@@ -190,15 +178,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
                 }
                 stat.close();
             } catch (SQLException e) {
-                Throwable throwable = null;
-                for (Throwable t : e) {
-                    logger.error("create index sql", t);
-                    throwable = t;
-                    break;
-                }
                 StringBuilder mesBuilder = new StringBuilder(200);
                 mesBuilder.append("There was an error when create index:").append(this.tableName)
-                        .append(".Cause:").append(throwable.getMessage());
+                        .append(".Cause:").append(e.getMessage());
                 throw new RuntimeException(mesBuilder.toString());
             } finally {
                 if (conn != null) {
@@ -235,15 +217,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("inquireByKey", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error table:").append(this.tableName)
-                    .append(" executing inquireByKey.Cause:").append(throwable.getMessage());
+                    .append(" executing inquireByKey.Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -300,15 +276,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("inquireBykeys", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing inquireBykeys.Cause:").append(throwable.getMessage());
+                    .append(" executing inquireBykeys.Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -446,15 +416,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("inquireKeys", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing inquireKeys.Cause:").append(throwable.getMessage());
+                    .append(" executing inquireKeys.Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -510,15 +474,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("inquire", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing inquire.Cause:").append(throwable.getMessage());
+                    .append(" executing inquire.Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -563,15 +521,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("count", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing count.Cause:").append(throwable.getMessage());
+                    .append(" executing count.Cause:").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -634,15 +586,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeUpdate();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("insert", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing insert.Cause: ").append(throwable.getMessage());
+                    .append(" executing insert.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -693,15 +639,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("insert and inquire", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing insert and inquire.Cause: ").append(throwable.getMessage());
+                    .append(" executing insert and inquire.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -738,15 +678,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeBatch();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("batch insert", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing batch insert.Cause: ").append(throwable.getMessage());
+                    .append(" executing batch insert.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -770,15 +704,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeUpdate();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                this.logger.error("delete", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing delete.Cause: ").append(throwable.getMessage());
+                    .append(" executing delete.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -807,15 +735,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeBatch();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("batch delete", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing batch delete.Cause: ").append(throwable.getMessage());
+                    .append(" executing batch delete.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -900,15 +822,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeUpdate();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("update", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing update.Cause: ").append(throwable.getMessage());
+                    .append(" executing update.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -948,15 +864,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             stat.executeBatch();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("batch update", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing batch update.Cause: ").append(throwable.getMessage());
+                    .append(" executing batch update.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {
@@ -1011,15 +921,9 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             rs.close();
             stat.close();
         } catch (SQLException e) {
-            Throwable throwable = null;
-            for (Throwable t : e) {
-                logger.error("update and inquire", t);
-                throwable = t;
-                break;
-            }
             StringBuilder mesBuilder = new StringBuilder(200);
             mesBuilder.append("There was an error when table:").append(this.tableName)
-                    .append(" executing update and inquire.Cause: ").append(throwable.getMessage());
+                    .append(" executing update and inquire.Cause: ").append(e.getMessage());
             throw new RuntimeException(mesBuilder.toString());
         } finally {
             if (conn != null) {

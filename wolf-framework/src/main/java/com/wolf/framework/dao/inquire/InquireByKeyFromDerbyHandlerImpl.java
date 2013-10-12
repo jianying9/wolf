@@ -11,11 +11,11 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public final class InquireByKeyFromDataHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
+public final class InquireByKeyFromDerbyHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
 
     private final DerbyHandler derbyHandler;
 
-    public InquireByKeyFromDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
+    public InquireByKeyFromDerbyHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
         super(clazz);
         this.derbyHandler = derbyHandler;
     }
@@ -40,15 +40,5 @@ public final class InquireByKeyFromDataHandlerImpl<T extends Entity> extends Abs
             tList = new ArrayList<T>(0);
         }
         return tList;
-    }
-
-    @Override
-    public Map<String, String> inquireMapByKey(String keyValue) {
-        return this.derbyHandler.inquireByKey(keyValue);
-    }
-
-    @Override
-    public List<Map<String, String>> inquireMapByKeys(List<String> keyValues) {
-        return this.derbyHandler.inquireBykeys(keyValues);
     }
 }

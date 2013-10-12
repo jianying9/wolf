@@ -10,12 +10,12 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class UpdateDataHandlerImpl extends AbstractDaoHandler implements UpdateHandler {
+public class UpdateDerbyHandlerImpl extends AbstractDaoHandler implements UpdateHandler {
 
     private final DerbyHandler derbyHandler;
     private final ColumnHandler keyHandler;
 
-    public UpdateDataHandlerImpl(DerbyHandler derbyHandler, Class clazz, ColumnHandler keyHandler) {
+    public UpdateDerbyHandlerImpl(DerbyHandler derbyHandler, Class clazz, ColumnHandler keyHandler) {
         super(clazz);
         this.derbyHandler = derbyHandler;
         this.keyHandler = keyHandler;

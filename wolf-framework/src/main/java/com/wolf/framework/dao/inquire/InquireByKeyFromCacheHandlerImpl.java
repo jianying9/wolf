@@ -3,7 +3,6 @@ package com.wolf.framework.dao.inquire;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -81,15 +80,5 @@ public final class InquireByKeyFromCacheHandlerImpl<T extends Entity> implements
             this.putEntityCache(missEntityList);
         }
         return tList;
-    }
-
-    @Override
-    public Map<String, String> inquireMapByKey(String keyValue) {
-        return this.inquireByKeyHandler.inquireMapByKey(keyValue);
-    }
-
-    @Override
-    public List<Map<String, String>> inquireMapByKeys(List<String> keyValues) {
-        return this.inquireByKeyHandler.inquireMapByKeys(keyValues);
     }
 }

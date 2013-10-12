@@ -12,12 +12,12 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class InsertDataHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InsertHandler<T> {
+public class InsertDerbyHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InsertHandler<T> {
     
     private final DerbyHandler derbyHandler;
     private final ColumnHandler keyHandler;
     
-    public InsertDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz, ColumnHandler keyHandler) {
+    public InsertDerbyHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz, ColumnHandler keyHandler) {
         super(clazz);
         this.derbyHandler = derbyHandler;
         this.keyHandler = keyHandler;
@@ -33,19 +33,6 @@ public class InsertDataHandlerImpl<T extends Entity> extends AbstractDaoHandler<
         }
         this.derbyHandler.insert(entityMap);
         return keyValue;
-    }
-    
-    @Override
-    public T insertAndInquire(Map<String, String> entityMap) {
-        final String keyName = this.keyHandler.getColumnName();
-        String keyValue = entityMap.get(keyName);
-        if (keyValue == null) {
-            keyValue = this.keyHandler.getDataHandler().getNextValue();
-            entityMap.put(keyName, keyValue);
-        }
-        Map<String, String> resultMap = this.derbyHandler.insertAndInquire(entityMap);
-        T t = this.newInstance(resultMap);
-        return t;
     }
     
     @Override

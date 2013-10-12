@@ -78,7 +78,8 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
 
     @Override
     public T insertAndInquire(Map<String, String> entityMap) {
-        return this.insertHandler.insertAndInquire(entityMap);
+        String keyValue = this.insert(entityMap);
+        return this.inquireByKey(keyValue);
     }
 
     @Override

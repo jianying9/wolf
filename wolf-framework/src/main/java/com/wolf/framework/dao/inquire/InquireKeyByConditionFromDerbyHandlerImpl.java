@@ -8,11 +8,11 @@ import java.util.List;
  *
  * @author aladdin
  */
-public final class InquireKeyByConditionFromDataHandlerImpl implements InquireKeyByConditionHandler {
+public final class InquireKeyByConditionFromDerbyHandlerImpl implements InquireKeyByConditionHandler {
 
     private final DerbyHandler derbyHandler;
 
-    public InquireKeyByConditionFromDataHandlerImpl(DerbyHandler derbyHandler) {
+    public InquireKeyByConditionFromDerbyHandlerImpl(DerbyHandler derbyHandler) {
         this.derbyHandler = derbyHandler;
     }
 

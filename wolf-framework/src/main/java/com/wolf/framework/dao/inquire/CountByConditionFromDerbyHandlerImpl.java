@@ -8,11 +8,11 @@ import java.util.List;
  *
  * @author aladdin
  */
-public final class CountByConditionFromDataHandlerImpl implements CountByConditionHandler {
+public final class CountByConditionFromDerbyHandlerImpl implements CountByConditionHandler {
 
     private final DerbyHandler derbyHandler;
 
-    public CountByConditionFromDataHandlerImpl(DerbyHandler derbyHandler) {
+    public CountByConditionFromDerbyHandlerImpl(DerbyHandler derbyHandler) {
         this.derbyHandler = derbyHandler;
     }
 

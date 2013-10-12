@@ -154,7 +154,6 @@ public class DerbyJUnitTest {
         configProperties.setProperty("dataServerName", "192.168.19.218");
         configProperties.setProperty("dataServerPort", "1527");
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(configProperties);
-        DataSource dataSource = applicationContextBuilder.dataSourceBuild();
         //
 //        this.testTwo(dataSource);
         //

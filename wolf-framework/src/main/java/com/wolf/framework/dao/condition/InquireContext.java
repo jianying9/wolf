@@ -8,42 +8,17 @@ import java.util.List;
  *
  * @author aladdin
  */
-public final class InquireContext {
+public final class InquireContext extends InquirePageContext {
 
-    private int pageSize = 10;
-    private int pageIndex = 1;
-    private final List<Condition> conditionList = new ArrayList<Condition>(6);
-    private final List<Order> orderList = new ArrayList<Order>(4);
+    private final List<Condition> conditionList = new ArrayList<Condition>(4);
+    private final List<Order> orderList = new ArrayList<Order>(2);
 
     public void clearCondition() {
         this.conditionList.clear();
     }
-    
+
     public void clearOrder() {
         this.orderList.clear();
-    }
-
-    public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex < 0 ? 0 : pageIndex;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        if (pageSize > 1000) {
-            pageSize = 1000;
-        } else {
-            if (pageSize < 1) {
-                pageSize = 10;
-            }
-        }
-        this.pageSize = pageSize;
     }
 
     public boolean hasCondition() {
@@ -72,11 +47,11 @@ public final class InquireContext {
         }
         return result;
     }
-    
+
     public void addOrder(Order order) {
         this.orderList.add(order);
     }
-    
+
     public List<Order> getOrderList() {
         return this.orderList;
     }

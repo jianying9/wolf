@@ -22,18 +22,18 @@ public interface DerbyHandler {
     public int count(List<Condition> conditionList);
 
     public void insert(Map<String, String> entityMap);
-    
+
     public Map<String, String> insertAndInquire(Map<String, String> entityMap);
-    
+
     public void batchInsert(List<Map<String, String>> entityMapList);
-    
+
     public void delete(String keyValue);
-    
+
     public void batchDelete(List<String> keyValueList);
-    
+
     public void update(Map<String, String> entityMap);
-    
+
     public void batchUpdate(List<Map<String, String>> entityMapList);
-    
+
     public Map<String, String> updateAndInquire(Map<String, String> entityMap);
 }

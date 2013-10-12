@@ -131,7 +131,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         FileStatus[] fstats = this.fileSystem.listStatus(this.rootPath);
         for (int index = 0; index < fstats.length; index++) {
             fileStatus = fstats[index];
-            if (fileStatus.isDir()) {
+            if (fileStatus.isDirectory()) {
                 //是文件目录
                 tempPath = fileStatus.getPath();
                 readOnlyPathName = tempPath.getName();
@@ -158,7 +158,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         String ramPrefix = this.ip.concat("-RAM-");
         for (int index = 0; index < fstats.length; index++) {
             fileStatus = fstats[index];
-            if (fileStatus.isDir() == false) {
+            if (fileStatus.isDirectory() == false) {
                 //是文件
                 tempPath = fileStatus.getPath();
                 tempPathName = tempPath.getName();
@@ -179,7 +179,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         String deletePrefix = this.ip.concat("-DELETE-");
         for (int index = 0; index < fstats.length; index++) {
             fileStatus = fstats[index];
-            if (fileStatus.isDir() == false) {
+            if (fileStatus.isDirectory() == false) {
                 //是文件
                 tempPath = fileStatus.getPath();
                 tempPathName = tempPath.getName();
@@ -329,7 +329,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
                 FileStatus fileStatus;
                 for (int index = 0; index < fstats.length; index++) {
                     fileStatus = fstats[index];
-                    if (fileStatus.isDir()) {
+                    if (fileStatus.isDirectory()) {
                         readOnlyPath = fileStatus.getPath();
                         readOnlyPathName = readOnlyPath.getName();
                         if (!readOnlyPathName.equals(mainPathName)) {
@@ -423,7 +423,7 @@ public class HdfsLuceneImpl implements HdfsLucene {
         //关闭旧的写入目录读取索引
         if (oldRamIndexReader != null) {
             oldRamIndexReader.close();
-            
+
         }
     }
 

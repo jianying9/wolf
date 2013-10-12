@@ -3,31 +3,31 @@ package com.wolf.framework.dao;
 import com.wolf.framework.cache.DefaultCacheConfiguration;
 import com.wolf.framework.dao.cache.InquireCache;
 import com.wolf.framework.dao.cache.InquireCacheImpl;
-import com.wolf.framework.dao.delete.DeleteDataHandlerImpl;
+import com.wolf.framework.dao.delete.DeleteDerbyHandlerImpl;
 import com.wolf.framework.dao.delete.DeleteEntityCacheHandlerImpl;
 import com.wolf.framework.dao.delete.DeleteHandler;
 import com.wolf.framework.dao.delete.DeleteInquireCacheHandlerImpl;
 import com.wolf.framework.dao.inquire.CountByConditionFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.CountByConditionFromCacheHandlerImpl;
-import com.wolf.framework.dao.inquire.CountByConditionFromDataHandlerImpl;
+import com.wolf.framework.dao.inquire.CountByConditionFromDerbyHandlerImpl;
 import com.wolf.framework.dao.inquire.CountByConditionHandler;
 import com.wolf.framework.dao.inquire.InquireByConditionFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByConditionFromCacheHandlerImpl;
-import com.wolf.framework.dao.inquire.InquireByConditionFromDataHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireByConditionFromDerbyHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByConditionHandler;
 import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyFromCacheHandlerImpl;
-import com.wolf.framework.dao.inquire.InquireByKeyFromDataHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireByKeyFromDerbyHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import com.wolf.framework.dao.inquire.InquireKeyByConditionFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireKeyByConditionFromCacheHandlerImpl;
-import com.wolf.framework.dao.inquire.InquireKeyByConditionFromDataHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireKeyByConditionFromDerbyHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireKeyByConditionHandler;
 import com.wolf.framework.dao.insert.InsertCacheHandlerImpl;
-import com.wolf.framework.dao.insert.InsertDataHandlerImpl;
+import com.wolf.framework.dao.insert.InsertDerbyHandlerImpl;
 import com.wolf.framework.dao.insert.InsertHandler;
 import com.wolf.framework.dao.parser.ColumnHandler;
-import com.wolf.framework.dao.update.UpdateDataHandlerImpl;
+import com.wolf.framework.dao.update.UpdateDerbyHandlerImpl;
 import com.wolf.framework.dao.update.UpdateEntityCacheHandlerImpl;
 import com.wolf.framework.dao.update.UpdateHandler;
 import com.wolf.framework.dao.update.UpdateInquireCacheHandlerImpl;
@@ -113,7 +113,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         final DerbyHandler derbyHandler = new DerbyTestHandlerImpl(this.entityDaoContext.getDataSource(), this.tableName, this.keyHandler, this.columnHandlerList);
         //
         //---------------------------构造根据key查询数据库entity处理对象
-        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDataHandlerImpl<T>(
+        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDerbyHandlerImpl<T>(
                 derbyHandler,
                 this.clazz);
         if (entityCache != null) {
@@ -124,17 +124,17 @@ public final class EntityDaoBuilder<T extends Entity> {
         //
         //----------------------------------构造数据增、删、改操作对象
         //构造插入数据库处理对象
-        InsertHandler<T> insertHandler = new InsertDataHandlerImpl<T>(
+        InsertHandler<T> insertHandler = new InsertDerbyHandlerImpl<T>(
                 derbyHandler,
                 this.clazz,
                 this.keyHandler);
         //构造更新数据库处理对象
-        UpdateHandler updateHandler = new UpdateDataHandlerImpl(
+        UpdateHandler updateHandler = new UpdateDerbyHandlerImpl(
                 derbyHandler,
                 this.clazz,
                 this.keyHandler);
         //构造删除数据库处理对象
-        DeleteHandler deleteHandler = new DeleteDataHandlerImpl(derbyHandler);
+        DeleteHandler deleteHandler = new DeleteDerbyHandlerImpl(derbyHandler);
         //----------------------------构造删、改实体缓存处理对象
         if (entityCache != null) {
             //构造更新数据时，实体缓存处理对象
@@ -156,7 +156,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         filterList.addAll(this.columnHandlerList);
         //-----------------------------构造根据条件查询key集合处理对象
         //构造根据条件查询key集合数据库处理对象
-        InquireKeyByConditionHandler inquireKeyByConditionHandler = new InquireKeyByConditionFromDataHandlerImpl(derbyHandler);
+        InquireKeyByConditionHandler inquireKeyByConditionHandler = new InquireKeyByConditionFromDerbyHandlerImpl(derbyHandler);
         //构造根据条件查询key集合缓存处理对象
         inquireKeyByConditionHandler = new InquireKeyByConditionFromCacheHandlerImpl(
                 inquireCache,
@@ -168,7 +168,7 @@ public final class EntityDaoBuilder<T extends Entity> {
         //
         //-----------------------------构造根据条件查询entity集合处理对象
         //根据条件查询数据库entity集合处理对象
-        InquireByConditionHandler<T> inquireByConditionHandler = new InquireByConditionFromDataHandlerImpl<T>(
+        InquireByConditionHandler<T> inquireByConditionHandler = new InquireByConditionFromDerbyHandlerImpl<T>(
                 derbyHandler,
                 this.clazz);
         //根据条件查询缓存entity处理对象
@@ -182,7 +182,7 @@ public final class EntityDaoBuilder<T extends Entity> {
                 inquireByConditionHandler);
         //----------------------------构造根据条件查询总记录数处理对象
         //根据条件查询总记录数处理对象
-        CountByConditionHandler countByConditionHandler = new CountByConditionFromDataHandlerImpl(derbyHandler);
+        CountByConditionHandler countByConditionHandler = new CountByConditionFromDerbyHandlerImpl(derbyHandler);
         //根据条件查询总记录数处理对象
         countByConditionHandler = new CountByConditionFromCacheHandlerImpl(
                 inquireCache,

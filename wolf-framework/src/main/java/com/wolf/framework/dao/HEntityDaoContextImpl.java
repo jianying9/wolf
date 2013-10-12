@@ -2,10 +2,13 @@ package com.wolf.framework.dao;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.hbase.HTableHandler;
+import com.wolf.framework.hbase.HTableHandlerImpl;
 import com.wolf.framework.task.TaskExecutor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 
 /**
  * 全局信息构造类
@@ -28,13 +31,14 @@ public class HEntityDaoContextImpl<T extends Entity> implements HEntityDaoContex
      *
      * @param properties
      */
-    public HEntityDaoContextImpl(ApplicationContext applicationContext, HTableHandler hTableHandler, final TaskExecutor taskExecutor) {
+    public HEntityDaoContextImpl(ApplicationContext applicationContext, final TaskExecutor taskExecutor) {
         this.entityDaoMap = new HashMap<Class<T>, HEntityDao<T>>(16, 1);
         this.applicationContext = applicationContext;
-        this.hTableHandler = hTableHandler;
         this.taskExecutor = taskExecutor;
+        Configuration config = HBaseConfiguration.create();
+        this.hTableHandler = new HTableHandlerImpl(config);
     }
-    
+
     @Override
     public final void putHEntityDao(final Class<T> clazz, final HEntityDao<T> entityDao, final String entityName) {
         if (this.entityDaoMap.containsKey(clazz)) {

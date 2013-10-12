@@ -1,0 +1,54 @@
+{
+    "compile.model": {
+        "value": "",
+        "describe": "运行模式:SERVER，DEVELOPMENT，UNIT_TEST"
+    },
+    "annotation.scan.packages": {
+        "value": "",
+        "describe": "扫描注解包名集合，例如com.wolf,com.pig"
+    },
+    "task.core.pool.size": {
+        "value": "10",
+        "describe": "线程空闲存活数量"
+    },
+    "task.max.pool.size": {
+        "value": "100",
+        "describe": "线程最大存活数量"
+    },
+    "derby.type": {
+        "value": "",
+        "describe": "derby数据源初始化方式:JNDI,EMBEDDED,REMOTE"
+    },
+    "derby.jndi.name": {
+        "value": "",
+        "describe": "JNDI的名称"
+    },
+    "derby.database.name": {
+        "value": "",
+        "describe": "数据源名称"
+    },
+    "derby.server.name": {
+        "value": "",
+        "describe": "远程数据库ip"
+    },
+    "derby.server.port": {
+        "value": "",
+        "describe": "远程数据库端口"
+    },
+    "redis.server.host": {
+        "value": "",
+        "describe": "redis服务器ip"
+    },
+    "redis.server.port": {
+        "value": "",
+        "describe": "redis服务器端口"
+    },
+    "redis.max.pool.size": {
+        "value": "",
+        "describe": "redis连接池最大连接数"
+    },
+    "redis.min.pool.size": {
+        "value": "",
+        "describe": "redis连接池最小连接数"
+    }
+}

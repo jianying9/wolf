@@ -3,10 +3,9 @@ package com.wolf.framework.dao.inquire;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- *
+ * 查询过滤
  * @author aladdin
  */
 public final class InquireByKeyFilterHandlerImpl<T extends Entity> implements InquireByKeyHandler<T> {
@@ -52,15 +51,5 @@ public final class InquireByKeyFilterHandlerImpl<T extends Entity> implements In
                 tList = sortList;
         }
         return tList;
-    }
-
-    @Override
-    public Map<String, String> inquireMapByKey(String keyValue) {
-        return this.inquireByKeyHandler.inquireMapByKey(keyValue);
-    }
-
-    @Override
-    public List<Map<String, String>> inquireMapByKeys(List<String> keyValues) {
-        return this.inquireByKeyHandler.inquireMapByKeys(keyValues);
     }
 }

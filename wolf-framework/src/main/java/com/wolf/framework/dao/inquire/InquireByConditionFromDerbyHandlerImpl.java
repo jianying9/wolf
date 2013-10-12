@@ -11,11 +11,11 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public final class InquireByConditionFromDataHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByConditionHandler<T> {
+public final class InquireByConditionFromDerbyHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByConditionHandler<T> {
 
     private final DerbyHandler derbyHandler;
 
-    public InquireByConditionFromDataHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
+    public InquireByConditionFromDerbyHandlerImpl(DerbyHandler derbyHandler, Class<T> clazz) {
         super(clazz);
         this.derbyHandler = derbyHandler;
     }

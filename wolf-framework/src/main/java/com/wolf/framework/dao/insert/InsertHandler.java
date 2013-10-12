@@ -18,7 +18,5 @@ public interface InsertHandler<T extends Entity> {
      */
     public String insert(Map<String, String> entityMap);
     
-    public T insertAndInquire(Map<String, String> entityMap);
-
     public void batchInsert(List<Map<String, String>> entityMapList);
 }
