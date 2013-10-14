@@ -32,7 +32,7 @@ public final class REntityDaoBuilder<T extends Entity> {
     private final REntityDaoContext<T> entityDaoContext;
 
     public REntityDaoBuilder(String tableName, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
-        this.tableName = "t_".concat(tableName);
+        this.tableName = tableName;
         this.keyHandler = keyHandler;
         this.columnHandlerList = columnHandlerList;
         this.clazz = clazz;

@@ -1,14 +1,14 @@
 package com.wolf.framework.injecter;
 
 import com.wolf.framework.dao.REntityDaoContext;
-import com.wolf.framework.dao.annotation.InjectHDao;
+import com.wolf.framework.dao.annotation.InjectRDao;
 import java.lang.reflect.Field;
 
 /**
  *
  * @author aladdin
  */
-public class RDaoInjecterImpl extends AbstractInjecter<InjectHDao> implements Injecter {
+public class RDaoInjecterImpl extends AbstractInjecter<InjectRDao> implements Injecter {
 
     private final REntityDaoContext entityDaoContextBuilder;
 
@@ -17,13 +17,13 @@ public class RDaoInjecterImpl extends AbstractInjecter<InjectHDao> implements In
     }
 
     @Override
-    protected Class<InjectHDao> getAnnotation() {
-        return InjectHDao.class;
+    protected Class<InjectRDao> getAnnotation() {
+        return InjectRDao.class;
     }
 
     @Override
     protected Class<?> getObjectKey(Field field) {
-        InjectHDao dao = field.getAnnotation(InjectHDao.class);
+        InjectRDao dao = field.getAnnotation(InjectRDao.class);
         return dao.clazz();
     }
 

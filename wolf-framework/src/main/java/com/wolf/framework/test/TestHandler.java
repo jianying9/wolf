@@ -9,7 +9,6 @@ import com.wolf.framework.session.Session;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalMessageContextImpl;
 import java.util.Map;
-import java.util.Properties;
 import org.slf4j.Logger;
 
 /**
@@ -20,11 +19,11 @@ public final class TestHandler {
 
     private Session session;
 
-    public TestHandler(Properties properties) {
+    public TestHandler(Map<String, String> parameterMap) {
         synchronized (TestHandler.class) {
             if (ApplicationContext.CONTEXT.isReady() == false) {
-                properties.put("compileModel", FrameworkConfig.UNIT_TEST);
-                ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(properties);
+                parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.UNIT_TEST);
+                ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
                 applicationContextBuilder.build();
             }
         }

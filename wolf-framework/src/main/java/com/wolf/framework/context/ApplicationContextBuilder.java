@@ -148,34 +148,37 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         //初始化data类型工厂对象
         final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
         //解析derby entityDao
-        this.logger.info("parsing annotation DaoConfig...");
-        this.entityDaoContext = new EntityDaoContextImpl<T>(
-                ApplicationContext.CONTEXT,
-                taskExecutor,
-                dataHanlderFactory);
-        final DaoConfigParser<T> entityConfigDaoParser = new DaoConfigParser<T>(this.entityDaoContext);
-        for (Class<T> clazz : this.entityClassList) {
-            entityConfigDaoParser.parse(clazz);
+        if (this.entityClassList.isEmpty() == false) {
+            this.logger.info("parsing annotation DaoConfig...");
+            this.entityDaoContext = new EntityDaoContextImpl<T>(
+                    ApplicationContext.CONTEXT,
+                    taskExecutor,
+                    dataHanlderFactory);
+            final DaoConfigParser<T> entityConfigDaoParser = new DaoConfigParser<T>(this.entityDaoContext);
+            for (Class<T> clazz : this.entityClassList) {
+                entityConfigDaoParser.parse(clazz);
+            }
         }
-        this.logger.info("parse annotation DaoConfig finished.");
         //解析hbase EntityDao
-        this.logger.info("parsing annotation HDaoConfig...");
-        this.hEntityDaoContext = new HEntityDaoContextImpl<T>(
-                ApplicationContext.CONTEXT,
-                taskExecutor);
-        final HDaoConfigParser<T> hEntityConfigDaoParser = new HDaoConfigParser<T>(this.hEntityDaoContext);
-        for (Class<T> clazz : this.hEntityClassList) {
-            hEntityConfigDaoParser.parse(clazz);
+        if (this.hEntityClassList.isEmpty() == false) {
+            this.logger.info("parsing annotation HDaoConfig...");
+            this.hEntityDaoContext = new HEntityDaoContextImpl<T>(
+                    ApplicationContext.CONTEXT,
+                    taskExecutor);
+            final HDaoConfigParser<T> hEntityConfigDaoParser = new HDaoConfigParser<T>(this.hEntityDaoContext);
+            for (Class<T> clazz : this.hEntityClassList) {
+                hEntityConfigDaoParser.parse(clazz);
+            }
         }
-        this.logger.info("parse annotation HDaoConfig finished.");
         //解析redis EntityDao
-        this.logger.info("parsing annotation RDaoConfig...");
-        this.rEntityDaoContext = new REntityDaoContextImpl<T>(ApplicationContext.CONTEXT);
-        final RDaoConfigParser<T> rEntityConfigDaoParser = new RDaoConfigParser<T>(this.rEntityDaoContext);
-        for (Class<T> clazz : this.rEntityClassList) {
-            rEntityConfigDaoParser.parse(clazz);
+        if (this.rEntityClassList.isEmpty() == false) {
+            this.logger.info("parsing annotation RDaoConfig...");
+            this.rEntityDaoContext = new REntityDaoContextImpl<T>(ApplicationContext.CONTEXT);
+            final RDaoConfigParser<T> rEntityConfigDaoParser = new RDaoConfigParser<T>(this.rEntityDaoContext);
+            for (Class<T> clazz : this.rEntityClassList) {
+                rEntityConfigDaoParser.parse(clazz);
+            }
         }
-        this.logger.info("parse annotation HDaoConfig finished.");
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
         final LocalServiceContextBuilder localServiceContextBuilder = new LocalServiceContextBuilderImpl();
@@ -229,6 +232,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.serviceWorkerContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");
+        ApplicationContext.CONTEXT.ready();
     }
 
     /**

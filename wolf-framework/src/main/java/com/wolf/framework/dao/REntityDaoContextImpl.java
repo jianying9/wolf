@@ -49,11 +49,11 @@ public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContex
             minPoolSize = 10;
         } else {
             minPoolSize = Integer.parseInt(minPoolSizeStr);
-            if (minPoolSize > maxPoolSize) {
-                minPoolSize = maxPoolSize;
-            }
             if (minPoolSize < 0) {
                 minPoolSize = 10;
+            }
+            if (minPoolSize > maxPoolSize) {
+                minPoolSize = maxPoolSize;
             }
         }
         //
