@@ -43,7 +43,7 @@ public abstract class AbstractMessageContext {
     //broadcast
     protected List<String> broadcastUserIdList;
     //session
-    protected Session newSession;
+    protected Session newSession = null;
 
     public AbstractMessageContext(String act, String json) {
         this.act = act;

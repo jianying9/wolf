@@ -97,7 +97,7 @@ public final class GlobalApplication extends WebSocketApplication {
         return this.webSockets.get(userId);
     }
 
-    public void removGlobalWebSocket(String userId) {
-        this.webSockets.remove(userId);
+    public void removGlobalWebSocket(GlobalWebSocket globalWebSocket) {
+        this.webSockets.remove(globalWebSocket.getSession().getUserId());
     }
 }
