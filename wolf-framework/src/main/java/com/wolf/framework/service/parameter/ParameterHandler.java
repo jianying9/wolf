@@ -8,7 +8,9 @@ public interface ParameterHandler {
 
     public String getName();
     
-    public String getDesc();
+    public String getDataType();
+    
+    public String getDescription();
 
     public String getJson(String value);
 

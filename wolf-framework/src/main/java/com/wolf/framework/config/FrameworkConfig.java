@@ -1,5 +1,9 @@
 package com.wolf.framework.config;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  *
  * @author aladdin
@@ -45,4 +49,19 @@ public class FrameworkConfig {
     public final static String REDIS_MAX_POOL_SIZE = "redis.max.pool.size";
     //redis连接池最小连接数
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
+    //保留字段集合
+
+    public static Set<String> getReservedWordSet() {
+        Set<String> wordSet = new HashSet<String>(4, 1);
+        //保留接口参数
+        wordSet.add("act");
+        wordSet.add("filters");
+        wordSet.add("sid");
+        wordSet.add("entry");
+        wordSet.add("pageIndex");
+        wordSet.add("pageSize");
+        wordSet.add("pageNum");
+        wordSet.add("pageTotal");
+        return Collections.unmodifiableSet(wordSet);
+    }
 }

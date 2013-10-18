@@ -7,7 +7,7 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public interface LocalServiceContextBuilder {
+public interface LocalServiceContext {
 
     public void putLocalService(final Class<? extends Local> clazz, final Local local);
 

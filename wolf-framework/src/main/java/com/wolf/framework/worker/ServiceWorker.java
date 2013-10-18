@@ -10,4 +10,10 @@ import com.wolf.framework.worker.context.FrameworkMessageContext;
 public interface ServiceWorker {
 
     public void doWork(FrameworkMessageContext frameworkMessageContext);
+
+    public String getInfo();
+    
+    public String getGroup();
+    
+    public String getDescription();
 }

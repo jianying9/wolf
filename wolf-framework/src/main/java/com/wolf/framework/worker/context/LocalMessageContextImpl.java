@@ -8,7 +8,7 @@ import java.util.Map;
  * @author aladdin
  */
 public class LocalMessageContextImpl extends AbstractMessageContext implements FrameworkMessageContext {
-    
+
     private final Session session;
 
     public LocalMessageContextImpl(Session session, String act, Map<String, String> parameterMap) {
@@ -45,8 +45,12 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
     public boolean isOnline(String userId) {
         return false;
     }
-    
+
     public String getResponseMessage() {
         return this.responseMessage;
+    }
+
+    @Override
+    public void sendSystemMessage(String message) {
     }
 }

@@ -1,6 +1,10 @@
 package com.wolf.framework.service.parameter;
 
+import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.data.DataHandlerFactory;
+import com.wolf.framework.service.parameter.filter.FilterFactory;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -16,5 +20,11 @@ public interface ParametersContext {
 
     public boolean assertExistParametersConfig(final Class<?> clazz);
 
-    public ParameterContextBuilder getFieldContextBuilder();
+    public FilterFactory getFilterFactory();
+
+    public DataHandlerFactory getDataHandlerFactory();
+
+    public ApplicationContext getApplicationContext();
+    
+    public Set<String> getReservedWordSet();
 }

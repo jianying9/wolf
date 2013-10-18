@@ -36,8 +36,8 @@ public final class DoubleDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_DECIMAL_VALUE;
     }
 
-    public DataTypeEnum getDataTypeEnum() {
-        return DataTypeEnum.DOUBLE;
+    public BasicTypeEnum getDataTypeEnum() {
+        return BasicTypeEnum.DOUBLE;
     }
 
     public String getNextValue() {

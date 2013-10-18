@@ -1,7 +1,5 @@
 package com.wolf.framework.exception;
 
-import com.wolf.framework.config.ResponseFlagType;
-
 /**
  *
  * @author aladdin
@@ -9,14 +7,14 @@ import com.wolf.framework.config.ResponseFlagType;
 public final class TranscationRollbackException extends RuntimeException {
 
     private static final long serialVersionUID = 489653045742631404L;
-    private final ResponseFlagType responseFlagType;
+    private final String flag;
 
-    public TranscationRollbackException(final ResponseFlagType responseFlagType) {
-        super(responseFlagType.getFlagName());
-        this.responseFlagType = responseFlagType;
+    public TranscationRollbackException(final String flag) {
+        super(flag);
+        this.flag = flag;
     }
 
-    public ResponseFlagType getFlag() {
-        return this.responseFlagType;
+    public String getFlag() {
+        return this.flag;
     }
 }

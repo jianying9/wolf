@@ -25,7 +25,7 @@ public interface DataHandler {
     
     public String getNextValue();
     
-    public DataTypeEnum getDataTypeEnum();
+    public BasicTypeEnum getDataTypeEnum();
     
     public String convertToInput(String value);
     

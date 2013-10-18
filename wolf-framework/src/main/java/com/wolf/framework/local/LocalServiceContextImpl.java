@@ -9,11 +9,11 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public final class LocalServiceContextBuilderImpl implements LocalServiceContextBuilder {
+public final class LocalServiceContextImpl implements LocalServiceContext {
 
     private final Map<Class<? extends Local>, Local> localServiceMap;
 
-    public LocalServiceContextBuilderImpl() {
+    public LocalServiceContextImpl() {
         this.localServiceMap = new HashMap<Class<? extends Local>, Local>(16, 1);
     }
 

@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.annotation;
 
-import com.wolf.framework.data.DataTypeEnum;
+import com.wolf.framework.data.BasicTypeEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,7 +20,7 @@ public @interface ColumnConfig {
      *
      * @return
      */
-    public DataTypeEnum dataTypeEnum();
+    public BasicTypeEnum dataTypeEnum();
 
     /**
      * 列类型

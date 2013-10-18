@@ -1,8 +1,7 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.config.DefaultResponseFlagEnum;
+import com.wolf.framework.config.DefaultResponseFlags;
 import com.wolf.framework.config.FrameworkLoggerEnum;
-import com.wolf.framework.config.ResponseFlagType;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
@@ -37,7 +36,7 @@ public abstract class AbstractMessageContext {
     //message
     private String error = "";
     protected String responseMessage = "";
-    private ResponseFlagType flag = DefaultResponseFlagEnum.FAILURE;
+    private String flag = DefaultResponseFlags.FAILURE;
     private Map<String, String> mapData;
     private List<Map<String, String>> mapListData;
     //broadcast
@@ -134,19 +133,19 @@ public abstract class AbstractMessageContext {
     }
 
     public final void invalid() {
-        this.flag = DefaultResponseFlagEnum.INVALID;
+        this.flag = DefaultResponseFlags.INVALID;
     }
 
     public final void unlogin() {
-        this.flag = DefaultResponseFlagEnum.UNLOGIN;
+        this.flag = DefaultResponseFlags.UNLOGIN;
     }
 
     public final void success() {
-        this.flag = DefaultResponseFlagEnum.SUCCESS;
+        this.flag = DefaultResponseFlags.SUCCESS;
     }
 
-    public final void setFlag(ResponseFlagType responseFlagType) {
-        this.flag = responseFlagType;
+    public final void setFlag(String flag) {
+        this.flag = flag;
     }
 
     public final void setError(String error) {
@@ -201,16 +200,14 @@ public abstract class AbstractMessageContext {
 
     public final void createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"flag\":\"").append(this.flag.getFlagName());
-        jsonBuilder.append("\",\"act\":\"").append(this.act);
-        jsonBuilder.append("\",\"error\":\"").append(this.error).append("\"}");
+        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+                .append("\",\"act\":\"").append(this.act)
+                .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
     }
 
     public final void createMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap) {
         StringBuilder jsonBuilder = new StringBuilder(64);
-        jsonBuilder.append("{\"flag\":\"").append(this.flag.getFlagName());
-        jsonBuilder.append("\",\"act\":\"").append(this.act);
         String data = "{}";
         if (parameterNames.length > 0) {
             if (this.mapData != null) {
@@ -219,18 +216,14 @@ public abstract class AbstractMessageContext {
                 data = JsonUtils.mapListToJSON(this.mapListData, parameterNames, parameterHandlerMap);
             }
         }
-        jsonBuilder.append("\",\"data\":").append(data).append('}');
+        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+                .append("\",\"act\":\"").append(this.act)
+                .append("\",\"data\":").append(data).append('}');
         this.responseMessage = jsonBuilder.toString();
     }
 
     public final void createPageMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap) {
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"flag\":\"").append(this.flag.getFlagName());
-        jsonBuilder.append("\",\"act\":\"").append(this.act);
-        jsonBuilder.append("\",\"pageTotal\":").append(this.pageTotal);
-        jsonBuilder.append(",\"pageIndex\":").append(this.pageIndex);
-        jsonBuilder.append(",\"pageSize\":").append(this.pageSize);
-        jsonBuilder.append(",\"pageNum\":").append(this.pageNum);
         String data = "";
         if (parameterNames.length > 0) {
             if (this.mapData != null) {
@@ -239,7 +232,13 @@ public abstract class AbstractMessageContext {
                 data = JsonUtils.mapListToJSON(this.mapListData, parameterNames, parameterHandlerMap);
             }
         }
-        jsonBuilder.append(",\"data\":[").append(data).append("]}");
+        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+                .append("\",\"act\":\"").append(this.act)
+                .append("\",\"pageTotal\":").append(this.pageTotal)
+                .append(",\"pageIndex\":").append(this.pageIndex)
+                .append(",\"pageSize\":").append(this.pageSize)
+                .append(",\"pageNum\":").append(this.pageNum)
+                .append(",\"data\":[").append(data).append("]}");
         this.responseMessage = jsonBuilder.toString();
     }
 }

@@ -4,7 +4,7 @@ import com.wolf.framework.dao.condition.Condition;
 import com.wolf.framework.dao.condition.InquireContext;
 import com.wolf.framework.dao.condition.OperateTypeEnum;
 import com.wolf.framework.dao.parser.ColumnHandler;
-import com.wolf.framework.data.DataTypeEnum;
+import com.wolf.framework.data.BasicTypeEnum;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public abstract class AbstractInquireConditionHandler {
     protected List<Condition> filterCondition(List<Condition> conditionList) {
         List<Condition> resultList;
         ColumnHandler columnHandler;
-        DataTypeEnum dataTypeEnum;
+        BasicTypeEnum dataTypeEnum;
         OperateTypeEnum operateTypeEnum;
         Condition newCondition;
         String columnName;
@@ -54,7 +54,7 @@ public abstract class AbstractInquireConditionHandler {
                 columnHandler = this.getColumnHandler(columnName);
                 if (columnHandler != null) {
                     dataTypeEnum = columnHandler.getDataHandler().getDataTypeEnum();
-                    if (dataTypeEnum == DataTypeEnum.DATE) {
+                    if (dataTypeEnum == BasicTypeEnum.DATE) {
                         operateTypeEnum = condition.getOperateTypeEnum();
                         columnValue = condition.getColumnValue();
                         switch (operateTypeEnum) {

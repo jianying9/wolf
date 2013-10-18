@@ -35,8 +35,8 @@ public final class IntDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_NUMBER_VALUE;
     }
 
-    public DataTypeEnum getDataTypeEnum() {
-        return DataTypeEnum.INT;
+    public BasicTypeEnum getDataTypeEnum() {
+        return BasicTypeEnum.INT;
     }
 
     public String getNextValue() {

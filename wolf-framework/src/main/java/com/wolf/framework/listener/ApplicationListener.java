@@ -7,6 +7,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.websocket.GlobalApplication;
+import com.wolf.framework.websocket.ManagementApplication;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,7 +27,8 @@ import org.slf4j.Logger;
  */
 public class ApplicationListener implements ServletContextListener {
 
-    public static GlobalApplication APP = null;
+    private static GlobalApplication APP = null;
+    private static ManagementApplication MAPP = null;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -74,15 +76,25 @@ public class ApplicationListener implements ServletContextListener {
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
         applicationContextBuilder.build();
         logger.info("Start websocket...");
-        //开启websocket
+        //开启websocket应用
         ApplicationListener.APP = new GlobalApplication();
         WebSocketEngine.getEngine().register(ApplicationListener.APP);
+        //开启开发模式
+        String compileModel = parameterMap.get(FrameworkConfig.COMPILE_MODEL);
+        if (compileModel != null && compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
+            ApplicationListener.MAPP = new ManagementApplication();
+            WebSocketEngine.getEngine().register(ApplicationListener.MAPP);
+        }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         if (ApplicationListener.APP != null) {
             WebSocketEngine.getEngine().unregister(ApplicationListener.APP);
+            ApplicationListener.APP.shutdown();
+        }
+        if (ApplicationListener.MAPP != null) {
+            WebSocketEngine.getEngine().unregister(ApplicationListener.MAPP);
         }
         ApplicationContext.CONTEXT.contextDestroyed();
     }

@@ -2,14 +2,14 @@ package com.wolf.framework.service;
 
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.DataTypeEnum;
+import com.wolf.framework.data.BasicTypeEnum;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
-import com.wolf.framework.service.parameter.ParameterContextBuilder;
 import com.wolf.framework.service.parameter.ParameterHandler;
 import com.wolf.framework.service.parameter.ParametersContext;
 import com.wolf.framework.service.parameter.ParametersHandler;
@@ -17,7 +17,6 @@ import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerImpl;
 import com.wolf.framework.worker.workhandler.BroadcastMessageHandlerImpl;
-import com.wolf.framework.worker.workhandler.CloseWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.CreateJsonMessageHandlerImpl;
 import com.wolf.framework.worker.workhandler.CreatePageJsonMessageHandlerImpl;
 import com.wolf.framework.worker.workhandler.DefaultWorkHandlerImpl;
@@ -47,19 +46,18 @@ import org.slf4j.Logger;
  * @author aladdin
  */
 public class ServiceConfigParser<K extends Service, T extends Entity> {
-
+    
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final ParameterHandler pageIndexHandler;
     private final ParameterHandler pageSizeHandler;
-
+    
     public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
         this.serviceWorkerContext = serviceWorkerContext;
         //初始化分页参数配置
-        ParametersContext parametersContextBuilder = this.serviceWorkerContext.getParametersContextBuilder();
-        ParameterContextBuilder parameterContextBuilder = parametersContextBuilder.getFieldContextBuilder();
-        DataHandlerFactory dataHandlerFactory = parameterContextBuilder.getDataHandlerFactory();
-        DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(DataTypeEnum.INT);
+        ParametersContext parametersContext = this.serviceWorkerContext.getParametersContextBuilder();
+        DataHandlerFactory dataHandlerFactory = parametersContext.getDataHandlerFactory();
+        DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(BasicTypeEnum.INT);
         this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler, "1", "页索引");
         this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler, "15", "页大小");
     }
@@ -88,10 +86,11 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final boolean response = serviceConfig.response();
             final boolean broadcast = serviceConfig.broadcast();
             final boolean validateSession = serviceConfig.validateSession();
+            final String description = serviceConfig.description();
+            final String group = serviceConfig.group();
             //获取字段处理对象集合
             final Map<String, ParameterHandler> fieldHandlerMapTemp = new HashMap<String, ParameterHandler>(2, 1);
             Set<Entry<String, ParameterHandler>> entrySet;
-            Map<String, ParameterHandler> parameterHandlerMapTmp;
             //参数配置
             final ParametersContext parametersContextBuilder = this.serviceWorkerContext.getParametersContextBuilder();
             ParametersHandler parametersHandler;
@@ -100,14 +99,13 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 //如果parametersConfig找不到，则抛出异常，停止加载
                 if (parametersHandler == null) {
                     StringBuilder mesBuilder = new StringBuilder(512);
-                    mesBuilder.append("There was an error parsing service worker. Cause: can not find parametersConfig handler : ").append(clazz);
+                    mesBuilder.append("Error when parsing service worker. Cause: can not find parametersConfig handler : ").append(clazz);
                     mesBuilder.append("\n").append("error class is ").append(clazz.getName());
                     throw new RuntimeException(mesBuilder.toString());
                 }
-                parameterHandlerMapTmp = parametersHandler.getFieldHandlerMap();
                 entrySet = parametersHandler.getFieldHandlerMap().entrySet();
                 for (Entry<String, ParameterHandler> entry : entrySet) {
-                    if (!fieldHandlerMapTemp.containsKey(entry.getKey())) {
+                    if (fieldHandlerMapTemp.containsKey(entry.getKey()) == false) {
                         fieldHandlerMapTemp.put(entry.getKey(), entry.getValue());
                     }
                 }
@@ -119,7 +117,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 fieldHandler = fieldHandlerMapTemp.get(parameter);
                 if (fieldHandler == null) {
                     StringBuilder mesBuilder = new StringBuilder(512);
-                    mesBuilder.append("There was an error parsing service worker. Cause: can not find important parameter config : ").append(parameter);
+                    mesBuilder.append("Error parsing service worker. Cause: can not find important parameter config : ").append(parameter);
                     mesBuilder.append("\n").append("error class is ").append(clazz.getName());
                     throw new RuntimeException(mesBuilder.toString());
                 }
@@ -132,7 +130,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 fieldHandler = fieldHandlerMapTemp.get(parameter);
                 if (fieldHandler == null) {
                     StringBuilder mesBuilder = new StringBuilder(512);
-                    mesBuilder.append("There was an error parsing service worker. Cause: can not find minor parameter config : ").append(parameter);
+                    mesBuilder.append("Error parsing service worker. Cause: can not find minor parameter config : ").append(parameter);
                     mesBuilder.append("\n").append("error class is ").append(clazz.getName());
                     throw new RuntimeException(mesBuilder.toString());
                 }
@@ -145,7 +143,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 fieldHandler = fieldHandlerMapTemp.get(parameter);
                 if (fieldHandler == null) {
                     StringBuilder mesBuilder = new StringBuilder(512);
-                    mesBuilder.append("There was an error parsing service worker. Cause: can not find return parameter config : ").append(parameter);
+                    mesBuilder.append("Error parsing service worker. Cause: can not find return parameter config : ").append(parameter);
                     mesBuilder.append("\n").append("error class is ").append(clazz.getName());
                     throw new RuntimeException(mesBuilder.toString());
                 }
@@ -159,7 +157,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             try {
                 service = clazz.newInstance();
             } catch (Exception e) {
-                this.logger.error("There was an error instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
+                this.logger.error("Error instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
                 throw new RuntimeException("There wa an error instancing class ".concat(clazz.getName()));
             }
             //注入相关对象
@@ -168,13 +166,14 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //包装服务类
             WorkHandler workHandler = new DefaultWorkHandlerImpl(service);
             //判断是否需要事务，如果需要则加入事务处理环节
-            String compileModel = this.serviceWorkerContext.getCompileModel();
+            ApplicationContext applicationContext = this.serviceWorkerContext.getApplicationContext();
+            String compileModel = applicationContext.getParameter(FrameworkConfig.COMPILE_MODEL);
             if (requireTransaction && compileModel.equals(FrameworkConfig.SERVER)) {
                 workHandler = new TransactionWorkHandlerImpl(workHandler);
             }
             //异常处理
             workHandler = new ExceptionWorkHandlerImpl(workHandler);
-            //--------------------------------after------------------
+            //--------------------------------业务执行后处理环节------------------
             if (response || broadcast) {
                 //是否有输出
                 //生成消息
@@ -201,7 +200,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                     workHandler = new RemoveSessionWorkHandlerImpl(workHandler);
                     break;
             }
-            //-----------------------before-----------------
+            //-----------------------业务执行前处理环节-----------------
             //是否获取分页参数
             if (page) {
                 workHandler = new PageParameterWorkHandlerImpl(this.pageIndexHandler, this.pageSizeHandler, workHandler);
@@ -233,10 +232,13 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             if (validateSession) {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
             }
-            //关闭连接
-            workHandler = new CloseWorkHandlerImpl(workHandler);
             //创建对应的工作对象
-            final ServiceWorker serviceWorker = new ServiceWorkerImpl(workHandler);
+            ServiceWorkerImpl serviceWorkerImpl = new ServiceWorkerImpl(workHandler);
+            //INFO,开发模式才能会返回接口信息
+            if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
+                serviceWorkerImpl.createInfo(actionName, group, description, importantParameter, minorParameter, returnParameter, parameterHandlerMap);
+            }
+            final ServiceWorker serviceWorker = serviceWorkerImpl;
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());
         } else {

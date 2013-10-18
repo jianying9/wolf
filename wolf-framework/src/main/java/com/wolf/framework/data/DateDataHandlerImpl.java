@@ -34,8 +34,8 @@ public class DateDataHandlerImpl implements DataHandler {
         return TimeUtils.getDateFotmatYYMMDD();
     }
 
-    public DataTypeEnum getDataTypeEnum() {
-        return DataTypeEnum.DATE;
+    public BasicTypeEnum getDataTypeEnum() {
+        return BasicTypeEnum.DATE;
     }
 
     public String getNextValue() {

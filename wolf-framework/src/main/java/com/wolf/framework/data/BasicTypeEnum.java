@@ -5,7 +5,7 @@ package com.wolf.framework.data;
  *
  * @author aladdin
  */
-public enum DataTypeEnum {
+public enum BasicTypeEnum {
 
     //Int [-2147483648,2147483647]
     INT {

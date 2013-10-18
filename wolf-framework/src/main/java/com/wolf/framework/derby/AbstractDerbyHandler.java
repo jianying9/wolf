@@ -1,6 +1,6 @@
 package com.wolf.framework.derby;
 
-import com.wolf.framework.data.DataTypeEnum;
+import com.wolf.framework.data.BasicTypeEnum;
 
 /**
  *
@@ -56,7 +56,7 @@ public class AbstractDerbyHandler {
     protected final String VARCHAR4000 = " VARCHAR(4000) ";
     protected final String CHAR36 = " CHAR(36) ";
     
-    protected final String getSqlType(DataTypeEnum dataTypeEnum) {
+    protected final String getSqlType(BasicTypeEnum dataTypeEnum) {
         String result = "UNDEFINED";
         switch(dataTypeEnum) {
                 case INT:

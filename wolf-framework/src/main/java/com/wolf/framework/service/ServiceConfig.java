@@ -85,16 +85,18 @@ public @interface ServiceConfig {
      * @return
      */
     public SessionHandleTypeEnum sessionHandleTypeEnum() default SessionHandleTypeEnum.NONE;
-    
+
     /**
      * 是否分页
-     * @return 
+     *
+     * @return
      */
     public boolean page() default false;
 
     /**
      * 是否响应消息
-     * @return 
+     *
+     * @return
      */
     public boolean response() default true;
 
@@ -111,4 +113,18 @@ public @interface ServiceConfig {
      * @return
      */
     public String description();
+
+    /**
+     * 接口分组
+     *
+     * @return
+     */
+    public String group() default "ungrouped";
+
+    /**
+     * 自定义返回标志
+     *
+     * @return
+     */
+    public ResponseFlag[] responseFlags() default {};
 }

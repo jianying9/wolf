@@ -58,21 +58,28 @@ public final class GlobalApplication extends WebSocketApplication {
 
     @Override
     public void onMessage(WebSocket socket, String text) {
-        String act = null;
+        GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
         //获取act
         Matcher matcher = this.actPattern.matcher(text);
         if (matcher.find()) {
-            act = matcher.group(1);
-        }
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
-        if (serviceWorker == null) {
-            this.logger.error("invalid act value:{}", text);
-            //无效的act
-            socket.send("{\"flag\":\"INVALID\",\"error\":\"act not exists\"}");
+            String act = matcher.group(1);
+            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
+            if (serviceWorker == null) {
+                this.logger.error("invalid act value:{}", text);
+                //无效的act
+                socket.send("{\"flag\":\"INVALID\",\"error\":\"act not exist\"}");
+            } else {
+                //创建消息对象并执行服务
+                FrameworkMessageContext frameworkMessageContext = new WebSocketMessageContextImpl(this, globalWebSocket, act, text);
+                serviceWorker.doWork(frameworkMessageContext);
+            }
         } else {
-            //创建消息对象并执行服务
-            FrameworkMessageContext frameworkMessageContext = new WebSocketMessageContextImpl(this, (GlobalWebSocket) socket, act, text);
-            serviceWorker.doWork(frameworkMessageContext);
+            socket.send("{\"flag\":\"EXCEPTION\",\"error\":\"error api\"}");
+        }
+        //如果改socket没有session，则关闭
+        Session session = globalWebSocket.getSession();
+        if (session == null) {
+            globalWebSocket.close();
         }
     }
 
@@ -99,5 +106,14 @@ public final class GlobalApplication extends WebSocketApplication {
 
     public void removGlobalWebSocket(GlobalWebSocket globalWebSocket) {
         this.webSockets.remove(globalWebSocket.getSession().getUserId());
+    }
+
+    public void shutdown() {
+        for (GlobalWebSocket webSocket : this.webSockets.values()) {
+            if (webSocket.isConnected()) {
+                webSocket.close();
+            }
+        }
+        this.webSockets.clear();
     }
 }

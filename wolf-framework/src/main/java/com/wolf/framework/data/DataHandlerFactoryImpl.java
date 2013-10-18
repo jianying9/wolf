@@ -11,22 +11,22 @@ import java.util.Map;
 public final class DataHandlerFactoryImpl implements DataHandlerFactory {
 
     public DataHandlerFactoryImpl() {
-        this.dataHandlerMap.put(DataTypeEnum.INT, new IntDataHandlerImpl());
-        this.dataHandlerMap.put(DataTypeEnum.LONG, new LongDataHandlerImpl());
-        this.dataHandlerMap.put(DataTypeEnum.DOUBLE, null);
-        this.dataHandlerMap.put(DataTypeEnum.DATE_TIME, new DateTimeDataHandlerImpl());
-        this.dataHandlerMap.put(DataTypeEnum.DATE, new DateDataHandlerImpl());
-        this.dataHandlerMap.put(DataTypeEnum.UUID, new CharDataHandlerImpl(" must be uuid", 36, DataTypeEnum.UUID));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_10, new CharDataHandlerImpl(" must be char10", 10, DataTypeEnum.CHAR_10));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_32, new CharDataHandlerImpl(" must be char32", 32, DataTypeEnum.CHAR_32));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_60, new CharDataHandlerImpl(" must be char60", 60, DataTypeEnum.CHAR_60));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_120, new CharDataHandlerImpl(" must be char120", 120, DataTypeEnum.CHAR_120));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_255, new CharDataHandlerImpl(" must be char255", 255, DataTypeEnum.CHAR_255));
-        this.dataHandlerMap.put(DataTypeEnum.CHAR_4000, new CharDataHandlerImpl(" must be char4000", 4000, DataTypeEnum.CHAR_4000));
+        this.dataHandlerMap.put(BasicTypeEnum.INT, new IntDataHandlerImpl());
+        this.dataHandlerMap.put(BasicTypeEnum.LONG, new LongDataHandlerImpl());
+        this.dataHandlerMap.put(BasicTypeEnum.DOUBLE, null);
+        this.dataHandlerMap.put(BasicTypeEnum.DATE_TIME, new DateTimeDataHandlerImpl());
+        this.dataHandlerMap.put(BasicTypeEnum.DATE, new DateDataHandlerImpl());
+        this.dataHandlerMap.put(BasicTypeEnum.UUID, new CharDataHandlerImpl(" must be uuid", 36, BasicTypeEnum.UUID));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_10, new CharDataHandlerImpl(" must be char10", 10, BasicTypeEnum.CHAR_10));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_32, new CharDataHandlerImpl(" must be char32", 32, BasicTypeEnum.CHAR_32));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_60, new CharDataHandlerImpl(" must be char60", 60, BasicTypeEnum.CHAR_60));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_120, new CharDataHandlerImpl(" must be char120", 120, BasicTypeEnum.CHAR_120));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_255, new CharDataHandlerImpl(" must be char255", 255, BasicTypeEnum.CHAR_255));
+        this.dataHandlerMap.put(BasicTypeEnum.CHAR_4000, new CharDataHandlerImpl(" must be char4000", 4000, BasicTypeEnum.CHAR_4000));
     }
-    private final Map<DataTypeEnum, DataHandler> dataHandlerMap = new EnumMap<DataTypeEnum, DataHandler>(DataTypeEnum.class);
+    private final Map<BasicTypeEnum, DataHandler> dataHandlerMap = new EnumMap<BasicTypeEnum, DataHandler>(BasicTypeEnum.class);
 
-    public DataHandler getDataHandler(DataTypeEnum dataTypeEnum) {
+    public DataHandler getDataHandler(BasicTypeEnum dataTypeEnum) {
         return this.dataHandlerMap.get(dataTypeEnum);
     }
 }

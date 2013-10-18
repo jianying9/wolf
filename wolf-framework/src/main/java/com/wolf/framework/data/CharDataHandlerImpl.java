@@ -12,9 +12,9 @@ public class CharDataHandlerImpl implements DataHandler {
 
     private final String error_message;
     private final int length;
-    private final DataTypeEnum dataTypeEnum;
+    private final BasicTypeEnum dataTypeEnum;
 
-    CharDataHandlerImpl(String error_message, int length, DataTypeEnum dataTypeEnum) {
+    CharDataHandlerImpl(String error_message, int length, BasicTypeEnum dataTypeEnum) {
         this.error_message = error_message;
         this.length = length;
         this.dataTypeEnum = dataTypeEnum;
@@ -35,7 +35,7 @@ public class CharDataHandlerImpl implements DataHandler {
         return StringUtils.getRandomStringValue(this.length);
     }
 
-    public DataTypeEnum getDataTypeEnum() {
+    public BasicTypeEnum getDataTypeEnum() {
         return this.dataTypeEnum;
     }
 

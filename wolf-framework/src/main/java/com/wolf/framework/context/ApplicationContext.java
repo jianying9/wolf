@@ -2,6 +2,7 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,10 @@ public final class ApplicationContext {
     private Map<String, String> parameterMap;
     private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(16, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
+    
+    public Map<String, ServiceWorker> getServiceWorkerMap() {
+        return Collections.unmodifiableMap(this.serviceWorkerMap);
+    }
 
     public ServiceWorker getServiceWorker(String act) {
         return this.serviceWorkerMap.get(act);

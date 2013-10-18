@@ -1,7 +1,7 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
-import com.wolf.framework.service.parameter.ParameterContextBuilder;
 import com.wolf.framework.service.parameter.ParametersContext;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,15 +15,9 @@ import java.util.Map;
 public class ServiceWorkerContextImpl implements ServiceWorkerContext {
 
     private final Map<String, String> existClassMap = new HashMap<String, String>(1024);
-    private final boolean usePseudo;
     private final ParametersContext parametersContext;
     private final Injecter injecter;
-    private final String compileModel;
-
-    @Override
-    public boolean isUsePseudo() {
-        return usePseudo;
-    }
+    private final ApplicationContext applicationContext;
     //服务集合
     private final Map<String, ServiceWorker> serviceWorkerMap;
 
@@ -35,7 +29,7 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
                 existClassName = "NULL";
             }
             StringBuilder errBuilder = new StringBuilder(1024);
-            errBuilder.append("There was an error putting service worker. Cause: actionName reduplicated : ").append(actionName).append("\n").append("exist class : ").append(existClassName).append("\n").append("this class : ").append(className);
+            errBuilder.append("Error putting service worker. Cause: actionName reduplicated : ").append(actionName).append("\n").append("exist class : ").append(existClassName).append("\n").append("this class : ").append(className);
             throw new RuntimeException(errBuilder.toString());
         }
         this.serviceWorkerMap.put(actionName, serviceWorker);
@@ -48,15 +42,13 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
      * @param properties
      */
     public ServiceWorkerContextImpl(
-            final boolean usePseudo,
             final ParametersContext parametersContextBuilder,
             final Injecter injecter,
-            String compileModel) {
-        this.usePseudo = usePseudo;
+            final ApplicationContext applicationContext) {
         this.serviceWorkerMap = new HashMap<String, ServiceWorker>(256, 1);
         this.parametersContext = parametersContextBuilder;
         this.injecter = injecter;
-        this.compileModel = compileModel;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -75,16 +67,12 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
     }
 
     @Override
-    public ParameterContextBuilder getFieldContextBuilder() {
-        return this.parametersContext.getFieldContextBuilder();
-    }
-
-    @Override
     public Injecter getInjecter() {
         return this.injecter;
     }
 
-    public String getCompileModel() {
-        return this.compileModel;
+    @Override
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
     }
 }

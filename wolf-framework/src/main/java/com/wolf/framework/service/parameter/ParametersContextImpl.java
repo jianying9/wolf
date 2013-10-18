@@ -1,8 +1,14 @@
 package com.wolf.framework.service.parameter;
 
+import com.wolf.framework.config.FrameworkConfig;
+import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.data.DataHandlerFactory;
+import com.wolf.framework.service.parameter.filter.FilterFactory;
+import com.wolf.framework.service.parameter.filter.FilterFactoryImpl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 全局信息构造类
@@ -13,16 +19,22 @@ public class ParametersContextImpl implements ParametersContext {
 
     //extended entity处理集合
     private final Map<Class<?>, ParametersHandler> parametersHandlerMap;
-    private final ParameterContextBuilder fieldContextBuilder;
+    private final FilterFactory filterFactory;
+    private final DataHandlerFactory dataHandlerFactory;
+    private final ApplicationContext applicationContext;
+    private final Set<String> reservedWordSet;
 
     /**
      * 构造函数
      *
      * @param properties
      */
-    public ParametersContextImpl(final ParameterContextBuilder fieldContextBuilder) {
-        this.fieldContextBuilder = fieldContextBuilder;
-        this.parametersHandlerMap = new HashMap<Class<?>, ParametersHandler>(16, 1);
+    public ParametersContextImpl(final DataHandlerFactory dataHandlerFactory, final ApplicationContext applicationContext) {
+        this.filterFactory = new FilterFactoryImpl();
+        this.parametersHandlerMap = new HashMap<Class<?>, ParametersHandler>(2, 1);
+        this.dataHandlerFactory = dataHandlerFactory;
+        this.reservedWordSet = FrameworkConfig.getReservedWordSet();
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -48,7 +60,22 @@ public class ParametersContextImpl implements ParametersContext {
     }
 
     @Override
-    public ParameterContextBuilder getFieldContextBuilder() {
-        return this.fieldContextBuilder;
+    public final FilterFactory getFilterFactory() {
+        return this.filterFactory;
+    }
+
+    @Override
+    public final DataHandlerFactory getDataHandlerFactory() {
+        return this.dataHandlerFactory;
+    }
+
+    @Override
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
+    }
+
+    @Override
+    public Set<String> getReservedWordSet() {
+        return this.reservedWordSet;
     }
 }

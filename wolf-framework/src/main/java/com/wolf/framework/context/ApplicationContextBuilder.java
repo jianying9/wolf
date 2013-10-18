@@ -27,16 +27,14 @@ import com.wolf.framework.injecter.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceConfigParser;
-import com.wolf.framework.local.LocalServiceContextBuilder;
-import com.wolf.framework.local.LocalServiceContextBuilderImpl;
+import com.wolf.framework.local.LocalServiceContext;
+import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.paser.ClassParser;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
 import com.wolf.framework.service.parameter.Parameter;
-import com.wolf.framework.service.parameter.ParameterContextBuilder;
-import com.wolf.framework.service.parameter.ParameterContextBuilderImpl;
 import com.wolf.framework.service.parameter.ParametersConfig;
 import com.wolf.framework.service.parameter.ParametersConfigParser;
 import com.wolf.framework.service.parameter.ParametersContext;
@@ -99,14 +97,9 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
         }
         //获取运行模式
-        boolean usePseudo = false;
-        String compilerModel = this.getParameter(FrameworkConfig.COMPILE_MODEL);
-        if (compilerModel == null) {
-            compilerModel = FrameworkConfig.SERVER;
-        }
-        if (compilerModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            //开发模式，开始伪实现编译
-            usePseudo = true;
+        String compileModel = this.getParameter(FrameworkConfig.COMPILE_MODEL);
+        if (compileModel == null) {
+            compileModel = FrameworkConfig.SERVER;
         }
         //查找注解类
         this.logger.info("Finding annotation...");
@@ -126,7 +119,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         //初始化任务处理对象
         this.logger.info("Start task executer...");
         TaskExecutor taskExecutor;
-        if (compilerModel.equals(FrameworkConfig.UNIT_TEST)) {
+        if (compileModel.equals(FrameworkConfig.UNIT_TEST)) {
             taskExecutor = new TaskExecutorUnitTestImpl();
         } else {
             int corePoolSize;
@@ -181,7 +174,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         }
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
-        final LocalServiceContextBuilder localServiceContextBuilder = new LocalServiceContextBuilderImpl();
+        final LocalServiceContext localServiceContextBuilder = new LocalServiceContextImpl();
         final LocalServiceConfigParser localServiceConfigParser = new LocalServiceConfigParser(localServiceContextBuilder);
         for (Class<Local> clazz : this.localServiceClassList) {
             localServiceConfigParser.parse(clazz);
@@ -208,9 +201,8 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         //对LocalService进行注入
         localServiceContextBuilder.inject(injecterList);
         //解析ParametersConfig包含的FieldConfig
-        final ParameterContextBuilder fieldContextBuilder = new ParameterContextBuilderImpl(dataHanlderFactory);
         this.logger.info("parsing annotation ParametersConfig start...");
-        this.parametersContext = new ParametersContextImpl(fieldContextBuilder);
+        this.parametersContext = new ParametersContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
         final ParametersConfigParser parametersConfigParser = new ParametersConfigParser(this.parametersContext);
         for (Class<Parameter> clazz : this.parameterClassList) {
             parametersConfigParser.parse(clazz);
@@ -222,10 +214,9 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         injecterListImpl.addInjecter(localServiceInjecter);
         injecterListImpl.addInjecter(taskExecutorInjecter);
         this.serviceWorkerContext = new ServiceWorkerContextImpl(
-                usePseudo,
                 this.parametersContext,
                 injecterListImpl,
-                compilerModel);
+                ApplicationContext.CONTEXT);
         final ServiceConfigParser<K, T> serviceConfigParser = new ServiceConfigParser<K, T>(this.serviceWorkerContext);
         for (Class<K> clazz : this.serviceClassList) {
             serviceConfigParser.parse(clazz);

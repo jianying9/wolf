@@ -9,26 +9,26 @@ import com.wolf.framework.websocket.GlobalWebSocket;
  * @author aladdin
  */
 public class WebSocketMessageContextImpl extends AbstractMessageContext implements FrameworkMessageContext {
-    
+
     private final GlobalApplication globalApplication;
     private final GlobalWebSocket globalWebSocket;
-    
+
     public WebSocketMessageContextImpl(GlobalApplication globalApplication, GlobalWebSocket globalWebSocket, String act, String message) {
         super(act, message);
         this.globalApplication = globalApplication;
         this.globalWebSocket = globalWebSocket;
     }
-    
+
     @Override
     public Session getSession() {
         return this.globalWebSocket.getSession();
     }
-    
+
     @Override
     public void sendMessage() {
         this.globalWebSocket.send(this.responseMessage);
     }
-    
+
     @Override
     public void broadcastMessage() {
         if (this.broadcastUserIdList != null) {
@@ -41,12 +41,12 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
             }
         }
     }
-    
+
     @Override
     public void close() {
         this.globalWebSocket.close();
     }
-    
+
     @Override
     public void saveNewSession() {
         if (this.newSession != null) {
@@ -72,7 +72,7 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
             }
         }
     }
-    
+
     @Override
     public void removeSession() {
         Session socketSession = this.globalWebSocket.getSession();
@@ -81,7 +81,7 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
         }
         this.globalWebSocket.setSession(null);
     }
-    
+
     @Override
     public boolean isOnline(String userId) {
         boolean result = false;
@@ -90,5 +90,10 @@ public class WebSocketMessageContextImpl extends AbstractMessageContext implemen
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public void sendSystemMessage(String message) {
+        this.globalWebSocket.send(message);
     }
 }

@@ -35,8 +35,8 @@ public final class LongDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_NUMBER_VALUE;
     }
 
-    public DataTypeEnum getDataTypeEnum() {
-        return DataTypeEnum.LONG;
+    public BasicTypeEnum getDataTypeEnum() {
+        return BasicTypeEnum.LONG;
     }
 
     public String getNextValue() {

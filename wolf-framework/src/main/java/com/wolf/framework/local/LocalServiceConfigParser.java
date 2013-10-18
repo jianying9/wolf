@@ -11,10 +11,10 @@ import org.slf4j.Logger;
  */
 public final class LocalServiceConfigParser {
 
-    private final LocalServiceContextBuilder localServiceContextBuilder;
+    private final LocalServiceContext localServiceContextBuilder;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
 
-    public LocalServiceConfigParser(LocalServiceContextBuilder localServiceContextBuilder) {
+    public LocalServiceConfigParser(LocalServiceContext localServiceContextBuilder) {
         this.localServiceContextBuilder = localServiceContextBuilder;
     }
 

@@ -1,6 +1,5 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.config.ResponseFlagType;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.session.Session;
@@ -22,15 +21,15 @@ public interface MessageContext {
     public int getPageSize();
 
     public void setPageTotal(int pageTotal);
-    
+
     public void setPageNum(int pageNum);
-    
+
     public Session getSession();
-    
+
     public void setNewSession(Session session);
-    
+
     public boolean isOnline(String userId);
-    
+
     public void setMapData(Map<String, String> parameterMap);
 
     public void setMapListData(List<Map<String, String>> parameterMapList);
@@ -40,8 +39,8 @@ public interface MessageContext {
     public <T extends Entity> void setEntityListData(List<T> tList);
 
     public void success();
-    
-    public void setFlag(ResponseFlagType responseFlagType);
+
+    public void setFlag(String flag);
 
     public void addBroadcastUserIdList(List<String> broadcastUserIdList);
 
