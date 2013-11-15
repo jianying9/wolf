@@ -67,6 +67,10 @@
                 <type>jar</type>
                 <exclusions>
                     <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
+                    <exclusion>
                         <artifactId>jetty</artifactId>
                         <groupId>org.mortbay.jetty</groupId>
                     </exclusion>
@@ -138,6 +142,10 @@
                 <version>2.0.0-cdh4.2.1</version>
                 <type>jar</type>
                 <exclusions>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
                     <exclusion>
                         <artifactId>paranamer</artifactId>
                         <groupId>com.thoughtworks.paranamer</groupId>
@@ -262,6 +270,10 @@
                 <version>0.94.2-cdh4.2.1</version>
                 <type>jar</type>
                 <exclusions>
+                    <exclusion>
+                        <artifactId>log4j</artifactId>
+                        <groupId>log4j</groupId>
+                    </exclusion>
                     <exclusion>
                         <artifactId>jsr305</artifactId>
                         <groupId>com.google.code.findbugs</groupId>
