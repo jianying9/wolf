@@ -7,3 +7,6 @@
 /wolf-remote-api/target/
 /wolf-framework/target/
 /wolf-remote/target/
+/wolf-dao-derby/target/
+/wolf-dao-hbase/target/
+/wolf-lucene/target/

@@ -565,5 +565,8 @@
         <module>wolf-remote-api</module>
         <module>wolf-remote</module>
         <module>wolf-framework</module>
-    </modules>
+        <module>wolf-dao-derby</module>
+    <module>wolf-dao-hbase</module>
+    <module>wolf-lucene</module>
+  </modules>
 </project>

@@ -3,22 +3,12 @@ package com.wolf.framework.context;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.EntityDaoContext;
-import com.wolf.framework.dao.EntityDaoContextImpl;
-import com.wolf.framework.dao.HEntityDaoContext;
-import com.wolf.framework.dao.HEntityDaoContextImpl;
 import com.wolf.framework.dao.REntityDaoContext;
 import com.wolf.framework.dao.REntityDaoContextImpl;
-import com.wolf.framework.dao.annotation.DaoConfig;
-import com.wolf.framework.dao.annotation.HDaoConfig;
 import com.wolf.framework.dao.annotation.RDaoConfig;
-import com.wolf.framework.dao.parser.DaoConfigParser;
-import com.wolf.framework.dao.parser.HDaoConfigParser;
 import com.wolf.framework.dao.parser.RDaoConfigParser;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataHandlerFactoryImpl;
-import com.wolf.framework.injecter.DaoInjecterImpl;
-import com.wolf.framework.injecter.HDaoInjecterImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.injecter.LocalServiceInjecterImpl;
@@ -59,15 +49,11 @@ import org.slf4j.Logger;
 public class ApplicationContextBuilder<T extends Entity, K extends Service> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-    protected final List<Class<T>> entityClassList = new ArrayList<Class<T>>();
-    protected final List<Class<T>> hEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<Parameter>> parameterClassList = new ArrayList<Class<Parameter>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<Class<?>> allClassList = new ArrayList<Class<?>>();
-    protected EntityDaoContext<T> entityDaoContext;
-    protected HEntityDaoContext<T> hEntityDaoContext;
     protected REntityDaoContext<T> rEntityDaoContext;
     protected ParametersContext parametersContext;
     protected ServiceWorkerContext serviceWorkerContext;
@@ -140,29 +126,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         }
         //初始化data类型工厂对象
         final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
-        //解析derby entityDao
-        if (this.entityClassList.isEmpty() == false) {
-            this.logger.info("parsing annotation DaoConfig...");
-            this.entityDaoContext = new EntityDaoContextImpl<T>(
-                    ApplicationContext.CONTEXT,
-                    taskExecutor,
-                    dataHanlderFactory);
-            final DaoConfigParser<T> entityConfigDaoParser = new DaoConfigParser<T>(this.entityDaoContext);
-            for (Class<T> clazz : this.entityClassList) {
-                entityConfigDaoParser.parse(clazz);
-            }
-        }
-        //解析hbase EntityDao
-        if (this.hEntityClassList.isEmpty() == false) {
-            this.logger.info("parsing annotation HDaoConfig...");
-            this.hEntityDaoContext = new HEntityDaoContextImpl<T>(
-                    ApplicationContext.CONTEXT,
-                    taskExecutor);
-            final HDaoConfigParser<T> hEntityConfigDaoParser = new HDaoConfigParser<T>(this.hEntityDaoContext);
-            for (Class<T> clazz : this.hEntityClassList) {
-                hEntityConfigDaoParser.parse(clazz);
-            }
-        }
         //解析redis EntityDao
         if (this.rEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation RDaoConfig...");
@@ -180,10 +143,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             localServiceConfigParser.parse(clazz);
         }
         this.logger.info("parse annotation LocalServiceConfig finished.");
-        //DAO注入管理对象
-        final Injecter daoInjecter = new DaoInjecterImpl(this.entityDaoContext);
-        //HDAO注入管理对象
-        final Injecter hDaoInjecter = new HDaoInjecterImpl(this.hEntityDaoContext);
         //RDAO注入管理对象
         final Injecter rDaoInjecter = new RDaoInjecterImpl(this.rEntityDaoContext);
         //LocalService注入管理对象
@@ -192,8 +151,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
         InjecterListImpl injecterListImpl = new InjecterListImpl();
-        injecterListImpl.addInjecter(daoInjecter);
-        injecterListImpl.addInjecter(hDaoInjecter);
         injecterListImpl.addInjecter(rDaoInjecter);
         injecterListImpl.addInjecter(localServiceInjecter);
         injecterListImpl.addInjecter(taskExecutorInjecter);
@@ -243,17 +200,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         //是否是实体
         if (Entity.class.isAssignableFrom(clazz)) {
             clazzt = (Class<T>) clazz;
-            if (clazzt.isAnnotationPresent(DaoConfig.class)) {
-                if (this.entityClassList.contains(clazzt) == false) {
-                    this.entityClassList.add(clazzt);
-                    this.logger.debug("find derby entity class ".concat(className));
-                }
-            } else if (clazzt.isAnnotationPresent(HDaoConfig.class)) {
-                if (this.hEntityClassList.contains(clazzt) == false) {
-                    this.hEntityClassList.add(clazzt);
-                    this.logger.debug("find hbase entity class ".concat(className));
-                }
-            } else if (clazzt.isAnnotationPresent(RDaoConfig.class)) {
+            if (clazzt.isAnnotationPresent(RDaoConfig.class)) {
                 if (this.rEntityClassList.contains(clazzt) == false) {
                     this.rEntityClassList.add(clazzt);
                     this.logger.debug("find redis entity class ".concat(className));
