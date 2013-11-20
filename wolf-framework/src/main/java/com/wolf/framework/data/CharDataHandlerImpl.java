@@ -35,18 +35,22 @@ public class CharDataHandlerImpl implements DataHandler {
         return StringUtils.getRandomStringValue(this.length);
     }
 
+    @Override
     public BasicTypeEnum getDataTypeEnum() {
         return this.dataTypeEnum;
     }
 
+    @Override
     public String getNextValue() {
         return UUID.randomUUID().toString();
     }
 
+    @Override
     public String convertToInput(String value) {
         return value;
     }
 
+    @Override
     public String convertToOutput(String value) {
         return value;
     }

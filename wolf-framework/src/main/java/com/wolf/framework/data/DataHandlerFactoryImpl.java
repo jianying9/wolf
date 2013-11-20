@@ -23,9 +23,11 @@ public final class DataHandlerFactoryImpl implements DataHandlerFactory {
         this.dataHandlerMap.put(BasicTypeEnum.CHAR_120, new CharDataHandlerImpl(" must be char120", 120, BasicTypeEnum.CHAR_120));
         this.dataHandlerMap.put(BasicTypeEnum.CHAR_255, new CharDataHandlerImpl(" must be char255", 255, BasicTypeEnum.CHAR_255));
         this.dataHandlerMap.put(BasicTypeEnum.CHAR_4000, new CharDataHandlerImpl(" must be char4000", 4000, BasicTypeEnum.CHAR_4000));
+        this.dataHandlerMap.put(BasicTypeEnum.IMAGE, new CharDataHandlerImpl(" must less then 200K", 409600, BasicTypeEnum.IMAGE));
     }
     private final Map<BasicTypeEnum, DataHandler> dataHandlerMap = new EnumMap<BasicTypeEnum, DataHandler>(BasicTypeEnum.class);
 
+    @Override
     public DataHandler getDataHandler(BasicTypeEnum dataTypeEnum) {
         return this.dataHandlerMap.get(dataTypeEnum);
     }

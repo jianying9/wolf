@@ -90,6 +90,13 @@ public enum BasicTypeEnum {
         public DataClassEnum getDataClassEnum() {
             return DataClassEnum.STRING;
         }
+    },
+    //file max length 409600 dataUrl 最大200k左右图片
+    IMAGE {
+        @Override
+        public DataClassEnum getDataClassEnum() {
+            return DataClassEnum.STRING;
+        }
     };
 
     public abstract DataClassEnum getDataClassEnum();

@@ -65,7 +65,8 @@ public final class GlobalApplication extends WebSocketApplication {
             String act = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
             if (serviceWorker == null) {
-                this.logger.error("invalid act value:{}", text);
+                this.logger.error("invalid act value:{}", act);
+                this.logger.error("invalid json value:{}", text);
                 //无效的act
                 socket.send("{\"flag\":\"INVALID\",\"error\":\"act not exist\"}");
             } else {
