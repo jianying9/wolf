@@ -193,7 +193,7 @@ public class RedisHandlerImpl implements RedisHandler {
                 columnValue = entityMap.get(columnName);
                 if (columnValue != null) {
                     oldColumnValue = oldEntityMap.get(columnName);
-                    if (oldColumnValue == null || oldColumnValue.equals(columnValue)) {
+                    if (oldColumnValue == null || oldColumnValue.equals(columnValue) == false) {
                         //值变化，更新
                         jedis.hset(redisKey, columnName, columnValue);
                         if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
