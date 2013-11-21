@@ -11,11 +11,13 @@ public class RColumnHandlerImpl implements RColumnHandler{
     private final String columnName;
     private final ColumnTypeEnum columnTypeEnum;
     private final String desc;
+    private final String defaultValue;
 
-    public RColumnHandlerImpl(String columnName, ColumnTypeEnum columnTypeEnum, String desc) {
+    public RColumnHandlerImpl(String columnName, ColumnTypeEnum columnTypeEnum, String desc, String defaultValue) {
         this.columnName = columnName;
         this.columnTypeEnum = columnTypeEnum;
         this.desc = desc;
+        this.defaultValue = defaultValue;
     }
     
     @Override
@@ -31,5 +33,10 @@ public class RColumnHandlerImpl implements RColumnHandler{
     @Override
     public String getDesc() {
         return this.desc;
+    }
+
+    @Override
+    public String getDefaultValue() {
+        return this.defaultValue;
     }
 }

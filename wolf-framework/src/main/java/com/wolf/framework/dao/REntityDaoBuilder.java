@@ -57,7 +57,8 @@ public final class REntityDaoBuilder<T extends Entity> {
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromRedisHandlerImpl<T>(
                 redisHandler,
-                this.clazz);
+                this.clazz,
+                this.columnHandlerList);
         inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
         //
         //----------------------------------构造数据增、删、改操作对象

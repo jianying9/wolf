@@ -20,6 +20,12 @@ public @interface RColumnConfig {
      * @return
      */
     public ColumnTypeEnum columnTypeEnum() default ColumnTypeEnum.COLUMN;
+    
+    /**
+     * redis数据为空时，取默认值
+     * @return 
+     */
+    public String defaultValue() default "";
 
     /**
      * 描述

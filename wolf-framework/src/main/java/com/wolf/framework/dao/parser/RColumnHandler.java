@@ -12,5 +12,7 @@ public interface RColumnHandler {
     
     public ColumnTypeEnum getColumnType();
     
+    public String getDefaultValue();
+    
     public String getDesc();
 }

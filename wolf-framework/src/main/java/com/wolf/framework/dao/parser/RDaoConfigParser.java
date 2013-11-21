@@ -64,12 +64,12 @@ public class RDaoConfigParser<T extends Entity> {
                         columnTypeEnum = columnConfig.columnTypeEnum();
                         if (columnTypeEnum == ColumnTypeEnum.KEY) {
                             if (keyHandler == null) {
-                                keyHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc());
+                                keyHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc(), "-1");
                             } else {
                                 throw new RuntimeException("There was an error building REntityDao:" + clazz.getName() + ". Cause:too many key");
                             }
                         } else {
-                            columnHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc());
+                            columnHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc(), columnConfig.defaultValue());
                             columnHandlerList.add(columnHandler);
                         }
                     }
