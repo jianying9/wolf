@@ -47,9 +47,11 @@ public class RedisHandlerImpl implements RedisHandler {
         Jedis jedis = this.jedisPool.getResource();
         //查询
         Map<String, String> result = jedis.hgetAll(redisKey);
-        if (result != null) {
+        if (result.isEmpty() == false ) {
             //保存keyValue
             result.put(this.keyHandler.getColumnName(), keyValue);
+        } else {
+            result = null;
         }
         //关闭连接
         this.jedisPool.returnResource(jedis);
