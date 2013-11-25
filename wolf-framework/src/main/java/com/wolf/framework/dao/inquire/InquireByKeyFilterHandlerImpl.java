@@ -33,7 +33,9 @@ public final class InquireByKeyFilterHandlerImpl<T extends Entity> implements In
                 //key数量为1
                 tList = new ArrayList<T>(1);
                 T t = this.inquireByKey(keyValues.get(0));
-                tList.add(t);
+                if(t != null) {
+                    tList.add(t);
+                }
                 break;
             default:
                 //key数量大于1
