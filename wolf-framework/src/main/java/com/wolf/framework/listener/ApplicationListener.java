@@ -34,9 +34,11 @@ public class ApplicationListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
         //1.加载系统配置
-        String appPath = sce.getServletContext().getRealPath("");
+        String appFilePath = sce.getServletContext().getRealPath("");
+        int index = appFilePath.lastIndexOf(File.separator);
+        String appRootPath = appFilePath.substring(index);
         StringBuilder fileBuilder = new StringBuilder(64);
-        fileBuilder.append(appPath).append(File.separator).append("WEB-INF").append(File.separator).append(FrameworkConfig.CONFIG_FILE);
+        fileBuilder.append(appFilePath).append(File.separator).append("WEB-INF").append(File.separator).append(FrameworkConfig.CONFIG_FILE);
         String filePath = fileBuilder.toString();
         logger.info("Finding config file:".concat(filePath));
         File file = new File(filePath);
@@ -77,12 +79,12 @@ public class ApplicationListener implements ServletContextListener {
         applicationContextBuilder.build();
         logger.info("Start websocket...");
         //开启websocket应用
-        ApplicationListener.APP = new GlobalApplication();
+        ApplicationListener.APP = new GlobalApplication(appRootPath);
         WebSocketEngine.getEngine().register(ApplicationListener.APP);
         //开启开发模式
         String compileModel = parameterMap.get(FrameworkConfig.COMPILE_MODEL);
         if (compileModel != null && compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            ApplicationListener.MAPP = new ManagementApplication();
+            ApplicationListener.MAPP = new ManagementApplication(appRootPath);
             WebSocketEngine.getEngine().register(ApplicationListener.MAPP);
         }
     }

@@ -29,7 +29,12 @@ public final class GlobalApplication extends WebSocketApplication {
     private final ConcurrentHashMap<String, GlobalWebSocket> webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(32767, 1);
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final Pattern actPattern = Pattern.compile("(?:\"act\":\")([A-Z_]+)(?:\")");
+    private final String pathEnd;
 
+    public GlobalApplication(String appRootPath) {
+        this.pathEnd = appRootPath.concat("/socket.io");
+    }
+    
     @Override
     public WebSocket createWebSocket(ProtocolHandler protocolHandler, WebSocketListener... listeners) {
         return new GlobalWebSocketImpl(protocolHandler, listeners);
@@ -38,7 +43,7 @@ public final class GlobalApplication extends WebSocketApplication {
     @Override
     public boolean isApplicationRequest(Request request) {
         final String uri = request.requestURI().toString();
-        return uri.endsWith("/socket.io");
+        return uri.endsWith(this.pathEnd);
     }
 
     @Override

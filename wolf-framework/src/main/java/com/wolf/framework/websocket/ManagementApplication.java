@@ -27,11 +27,16 @@ import org.slf4j.Logger;
 public final class ManagementApplication extends WebSocketApplication {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final String pathEnd;
 
+    public ManagementApplication(String appRootPath) {
+        this.pathEnd = appRootPath.concat("/management.io");
+    }
+    
     @Override
     public boolean isApplicationRequest(Request request) {
         final String uri = request.requestURI().toString();
-        return uri.endsWith("/management.io");
+        return uri.endsWith(this.pathEnd);
     }
 
     @Override
