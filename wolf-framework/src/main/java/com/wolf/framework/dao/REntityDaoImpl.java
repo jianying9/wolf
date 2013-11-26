@@ -91,7 +91,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
 
     @Override
     public void delete(String keyValue) {
-        this.deleteHandler.delete(null);
+        this.deleteHandler.delete(keyValue);
     }
 
     @Override
