@@ -1,5 +1,6 @@
 package com.wolf.framework.redis;
 
+import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireRedisIndexContext;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,13 @@ public interface RedisHandler {
     
     public void batchDelete(List<String> keyValueList);
     
+    public List<String> inquireKeys(InquirePageContext inquirePageContext);
+    
+    public long count();
+    
     public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext);
     
     public long countByIndex(String indexName, String indexValue);
+    
+    public long increase(String keyValue, String columnName, long value);
 }

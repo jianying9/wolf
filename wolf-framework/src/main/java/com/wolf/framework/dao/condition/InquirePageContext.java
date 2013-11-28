@@ -23,8 +23,8 @@ public class InquirePageContext {
     }
 
     public final void setPageSize(int pageSize) {
-        if (pageSize > 50) {
-            pageSize = 50;
+        if (pageSize > 1000) {
+            pageSize = 1000;
         } else {
             if (pageSize < 1) {
                 pageSize = 10;

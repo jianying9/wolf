@@ -1,5 +1,6 @@
 package com.wolf.framework.dao;
 
+import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireRedisIndexContext;
 import com.wolf.framework.dao.delete.DeleteHandler;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
@@ -109,6 +110,22 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     }
 
     @Override
+    public List<String> inquireKeys(InquirePageContext inquirePageContext) {
+        return this.redisHandler.inquireKeys(inquirePageContext);
+    }
+
+    @Override
+    public List<T> inquire(InquirePageContext inquirePageContext) {
+        List<String> keyList = this.inquireKeys(inquirePageContext);
+        return this.inquireByKeys(keyList);
+    }
+
+    @Override
+    public long count() {
+        return this.redisHandler.count();
+    }
+
+    @Override
     public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndex(inquireRedisIndexContext);
     }
@@ -122,5 +139,10 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     @Override
     public long countByIndex(String indexName, String indexValue) {
         return this.redisHandler.countByIndex(indexName, indexValue);
+    }
+
+    @Override
+    public long increase(String keyValue, String columnName, long value) {
+        return this.redisHandler.increase(keyValue, columnName, value);
     }
 }

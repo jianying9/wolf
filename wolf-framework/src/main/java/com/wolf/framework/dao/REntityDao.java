@@ -1,5 +1,6 @@
 package com.wolf.framework.dao;
 
+import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireRedisIndexContext;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,26 @@ public interface REntityDao<T extends Entity> {
      * @param keyValues
      */
     public void batchDelete(final List<String> keyValues);
+    
+    /**
+     * 全表分页查询主键
+     * @param inquirePageContext
+     * @return 
+     */
+    public List<String> inquireKeys(InquirePageContext inquirePageContext);
+    
+    /**
+     * 全表分页查询
+     * @param inquirePageContext
+     * @return 
+     */
+    public List<T> inquire(InquirePageContext inquirePageContext);
+    
+    /**
+     * 统计全表总记录
+     * @return 
+     */
+    public long count();
 
     /**
      * 索引条件查询主键集合
@@ -115,4 +136,13 @@ public interface REntityDao<T extends Entity> {
      * @return
      */
     public long countByIndex(final String indexName, final String indexValue);
+    
+    /**
+     * 增加某number类型且非索引列的值
+     * @param keyValue
+     * @param columnName
+     * @param value
+     * @return 
+     */
+    public long increase(String keyValue, String columnName, long value);
 }
