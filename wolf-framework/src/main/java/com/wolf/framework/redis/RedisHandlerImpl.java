@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -102,7 +101,7 @@ public class RedisHandlerImpl implements RedisHandler {
         final String keyName = this.keyHandler.getColumnName();
         String keyValue = entityMap.get(keyName);
         if (keyValue == null) {
-            keyValue = UUID.randomUUID().toString();
+            throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
         }
         //构造redis 记录key
         StringBuilder strBuilder = new StringBuilder(this.tableName.length() + this.connector.length() + keyValue.length());
@@ -164,7 +163,7 @@ public class RedisHandlerImpl implements RedisHandler {
             for (Map<String, String> entityMap : entityMapList) {
                 keyValue = entityMap.get(keyName);
                 if (keyValue == null) {
-                    keyValue = UUID.randomUUID().toString();
+                    throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
                 }
                 //构造redis 记录key
                 strBuilder.append(this.tableName).append(this.connector).append(keyValue);

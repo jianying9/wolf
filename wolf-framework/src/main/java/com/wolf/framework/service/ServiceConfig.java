@@ -59,13 +59,6 @@ public @interface ServiceConfig {
     public Class<? extends Parameter>[] parametersConfigs() default {};
 
     /**
-     * 多参数单值,用Map<String,String>来传递---SIMPLE_MAP 不获取任何参数---NO_PARAMETER
-     *
-     * @return
-     */
-    public ParameterTypeEnum parameterTypeEnum() default ParameterTypeEnum.NO_PARAMETER;
-
-    /**
      * 事务类型 需要事务控制--true 不需要事务控制--false
      *
      * @return

@@ -46,12 +46,12 @@ import org.slf4j.Logger;
  * @author aladdin
  */
 public class ServiceConfigParser<K extends Service, T extends Entity> {
-    
+
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final ParameterHandler pageIndexHandler;
     private final ParameterHandler pageSizeHandler;
-    
+
     public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
         this.serviceWorkerContext = serviceWorkerContext;
         //初始化分页参数配置
@@ -79,7 +79,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final MinorHandlerTypeEnum minorHandlerTypeEnum = serviceConfig.minorHandlerTypeEnum();
             final String[] returnParameter = serviceConfig.returnParameter();
             final Class<?>[] parametersConfigs = serviceConfig.parametersConfigs();
-            final ParameterTypeEnum parameterTypeEnum = serviceConfig.parameterTypeEnum();
             final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
@@ -206,27 +205,25 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 workHandler = new PageParameterWorkHandlerImpl(this.pageIndexHandler, this.pageSizeHandler, workHandler);
             }
             //判断取值验证类型,将对应处理对象加入到处理环节
-            if (parameterTypeEnum == ParameterTypeEnum.PARAMETER) {
-                //次要参数
-                if (minorParameter.length > 0) {
-                    MinorParameterHandler minorParameterHandler = null;
-                    switch (minorHandlerTypeEnum) {
-                        case KEEP_EMPTY:
-                            minorParameterHandler = new MinorParameterKeepEmptyHandlerImpl(minorParameter, parameterHandlerMap);
-                            break;
-                        case DISCARD_EMPTY:
-                            minorParameterHandler = new MinorParameterDiscardEmptyHandlerImpl(minorParameter, parameterHandlerMap);
-                            break;
-                        case DEFAULT_REPLACE_NULL_AND_EMPTY:
-                            minorParameterHandler = new MinorParameterDefaultReplaceNullAndEmptyHandlerImpl(minorParameter, parameterHandlerMap);
-                            break;
-                    }
-                    workHandler = new MinorParameterWorkHandlerImpl(minorParameterHandler, workHandler);
+            //次要参数
+            if (minorParameter.length > 0) {
+                MinorParameterHandler minorParameterHandler = null;
+                switch (minorHandlerTypeEnum) {
+                    case KEEP_EMPTY:
+                        minorParameterHandler = new MinorParameterKeepEmptyHandlerImpl(minorParameter, parameterHandlerMap);
+                        break;
+                    case DISCARD_EMPTY:
+                        minorParameterHandler = new MinorParameterDiscardEmptyHandlerImpl(minorParameter, parameterHandlerMap);
+                        break;
+                    case DEFAULT_REPLACE_NULL_AND_EMPTY:
+                        minorParameterHandler = new MinorParameterDefaultReplaceNullAndEmptyHandlerImpl(minorParameter, parameterHandlerMap);
+                        break;
                 }
-                //重要参数
-                if (importantParameter.length > 0) {
-                    workHandler = new ImportantParameterWorkHandlerImpl(importantParameter, parameterHandlerMap, workHandler);
-                }
+                workHandler = new MinorParameterWorkHandlerImpl(minorParameterHandler, workHandler);
+            }
+            //重要参数
+            if (importantParameter.length > 0) {
+                workHandler = new ImportantParameterWorkHandlerImpl(importantParameter, parameterHandlerMap, workHandler);
             }
             //是否验证session
             if (validateSession) {
