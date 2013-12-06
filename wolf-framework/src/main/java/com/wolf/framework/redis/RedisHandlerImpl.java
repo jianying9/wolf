@@ -448,7 +448,7 @@ public class RedisHandlerImpl implements RedisHandler {
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
         try {
-            Set<String> keySet = jedis.zrange(redisIndexKey, start, end);
+            Set<String> keySet = jedis.zrevrange(redisIndexKey, start, end);
             resultList = new ArrayList<String>(keySet.size());
             resultList.addAll(keySet);
         } finally {
@@ -496,7 +496,7 @@ public class RedisHandlerImpl implements RedisHandler {
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
             try {
-                Set<String> keySet = jedis.zrange(redisColumnIndexKey, start, end);
+                Set<String> keySet = jedis.zrevrange(redisColumnIndexKey, start, end);
                 resultList = new ArrayList<String>(keySet.size());
                 resultList.addAll(keySet);
             } finally {
