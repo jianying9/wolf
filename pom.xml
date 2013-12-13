@@ -21,6 +21,15 @@
         </repository>
     </repositories>
     
+    <!--发布资源库地址-->
+    <distributionManagement>
+        <repository>
+            <id>192.168.15.73-snapshots</id>
+            <name>local snapshots maven repository</name>
+            <url>http://192.168.15.73:8080/archiva/repository/snapshots</url>
+        </repository>
+    </distributionManagement>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
