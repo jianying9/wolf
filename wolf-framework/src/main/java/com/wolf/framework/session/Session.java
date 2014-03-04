@@ -8,4 +8,8 @@ package com.wolf.framework.session;
 public interface Session {
 
     public String getUserId();
+
+    public String getSid();
+
+    public boolean isIdle();
 }

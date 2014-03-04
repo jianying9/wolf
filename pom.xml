@@ -13,20 +13,48 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <!-- local.maven.com内网地址为192.168.59.99 -->
+    <!--远程资源库地址-->
     <repositories>
+        <repository>
+            <!-- 内网maven正式版本发布地址 -->
+            <id>local.maven.com-releases</id>
+            <name>local internal maven repository</name>
+            <url>http://local.maven.com:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <!-- 内网maven每日快照版本发布地址 -->
+            <id>local.maven.com-snapshots</id>
+            <name>local snapshots maven repository</name>
+            <url>http://local.maven.com:8081/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <!-- 外网maven中心库代理 -->
+            <id>local.maven.com-proxy</id>
+            <name>local internal maven repository</name>
+            <url>http://local.maven.com:8081/nexus/content/repositories/central</url>
+        </repository>
         <repository>
             <id>cloudera</id>
             <name>cloudera maven repository</name>
             <url>https://repository.cloudera.com/content/repositories/releases</url>
         </repository>
     </repositories>
-    
+    <!--远程插件资源库地址-->
+    <pluginRepositories>
+        <pluginRepository>
+            <!-- 外网maven中心库代理 -->
+            <id>local.maven.com-proxy</id>
+            <name>local internal maven repository</name>
+            <url>http://local.maven.com:8081/nexus/content/repositories/central</url>
+        </pluginRepository>
+    </pluginRepositories>
     <!--发布资源库地址-->
     <distributionManagement>
         <repository>
-            <id>192.168.15.73-snapshots</id>
+            <id>local.maven.com-snapshots</id>
             <name>local snapshots maven repository</name>
-            <url>http://192.168.15.73:8080/archiva/repository/snapshots</url>
+            <url>http://local.maven.com:8081/nexus/content/repositories/snapshots/</url>
         </repository>
     </distributionManagement>
     
@@ -575,7 +603,7 @@
         <module>wolf-remote</module>
         <module>wolf-framework</module>
         <module>wolf-dao-derby</module>
-    <module>wolf-dao-hbase</module>
-    <module>wolf-lucene</module>
-  </modules>
+        <module>wolf-dao-hbase</module>
+        <module>wolf-lucene</module>
+    </modules>
 </project>

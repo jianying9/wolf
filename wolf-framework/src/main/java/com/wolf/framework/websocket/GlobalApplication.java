@@ -26,13 +26,13 @@ import org.slf4j.Logger;
  */
 public final class GlobalApplication extends WebSocketApplication {
 
-    private final ConcurrentHashMap<String, GlobalWebSocket> webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(32767, 1);
+    private final ConcurrentHashMap<String, GlobalWebSocket> webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(4096, 1);
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final Pattern actPattern = Pattern.compile("(?:\"act\":\")([A-Z_]+)(?:\")");
     private final String pathEnd;
 
     public GlobalApplication(String appRootPath) {
-        this.pathEnd = appRootPath.concat("/socket.io");
+        this.pathEnd = appRootPath.concat("/service.io");
     }
     
     @Override
