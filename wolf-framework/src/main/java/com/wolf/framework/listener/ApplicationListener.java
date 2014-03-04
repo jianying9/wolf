@@ -19,12 +19,14 @@ import javax.servlet.ServletContextListener;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
+import javax.servlet.annotation.WebListener;
 
 /**
  * 应用程序全局信息初始化
  *
  * @author aladdin
  */
+@WebListener()
 public class ApplicationListener implements ServletContextListener {
 
     private static GlobalApplication APP = null;

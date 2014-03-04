@@ -24,7 +24,7 @@ public class HttpUtils {
      */
     public static void toWrite(HttpServletRequest request, HttpServletResponse response, String jsonStr) {
         //获取跨域请求标志，并对输出内容做跨域处理
-        String jsoncallback = request.getParameter("jsoncallback");
+        String jsoncallback = request.getParameter("callback");
         if (jsoncallback == null || jsoncallback.equals("?")) {
             toWrite(response, jsonStr);
         } else {

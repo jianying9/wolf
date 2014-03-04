@@ -5,6 +5,7 @@ import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireRedisIndexContext;
 import com.wolf.framework.dao.parser.RColumnHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class RedisHandlerImpl implements RedisHandler {
                 redisRowKey = strBuilder.toString();
                 strBuilder.setLength(prefixLength);
                 result = jedis.hgetAll(redisRowKey);
-                if(result.isEmpty() == false) {
+                if (result.isEmpty() == false) {
                     //redis key 存在，保存keyValue
                     result.put(keyName, keyValue);
                     resultList.add(result);
@@ -216,52 +217,53 @@ public class RedisHandlerImpl implements RedisHandler {
         strBuilder.setLength(0);
         //查询旧记录
         Map<String, String> oldEntityMap = this.inquireByKey(keyValue);
-        if (oldEntityMap != null) {
-            //比对变化，更新数据及索引
-            String columnValue;
-            String oldColumnValue;
-            String columnName;
-            String reidsColumnIndexKey;
-            //开启连接
-            Jedis jedis = this.jedisPool.getResource();
-            try {
-                for (RColumnHandler rColumnHandler : this.columnHandlerList) {
-                    columnName = rColumnHandler.getColumnName();
-                    columnValue = entityMap.get(columnName);
-                    if (columnValue != null) {
-                        oldColumnValue = oldEntityMap.get(columnName);
-                        if (oldColumnValue == null || oldColumnValue.equals(columnValue) == false) {
-                            //值变化，更新
-                            jedis.hset(redisKey, columnName, columnValue);
-                            if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
-                                //是索引列
-                                if (oldColumnValue != null) {
-                                    //删除旧索引
-                                    strBuilder.append(this.columnIndexPrefix).append(this.connector)
-                                            .append(this.tableName).append(this.connector)
-                                            .append(columnName).append(this.connector)
-                                            .append(oldColumnValue);
-                                    reidsColumnIndexKey = strBuilder.toString();
-                                    strBuilder.setLength(0);
-                                    jedis.zrem(reidsColumnIndexKey, keyValue);
-                                }
-                                //更新新索引
+        if (oldEntityMap == null) {
+            oldEntityMap = new HashMap<String, String>(0, 1);
+        }
+        //比对变化，更新数据及索引
+        String columnValue;
+        String oldColumnValue;
+        String columnName;
+        String reidsColumnIndexKey;
+        //开启连接
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                columnName = rColumnHandler.getColumnName();
+                columnValue = entityMap.get(columnName);
+                if (columnValue != null) {
+                    oldColumnValue = oldEntityMap.get(columnName);
+                    if (oldColumnValue == null || oldColumnValue.equals(columnValue) == false) {
+                        //值变化，更新
+                        jedis.hset(redisKey, columnName, columnValue);
+                        if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                            //是索引列
+                            if (oldColumnValue != null) {
+                                //删除旧索引
                                 strBuilder.append(this.columnIndexPrefix).append(this.connector)
                                         .append(this.tableName).append(this.connector)
                                         .append(columnName).append(this.connector)
-                                        .append(columnValue);
+                                        .append(oldColumnValue);
                                 reidsColumnIndexKey = strBuilder.toString();
                                 strBuilder.setLength(0);
-                                long source = System.currentTimeMillis();
-                                jedis.zadd(reidsColumnIndexKey, source, keyValue);
+                                jedis.zrem(reidsColumnIndexKey, keyValue);
                             }
+                            //更新新索引
+                            strBuilder.append(this.columnIndexPrefix).append(this.connector)
+                                    .append(this.tableName).append(this.connector)
+                                    .append(columnName).append(this.connector)
+                                    .append(columnValue);
+                            reidsColumnIndexKey = strBuilder.toString();
+                            strBuilder.setLength(0);
+                            long source = System.currentTimeMillis();
+                            jedis.zadd(reidsColumnIndexKey, source, keyValue);
                         }
                     }
                 }
-            } finally {
-                //关闭连接
-                this.jedisPool.returnResource(jedis);
             }
+        } finally {
+            //关闭连接
+            this.jedisPool.returnResource(jedis);
         }
         return keyValue;
     }

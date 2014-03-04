@@ -5,7 +5,7 @@ import com.wolf.framework.context.ApplicationContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.pool.impl.GenericObjectPool.Config;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -57,10 +57,9 @@ public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContex
             }
         }
         //
-        Config poolConfig = new Config();
-        poolConfig.maxIdle = maxPoolSize;
-        poolConfig.maxActive = maxPoolSize;
-        poolConfig.minIdle = minPoolSize;
+        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+        poolConfig.setMaxIdle(maxPoolSize);
+        poolConfig.setMinIdle(minPoolSize);
         this.jedisPool = new JedisPool(poolConfig, host, port);
     }
 

@@ -23,7 +23,7 @@ import org.slf4j.Logger;
  *
  * @author aladdin
  */
-@WebServlet(name = "service.io", loadOnStartup = 1)
+@WebServlet(name = "service.io", loadOnStartup = 1, urlPatterns = {"/service.io"})
 public class ServiceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2005719241528799747L;
