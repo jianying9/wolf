@@ -36,7 +36,7 @@ public final class InquireCacheImpl implements InquireCache {
         final List<Condition> conditionList = inquireContext.getConditionList();
         StringBuilder keyBuilder = new StringBuilder(conditionList.size() * 24 + 24);
         //page
-        int pageIndex = inquireContext.getPageIndex();
+        long pageIndex = inquireContext.getPageIndex();
         if(pageIndex > 0) {
             keyBuilder.append("pageIndex_").append(inquireContext.getPageIndex()).append("|pageSize_").append(inquireContext.getPageSize()).append('|');
         }

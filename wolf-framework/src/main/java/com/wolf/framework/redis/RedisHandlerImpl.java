@@ -443,10 +443,10 @@ public class RedisHandlerImpl implements RedisHandler {
         strBuilder.append(this.keyIndexPrefix).append(this.connector).append(this.tableName);
         String redisIndexKey = strBuilder.toString();
         strBuilder.setLength(0);
-        int pageIndex = inquirePageContext.getPageIndex();
-        int pageSize = inquirePageContext.getPageSize();
-        int start = (pageIndex - 1) * pageSize;
-        int end = pageIndex * pageSize - 1;
+        long pageIndex = inquirePageContext.getPageIndex();
+        long pageSize = inquirePageContext.getPageSize();
+        long start = (pageIndex - 1) * pageSize;
+        long end = pageIndex * pageSize - 1;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
         try {
@@ -491,10 +491,10 @@ public class RedisHandlerImpl implements RedisHandler {
                     .append(indexName).append(this.connector)
                     .append(inquireRedisIndexContext.getIndexValue());
             String redisColumnIndexKey = strBuilder.toString();
-            int pageIndex = inquireRedisIndexContext.getPageIndex();
-            int pageSize = inquireRedisIndexContext.getPageSize();
-            int start = (pageIndex - 1) * pageSize;
-            int end = pageIndex * pageSize - 1;
+            long pageIndex = inquireRedisIndexContext.getPageIndex();
+            long pageSize = inquireRedisIndexContext.getPageSize();
+            long start = (pageIndex - 1) * pageSize;
+            long end = pageIndex * pageSize - 1;
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
             try {

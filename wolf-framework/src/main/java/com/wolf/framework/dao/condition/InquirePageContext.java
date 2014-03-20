@@ -7,22 +7,22 @@ package com.wolf.framework.dao.condition;
  */
 public class InquirePageContext {
 
-    private int pageSize = 10;
-    private int pageIndex = 1;
+    private long pageSize = 10;
+    private long pageIndex = 1;
 
-    public final int getPageIndex() {
+    public final long getPageIndex() {
         return pageIndex;
     }
 
-    public final void setPageIndex(int pageIndex) {
+    public final void setPageIndex(long pageIndex) {
         this.pageIndex = pageIndex < 0 ? 1 : pageIndex;
     }
 
-    public final int getPageSize() {
+    public final long getPageSize() {
         return pageSize;
     }
 
-    public final void setPageSize(int pageSize) {
+    public final void setPageSize(long pageSize) {
         if (pageSize > 1000) {
             pageSize = 1000;
         } else {
