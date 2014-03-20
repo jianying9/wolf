@@ -16,13 +16,13 @@ public interface MessageContext {
 
     public Map<String, String> getParameterMap();
 
-    public int getPageIndex();
+    public long getPageIndex();
 
-    public int getPageSize();
+    public long getPageSize();
 
-    public void setPageTotal(int pageTotal);
+    public void setPageTotal(long pageTotal);
 
-    public void setPageNum(int pageNum);
+    public void setPageNum(long pageNum);
 
     public Session getSession();
 

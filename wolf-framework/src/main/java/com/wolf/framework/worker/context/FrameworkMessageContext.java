@@ -15,9 +15,9 @@ public interface FrameworkMessageContext extends MessageContext {
 
     public String getAct();
 
-    public void setPageIndex(int pageIndex);
+    public void setPageIndex(long pageIndex);
 
-    public void setPageSize(int pageSize);
+    public void setPageSize(long pageSize);
 
     public void invalid();
 

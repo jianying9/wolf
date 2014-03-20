@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 public abstract class AbstractMessageContext {
 
     //page
-    private int pageIndex = 1;
-    private int pageSize = 15;
-    private int pageTotal = 0;
-    private int pageNum = 0;
+    private long pageIndex = 1;
+    private long pageSize = 15;
+    private long pageTotal = 0;
+    private long pageNum = 0;
     //input
     private final Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
     private final String act;
@@ -80,35 +80,35 @@ public abstract class AbstractMessageContext {
         }
     }
 
-    public final int getPageIndex() {
+    public final long getPageIndex() {
         return pageIndex;
     }
 
-    public final void setPageIndex(int pageIndex) {
+    public final void setPageIndex(long pageIndex) {
         this.pageIndex = pageIndex > 0 ? pageIndex : 1;
     }
 
-    public final int getPageSize() {
+    public final long getPageSize() {
         return pageSize;
     }
 
-    public final void setPageSize(int pageSize) {
+    public final void setPageSize(long pageSize) {
         this.pageSize = pageSize > 0 ? pageSize : 15;
     }
 
-    public final int getPageTotal() {
+    public final long getPageTotal() {
         return pageTotal;
     }
 
-    public final void setPageTotal(int pageTotal) {
+    public final void setPageTotal(long pageTotal) {
         this.pageTotal = pageTotal;
     }
 
-    public final int getPageNum() {
+    public final long getPageNum() {
         return pageNum;
     }
 
-    public final void setPageNum(int pageNum) {
+    public final void setPageNum(long pageNum) {
         this.pageNum = pageNum;
     }
 
