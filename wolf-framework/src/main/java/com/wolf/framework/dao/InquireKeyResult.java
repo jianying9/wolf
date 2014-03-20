@@ -8,13 +8,13 @@ import java.util.List;
  */
 public interface InquireKeyResult {
 
-    public int getTotal();
+    public long getTotal();
 
-    public int getPageSize();
+    public long getPageSize();
     
-    public int getPageNum();
+    public long getPageNum();
     
-    public int getPageIndex();
+    public long getPageIndex();
 
     public List<String> getResultList();
 

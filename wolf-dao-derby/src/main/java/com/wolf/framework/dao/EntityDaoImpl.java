@@ -1,8 +1,5 @@
 package com.wolf.framework.dao;
 
-import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.InquireKeyResult;
-import com.wolf.framework.dao.InquireResult;
 import com.wolf.framework.dao.condition.Condition;
 import com.wolf.framework.dao.condition.InquireContext;
 import com.wolf.framework.dao.condition.OperateTypeEnum;
@@ -56,9 +53,9 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
     @Override
     public InquireResult<T> inquirePageByCondition(InquireContext inquireContext) {
         int total = this.countByConditionHandler.count(inquireContext.getConditionList());
-        int pageIndex = inquireContext.getPageIndex();
-        int pageSize = inquireContext.getPageSize();
-        int pageNum = total / pageSize;
+        long pageIndex = inquireContext.getPageIndex();
+        long pageSize = inquireContext.getPageSize();
+        long pageNum = total / pageSize;
         if (total % pageSize > 0) {
             pageNum++;
         }
@@ -145,10 +142,10 @@ public class EntityDaoImpl<T extends Entity> implements EntityDao<T> {
 
     @Override
     public InquireKeyResult inquirePageKeysByCondition(InquireContext inquireContext) {
-        int total = this.countByConditionHandler.count(inquireContext.getConditionList());
-        int pageIndex = inquireContext.getPageIndex();
-        int pageSize = inquireContext.getPageSize();
-        int pageNum = total / pageSize;
+        long total = this.countByConditionHandler.count(inquireContext.getConditionList());
+        long pageIndex = inquireContext.getPageIndex();
+        long pageSize = inquireContext.getPageSize();
+        long pageNum = total / pageSize;
         if (total % pageSize > 0) {
             pageNum++;
         }

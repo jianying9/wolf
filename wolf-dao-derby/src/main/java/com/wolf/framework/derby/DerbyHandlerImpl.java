@@ -346,7 +346,7 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             sqlBuilder.setLength(sqlBuilder.length() - 1);
         }
         //分页
-        int pageIndex = inquireContext.getPageIndex();
+        long pageIndex = inquireContext.getPageIndex();
         if (pageIndex > 0) {
             if (pageIndex > 1) {
                 sqlBuilder.append(this.OFFSET).append(this.FETCH_NEXT);
@@ -364,11 +364,11 @@ public class DerbyHandlerImpl extends AbstractDerbyHandler implements DerbyHandl
             valueList.add(conditionList.get(index).getColumnValue());
         }
         //获取分页条件值
-        int pageIndex = inquireContext.getPageIndex();
+        long pageIndex = inquireContext.getPageIndex();
         if (pageIndex > 0) {
-            int pageSize = inquireContext.getPageSize();
+            long pageSize = inquireContext.getPageSize();
             if (pageIndex > 1) {
-                int offset = (pageIndex - 1) * pageSize;
+                long offset = (pageIndex - 1) * pageSize;
                 valueList.add(Long.toString(offset));
             }
             valueList.add(Long.toString(pageSize));

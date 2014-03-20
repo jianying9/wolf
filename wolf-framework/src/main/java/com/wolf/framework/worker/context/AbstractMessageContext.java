@@ -102,14 +102,19 @@ public abstract class AbstractMessageContext {
 
     public final void setPageTotal(long pageTotal) {
         this.pageTotal = pageTotal;
+        if (this.pageTotal > 0) {
+            long total = this.pageTotal;
+            long num = 0;
+            while (total > 0) {
+                num++;
+                total = total - this.pageSize;
+            }
+            this.pageNum = num;
+        }
     }
 
     public final long getPageNum() {
         return pageNum;
-    }
-
-    public final void setPageNum(long pageNum) {
-        this.pageNum = pageNum;
     }
 
     public final String getAct() {

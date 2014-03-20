@@ -10,13 +10,13 @@ import java.util.List;
  */
 public class InquireResultImpl<T extends Entity> implements InquireResult {
 
-    private final int total;
-    private final int pageSize;
-    private final int pageNum;
-    private final int pageIndex;
+    private final long total;
+    private final long pageSize;
+    private final long pageNum;
+    private final long pageIndex;
     private final List<T> resultList;
 
-    public InquireResultImpl(int total, int pageSize, int pageNum, int pageIndex, List<T> resultList) {
+    public InquireResultImpl(long total, long pageSize, long pageNum, long pageIndex, List<T> resultList) {
         this.total = total;
         this.pageSize = pageSize;
         this.pageNum = pageNum;
@@ -25,12 +25,12 @@ public class InquireResultImpl<T extends Entity> implements InquireResult {
     }
     
     @Override
-    public int getTotal() {
+    public long getTotal() {
         return this.total;
     }
 
     @Override
-    public int getPageSize() {
+    public long getPageSize() {
         return this.pageSize;
     }
 
@@ -44,11 +44,13 @@ public class InquireResultImpl<T extends Entity> implements InquireResult {
         return this.resultList.isEmpty();
     }
 
-    public int getPageNum() {
+    @Override
+    public long getPageNum() {
         return this.pageNum;
     }
 
-    public int getPageIndex() {
+    @Override
+    public long getPageIndex() {
         return this.pageIndex;
     }
 }

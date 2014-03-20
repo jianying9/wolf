@@ -19,10 +19,12 @@ public interface MessageContext {
     public long getPageIndex();
 
     public long getPageSize();
+    
+    public long getPageTotal();
+    
+    public long getPageNum();
 
     public void setPageTotal(long pageTotal);
-
-    public void setPageNum(long pageNum);
 
     public Session getSession();
 

@@ -404,11 +404,11 @@ public class DerbyTestHandlerImpl extends AbstractDerbyHandler implements DerbyH
             sqlBuilder.setLength(sqlBuilder.length() - 1);
         }
         //分页
-        int pageIndex = inquireContext.getPageIndex();
+        long pageIndex = inquireContext.getPageIndex();
         if (pageIndex > 0) {
-            int pageSize = inquireContext.getPageSize();
+            long pageSize = inquireContext.getPageSize();
             if (pageIndex > 1) {
-                int offset = (pageIndex - 1) * pageSize;
+                long offset = (pageIndex - 1) * pageSize;
                 sqlBuilder.append(this.OFFSET_PREFIX).append(offset).append(this.OFFSET_SURFIX)
                         .append(this.FETCH_NEXT_PREFIX).append(pageSize).append(this.FETCH_NEXT_SURFIX);
             } else {
