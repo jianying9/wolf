@@ -2,7 +2,7 @@ package com.wolf.framework.worker;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
-import com.wolf.framework.service.parameter.ParametersContext;
+import com.wolf.framework.service.parameter.ParameterContext;
 import java.util.Map;
 
 /**
@@ -17,9 +17,9 @@ public interface ServiceWorkerContext {
 
     public boolean assertExistServiceWorker(final String actionName);
 
-    public ParametersContext getParametersContextBuilder();
-
     public Injecter getInjecter();
+    
+    public ParameterContext getParameterContext();
     
     public ApplicationContext getApplicationContext();
 }

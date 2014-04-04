@@ -24,11 +24,8 @@ import com.wolf.framework.paser.ClassParser;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
-import com.wolf.framework.service.parameter.Parameter;
-import com.wolf.framework.service.parameter.ParametersConfig;
-import com.wolf.framework.service.parameter.ParametersConfigParser;
-import com.wolf.framework.service.parameter.ParametersContext;
-import com.wolf.framework.service.parameter.ParametersContextImpl;
+import com.wolf.framework.service.parameter.ParameterContext;
+import com.wolf.framework.service.parameter.ParameterContextImpl;
 import com.wolf.framework.task.TaskExecutor;
 import com.wolf.framework.task.TaskExecutorImpl;
 import com.wolf.framework.task.TaskExecutorUnitTestImpl;
@@ -50,12 +47,10 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
-    protected final List<Class<Parameter>> parameterClassList = new ArrayList<Class<Parameter>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<Class<?>> allClassList = new ArrayList<Class<?>>();
     protected REntityDaoContext<T> rEntityDaoContext;
-    protected ParametersContext parametersContext;
     protected ServiceWorkerContext serviceWorkerContext;
     private final Map<String, String> parameterMap;
 
@@ -124,8 +119,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             }
             taskExecutor = new TaskExecutorImpl(corePoolSize, maxPoolSize);
         }
-        //初始化data类型工厂对象
-        final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
         //解析redis EntityDao
         if (this.rEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation RDaoConfig...");
@@ -157,22 +150,17 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
         localServiceContextBuilder.inject(injecterList);
-        //解析ParametersConfig包含的FieldConfig
-        this.logger.info("parsing annotation ParametersConfig start...");
-        this.parametersContext = new ParametersContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
-        final ParametersConfigParser parametersConfigParser = new ParametersConfigParser(this.parametersContext);
-        for (Class<Parameter> clazz : this.parameterClassList) {
-            parametersConfigParser.parse(clazz);
-        }
-        this.logger.info("parse annotation ParametersConfig finished.");
+        //初始化data类型工厂对象
+        final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
+        ParameterContext parametersContext = new ParameterContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
         injecterListImpl = new InjecterListImpl();
         injecterListImpl.addInjecter(localServiceInjecter);
         injecterListImpl.addInjecter(taskExecutorInjecter);
         this.serviceWorkerContext = new ServiceWorkerContextImpl(
-                this.parametersContext,
                 injecterListImpl,
+                parametersContext,
                 ApplicationContext.CONTEXT);
         final ServiceConfigParser<K, T> serviceConfigParser = new ServiceConfigParser<K, T>(this.serviceWorkerContext);
         for (Class<K> clazz : this.serviceClassList) {
@@ -195,7 +183,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         Class<T> clazzt;
         Class<K> clazzk;
         Class<Local> clazzl;
-        Class<Parameter> clazzp;
         this.allClassList.add(clazz);
         //是否是实体
         if (Entity.class.isAssignableFrom(clazz)) {
@@ -213,14 +200,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             if (this.serviceClassList.contains(clazzk) == false) {
                 this.serviceClassList.add(clazzk);
                 this.logger.debug("find service class ".concat(className));
-            }
-        }
-        //是否是参数配置
-        if (clazz.isAnnotationPresent(ParametersConfig.class) && Parameter.class.isAssignableFrom(clazz)) {
-            clazzp = (Class<Parameter>) clazz;
-            if (this.parameterClassList.contains(clazzp) == false) {
-                this.parameterClassList.add(clazzp);
-                this.logger.debug("find parameter class ".concat(className));
             }
         }
         //是否是内部服务

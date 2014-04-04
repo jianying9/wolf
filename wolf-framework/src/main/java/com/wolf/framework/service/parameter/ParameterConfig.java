@@ -17,6 +17,8 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface ParameterConfig {
 
+    public String name();
+
     public ParameterTypeEnum parameterTypeEnum() default ParameterTypeEnum.BASIC;
 
     /**

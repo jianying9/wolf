@@ -1,9 +1,8 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.ParameterConfig;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
-import java.util.Map;
 
 /**
  * 服务工作对象接口
@@ -31,15 +30,13 @@ public final class ServiceWorkerImpl implements ServiceWorker {
         return info;
     }
 
-    private String getParameterJson(String[] parameters, Map<String, ParameterHandler> parameterHandlerMap) {
+    private String getParameterJson(ParameterConfig[] parameters) {
         StringBuilder jsonBuilder = new StringBuilder(64);
-        ParameterHandler parameterHandler;
-        for (String parameter : parameters) {
-            parameterHandler = parameterHandlerMap.get(parameter);
-            jsonBuilder.append("{\"name\":\"").append(parameter)
-                    .append("\",\"type\":\"").append(parameterHandler.getDataType())
-                    .append("\",\"defaultValue\":\"").append(parameterHandler.getDefaultValue())
-                    .append("\",\"description\":\"").append(parameterHandler.getDescription())
+        for (ParameterConfig parameterConfig : parameters) {
+            jsonBuilder.append("{\"name\":\"").append(parameterConfig)
+                    .append("\",\"type\":\"").append(parameterConfig.basicTypeEnum().name())
+                    .append("\",\"defaultValue\":\"").append(parameterConfig.defaultValue())
+                    .append("\",\"description\":\"").append(parameterConfig.desc())
                     .append("\"}").append(',');
         }
         if (jsonBuilder.length() > 0) {
@@ -51,18 +48,17 @@ public final class ServiceWorkerImpl implements ServiceWorker {
     public void createInfo(String act,
             String group,
             String description,
-            String[] importantParameter,
-            String[] minorParameter,
-            String[] returnParameter,
-            Map<String, ParameterHandler> parameterHandlerMap) {
+            ParameterConfig[] importantParameter,
+            ParameterConfig[] minorParameter,
+            ParameterConfig[] returnParameter) {
         this.group = group;
         this.description = description;
         //构造重要参数信息
-        String importantData = this.getParameterJson(importantParameter, parameterHandlerMap);
+        String importantData = this.getParameterJson(importantParameter);
         //构造次要参数信息
-        String minorData = this.getParameterJson(minorParameter, parameterHandlerMap);
+        String minorData = this.getParameterJson(minorParameter);
         //构造返回参数信息
-        String returnData = this.getParameterJson(returnParameter, parameterHandlerMap);
+        String returnData = this.getParameterJson(returnParameter);
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"actionName\":\"").append(act);
         jsonBuilder.append("\",\"group\":\"").append(group);

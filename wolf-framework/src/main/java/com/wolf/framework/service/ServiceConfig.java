@@ -1,6 +1,6 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.service.parameter.Parameter;
+import com.wolf.framework.service.parameter.ParameterConfig;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,36 +27,21 @@ public @interface ServiceConfig {
      *
      * @return String[]
      */
-    public String[] importantParameter() default {};
+    public ParameterConfig[] importantParameter() default {};
 
     /**
      * 次要的参数
      *
      * @return String[]
      */
-    public String[] minorParameter() default {};
-
-    /**
-     * 次要参数处理方法 KEEP_EMPEY-保留空字符串 DISCARD_EMPTY-丢弃空字符串
-     * DEFAULT_REPLACE_NULL-用缺省值填充NULL
-     *
-     * @return
-     */
-    public MinorHandlerTypeEnum minorHandlerTypeEnum() default MinorHandlerTypeEnum.KEEP_EMPTY;
+    public ParameterConfig[] minorParameter() default {};
 
     /**
      * 返回的参数
      *
      * @return String[]
      */
-    public String[] returnParameter() default {};
-
-    /**
-     * 验证参数来源，实体有顺序，如果有重复取最先出现的ExtendedEntityEnum中的field信息
-     *
-     * @return
-     */
-    public Class<? extends Parameter>[] parametersConfigs() default {};
+    public ParameterConfig[] returnParameter() default {};
 
     /**
      * 事务类型 需要事务控制--true 不需要事务控制--false

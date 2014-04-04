@@ -2,7 +2,7 @@ package com.wolf.framework.worker;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
-import com.wolf.framework.service.parameter.ParametersContext;
+import com.wolf.framework.service.parameter.ParameterContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +15,9 @@ import java.util.Map;
 public class ServiceWorkerContextImpl implements ServiceWorkerContext {
 
     private final Map<String, String> existClassMap = new HashMap<String, String>(1024);
-    private final ParametersContext parametersContext;
     private final Injecter injecter;
     private final ApplicationContext applicationContext;
+    private final ParameterContext parameterContext;
     //服务集合
     private final Map<String, ServiceWorker> serviceWorkerMap;
 
@@ -42,12 +42,12 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
      * @param properties
      */
     public ServiceWorkerContextImpl(
-            final ParametersContext parametersContextBuilder,
             final Injecter injecter,
+            final ParameterContext parameterContext,
             final ApplicationContext applicationContext) {
         this.serviceWorkerMap = new HashMap<String, ServiceWorker>(256, 1);
-        this.parametersContext = parametersContextBuilder;
         this.injecter = injecter;
+        this.parameterContext = parameterContext;
         this.applicationContext = applicationContext;
     }
 
@@ -62,11 +62,6 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
     }
 
     @Override
-    public ParametersContext getParametersContextBuilder() {
-        return this.parametersContext;
-    }
-
-    @Override
     public Injecter getInjecter() {
         return this.injecter;
     }
@@ -74,5 +69,10 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
     @Override
     public ApplicationContext getApplicationContext() {
         return this.applicationContext;
+    }
+
+    @Override
+    public ParameterContext getParameterContext() {
+        return this.parameterContext;
     }
 }
