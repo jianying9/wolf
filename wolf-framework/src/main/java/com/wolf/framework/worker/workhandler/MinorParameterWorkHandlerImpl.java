@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.InputParameterHandler;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import java.util.Map;
 
@@ -13,11 +13,11 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final String[] minorParameter;
-    private final Map<String, ParameterHandler> parameterHandlerMap;
+    private final Map<String, InputParameterHandler> parameterHandlerMap;
 
     public MinorParameterWorkHandlerImpl(
             final String[] minorParameter,
-            final Map<String, ParameterHandler> parameterHandlerMap,
+            final Map<String, InputParameterHandler> parameterHandlerMap,
             final WorkHandler workHandler) {
         this.minorParameter = minorParameter;
         this.parameterHandlerMap = parameterHandlerMap;
@@ -30,7 +30,7 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
         String paraValue;
         String errorParaName = "";
         String errorMsg = "";
-        ParameterHandler parameterHandler;
+        InputParameterHandler parameterHandler;
         //验证必要参数是否合法
         Map<String, String> parameterMap = frameworkMessageContext.getParameterMap();
         for (String parameter : this.minorParameter) {

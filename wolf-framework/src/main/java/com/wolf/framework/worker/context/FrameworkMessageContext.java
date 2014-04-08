@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.OutputParameterHandler;
 import java.util.Map;
 
 /**
@@ -37,9 +37,9 @@ public interface FrameworkMessageContext extends MessageContext {
 
     public void createErrorMessage();
 
-    public void createMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap);
+    public void createMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap);
 
-    public void createPageMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap);
+    public void createPageMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap);
 
     public void sendSystemMessage(String message);
 }

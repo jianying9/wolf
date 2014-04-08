@@ -5,7 +5,7 @@ package com.wolf.framework.data;
  *
  * @author aladdin
  */
-public enum BasicTypeEnum {
+public enum TypeEnum {
 
     //Int [-2147483648,2147483647]
     INT {
@@ -96,6 +96,20 @@ public enum BasicTypeEnum {
         @Override
         public DataClassEnum getDataClassEnum() {
             return DataClassEnum.STRING;
+        }
+    },
+    //json对象
+    OBJECT {
+        @Override
+        public DataClassEnum getDataClassEnum() {
+            return DataClassEnum.JSON;
+        }
+    },
+    //json数组
+    ARRAY {
+        @Override
+        public DataClassEnum getDataClassEnum() {
+            return DataClassEnum.JSON;
         }
     };
 

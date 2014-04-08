@@ -7,10 +7,10 @@ import com.wolf.framework.data.DataHandler;
  *
  * @author aladdin
  */
-public final class DateParameterHandlerImpl extends AbstractParameterHandler implements ParameterHandler {
+public final class DateParameterHandlerImpl extends AbstractParameterHandler implements InputParameterHandler, OutputParameterHandler {
 
-    DateParameterHandlerImpl(final String name, final DataHandler dataHandler, final String defaultValue, final String desc) {
-        super(name, dataHandler, defaultValue, desc);
+    DateParameterHandlerImpl(final String name, final DataHandler dataHandler, final String desc) {
+        super(name, dataHandler, desc);
     }
 
     @Override

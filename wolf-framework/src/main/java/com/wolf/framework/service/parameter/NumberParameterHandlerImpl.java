@@ -7,10 +7,10 @@ import com.wolf.framework.data.DataHandler;
  *
  * @author aladdin
  */
-public final class NumberParameterHandlerImpl extends AbstractParameterHandler implements ParameterHandler {
+public final class NumberParameterHandlerImpl extends AbstractParameterHandler implements InputParameterHandler, OutputParameterHandler {
 
-    public NumberParameterHandlerImpl(final String name, final DataHandler dataHandler, final String defaultValue, final String desc) {
-        super(name, dataHandler, defaultValue, desc);
+    public NumberParameterHandlerImpl(final String name, final DataHandler dataHandler, final String desc) {
+        super(name, dataHandler, desc);
     }
 
     @Override

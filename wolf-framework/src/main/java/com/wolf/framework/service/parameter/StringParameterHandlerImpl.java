@@ -8,12 +8,12 @@ import com.wolf.framework.service.parameter.filter.Filter;
  *
  * @author aladdin
  */
-public final class StringParameterHandlerImpl extends AbstractParameterHandler implements ParameterHandler {
+public final class StringParameterHandlerImpl extends AbstractParameterHandler implements InputParameterHandler, OutputParameterHandler {
 
     private final Filter[] filters;
 
-    StringParameterHandlerImpl(final String name, final Filter[] filters, final DataHandler dataHandler, final String defaultValue, final String desc) {
-        super(name, dataHandler, defaultValue, desc);
+    StringParameterHandlerImpl(final String name, final Filter[] filters, final DataHandler dataHandler, final String desc) {
+        super(name, dataHandler, desc);
         this.filters = filters;
     }
 

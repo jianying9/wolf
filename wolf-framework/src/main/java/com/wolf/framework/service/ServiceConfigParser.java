@@ -6,14 +6,17 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.BasicTypeEnum;
+import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
-import com.wolf.framework.service.parameter.ParameterConfig;
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.InputConfig;
+import com.wolf.framework.service.parameter.InputParameterHandler;
+import com.wolf.framework.service.parameter.OutputParameterHandler;
 import com.wolf.framework.service.parameter.ParameterContext;
-import com.wolf.framework.service.parameter.ParameterHandlerBuilder;
+import com.wolf.framework.service.parameter.InputParameterHandlerBuilder;
+import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.OutputParameterHandlerBuilder;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerImpl;
@@ -46,17 +49,17 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
 
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-    private final ParameterHandler pageIndexHandler;
-    private final ParameterHandler pageSizeHandler;
+    private final InputParameterHandler pageIndexHandler;
+    private final InputParameterHandler pageSizeHandler;
 
     public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
         this.serviceWorkerContext = serviceWorkerContext;
         //初始化分页参数配置
         ParameterContext parametersContext = this.serviceWorkerContext.getParameterContext();
         DataHandlerFactory dataHandlerFactory = parametersContext.getDataHandlerFactory();
-        DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(BasicTypeEnum.INT);
-        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler, "1", "页索引");
-        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler, "15", "页大小");
+        DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(TypeEnum.INT);
+        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler, "页索引");
+        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler, "页大小");
     }
 
     /**
@@ -71,9 +74,9 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);
             final String actionName = serviceConfig.actionName();
-            final ParameterConfig[] importantParameter = serviceConfig.importantParameter();
-            final ParameterConfig[] minorParameter = serviceConfig.minorParameter();
-            final ParameterConfig[] returnParameter = serviceConfig.returnParameter();
+            final InputConfig[] importantParameter = serviceConfig.importantParameter();
+            final InputConfig[] minorParameter = serviceConfig.minorParameter();
+            final OutputConfig[] returnParameter = serviceConfig.returnParameter();
             final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
@@ -105,28 +108,28 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //异常处理
             workHandler = new ExceptionWorkHandlerImpl(workHandler);
             //--------------------------------业务执行后处理环节------------------
-            ParameterHandler parameterHandler;
-            ParameterHandlerBuilder parameterHandlerBuilder;
+            OutputParameterHandler outputParameterHandler;
+            OutputParameterHandlerBuilder outputParameterHandlerBuilder;
             if (response || broadcast) {
                 //是否有输出
                 //获取返回参数
-                final Map<String, ParameterHandler> returnParameterMap;
+                final Map<String, OutputParameterHandler> returnParameterMap;
                 final String[] returnNames;
-                if (importantParameter.length > 0) {
-                    List<String> returnNameList = new ArrayList<String>(importantParameter.length);
-                    returnParameterMap = new HashMap<String, ParameterHandler>(importantParameter.length, 1);
-                    for (ParameterConfig parameterConfig : returnParameter) {
-                        parameterHandlerBuilder = new ParameterHandlerBuilder(
+                if (returnParameter.length > 0) {
+                    List<String> returnNameList = new ArrayList<String>(returnParameter.length);
+                    returnParameterMap = new HashMap<String, OutputParameterHandler>(returnParameter.length, 1);
+                    for (OutputConfig parameterConfig : returnParameter) {
+                        outputParameterHandlerBuilder = new OutputParameterHandlerBuilder(
                                 parameterConfig,
                                 this.serviceWorkerContext.getApplicationContext(),
                                 this.serviceWorkerContext.getParameterContext());
-                        parameterHandler = parameterHandlerBuilder.build();
-                        returnParameterMap.put(parameterConfig.name(), parameterHandler);
+                        outputParameterHandler = outputParameterHandlerBuilder.build();
+                        returnParameterMap.put(parameterConfig.name(), outputParameterHandler);
                         returnNameList.add(parameterConfig.name());
                     }
                     returnNames = returnNameList.toArray(new String[returnNameList.size()]);
                 } else {
-                    returnParameterMap = new HashMap<String, ParameterHandler>(0, 1);
+                    returnParameterMap = new HashMap<String, OutputParameterHandler>(0, 1);
                     returnNames = new String[0];
                 }
                 //生成消息
@@ -159,18 +162,20 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 workHandler = new PageParameterWorkHandlerImpl(this.pageIndexHandler, this.pageSizeHandler, workHandler);
             }
             //判断取值验证类型,将对应处理对象加入到处理环节
+            InputParameterHandler inputParameterHandler;
+            InputParameterHandlerBuilder inputParameterHandlerBuilder;
             //次要参数
             if (minorParameter.length > 0) {
                 //获取次要参数
-                final Map<String, ParameterHandler> minorParameterMap = new HashMap<String, ParameterHandler>(minorParameter.length, 1);
+                final Map<String, InputParameterHandler> minorParameterMap = new HashMap<String, InputParameterHandler>(minorParameter.length, 1);
                 List<String> minorNameList = new ArrayList<String>(minorParameter.length);
-                for (ParameterConfig parameterConfig : minorParameter) {
-                    parameterHandlerBuilder = new ParameterHandlerBuilder(
+                for (InputConfig parameterConfig : minorParameter) {
+                    inputParameterHandlerBuilder = new InputParameterHandlerBuilder(
                             parameterConfig,
                             this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
-                    parameterHandler = parameterHandlerBuilder.build();
-                    minorParameterMap.put(parameterConfig.name(), parameterHandler);
+                    inputParameterHandler = inputParameterHandlerBuilder.build();
+                    minorParameterMap.put(parameterConfig.name(), inputParameterHandler);
                     minorNameList.add(parameterConfig.name());
                 }
                 final String[] minorNames = minorNameList.toArray(new String[minorNameList.size()]);
@@ -178,15 +183,15 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //重要参数
             if (importantParameter.length > 0) {
-                final Map<String, ParameterHandler> importantParameterMap = new HashMap<String, ParameterHandler>(minorParameter.length, 1);
+                final Map<String, InputParameterHandler> importantParameterMap = new HashMap<String, InputParameterHandler>(minorParameter.length, 1);
                 List<String> importantNameList = new ArrayList<String>(importantParameter.length);
-                for (ParameterConfig parameterConfig : importantParameter) {
-                    parameterHandlerBuilder = new ParameterHandlerBuilder(
+                for (InputConfig parameterConfig : importantParameter) {
+                    inputParameterHandlerBuilder = new InputParameterHandlerBuilder(
                             parameterConfig,
                             this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
-                    parameterHandler = parameterHandlerBuilder.build();
-                    importantParameterMap.put(parameterConfig.name(), parameterHandler);
+                    inputParameterHandler = inputParameterHandlerBuilder.build();
+                    importantParameterMap.put(parameterConfig.name(), inputParameterHandler);
                     importantNameList.add(parameterConfig.name());
                 }
                 final String[] importantNames = importantNameList.toArray(new String[importantNameList.size()]);

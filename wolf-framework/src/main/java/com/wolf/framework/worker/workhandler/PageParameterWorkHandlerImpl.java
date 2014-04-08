@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.InputParameterHandler;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 
 /**
@@ -11,12 +11,12 @@ import com.wolf.framework.worker.context.FrameworkMessageContext;
 public class PageParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
-    private final ParameterHandler pageIndexHandler;
-    private final ParameterHandler pageSizeHandler;
+    private final InputParameterHandler pageIndexHandler;
+    private final InputParameterHandler pageSizeHandler;
 
     public PageParameterWorkHandlerImpl(
-            ParameterHandler pageIndexHandler,
-            ParameterHandler pageSizeHandler,
+            InputParameterHandler pageIndexHandler,
+            InputParameterHandler pageSizeHandler,
             final WorkHandler workHandler) {
         this.nextWorkHandler = workHandler;
         this.pageIndexHandler = pageIndexHandler;
@@ -28,22 +28,22 @@ public class PageParameterWorkHandlerImpl implements WorkHandler {
         String errorMsg;
         String pageIdnex = frameworkMessageContext.getParameter(WorkHandler.PAGE_INDEX);
         if (pageIdnex == null) {
-            pageIdnex = this.pageIndexHandler.getDefaultValue();
+            pageIdnex = "1";
         } else {
             errorMsg = this.pageIndexHandler.validate(pageIdnex);
             if (errorMsg.isEmpty() == false) {
-                pageIdnex = this.pageIndexHandler.getDefaultValue();
+                pageIdnex = "1";
             }
             frameworkMessageContext.removeParameter(WorkHandler.PAGE_INDEX);
         }
         frameworkMessageContext.setPageIndex(Integer.parseInt(pageIdnex));
         String pageSize = frameworkMessageContext.getParameter(WorkHandler.PAGE_SIZE);
         if (pageSize == null) {
-            pageSize = this.pageSizeHandler.getDefaultValue();
+            pageSize = "6";
         } else {
             errorMsg = this.pageSizeHandler.validate(pageSize);
             if (errorMsg.isEmpty() == false) {
-                pageSize = this.pageSizeHandler.getDefaultValue();
+                pageSize = "6";
             }
             frameworkMessageContext.removeParameter(WorkHandler.PAGE_SIZE);
         }

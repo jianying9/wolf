@@ -12,9 +12,9 @@ public class CharDataHandlerImpl implements DataHandler {
 
     private final String error_message;
     private final int length;
-    private final BasicTypeEnum dataTypeEnum;
+    private final TypeEnum dataTypeEnum;
 
-    CharDataHandlerImpl(String error_message, int length, BasicTypeEnum dataTypeEnum) {
+    CharDataHandlerImpl(String error_message, int length, TypeEnum dataTypeEnum) {
         this.error_message = error_message;
         this.length = length;
         this.dataTypeEnum = dataTypeEnum;
@@ -36,7 +36,7 @@ public class CharDataHandlerImpl implements DataHandler {
     }
 
     @Override
-    public BasicTypeEnum getDataTypeEnum() {
+    public TypeEnum getDataTypeEnum() {
         return this.dataTypeEnum;
     }
 

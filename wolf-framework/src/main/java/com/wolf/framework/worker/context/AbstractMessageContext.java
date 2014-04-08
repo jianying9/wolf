@@ -5,7 +5,7 @@ import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.OutputParameterHandler;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.JsonUtils;
 import com.wolf.framework.utils.StringUtils;
@@ -211,7 +211,7 @@ public abstract class AbstractMessageContext {
         this.responseMessage = jsonBuilder.toString();
     }
 
-    public final void createMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap) {
+    public final void createMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         String data = "{}";
         if (parameterNames.length > 0) {
@@ -227,7 +227,7 @@ public abstract class AbstractMessageContext {
         this.responseMessage = jsonBuilder.toString();
     }
 
-    public final void createPageMessage(String[] parameterNames, Map<String, ParameterHandler> parameterHandlerMap) {
+    public final void createPageMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap) {
         StringBuilder jsonBuilder = new StringBuilder(128);
         String data = "";
         if (parameterNames.length > 0) {

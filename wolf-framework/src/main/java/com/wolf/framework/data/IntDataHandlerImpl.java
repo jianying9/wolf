@@ -35,18 +35,22 @@ public final class IntDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_NUMBER_VALUE;
     }
 
-    public BasicTypeEnum getDataTypeEnum() {
-        return BasicTypeEnum.INT;
+    @Override
+    public TypeEnum getDataTypeEnum() {
+        return TypeEnum.INT;
     }
 
+    @Override
     public String getNextValue() {
         return this.getRandomValue();
     }
     
+    @Override
     public String convertToInput(String value) {
         return value;
     }
 
+    @Override
     public String convertToOutput(String value) {
         return value;
     }

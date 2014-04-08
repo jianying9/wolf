@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.service.parameter.ParameterHandler;
+import com.wolf.framework.service.parameter.InputParameterHandler;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import java.util.Map;
 
@@ -13,11 +13,11 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final String[] importantParameter;
-    private final Map<String, ParameterHandler> parameterHandlerMap;
+    private final Map<String, InputParameterHandler> parameterHandlerMap;
 
     public ImportantParameterWorkHandlerImpl(
             final String[] importantParameter,
-            final Map<String, ParameterHandler> parameterHandlerMap,
+            final Map<String, InputParameterHandler> parameterHandlerMap,
             final WorkHandler workHandler) {
         this.nextWorkHandler = workHandler;
         this.importantParameter = importantParameter;
@@ -29,7 +29,7 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
         String paraValue;
         String errorParaName = "";
         String errorMsg = "";
-        ParameterHandler parameterHandler;
+        InputParameterHandler parameterHandler;
         Map<String, String> parameterMap = frameworkMessageContext.getParameterMap();
         //验证必要参数是否合法
         for (String parameter : this.importantParameter) {

@@ -1,7 +1,6 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.BasicTypeEnum;
-import com.wolf.framework.data.JsonTypeEnum;
+import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,27 +12,18 @@ import java.lang.annotation.Target;
  *
  * @author aladdin
  */
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface ParameterConfig {
+public @interface OutputConfig {
 
     public String name();
 
-    public ParameterTypeEnum parameterTypeEnum() default ParameterTypeEnum.BASIC;
-
     /**
-     * basic数据类型
+     * 数据类型
      *
      * @return
      */
-    public BasicTypeEnum basicTypeEnum() default BasicTypeEnum.CHAR_10;
-
-    /**
-     * json数据类型
-     *
-     * @return
-     */
-    public JsonTypeEnum jsonTypeEnum() default JsonTypeEnum.OBJECT;
+    public TypeEnum typeEnum();
 
     /**
      * 描述
@@ -48,9 +38,4 @@ public @interface ParameterConfig {
      * @return
      */
     public FilterTypeEnum[] filterTypes() default {FilterTypeEnum.ESCAPE, FilterTypeEnum.SECURITY};
-
-    /**
-     * 自定义默认值，将会覆盖字段类型的默认值
-     */
-    public String defaultValue() default "";
 }

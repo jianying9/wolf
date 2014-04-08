@@ -5,7 +5,7 @@ package com.wolf.framework.service.parameter;
  *
  * @author aladdin
  */
-public final class JsonParameterHandlerImpl implements ParameterHandler {
+public final class JsonParameterHandlerImpl implements OutputParameterHandler {
 
     private final String name;
     private final String dataType;
@@ -16,7 +16,7 @@ public final class JsonParameterHandlerImpl implements ParameterHandler {
         this.name = name;
         this.dataType = dataType;
         this.desc = desc;
-        this.defaultValue = defaultValue.isEmpty() ? "{}" : defaultValue;
+        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -40,23 +40,8 @@ public final class JsonParameterHandlerImpl implements ParameterHandler {
     }
 
     @Override
-    public String validate(String value) {
-        throw new UnsupportedOperationException("Json type only use in Output...");
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return this.defaultValue;
-    }
-
-    @Override
     public String getRandomValue() {
         return this.defaultValue;
-    }
-
-    @Override
-    public String convertToInput(String value) {
-        throw new UnsupportedOperationException("Json type only use in Output...");
     }
 
     @Override

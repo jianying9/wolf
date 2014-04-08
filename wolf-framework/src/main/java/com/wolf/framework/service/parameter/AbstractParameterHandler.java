@@ -12,21 +12,11 @@ public abstract class AbstractParameterHandler {
     protected final String name;
     protected final String description;
     protected final DataHandler dataHandler;
-    protected final String defaultValue;
 
-    protected AbstractParameterHandler(final String name, final DataHandler dataHandler, final String defaultValue, final String description) {
+    protected AbstractParameterHandler(final String name, final DataHandler dataHandler, final String description) {
         this.name = name;
         this.description = description;
         this.dataHandler = dataHandler;
-        if (defaultValue.isEmpty()) {
-            this.defaultValue = this.dataHandler.getDefaultValue();
-        } else {
-            this.defaultValue = defaultValue;
-        }
-    }
-
-    public final String getDefaultValue() {
-        return this.defaultValue;
     }
 
     public final String getName() {

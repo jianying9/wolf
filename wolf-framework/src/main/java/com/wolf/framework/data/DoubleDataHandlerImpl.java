@@ -36,18 +36,22 @@ public final class DoubleDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_DECIMAL_VALUE;
     }
 
-    public BasicTypeEnum getDataTypeEnum() {
-        return BasicTypeEnum.DOUBLE;
+    @Override
+    public TypeEnum getDataTypeEnum() {
+        return TypeEnum.DOUBLE;
     }
 
+    @Override
     public String getNextValue() {
         return this.getRandomValue();
     }
     
+    @Override
     public String convertToInput(String value) {
         return value;
     }
 
+    @Override
     public String convertToOutput(String value) {
         return value;
     }

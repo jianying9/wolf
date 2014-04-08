@@ -9,5 +9,6 @@ public enum DataClassEnum {
 
     NUMBER,
     DATE,
-    STRING;
+    STRING,
+    JSON;
 }

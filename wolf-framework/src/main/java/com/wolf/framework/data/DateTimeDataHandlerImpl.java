@@ -34,19 +34,23 @@ public class DateTimeDataHandlerImpl implements DataHandler {
         return TimeUtils.getDateFotmatYYMMDDHHmmSS();
     }
 
-    public BasicTypeEnum getDataTypeEnum() {
-        return BasicTypeEnum.DATE_TIME;
+    @Override
+    public TypeEnum getDataTypeEnum() {
+        return TypeEnum.DATE_TIME;
     }
 
+    @Override
     public String getNextValue() {
         return this.getRandomValue();
     }
 
+    @Override
     public String convertToInput(String value) {
         long result = TimeUtils.convertYYYYMMDDHHmmSSToMillisecond(value);
         return Long.toString(result);
     }
 
+    @Override
     public String convertToOutput(String value) {
         long milliseconds = Long.parseLong(value);
         String result = TimeUtils.convertMillisecondToYYYYMMDDHHmmSS(milliseconds);

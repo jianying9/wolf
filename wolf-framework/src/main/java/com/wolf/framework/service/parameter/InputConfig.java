@@ -1,4 +1,4 @@
-package com.wolf.framework.dao.annotation;
+package com.wolf.framework.service.parameter;
 
 import com.wolf.framework.data.TypeEnum;
 import java.lang.annotation.ElementType;
@@ -7,27 +7,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 用于描述entity中各个field的信息
+ * entity filed annotation，用于描述entity中各个field的信息
  *
  * @author aladdin
  */
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface ColumnConfig {
+public @interface InputConfig {
+
+    public String name();
 
     /**
      * 数据类型
      *
      * @return
      */
-    public TypeEnum dataTypeEnum();
-
-    /**
-     * 列类型
-     *
-     * @return
-     */
-    public ColumnTypeEnum columnTypeEnum() default ColumnTypeEnum.COLUMN;
+    public TypeEnum typeEnum();
 
     /**
      * 描述

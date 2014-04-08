@@ -35,18 +35,22 @@ public final class LongDataHandlerImpl implements DataHandler {
         return DataHandler.DEFAULT_NUMBER_VALUE;
     }
 
-    public BasicTypeEnum getDataTypeEnum() {
-        return BasicTypeEnum.LONG;
+    @Override
+    public TypeEnum getDataTypeEnum() {
+        return TypeEnum.LONG;
     }
 
+    @Override
     public String getNextValue() {
         return Long.toString(System.currentTimeMillis());
     }
     
+    @Override
     public String convertToInput(String value) {
         return value;
     }
 
+    @Override
     public String convertToOutput(String value) {
         return value;
     }
