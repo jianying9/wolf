@@ -92,29 +92,48 @@ public interface REntityDao<T extends Entity> {
      * @param keyValues
      */
     public void batchDelete(final List<String> keyValues);
-    
+
     /**
-     * 全表分页查询主键
+     * 根据得分正序全表分页查询主键
+     *
      * @param inquirePageContext
-     * @return 
+     * @return
      */
     public List<String> inquireKeys(InquirePageContext inquirePageContext);
-    
+
     /**
-     * 全表分页查询
+     * 根据得分倒序全表分页查询主键
+     *
      * @param inquirePageContext
-     * @return 
+     * @return
+     */
+    public List<String> inquireKeysDESC(InquirePageContext inquirePageContext);
+
+    /**
+     * 根据得分正序全表分页查询
+     *
+     * @param inquirePageContext
+     * @return
      */
     public List<T> inquire(InquirePageContext inquirePageContext);
-    
+
+    /**
+     * 根据得分倒序全表分页查询
+     *
+     * @param inquirePageContext
+     * @return
+     */
+    public List<T> inquireDESC(InquirePageContext inquirePageContext);
+
     /**
      * 统计全表总记录
-     * @return 
+     *
+     * @return
      */
     public long count();
 
     /**
-     * 索引条件查询主键集合
+     * 根据得分正序索引条件查询主键集合
      *
      * @param inquireRedisIndexContext
      * @return
@@ -122,12 +141,29 @@ public interface REntityDao<T extends Entity> {
     public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext);
 
     /**
-     * 索引条件查询
+     * 根据得分倒序索引条件查询主键集合
+     *
      * @param inquireRedisIndexContext
-     * @return 
+     * @return
+     */
+    public List<String> inquireKeysByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext);
+
+    /**
+     * 根据得分正序索引条件查询
+     *
+     * @param inquireRedisIndexContext
+     * @return
      */
     public List<T> inquireByIndex(InquireRedisIndexContext inquireRedisIndexContext);
-    
+
+    /**
+     * 根据得分倒序索引条件查询
+     *
+     * @param inquireRedisIndexContext
+     * @return
+     */
+    public List<T> inquireByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext);
+
     /**
      * 索引统计
      *
@@ -136,13 +172,30 @@ public interface REntityDao<T extends Entity> {
      * @return
      */
     public long countByIndex(final String indexName, final String indexValue);
-    
+
     /**
      * 增加某number类型且非索引列的值
+     *
      * @param keyValue
      * @param columnName
      * @param value
-     * @return 
+     * @return
      */
     public long increase(String keyValue, String columnName, long value);
+
+    /**
+     * 设置当前记录的key索引得分,影响key分页查询的排序
+     *
+     * @param sorce
+     */
+    public void setKeySorce(Map<String, String> entityMap, long sorce);
+
+    /**
+     * 设置当前记录的列索引得分，影响index分页查询的排序
+     *
+     * @param columnName
+     * @param columnValue
+     * @param sorce
+     */
+    public void setIndexSorce(Map<String, String> entityMap, String columnName, long sorce);
 }

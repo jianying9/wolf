@@ -113,10 +113,21 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public List<String> inquireKeys(InquirePageContext inquirePageContext) {
         return this.redisHandler.inquireKeys(inquirePageContext);
     }
+    
+    @Override
+    public List<String> inquireKeysDESC(InquirePageContext inquirePageContext) {
+        return this.redisHandler.inquireKeysDESC(inquirePageContext);
+    }
 
     @Override
     public List<T> inquire(InquirePageContext inquirePageContext) {
         List<String> keyList = this.inquireKeys(inquirePageContext);
+        return this.inquireByKeys(keyList);
+    }
+    
+    @Override
+    public List<T> inquireDESC(InquirePageContext inquirePageContext) {
+        List<String> keyList = this.inquireKeysDESC(inquirePageContext);
         return this.inquireByKeys(keyList);
     }
 
@@ -129,10 +140,21 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndex(inquireRedisIndexContext);
     }
+    
+    @Override
+    public List<String> inquireKeysByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext) {
+        return this.redisHandler.inquireKeysByIndexDESC(inquireRedisIndexContext);
+    }
 
     @Override
     public List<T> inquireByIndex(InquireRedisIndexContext inquireRedisIndexContext) {
         List<String> keyList = this.inquireKeysByIndex(inquireRedisIndexContext);
+        return this.inquireByKeys(keyList);
+    }
+    
+    @Override
+    public List<T> inquireByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext) {
+        List<String> keyList = this.inquireKeysByIndexDESC(inquireRedisIndexContext);
         return this.inquireByKeys(keyList);
     }
 
@@ -144,5 +166,20 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     @Override
     public long increase(String keyValue, String columnName, long value) {
         return this.redisHandler.increase(keyValue, columnName, value);
+    }
+
+    @Override
+    public void setKeySorce(Map<String, String> entityMap, long sorce) {
+        String keyIndexName = this.redisHandler.getKeyIndexName();
+        entityMap.put(keyIndexName, Long.toString(sorce));
+    }
+
+    @Override
+    public void setIndexSorce(Map<String, String> entityMap, String columnName, long sorce) {
+        String columnValue = entityMap.get(columnName);
+        if (columnValue != null) {
+            String indexName = this.redisHandler.getColumnIndexName(columnName, columnValue);
+            entityMap.put(indexName, Long.toString(sorce));
+        }
     }
 }
