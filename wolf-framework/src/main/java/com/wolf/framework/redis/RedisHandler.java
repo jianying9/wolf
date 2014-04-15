@@ -24,6 +24,8 @@ public interface RedisHandler {
     public void batchInsert(List<Map<String, String>> entityMapList);
 
     public String update(Map<String, String> entityMap);
+    
+    public void updateKeySorce(String keyValue, long sorce);
 
     public void batchUpdate(List<Map<String, String>> entityMapList);
 

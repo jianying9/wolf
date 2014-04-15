@@ -173,6 +173,11 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
         String keyIndexName = this.redisHandler.getKeyIndexName();
         entityMap.put(keyIndexName, Long.toString(sorce));
     }
+    
+    @Override
+    public void updateKeySorce(String keyValue, long sorce) {
+        this.redisHandler.updateKeySorce(keyValue, sorce);
+    }
 
     @Override
     public void setIndexSorce(Map<String, String> entityMap, String columnName, long sorce) {

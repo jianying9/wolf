@@ -687,4 +687,22 @@ public class RedisHandlerImpl implements RedisHandler {
         }
         return result;
     }
+
+    @Override
+    public void updateKeySorce(String keyValue, long sorce) {
+        StringBuilder strBuilder = new StringBuilder(this.tableName.length() + this.connector.length() + this.keyIndexPrefix.length() + keyValue.length());
+        //构造redis 主键 index key
+        strBuilder.append(this.keyIndexPrefix).append(this.connector).append(this.tableName);
+        String redisIndexKey = strBuilder.toString();
+        strBuilder.setLength(0);
+        //开启连接
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            //保存key索引
+            jedis.zadd(redisIndexKey, sorce, keyValue);
+        } finally {
+            //关闭连接
+            this.jedisPool.returnResource(jedis);
+        }
+    }
 }

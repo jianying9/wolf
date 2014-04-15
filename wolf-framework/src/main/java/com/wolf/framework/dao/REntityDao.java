@@ -189,6 +189,13 @@ public interface REntityDao<T extends Entity> {
      * @param sorce
      */
     public void setKeySorce(Map<String, String> entityMap, long sorce);
+    
+    /**
+     * 更新key索引的得分
+     * @param keyValue
+     * @param sorce 
+     */
+    public void updateKeySorce(String keyValue, long sorce);
 
     /**
      * 设置当前记录的列索引得分，影响index分页查询的排序
