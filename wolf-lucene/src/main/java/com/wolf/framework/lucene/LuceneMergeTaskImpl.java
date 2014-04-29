@@ -6,7 +6,7 @@ import com.wolf.framework.task.Task;
  *
  * @author aladdin
  */
-public class LuceneMergeTaskImpl implements Task {
+public class LuceneMergeTaskImpl extends Task {
 
     private final HdfsLuceneImpl hdfsLuceneImpl;
 
@@ -20,7 +20,7 @@ public class LuceneMergeTaskImpl implements Task {
     }
 
     @Override
-    public void run() {
+    protected void execute() {
         this.hdfsLuceneImpl.merge();
     }
 }
