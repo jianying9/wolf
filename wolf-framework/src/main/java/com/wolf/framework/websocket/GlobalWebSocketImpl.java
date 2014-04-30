@@ -10,20 +10,29 @@ import com.wolf.framework.session.Session;
  * @author aladdin
  */
 public final class GlobalWebSocketImpl extends DefaultWebSocket implements GlobalWebSocket {
-
+    
     private Session session;
-
+    
     public GlobalWebSocketImpl(ProtocolHandler protocolHandler, WebSocketListener... listeners) {
         super(protocolHandler, listeners);
     }
-
+    
     @Override
     public Session getSession() {
         return session;
     }
-
+    
     @Override
     public void setSession(Session session) {
         this.session = session;
+    }
+    
+    @Override
+    public String toString() {
+        String sid = "null";
+        if(this.session != null) {
+            sid = this.session.getSid();
+        }
+        return super.toString() + " sid:" + sid;
     }
 }

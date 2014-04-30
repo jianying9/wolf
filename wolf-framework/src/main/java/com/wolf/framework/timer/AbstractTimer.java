@@ -22,7 +22,7 @@ public class AbstractTimer {
                 Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
                 logger.error("timer:Can not find act:".concat(act));
             } else {
-                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap);
+                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
                 serviceWorker.doWork(localMessageContextImpl);
                 result = localMessageContextImpl.getResponseMessage();
             }

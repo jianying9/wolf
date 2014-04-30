@@ -37,8 +37,7 @@ public class ApplicationListener implements ServletContextListener {
         Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
         //1.加载系统配置
         String appFilePath = sce.getServletContext().getRealPath("");
-        int index = appFilePath.lastIndexOf(File.separator);
-        String appRootPath = appFilePath.substring(index);
+        String appContextPath = sce.getServletContext().getContextPath();
         StringBuilder fileBuilder = new StringBuilder(64);
         fileBuilder.append(appFilePath).append(File.separator).append("WEB-INF").append(File.separator).append(FrameworkConfig.CONFIG_FILE);
         String filePath = fileBuilder.toString();
@@ -81,12 +80,14 @@ public class ApplicationListener implements ServletContextListener {
         applicationContextBuilder.build();
         logger.info("Start websocket...");
         //开启websocket应用
-        ApplicationListener.APP = new GlobalApplication(appRootPath);
+        ApplicationListener.APP = new GlobalApplication(appContextPath);
         WebSocketEngine.getEngine().register(ApplicationListener.APP);
+        //注册推送服务
+        ApplicationContext.CONTEXT.getCometContext().addCometHandler(ApplicationListener.APP);
         //开启开发模式
         String compileModel = parameterMap.get(FrameworkConfig.COMPILE_MODEL);
         if (compileModel != null && compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            ApplicationListener.MAPP = new ManagementApplication(appRootPath);
+            ApplicationListener.MAPP = new ManagementApplication(appContextPath);
             WebSocketEngine.getEngine().register(ApplicationListener.MAPP);
         }
     }

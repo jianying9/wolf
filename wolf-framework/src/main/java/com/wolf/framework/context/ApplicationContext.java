@@ -1,5 +1,7 @@
 package com.wolf.framework.context;
 
+import com.wolf.framework.comet.CometContext;
+import com.wolf.framework.comet.CometContextImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,8 +19,9 @@ public final class ApplicationContext {
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
-    private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(16, 1);
+    private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
+    private final CometContext cometContext = new CometContextImpl();
     
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
@@ -56,5 +59,9 @@ public final class ApplicationContext {
         for (Resource resource : this.resourceList) {
             resource.destory();
         }
+    }
+
+    public CometContext getCometContext() {
+        return cometContext;
     }
 }

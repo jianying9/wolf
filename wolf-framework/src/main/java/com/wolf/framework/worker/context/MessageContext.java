@@ -30,8 +30,6 @@ public interface MessageContext {
 
     public void setNewSession(Session session);
 
-    public boolean isOnline(String userId);
-
     public void setMapData(Map<String, String> parameterMap);
 
     public void setMapListData(List<Map<String, String>> parameterMapList);

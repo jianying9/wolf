@@ -140,7 +140,7 @@ public class DerbyJUnitTest {
     
     private final Pattern valueFilterPattern = Pattern.compile("'|\"");
 
-    @Test
+//    @Test
     public void derbyClientTest() throws SQLException {
         Properties configProperties = new Properties();
         configProperties.setProperty("appPath", "/search");

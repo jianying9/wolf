@@ -1,5 +1,6 @@
 package com.wolf.framework.worker.context;
 
+import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.session.Session;
 import java.util.Map;
 
@@ -11,8 +12,8 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
 
     private final Session session;
 
-    public LocalMessageContextImpl(Session session, String act, Map<String, String> parameterMap) {
-        super(act, parameterMap);
+    public LocalMessageContextImpl(Session session, String act, Map<String, String> parameterMap, CometContext cometContext) {
+        super(act, parameterMap, cometContext);
         this.session = session;
     }
 
@@ -23,10 +24,6 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
 
     @Override
     public void sendMessage() {
-    }
-
-    @Override
-    public void broadcastMessage() {
     }
 
     @Override
@@ -41,16 +38,7 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
     public void removeSession() {
     }
 
-    @Override
-    public boolean isOnline(String userId) {
-        return false;
-    }
-
     public String getResponseMessage() {
         return this.responseMessage;
-    }
-
-    @Override
-    public void sendSystemMessage(String message) {
     }
 }

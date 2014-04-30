@@ -1,5 +1,9 @@
 package com.wolf.framework.context;
 
+import com.wolf.framework.comet.CometContext;
+import com.wolf.framework.comet.LeaveEventConfig;
+import com.wolf.framework.comet.LeaveEventHandleBuilder;
+import com.wolf.framework.comet.LeaveEventHandler;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.dao.Entity;
@@ -49,7 +53,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
-    protected final List<Class<?>> allClassList = new ArrayList<Class<?>>();
+    protected final List<Class<LeaveEventHandler>> leaveEventHandlerClassList = new ArrayList<Class<LeaveEventHandler>>();
     protected REntityDaoContext<T> rEntityDaoContext;
     protected ServiceWorkerContext serviceWorkerContext;
     private final Map<String, String> parameterMap;
@@ -153,11 +157,23 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         //初始化data类型工厂对象
         final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
         ParameterContext parametersContext = new ParameterContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
-        //解析ServiceConfig
-        this.logger.info("parsing annotation ServiceConfig...");
+        //服务注入对象
         injecterListImpl = new InjecterListImpl();
         injecterListImpl.addInjecter(localServiceInjecter);
         injecterListImpl.addInjecter(taskExecutorInjecter);
+        //解析LeaveEventConfig
+        this.logger.info("parsing annotation LeaveEventConfig...");
+        LeaveEventHandleBuilder leaveEventHandleBuilder;
+        LeaveEventHandler leaveEventHandler;
+        CometContext cometContext = ApplicationContext.CONTEXT.getCometContext();
+        for (Class<LeaveEventHandler> clazzle : this.leaveEventHandlerClassList) {
+            leaveEventHandleBuilder = new LeaveEventHandleBuilder(injecterListImpl, clazzle);
+            leaveEventHandler = leaveEventHandleBuilder.build();
+            cometContext.addLeaveEventHandler(leaveEventHandler);
+        }
+        this.logger.info("parse annotation LeaveEventConfig finished.");
+        //解析ServiceConfig
+        this.logger.info("parsing annotation ServiceConfig...");
         this.serviceWorkerContext = new ServiceWorkerContextImpl(
                 injecterListImpl,
                 parametersContext,
@@ -183,7 +199,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         Class<T> clazzt;
         Class<K> clazzk;
         Class<Local> clazzl;
-        this.allClassList.add(clazz);
+        Class<LeaveEventHandler> clazzle;
         //是否是实体
         if (Entity.class.isAssignableFrom(clazz)) {
             clazzt = (Class<T>) clazz;
@@ -208,6 +224,14 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             if (this.localServiceClassList.contains(clazzl) == false) {
                 this.localServiceClassList.add(clazzl);
                 this.logger.debug("find local service class ".concat(className));
+            }
+        }
+        //是否是推送用户离开事件
+        if (clazz.isAnnotationPresent(LeaveEventConfig.class) && LeaveEventHandler.class.isAssignableFrom(clazz)) {
+            clazzle = (Class<LeaveEventHandler>) clazz;
+            if (this.leaveEventHandlerClassList.contains(clazzle) == false) {
+                this.leaveEventHandlerClassList.add(clazzle);
+                this.logger.debug("find comet leave event handler class ".concat(className));
             }
         }
     }

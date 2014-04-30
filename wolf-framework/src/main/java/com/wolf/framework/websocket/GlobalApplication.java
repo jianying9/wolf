@@ -6,6 +6,8 @@ import com.sun.grizzly.websockets.ProtocolHandler;
 import com.sun.grizzly.websockets.WebSocket;
 import com.sun.grizzly.websockets.WebSocketApplication;
 import com.sun.grizzly.websockets.WebSocketListener;
+import com.wolf.framework.comet.CometContext;
+import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
@@ -24,17 +26,17 @@ import org.slf4j.Logger;
  *
  * @author aladdin
  */
-public final class GlobalApplication extends WebSocketApplication {
+public final class GlobalApplication extends WebSocketApplication implements CometHandler {
 
     private final ConcurrentHashMap<String, GlobalWebSocket> webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(4096, 1);
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final Pattern actPattern = Pattern.compile("(?:\"act\":\")([A-Z_]+)(?:\")");
     private final String pathEnd;
 
-    public GlobalApplication(String appRootPath) {
-        this.pathEnd = appRootPath.concat("/service.io");
+    public GlobalApplication(String appContextPath) {
+        this.pathEnd = appContextPath.concat("/service.io");
     }
-    
+
     @Override
     public WebSocket createWebSocket(ProtocolHandler protocolHandler, WebSocketListener... listeners) {
         return new GlobalWebSocketImpl(protocolHandler, listeners);
@@ -55,9 +57,11 @@ public final class GlobalApplication extends WebSocketApplication {
         GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
         Session session = globalWebSocket.getSession();
         if (session != null) {
-            this.webSockets.remove(session.getUserId());
+            this.webSockets.remove(session.getSid());
+            //触发comet用户离开事件
+            CometContext cometContext = ApplicationContext.CONTEXT.getCometContext();
+            cometContext.invokeLeaveEvent(session);
         }
-        this.logger.debug("online count when close:{}", this.webSockets.size());
         socket.close();
     }
 
@@ -76,7 +80,7 @@ public final class GlobalApplication extends WebSocketApplication {
                 socket.send("{\"flag\":\"INVALID\",\"error\":\"act not exist\"}");
             } else {
                 //创建消息对象并执行服务
-                FrameworkMessageContext frameworkMessageContext = new WebSocketMessageContextImpl(this, globalWebSocket, act, text);
+                FrameworkMessageContext frameworkMessageContext = new WebSocketMessageContextImpl(this, globalWebSocket, act, text, ApplicationContext.CONTEXT.getCometContext());
                 serviceWorker.doWork(frameworkMessageContext);
             }
         } else {
@@ -95,15 +99,14 @@ public final class GlobalApplication extends WebSocketApplication {
 
     public synchronized void putGlobalWebSocket(GlobalWebSocket globalWebSocket) {
         Session session = globalWebSocket.getSession();
-        String userId = session.getUserId();
-        GlobalWebSocket other = this.webSockets.get(userId);
+        String sid = session.getSid();
+        GlobalWebSocket other = this.webSockets.get(sid);
         if (other != null) {
             //该用户已经在其他地方登录，强退
             other.send("{\"flag\":\"SUCCESS\",\"act\":\"FORCED_LOGOUT\",\"data\":[]}");
             other.close();
         }
-        this.webSockets.put(session.getUserId(), globalWebSocket);
-        this.logger.debug("online count when save:{}", this.webSockets.size());
+        this.webSockets.put(session.getSid(), globalWebSocket);
     }
 
     public GlobalWebSocket getGlobalWebSocket(String userId) {
@@ -111,7 +114,7 @@ public final class GlobalApplication extends WebSocketApplication {
     }
 
     public void removGlobalWebSocket(GlobalWebSocket globalWebSocket) {
-        this.webSockets.remove(globalWebSocket.getSession().getUserId());
+        this.webSockets.remove(globalWebSocket.getSession().getSid());
     }
 
     public void shutdown() {
@@ -121,5 +124,13 @@ public final class GlobalApplication extends WebSocketApplication {
             }
         }
         this.webSockets.clear();
+    }
+
+    @Override
+    public void push(String sid, String message) {
+        WebSocket webSocket = this.webSockets.get(sid);
+        if (webSocket != null) {
+            webSocket.send(message);
+        }
     }
 }

@@ -6,24 +6,14 @@ package com.wolf.framework.session;
  */
 public class SessionImpl implements Session {
 
-    private final String userId;
+    private final String sid;
 
-    public SessionImpl(String userId) {
-        this.userId = userId;
-    }
-
-    @Override
-    public String getUserId() {
-        return this.userId;
+    public SessionImpl(String sid) {
+        this.sid = sid;
     }
 
     @Override
     public String getSid() {
-        return this.userId;
-    }
-
-    @Override
-    public boolean isIdle() {
-        return false;
+        return this.sid;
     }
 }

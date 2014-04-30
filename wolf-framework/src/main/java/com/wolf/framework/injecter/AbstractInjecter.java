@@ -33,16 +33,16 @@ public abstract class AbstractInjecter<A extends Annotation> {
                 key = this.getObjectKey(field);
                 value = this.getObject(key);
                 if (value == null) {
-                    this.logger.error("There was an error instancing field. Cause: can not find  by class {}", key.getName());
-                    throw new RuntimeException("There wa an error instancing field in class: ".concat(clazz.getName()));
+                    this.logger.error("Error when instancing field. Cause: can not find  by class {}", key.getName());
+                    throw new RuntimeException("Error when instancing field in class: ".concat(clazz.getName()));
                 } else {
                     field.setAccessible(true);
                     try {
                         field.set(object, value);
                     } catch (IllegalArgumentException ex) {
-                        this.logger.error("There was an error instancing field:".concat(field.getName()), ex);
+                        this.logger.error("Error when instancing field:".concat(field.getName()), ex);
                     } catch (IllegalAccessException ex) {
-                        this.logger.error("There was an error instancing field:".concat(field.getName()), ex);
+                        this.logger.error("Error when instancing field:".concat(field.getName()), ex);
                     }
                 }
             }

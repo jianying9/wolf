@@ -91,8 +91,8 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             try {
                 service = clazz.newInstance();
             } catch (Exception e) {
-                this.logger.error("Error instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
-                throw new RuntimeException("There wa an error instancing class ".concat(clazz.getName()));
+                this.logger.error("Error when instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
+                throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
             }
             //注入相关对象
             Injecter injecter = this.serviceWorkerContext.getInjecter();

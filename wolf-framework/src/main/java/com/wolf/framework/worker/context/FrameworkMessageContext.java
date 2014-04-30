@@ -40,6 +40,4 @@ public interface FrameworkMessageContext extends MessageContext {
     public void createMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap);
 
     public void createPageMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap);
-
-    public void sendSystemMessage(String message);
 }

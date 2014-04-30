@@ -1,5 +1,6 @@
 package com.wolf.framework.worker.context;
 
+import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.DefaultResponseFlags;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
@@ -40,11 +41,13 @@ public abstract class AbstractMessageContext {
     private Map<String, String> mapData;
     private List<Map<String, String>> mapListData;
     //broadcast
-    protected List<String> broadcastUserIdList;
+    private List<String> broadcastUserIdList;
+    private final CometContext cometContext;
     //session
     protected Session newSession = null;
 
-    public AbstractMessageContext(String act, String json) {
+    public AbstractMessageContext(String act, String json, CometContext cometContext) {
+        this.cometContext = cometContext;
         this.act = act;
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
@@ -73,7 +76,8 @@ public abstract class AbstractMessageContext {
         }
     }
 
-    public AbstractMessageContext(String act, Map<String, String> parameterMap) {
+    public AbstractMessageContext(String act, Map<String, String> parameterMap, CometContext cometContext) {
+        this.cometContext = cometContext;
         this.act = act;
         if (parameterMap != null) {
             this.parameterMap.putAll(parameterMap);
@@ -245,5 +249,13 @@ public abstract class AbstractMessageContext {
                 .append(",\"pageNum\":").append(this.pageNum)
                 .append(",\"data\":[").append(data).append("]}");
         this.responseMessage = jsonBuilder.toString();
+    }
+
+    public final void broadcastMessage() {
+        if (this.broadcastUserIdList != null) {
+            for (String broadcastUserId : broadcastUserIdList) {
+                this.cometContext.push(broadcastUserId, this.responseMessage);
+            }
+        }
     }
 }

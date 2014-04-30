@@ -62,7 +62,7 @@ public class ServiceServlet extends HttpServlet {
             }
             String sid = parameterMap.get("sid");
             Session session = this.sessionMap.get(sid);
-            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(session, act, parameterMap);
+            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(session, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
             serviceWorker.doWork(localMessageContextImpl);
             result = localMessageContextImpl.getResponseMessage();
         }

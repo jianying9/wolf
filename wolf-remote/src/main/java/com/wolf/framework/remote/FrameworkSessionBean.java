@@ -26,7 +26,7 @@ public class FrameworkSessionBean implements FrameworkSessionBeanRemote {
             if (serviceWorker == null) {
                 result = "{\"flag\":\"INVALID\",\"error\":\"invalid act value\"}";
             } else {
-                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap);
+                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
                 serviceWorker.doWork(localMessageContextImpl);
                 result = localMessageContextImpl.getResponseMessage();
             }

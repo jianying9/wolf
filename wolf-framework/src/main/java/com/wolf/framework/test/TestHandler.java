@@ -41,7 +41,7 @@ public final class TestHandler {
             logger.error("timer:Can not find act:".concat(act));
             result = "{\"flag\":\"INVALID\",\"error\":\"act not exists\"}";
         } else {
-            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(this.session, act, parameterMap);
+            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(this.session, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
             serviceWorker.doWork(localMessageContextImpl);
             result = localMessageContextImpl.getResponseMessage();
         }
