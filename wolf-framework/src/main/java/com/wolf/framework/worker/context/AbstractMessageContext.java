@@ -41,7 +41,7 @@ public abstract class AbstractMessageContext {
     private Map<String, String> mapData;
     private List<Map<String, String>> mapListData;
     //broadcast
-    private List<String> broadcastUserIdList;
+    private List<String> broadcastSidList;
     private final CometContext cometContext;
     //session
     protected Session newSession = null;
@@ -184,18 +184,18 @@ public abstract class AbstractMessageContext {
         this.setMapListData(entityMapList);
     }
 
-    public final void addBroadcastUserId(String broadcastUserId) {
-        if (this.broadcastUserIdList == null) {
-            broadcastUserIdList = new ArrayList<String>(10);
+    public final void addBroadcastSid(String broadcastSid) {
+        if (this.broadcastSidList == null) {
+            broadcastSidList = new ArrayList<String>(10);
         }
-        this.broadcastUserIdList.add(broadcastUserId);
+        this.broadcastSidList.add(broadcastSid);
     }
 
-    public final void addBroadcastUserIdList(List<String> broadcastUserIdList) {
-        if (this.broadcastUserIdList == null) {
-            this.broadcastUserIdList = broadcastUserIdList;
+    public final void addBroadcastSidList(List<String> broadcastSidList) {
+        if (this.broadcastSidList == null) {
+            this.broadcastSidList = broadcastSidList;
         } else {
-            this.broadcastUserIdList.addAll(broadcastUserIdList);
+            this.broadcastSidList.addAll(broadcastSidList);
         }
     }
 
@@ -252,8 +252,8 @@ public abstract class AbstractMessageContext {
     }
 
     public final void broadcastMessage() {
-        if (this.broadcastUserIdList != null) {
-            for (String broadcastUserId : broadcastUserIdList) {
+        if (this.broadcastSidList != null) {
+            for (String broadcastUserId : broadcastSidList) {
                 this.cometContext.push(broadcastUserId, this.responseMessage);
             }
         }

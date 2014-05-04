@@ -42,9 +42,9 @@ public interface MessageContext {
 
     public void setFlag(String flag);
 
-    public void addBroadcastUserIdList(List<String> broadcastUserIdList);
+    public void addBroadcastSidList(List<String> broadcastSidList);
 
-    public void addBroadcastUserId(String broadcastUserId);
+    public void addBroadcastSid(String broadcastSid);
 
     public ApplicationContext getApplicationContext();
 }
