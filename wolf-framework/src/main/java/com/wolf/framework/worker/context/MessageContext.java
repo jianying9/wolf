@@ -42,9 +42,11 @@ public interface MessageContext {
 
     public void setFlag(String flag);
 
-    public void addBroadcastSidList(List<String> broadcastSidList);
-
-    public void addBroadcastSid(String broadcastSid);
-
     public ApplicationContext getApplicationContext();
+    
+    public String getResponseMessage();
+    
+    public String getResponseMessage(boolean useCache);
+    
+    public void push(String sid, String responseMessage);
 }

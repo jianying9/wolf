@@ -1,6 +1,5 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.session.Session;
 import java.util.Map;
 
@@ -8,12 +7,12 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class LocalMessageContextImpl extends AbstractMessageContext implements FrameworkMessageContext {
+public class LocalWorkerContextImpl extends AbstractWorkContext {
 
     private final Session session;
 
-    public LocalMessageContextImpl(Session session, String act, Map<String, String> parameterMap, CometContext cometContext) {
-        super(act, parameterMap, cometContext);
+    public LocalWorkerContextImpl(Session session, String act, Map<String, String> parameterMap) {
+        super(act, parameterMap);
         this.session = session;
     }
 
@@ -31,14 +30,10 @@ public class LocalMessageContextImpl extends AbstractMessageContext implements F
     }
 
     @Override
-    public void saveNewSession() {
+    public void saveNewSession(Session session) {
     }
 
     @Override
     public void removeSession() {
-    }
-
-    public String getResponseMessage() {
-        return this.responseMessage;
     }
 }

@@ -13,8 +13,8 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.FrameworkMessageContext;
-import com.wolf.framework.worker.context.WebSocketMessageContextImpl;
+import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
+import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,8 +81,8 @@ public final class GlobalApplication extends WebSocketApplication implements Com
                 socket.send("{\"flag\":\"INVALID\",\"error\":\"act not exist\"}");
             } else {
                 //创建消息对象并执行服务
-                FrameworkMessageContext frameworkMessageContext = new WebSocketMessageContextImpl(this, globalWebSocket, act, text, ApplicationContext.CONTEXT.getCometContext());
-                serviceWorker.doWork(frameworkMessageContext);
+                WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, act, text);
+                serviceWorker.doWork(workerContext);
             }
         } else {
             socket.send("{\"flag\":\"EXCEPTION\",\"error\":\"error api\"}");

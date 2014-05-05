@@ -79,7 +79,7 @@ public final class ManagementApplication extends WebSocketApplication {
             String act = parameterMap.get("act");
             if (act != null) {
                 if (act.equals("GROUPS")) {
-                    result = this.getGroups(parameterMap);
+                    result = this.getGroups();
                 } else if (act.equals("SERVICES")) {
                     //返回所有接口信息
                     result = this.getServices(parameterMap);
@@ -93,7 +93,7 @@ public final class ManagementApplication extends WebSocketApplication {
         socket.close();
     }
 
-    private String getGroups(Map<String, String> parameterMap) {
+    private String getGroups() {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         StringBuilder resultBuilder = new StringBuilder(entrySet.size() * 32);

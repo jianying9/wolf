@@ -4,7 +4,7 @@ import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.LocalMessageContextImpl;
+import com.wolf.framework.worker.context.LocalWorkerContextImpl;
 import java.util.Map;
 import org.slf4j.Logger;
 
@@ -22,9 +22,9 @@ public class AbstractTimer {
                 Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
                 logger.error("timer:Can not find act:".concat(act));
             } else {
-                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
-                serviceWorker.doWork(localMessageContextImpl);
-                result = localMessageContextImpl.getResponseMessage();
+                LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, act, parameterMap);
+                serviceWorker.doWork(localWorkerContextImpl);
+                result = localWorkerContextImpl.getResponseMessage();
             }
         } else {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);

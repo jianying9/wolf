@@ -1,6 +1,7 @@
 package com.wolf.framework.worker.workhandler;
 
 import com.wolf.framework.worker.context.FrameworkMessageContext;
+import com.wolf.framework.worker.context.WorkerContext;
 
 /**
  * JSON输出处理类
@@ -18,6 +19,9 @@ public class SendMessageWorkHandlerImpl implements WorkHandler {
     @Override
     public void execute(FrameworkMessageContext frameworkMessageContext) {
         this.nextWorkHandler.execute(frameworkMessageContext);
-        frameworkMessageContext.sendMessage();
+        String message = frameworkMessageContext.getResponseMessage();
+        WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
+        workerContext.setResponseMessage(message);
+        workerContext.sendMessage();
     }
 }

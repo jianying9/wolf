@@ -2,180 +2,87 @@ package com.wolf.framework.worker.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.DefaultResponseFlags;
-import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.service.parameter.OutputParameterHandler;
 import com.wolf.framework.session.Session;
-import com.wolf.framework.utils.JsonUtils;
-import com.wolf.framework.utils.StringUtils;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
 
 /**
  *
  * @author aladdin
  */
-public abstract class AbstractMessageContext {
+public abstract class AbstractMessageContext implements FrameworkMessageContext {
 
-    //page
-    private long pageIndex = 1;
-    private long pageSize = 15;
-    private long pageTotal = 0;
-    private long pageNum = 0;
-    //input
+    protected final WorkerContext workerContext;
     private final Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
-    private final String act;
     //message
     private String error = "";
-    protected String responseMessage = "";
-    private String flag = DefaultResponseFlags.FAILURE;
-    private Map<String, String> mapData;
-    private List<Map<String, String>> mapListData;
-    //broadcast
-    private List<String> broadcastSidList;
-    private final CometContext cometContext;
+    private String responseMessage = "";
+    protected String flag = DefaultResponseFlags.FAILURE;
+    protected final String[] returnParameter;
+    protected final Map<String, OutputParameterHandler> parameterHandlerMap;
     //session
-    protected Session newSession = null;
+    private Session newSession = null;
 
-    public AbstractMessageContext(String act, String json, CometContext cometContext) {
-        this.cometContext = cometContext;
-        this.act = act;
-        if (json.isEmpty() == false) {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = null;
-            try {
-                rootNode = mapper.readValue(json, JsonNode.class);
-            } catch (IOException e) {
-                Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-                logger.error("error json message:{}", json);
-                logger.error("parse json error:", e);
-            }
-            if (rootNode != null) {
-                //读数据
-                Map.Entry<String, JsonNode> entry;
-                String name;
-                String value;
-                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
-                while (iterator.hasNext()) {
-                    entry = iterator.next();
-                    name = entry.getKey();
-                    value = entry.getValue().getTextValue();
-                    value = StringUtils.trim(value);
-                    this.parameterMap.put(name, value);
-                }
-            }
-        }
+    public AbstractMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> parameterHandlerMap) {
+        this.workerContext = workerContext;
+        this.returnParameter = returnParameter;
+        this.parameterHandlerMap = parameterHandlerMap;
     }
 
-    public AbstractMessageContext(String act, Map<String, String> parameterMap, CometContext cometContext) {
-        this.cometContext = cometContext;
-        this.act = act;
-        if (parameterMap != null) {
-            this.parameterMap.putAll(parameterMap);
-        }
+    public abstract String createMessage();
+
+    @Override
+    public final WorkerContext getWorkerContext() {
+        return this.workerContext;
     }
 
-    public final long getPageIndex() {
-        return pageIndex;
-    }
-
-    public final void setPageIndex(long pageIndex) {
-        this.pageIndex = pageIndex > 0 ? pageIndex : 1;
-    }
-
-    public final long getPageSize() {
-        return pageSize;
-    }
-
-    public final void setPageSize(long pageSize) {
-        this.pageSize = pageSize > 0 ? pageSize : 15;
-    }
-
-    public final long getPageTotal() {
-        return pageTotal;
-    }
-
-    public final void setPageTotal(long pageTotal) {
-        this.pageTotal = pageTotal;
-        if (this.pageTotal > 0) {
-            long total = this.pageTotal;
-            long num = 0;
-            while (total > 0) {
-                num++;
-                total = total - this.pageSize;
-            }
-            this.pageNum = num;
-        }
-    }
-
-    public final long getPageNum() {
-        return pageNum;
-    }
-
-    public final String getAct() {
-        return act;
-    }
-
+    @Override
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
 
-    public final void putParameter(String name, String value) {
-        this.parameterMap.put(name, value);
-    }
-
-    public final void removeParameter(String name) {
-        this.parameterMap.remove(name);
-    }
-
+    @Override
     public final Map<String, String> getParameterMap() {
         return this.parameterMap;
     }
 
+    @Override
     public final void invalid() {
         this.flag = DefaultResponseFlags.INVALID;
     }
 
+    @Override
     public final void unlogin() {
         this.flag = DefaultResponseFlags.UNLOGIN;
     }
 
+    @Override
     public final void success() {
         this.flag = DefaultResponseFlags.SUCCESS;
     }
 
+    @Override
     public final void setFlag(String flag) {
         this.flag = flag;
     }
 
+    @Override
     public final void setError(String error) {
         this.error = error;
     }
 
-    public final void setMapData(Map<String, String> parameterMap) {
-        this.mapData = parameterMap;
-        this.mapListData = null;
-    }
-
-    public final void setMapListData(List<Map<String, String>> parameterMapList) {
-        this.mapData = null;
-        this.mapListData = parameterMapList;
-    }
-
+    @Override
     public final <T extends Entity> void setEntityData(T t) {
         Map<String, String> entityMap = t.toMap();
         this.setMapData(entityMap);
     }
 
+    @Override
     public final <T extends Entity> void setEntityListData(List<T> tList) {
         List<Map<String, String>> entityMapList = new ArrayList<Map<String, String>>(tList.size());
         for (T t : tList) {
@@ -184,78 +91,64 @@ public abstract class AbstractMessageContext {
         this.setMapListData(entityMapList);
     }
 
-    public final void addBroadcastSid(String broadcastSid) {
-        if (this.broadcastSidList == null) {
-            broadcastSidList = new ArrayList<String>(10);
-        }
-        this.broadcastSidList.add(broadcastSid);
-    }
-
-    public final void addBroadcastSidList(List<String> broadcastSidList) {
-        if (this.broadcastSidList == null) {
-            this.broadcastSidList = broadcastSidList;
-        } else {
-            this.broadcastSidList.addAll(broadcastSidList);
-        }
-    }
-
+    @Override
     public final void setNewSession(Session session) {
         this.newSession = session;
     }
 
+    @Override
     public final ApplicationContext getApplicationContext() {
         return ApplicationContext.CONTEXT;
     }
 
-    public final void createErrorMessage() {
+    @Override
+    public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"flag\":\"").append(this.flag)
-                .append("\",\"act\":\"").append(this.act)
+                .append("\",\"act\":\"").append(this.workerContext.getAct())
                 .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
+        return this.responseMessage;
     }
 
-    public final void createMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap) {
-        StringBuilder jsonBuilder = new StringBuilder(64);
-        String data = "{}";
-        if (parameterNames.length > 0) {
-            if (this.mapData != null) {
-                data = JsonUtils.mapToJSON(this.mapData, parameterNames, parameterHandlerMap);
-            } else if (this.mapListData != null) {
-                data = JsonUtils.mapListToJSON(this.mapListData, parameterNames, parameterHandlerMap);
-            }
-        }
-        jsonBuilder.append("{\"flag\":\"").append(this.flag)
-                .append("\",\"act\":\"").append(this.act)
-                .append("\",\"data\":").append(data).append('}');
-        this.responseMessage = jsonBuilder.toString();
+    @Override
+    public final Session getSession() {
+        return this.workerContext.getSession();
     }
 
-    public final void createPageMessage(String[] parameterNames, Map<String, OutputParameterHandler> parameterHandlerMap) {
-        StringBuilder jsonBuilder = new StringBuilder(128);
-        String data = "";
-        if (parameterNames.length > 0) {
-            if (this.mapData != null) {
-                data = JsonUtils.mapToJSON(this.mapData, parameterNames, parameterHandlerMap);
-            } else if (this.mapListData != null) {
-                data = JsonUtils.mapListToJSON(this.mapListData, parameterNames, parameterHandlerMap);
-            }
-        }
-        jsonBuilder.append("{\"flag\":\"").append(this.flag)
-                .append("\",\"act\":\"").append(this.act)
-                .append("\",\"pageTotal\":").append(this.pageTotal)
-                .append(",\"pageIndex\":").append(this.pageIndex)
-                .append(",\"pageSize\":").append(this.pageSize)
-                .append(",\"pageNum\":").append(this.pageNum)
-                .append(",\"data\":[").append(data).append("]}");
-        this.responseMessage = jsonBuilder.toString();
+    @Override
+    public final Session getNewSession() {
+        return this.newSession;
     }
 
-    public final void broadcastMessage() {
-        if (this.broadcastSidList != null) {
-            for (String broadcastUserId : broadcastSidList) {
-                this.cometContext.push(broadcastUserId, this.responseMessage);
-            }
+    @Override
+    public final String getResponseMessage() {
+        if (this.responseMessage.isEmpty()) {
+            this.responseMessage = this.createMessage();
         }
+        return this.responseMessage;
+    }
+
+    @Override
+    public final String getResponseMessage(boolean useCache) {
+        String result;
+        if (useCache) {
+            result = this.getResponseMessage();
+        } else {
+            this.responseMessage = this.createMessage();
+            result = this.responseMessage;
+        }
+        return result;
+    }
+
+    @Override
+    public void putParameter(String name, String value) {
+        this.parameterMap.put(name, value);
+    }
+
+    @Override
+    public void push(String sid, String responseMessage) {
+        CometContext cometContext = this.getApplicationContext().getCometContext();
+        cometContext.push(sid, responseMessage);
     }
 }

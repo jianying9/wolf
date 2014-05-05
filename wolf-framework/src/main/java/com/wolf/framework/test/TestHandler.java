@@ -7,7 +7,8 @@ import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.LocalMessageContextImpl;
+import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 import org.slf4j.Logger;
 
@@ -41,9 +42,9 @@ public final class TestHandler {
             logger.error("timer:Can not find act:".concat(act));
             result = "{\"flag\":\"INVALID\",\"error\":\"act not exists\"}";
         } else {
-            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(this.session, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
-            serviceWorker.doWork(localMessageContextImpl);
-            result = localMessageContextImpl.getResponseMessage();
+            WorkerContext workerContext = new LocalWorkerContextImpl(this.session, act, parameterMap);
+            serviceWorker.doWork(workerContext);
+            result = workerContext.getResponseMessage();
         }
         return result;
     }

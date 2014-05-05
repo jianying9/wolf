@@ -17,17 +17,14 @@ import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.InputParameterHandlerBuilder;
 import com.wolf.framework.service.parameter.OutputConfig;
 import com.wolf.framework.service.parameter.OutputParameterHandlerBuilder;
+import com.wolf.framework.worker.PageServiceWorkerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerImpl;
-import com.wolf.framework.worker.workhandler.BroadcastMessageHandlerImpl;
-import com.wolf.framework.worker.workhandler.CreateJsonMessageHandlerImpl;
-import com.wolf.framework.worker.workhandler.CreatePageJsonMessageHandlerImpl;
 import com.wolf.framework.worker.workhandler.DefaultWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ExceptionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ImportantParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.MinorParameterWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.PageParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SendMessageWorkHandlerImpl;
@@ -81,7 +78,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
             final boolean response = serviceConfig.response();
-            final boolean broadcast = serviceConfig.broadcast();
             final boolean validateSession = serviceConfig.validateSession();
             final String description = serviceConfig.description();
             final String group = serviceConfig.group();
@@ -108,44 +104,9 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //异常处理
             workHandler = new ExceptionWorkHandlerImpl(workHandler);
             //--------------------------------业务执行后处理环节------------------
-            OutputParameterHandler outputParameterHandler;
-            OutputParameterHandlerBuilder outputParameterHandlerBuilder;
-            if (response || broadcast) {
-                //是否有输出
-                //获取返回参数
-                final Map<String, OutputParameterHandler> returnParameterMap;
-                final String[] returnNames;
-                if (returnParameter.length > 0) {
-                    List<String> returnNameList = new ArrayList<String>(returnParameter.length);
-                    returnParameterMap = new HashMap<String, OutputParameterHandler>(returnParameter.length, 1);
-                    for (OutputConfig parameterConfig : returnParameter) {
-                        outputParameterHandlerBuilder = new OutputParameterHandlerBuilder(
-                                parameterConfig,
-                                this.serviceWorkerContext.getApplicationContext(),
-                                this.serviceWorkerContext.getParameterContext());
-                        outputParameterHandler = outputParameterHandlerBuilder.build();
-                        returnParameterMap.put(parameterConfig.name(), outputParameterHandler);
-                        returnNameList.add(parameterConfig.name());
-                    }
-                    returnNames = returnNameList.toArray(new String[returnNameList.size()]);
-                } else {
-                    returnParameterMap = new HashMap<String, OutputParameterHandler>(0, 1);
-                    returnNames = new String[0];
-                }
-                //生成消息
-                if (page) {
-                    workHandler = new CreatePageJsonMessageHandlerImpl(returnNames, returnParameterMap, workHandler);
-                } else {
-                    workHandler = new CreateJsonMessageHandlerImpl(returnNames, returnParameterMap, workHandler);
-                }
+            if (response) {
                 //是否响应消息
-                if (response) {
-                    workHandler = new SendMessageWorkHandlerImpl(workHandler);
-                }
-                //是否广播消息
-                if (broadcast) {
-                    workHandler = new BroadcastMessageHandlerImpl(workHandler);
-                }
+                workHandler = new SendMessageWorkHandlerImpl(workHandler);
             }
             //session处理
             switch (sessionHandleTypeEnum) {
@@ -157,10 +118,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                     break;
             }
             //-----------------------业务执行前处理环节-----------------
-            //是否获取分页参数
-            if (page) {
-                workHandler = new PageParameterWorkHandlerImpl(this.pageIndexHandler, this.pageSizeHandler, workHandler);
-            }
             //判断取值验证类型,将对应处理对象加入到处理环节
             InputParameterHandler inputParameterHandler;
             InputParameterHandlerBuilder inputParameterHandlerBuilder;
@@ -201,13 +158,39 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             if (validateSession) {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
             }
+            OutputParameterHandler outputParameterHandler;
+            OutputParameterHandlerBuilder outputParameterHandlerBuilder;
+            //获取返回参数
+            final Map<String, OutputParameterHandler> returnParameterMap;
+            final String[] returnNames;
+            if (returnParameter.length > 0) {
+                List<String> returnNameList = new ArrayList<String>(returnParameter.length);
+                returnParameterMap = new HashMap<String, OutputParameterHandler>(returnParameter.length, 1);
+                for (OutputConfig parameterConfig : returnParameter) {
+                    outputParameterHandlerBuilder = new OutputParameterHandlerBuilder(
+                            parameterConfig,
+                            this.serviceWorkerContext.getApplicationContext(),
+                            this.serviceWorkerContext.getParameterContext());
+                    outputParameterHandler = outputParameterHandlerBuilder.build();
+                    returnParameterMap.put(parameterConfig.name(), outputParameterHandler);
+                    returnNameList.add(parameterConfig.name());
+                }
+                returnNames = returnNameList.toArray(new String[returnNameList.size()]);
+            } else {
+                returnParameterMap = new HashMap<String, OutputParameterHandler>(0, 1);
+                returnNames = new String[0];
+            }
             //创建对应的工作对象
-            ServiceWorkerImpl serviceWorkerImpl = new ServiceWorkerImpl(workHandler);
+            final ServiceWorker serviceWorker;
+            if (page) {
+                serviceWorker = new PageServiceWorkerImpl(this.pageIndexHandler, this.pageSizeHandler, returnNames, returnParameterMap, workHandler);
+            } else {
+                serviceWorker = new ServiceWorkerImpl(returnNames, returnParameterMap, workHandler);
+            }
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-                serviceWorkerImpl.createInfo(actionName, group, description, importantParameter, minorParameter, returnParameter);
+                serviceWorker.createInfo(actionName, group, description, importantParameter, minorParameter, returnParameter);
             }
-            final ServiceWorker serviceWorker = serviceWorkerImpl;
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());
         } else {

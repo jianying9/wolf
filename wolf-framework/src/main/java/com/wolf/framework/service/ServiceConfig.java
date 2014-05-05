@@ -80,13 +80,6 @@ public @interface ServiceConfig {
     public boolean response() default true;
 
     /**
-     * 是否广播消息
-     *
-     * @return
-     */
-    public boolean broadcast() default false;
-
-    /**
      * 描述
      *
      * @return

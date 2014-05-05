@@ -2,7 +2,8 @@ package com.wolf.framework.remote;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.LocalMessageContextImpl;
+import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
@@ -26,9 +27,9 @@ public class FrameworkSessionBean implements FrameworkSessionBeanRemote {
             if (serviceWorker == null) {
                 result = "{\"flag\":\"INVALID\",\"error\":\"invalid act value\"}";
             } else {
-                LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(null, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
-                serviceWorker.doWork(localMessageContextImpl);
-                result = localMessageContextImpl.getResponseMessage();
+                WorkerContext workerContext = new LocalWorkerContextImpl(null, act, parameterMap);
+                serviceWorker.doWork(workerContext);
+                result = workerContext.getResponseMessage();
             }
         } else {
             result = "{\"flag\":\"FAILURE\",\"error\":\"System is not ready! Wait for a moment...\"}";

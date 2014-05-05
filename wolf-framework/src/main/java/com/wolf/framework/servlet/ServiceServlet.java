@@ -7,7 +7,8 @@ import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.LocalMessageContextImpl;
+import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -62,9 +63,9 @@ public class ServiceServlet extends HttpServlet {
             }
             String sid = parameterMap.get("sid");
             Session session = this.sessionMap.get(sid);
-            LocalMessageContextImpl localMessageContextImpl = new LocalMessageContextImpl(session, act, parameterMap, ApplicationContext.CONTEXT.getCometContext());
-            serviceWorker.doWork(localMessageContextImpl);
-            result = localMessageContextImpl.getResponseMessage();
+            WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
+            serviceWorker.doWork(workerContext);
+            result = workerContext.getResponseMessage();
         }
         HttpUtils.toWrite(request, response, result);
     }

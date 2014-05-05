@@ -2,6 +2,7 @@ package com.wolf.framework.worker.workhandler;
 
 import com.wolf.framework.session.Session;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
+import com.wolf.framework.worker.context.WorkerContext;
 
 /**
  * session读取及验证处理类
@@ -22,8 +23,10 @@ public class ValidateSessionWorkHandlerImpl implements WorkHandler {
         if (session == null) {
             //返回未登录提示，关闭连接
             frameworkMessageContext.unlogin();
-            frameworkMessageContext.createErrorMessage();
-            frameworkMessageContext.sendMessage();
+            String message = frameworkMessageContext.createErrorMessage();
+            WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
+            workerContext.setResponseMessage(message);
+            workerContext.sendMessage();
         } else {
             this.nextWorkHandler.execute(frameworkMessageContext);
         }
