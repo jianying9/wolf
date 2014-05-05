@@ -67,6 +67,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
 
     @Override
     public void onMessage(WebSocket socket, String text) {
+        this.logger.debug(text);
         GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
         //获取act
         Matcher matcher = this.actPattern.matcher(text);
