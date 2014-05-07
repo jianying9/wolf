@@ -19,5 +19,10 @@ public @interface RDaoConfig {
      *
      * @return
      */
-    String tableName();
+    public String tableName();
+    
+    /**
+     * db标识
+     */
+    public int dbIndex();
 }

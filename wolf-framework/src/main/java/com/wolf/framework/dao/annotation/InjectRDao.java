@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface InjectRDao {
 
-    Class<? extends Entity> clazz();
+    public Class<? extends Entity> clazz();
 }

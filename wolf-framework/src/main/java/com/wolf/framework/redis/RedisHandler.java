@@ -1,7 +1,7 @@
 package com.wolf.framework.redis;
 
 import com.wolf.framework.dao.condition.InquirePageContext;
-import com.wolf.framework.dao.condition.InquireRedisIndexContext;
+import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface RedisHandler {
 
-    public String getKeyIndexName();
+    public String getTableIndexKey();
 
     public String getColumnIndexName(String columnName, String columnValue);
 
@@ -39,9 +39,9 @@ public interface RedisHandler {
 
     public long count();
 
-    public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<String> inquireKeysByIndex(InquireIndexPageContext inquireRedisIndexContext);
 
-    public List<String> inquireKeysByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<String> inquireKeysByIndexDESC(InquireIndexPageContext inquireRedisIndexContext);
 
     public long countByIndex(String indexName, String indexValue);
 

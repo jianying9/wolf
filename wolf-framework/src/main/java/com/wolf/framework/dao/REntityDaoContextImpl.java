@@ -15,6 +15,7 @@ import redis.clients.jedis.JedisPool;
 public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContext<T> {
 
     private final Map<String, String> existClassMap = new HashMap<String, String>(128);
+    private final Map<Integer, String> existDbIndxMap = new HashMap<Integer, String>(128);
     //entity处理类集合
     private final Map<Class<T>, REntityDao<T>> entityDaoMap;
     //
@@ -64,20 +65,34 @@ public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContex
     }
 
     @Override
-    public void putREntityDao(Class clazz, REntityDao entityDao, String entityName) {
+    public void putREntityDao(Class clazz, REntityDao entityDao, String entityName, int dbIndex) {
+        //判断实体是否存在
         if (this.entityDaoMap.containsKey(clazz)) {
             String existClassName = this.existClassMap.get(entityName);
             if (existClassName == null) {
                 existClassName = "NULL";
             }
             StringBuilder errBuilder = new StringBuilder(1024);
-            errBuilder.append("There was an error putting REntityDao. Cause: entityName reduplicated : ")
+            errBuilder.append("Error putting REntityDao. Cause: entityName reduplicated : ")
+                    .append(entityName).append("\n").append("exist class : ").append(existClassName).append("\n")
+                    .append("this class : ").append(clazz.getName());
+            throw new RuntimeException(errBuilder.toString());
+        }
+        //判断dbIndex是否被使用
+        if (this.existDbIndxMap.containsKey(dbIndex)) {
+            String existClassName = this.existDbIndxMap.get(dbIndex);
+            if (existClassName == null) {
+                existClassName = "NULL";
+            }
+            StringBuilder errBuilder = new StringBuilder(1024);
+            errBuilder.append("Error putting REntityDao. Cause: dbIndex reduplicated : ")
                     .append(entityName).append("\n").append("exist class : ").append(existClassName).append("\n")
                     .append("this class : ").append(clazz.getName());
             throw new RuntimeException(errBuilder.toString());
         }
         this.entityDaoMap.put(clazz, entityDao);
         this.existClassMap.put(entityName, clazz.getName());
+        this.existDbIndxMap.put(dbIndex, clazz.getName());
     }
 
     @Override

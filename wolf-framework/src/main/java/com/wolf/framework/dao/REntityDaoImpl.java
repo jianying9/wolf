@@ -1,7 +1,7 @@
 package com.wolf.framework.dao;
 
 import com.wolf.framework.dao.condition.InquirePageContext;
-import com.wolf.framework.dao.condition.InquireRedisIndexContext;
+import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import com.wolf.framework.dao.delete.DeleteHandler;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import com.wolf.framework.dao.insert.InsertHandler;
@@ -137,23 +137,23 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     }
 
     @Override
-    public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext) {
+    public List<String> inquireKeysByIndex(InquireIndexPageContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndex(inquireRedisIndexContext);
     }
     
     @Override
-    public List<String> inquireKeysByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext) {
+    public List<String> inquireKeysByIndexDESC(InquireIndexPageContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndexDESC(inquireRedisIndexContext);
     }
 
     @Override
-    public List<T> inquireByIndex(InquireRedisIndexContext inquireRedisIndexContext) {
+    public List<T> inquireByIndex(InquireIndexPageContext inquireRedisIndexContext) {
         List<String> keyList = this.inquireKeysByIndex(inquireRedisIndexContext);
         return this.inquireByKeys(keyList);
     }
     
     @Override
-    public List<T> inquireByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext) {
+    public List<T> inquireByIndexDESC(InquireIndexPageContext inquireRedisIndexContext) {
         List<String> keyList = this.inquireKeysByIndexDESC(inquireRedisIndexContext);
         return this.inquireByKeys(keyList);
     }
@@ -170,7 +170,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
 
     @Override
     public void setKeySorce(Map<String, String> entityMap, long sorce) {
-        String keyIndexName = this.redisHandler.getKeyIndexName();
+        String keyIndexName = this.redisHandler.getTableIndexKey();
         entityMap.put(keyIndexName, Long.toString(sorce));
     }
     

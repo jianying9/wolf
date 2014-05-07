@@ -1,7 +1,7 @@
 package com.wolf.framework.dao;
 
 import com.wolf.framework.dao.condition.InquirePageContext;
-import com.wolf.framework.dao.condition.InquireRedisIndexContext;
+import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import java.util.List;
 import java.util.Map;
 
@@ -138,7 +138,7 @@ public interface REntityDao<T extends Entity> {
      * @param inquireRedisIndexContext
      * @return
      */
-    public List<String> inquireKeysByIndex(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<String> inquireKeysByIndex(InquireIndexPageContext inquireRedisIndexContext);
 
     /**
      * 根据得分倒序索引条件查询主键集合
@@ -146,7 +146,7 @@ public interface REntityDao<T extends Entity> {
      * @param inquireRedisIndexContext
      * @return
      */
-    public List<String> inquireKeysByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<String> inquireKeysByIndexDESC(InquireIndexPageContext inquireRedisIndexContext);
 
     /**
      * 根据得分正序索引条件查询
@@ -154,7 +154,7 @@ public interface REntityDao<T extends Entity> {
      * @param inquireRedisIndexContext
      * @return
      */
-    public List<T> inquireByIndex(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<T> inquireByIndex(InquireIndexPageContext inquireRedisIndexContext);
 
     /**
      * 根据得分倒序索引条件查询
@@ -162,7 +162,7 @@ public interface REntityDao<T extends Entity> {
      * @param inquireRedisIndexContext
      * @return
      */
-    public List<T> inquireByIndexDESC(InquireRedisIndexContext inquireRedisIndexContext);
+    public List<T> inquireByIndexDESC(InquireIndexPageContext inquireRedisIndexContext);
 
     /**
      * 索引统计

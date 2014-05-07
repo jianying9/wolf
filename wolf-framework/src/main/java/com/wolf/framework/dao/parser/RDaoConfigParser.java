@@ -42,6 +42,8 @@ public class RDaoConfigParser<T extends Entity> {
             final RDaoConfig rDaoConfig = clazz.getAnnotation(RDaoConfig.class);
             //3.获取实体标识
             final String tableName = rDaoConfig.tableName();
+            //4.获取dbIndex
+            final int dbIndex = rDaoConfig.dbIndex();
             //5获取该实体所有字段集合
             Field[] fieldTemp = clazz.getDeclaredFields();
             //ColumnHandler
@@ -80,12 +82,13 @@ public class RDaoConfigParser<T extends Entity> {
             }
             REntityDaoBuilder<T> entityDaoBuilder = new REntityDaoBuilder<T>(
                     tableName,
+                    dbIndex,
                     keyHandler,
                     columnHandlerList,
                     clazz,
                     this.entityDaoContext);
             REntityDao<T> entityDao = entityDaoBuilder.build();
-            entityDaoContext.putREntityDao(clazz, entityDao, tableName);
+            entityDaoContext.putREntityDao(clazz, entityDao, tableName, dbIndex);
             this.logger.debug("--parse REntity DAO {} finished--", clazz.getName());
         } else {
             this.logger.error("--parse REntity DAO {} missing annotation RDaoConfig--", clazz.getName());
