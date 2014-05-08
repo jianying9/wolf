@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 /**
  *
@@ -40,6 +41,24 @@ public class RedisHandlerImpl implements RedisHandler {
         }
         this.tableIndexKey = "KEY" + this.connector + tableName;
         this.columnIndexKeyPrefix = "INDEX" + this.connector + tableName + this.connector;
+        //验证
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            jedis.select(this.dbIndex);
+            String thisTableName = jedis.get("TABLE_NAME");
+            if(thisTableName == null) {
+                jedis.set("TABLE_NAME", tableName);
+            } else {
+                if(thisTableName.equals(tableName) == false) {
+                    throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " is used by " + thisTableName);
+                }
+            }
+            
+        } catch (JedisDataException ex) {
+            throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " invalid");
+        } finally {
+            this.jedisPool.returnResource(jedis);
+        }
     }
 
     @Override
