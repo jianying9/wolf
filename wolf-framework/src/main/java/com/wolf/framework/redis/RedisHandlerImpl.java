@@ -85,6 +85,7 @@ public class RedisHandlerImpl implements RedisHandler {
         String keyName = this.keyHandler.getColumnName();
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
+        jedis.select(this.dbIndex);
         try {
             //查询
             for (String keyValue : keyValueList) {
