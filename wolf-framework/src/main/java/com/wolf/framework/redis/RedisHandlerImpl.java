@@ -82,8 +82,8 @@ public final class RedisHandlerImpl implements RedisHandler {
         try {
             //查询
             jedis.select(0);
-            Double sorce = jedis.zscore(this.tableIndexKey, keyValue);
-            if (sorce != null) {
+            Double score = jedis.zscore(this.tableIndexKey, keyValue);
+            if (score != null) {
                 result = true;
             }
         } finally {
@@ -97,8 +97,8 @@ public final class RedisHandlerImpl implements RedisHandler {
         Map<String, String> result = null;
         //查询
         jedis.select(0);
-        Double sorce = jedis.zscore(this.tableIndexKey, keyValue);
-        if (sorce != null) {
+        Double score = jedis.zscore(this.tableIndexKey, keyValue);
+        if (score != null) {
             jedis.select(this.dbIndex);
             result = jedis.hgetAll(keyValue);
             //redis key 存在，保存keyValue
@@ -181,14 +181,14 @@ public final class RedisHandlerImpl implements RedisHandler {
                     }
                 }
             }
+            //保存key索引
+            score = entityMap.get(this.tableIndexKey);
+            if (score == null) {
+                jedis.zadd(this.tableIndexKey, defaultScore, keyValue);
+            } else {
+                jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
+            }
             if (insertMap.isEmpty() == false) {
-                //保存key索引
-                score = entityMap.get(this.tableIndexKey);
-                if (score == null) {
-                    jedis.zadd(this.tableIndexKey, defaultScore, keyValue);
-                } else {
-                    jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
-                }
                 //插入到对应的db
                 jedis.select(this.dbIndex);
                 jedis.hmset(keyValue, insertMap);
@@ -243,14 +243,14 @@ public final class RedisHandlerImpl implements RedisHandler {
                         }
                     }
                 }
+                //保存key索引
+                score = entityMap.get(this.tableIndexKey);
+                if (score == null) {
+                    jedis.zadd(this.tableIndexKey, defaultScore, keyValue);
+                } else {
+                    jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
+                }
                 if (insertMap.isEmpty() == false) {
-                    //保存key索引
-                    score = entityMap.get(this.tableIndexKey);
-                    if (score == null) {
-                        jedis.zadd(this.tableIndexKey, defaultScore, keyValue);
-                    } else {
-                        jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
-                    }
                     //插入到对应的db
                     jedis.select(this.dbIndex);
                     jedis.hmset(keyValue, insertMap);
