@@ -14,6 +14,8 @@ public interface RedisHandler {
     public String getTableIndexKey();
 
     public String getColumnIndexName(String columnName, String columnValue);
+    
+    public boolean exist(String keyValue);
 
     public Map<String, String> inquireByKey(String keyValue);
 

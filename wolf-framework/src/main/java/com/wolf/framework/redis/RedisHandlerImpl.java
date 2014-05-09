@@ -18,7 +18,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
  *
  * @author aladdin
  */
-public class RedisHandlerImpl implements RedisHandler {
+public final class RedisHandlerImpl implements RedisHandler {
 
     private final int dbIndex;
     private final JedisPool jedisPool;
@@ -46,14 +46,14 @@ public class RedisHandlerImpl implements RedisHandler {
         try {
             jedis.select(this.dbIndex);
             String thisTableName = jedis.get("TABLE_NAME");
-            if(thisTableName == null) {
+            if (thisTableName == null) {
                 jedis.set("TABLE_NAME", tableName);
             } else {
-                if(thisTableName.equals(tableName) == false) {
+                if (thisTableName.equals(tableName) == false) {
                     throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " is used by " + thisTableName);
                 }
             }
-            
+
         } catch (JedisDataException ex) {
             throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " invalid");
         } finally {
@@ -75,21 +75,45 @@ public class RedisHandlerImpl implements RedisHandler {
     }
 
     @Override
+    public boolean exist(String keyValue) {
+        boolean result = false;
+        //开启连接
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            //查询
+            jedis.select(0);
+            Double sorce = jedis.zscore(this.tableIndexKey, keyValue);
+            if (sorce != null) {
+                result = true;
+            }
+        } finally {
+            //关闭连接
+            this.jedisPool.returnResource(jedis);
+        }
+        return result;
+    }
+
+    private Map<String, String> localInquireByKey(String keyValue, Jedis jedis) {
+        Map<String, String> result = null;
+        //查询
+        jedis.select(0);
+        Double sorce = jedis.zscore(this.tableIndexKey, keyValue);
+        if (sorce != null) {
+            jedis.select(this.dbIndex);
+            result = jedis.hgetAll(keyValue);
+            //redis key 存在，保存keyValue
+            result.put(this.keyHandler.getColumnName(), keyValue);
+        }
+        return result;
+    }
+
+    @Override
     public Map<String, String> inquireByKey(String keyValue) {
         Map<String, String> result = null;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(this.dbIndex);
         try {
-            //查询
-            result = jedis.hgetAll(keyValue);
-            if (result.isEmpty()) {
-                //redis key 不存在
-                result = null;
-            } else {
-                //redis key 存在，保存keyValue
-                result.put(this.keyHandler.getColumnName(), keyValue);
-            }
+            result = this.localInquireByKey(keyValue, jedis);
         } finally {
             //关闭连接
             this.jedisPool.returnResource(jedis);
@@ -101,17 +125,13 @@ public class RedisHandlerImpl implements RedisHandler {
     public List<Map<String, String>> inquireBykeys(List<String> keyValueList) {
         List<Map<String, String>> resultList = new ArrayList<Map<String, String>>(keyValueList.size());
         Map<String, String> result;
-        String keyName = this.keyHandler.getColumnName();
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(this.dbIndex);
         try {
             //查询
             for (String keyValue : keyValueList) {
-                result = jedis.hgetAll(keyValue);
-                if (result.isEmpty() == false) {
-                    //redis key 存在，保存keyValue
-                    result.put(keyName, keyValue);
+                result = this.localInquireByKey(keyValue, jedis);
+                if (result != null) {
                     resultList.add(result);
                 }
             }
@@ -138,9 +158,9 @@ public class RedisHandlerImpl implements RedisHandler {
         Map<String, String> insertMap = new HashMap<String, String>(entityMap.size(), 1);
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
             //过滤多余的列，并更新index
+            jedis.select(0);
             for (RColumnHandler rColumnHandler : this.columnHandlerList) {
                 columnName = rColumnHandler.getColumnName();
                 columnValue = entityMap.get(columnName);
@@ -263,8 +283,8 @@ public class RedisHandlerImpl implements RedisHandler {
             Map<String, String> updateMap = new HashMap<String, String>(4, 1);
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
-            jedis.select(0);
             try {
+                jedis.select(0);
                 for (RColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
@@ -300,17 +320,16 @@ public class RedisHandlerImpl implements RedisHandler {
                         }
                     }
                 }
+                //保存key索引
+                score = entityMap.get(this.tableIndexKey);
+                if (score != null) {
+                    jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
+                }
                 if (updateMap.isEmpty() == false) {
-                    //保存key索引
-                    score = entityMap.get(this.tableIndexKey);
-                    if (score != null) {
-                        jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
-                    }
                     //更新到对应的db
                     jedis.select(this.dbIndex);
                     jedis.hmset(keyValue, updateMap);
                 }
-
             } finally {
                 //关闭连接
                 this.jedisPool.returnResource(jedis);
@@ -341,9 +360,9 @@ public class RedisHandlerImpl implements RedisHandler {
                 keyValue = entityMap.get(keyName);
                 if (keyValue != null) {
                     //keyValue 存在,查询旧记录
-                    oldEntityMap = this.inquireByKey(keyValue);
-                    jedis.select(0);
+                    oldEntityMap = this.localInquireByKey(keyValue, jedis);
                     if (oldEntityMap != null) {
+                        jedis.select(0);
                         defaultScore = System.currentTimeMillis();
                         updateMap.clear();
                         //比对变化，更新数据及索引
@@ -382,12 +401,12 @@ public class RedisHandlerImpl implements RedisHandler {
                                 }
                             }
                         }
+                        //保存key索引
+                        score = entityMap.get(this.tableIndexKey);
+                        if (score != null) {
+                            jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
+                        }
                         if (updateMap.isEmpty() == false) {
-                            //保存key索引
-                            score = entityMap.get(this.tableIndexKey);
-                            if (score != null) {
-                                jedis.zadd(this.tableIndexKey, Long.parseLong(score), keyValue);
-                            }
                             //更新到对应的db
                             jedis.select(this.dbIndex);
                             jedis.hmset(keyValue, updateMap);
@@ -405,16 +424,16 @@ public class RedisHandlerImpl implements RedisHandler {
     public void delete(String keyValue) {
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
             //查询
-            Map<String, String> entityMap = jedis.hgetAll(keyValue);
+            Map<String, String> entityMap = this.localInquireByKey(keyValue, jedis);
             if (entityMap != null) {
                 //删除相关索引
                 String columnValue;
                 String columnName;
                 String columnIndexKey;
                 StringBuilder strBuilder = new StringBuilder(32);
+                jedis.select(0);
                 for (RColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
@@ -452,7 +471,7 @@ public class RedisHandlerImpl implements RedisHandler {
             //删除
             for (String keyValue : keyValueList) {
                 //查询
-                entityMap = jedis.hgetAll(keyValue);
+                entityMap = this.localInquireByKey(keyValue, jedis);
                 if (entityMap != null) {
                     jedis.select(0);
                     //删除索引列
@@ -490,8 +509,8 @@ public class RedisHandlerImpl implements RedisHandler {
         long end = pageIndex * pageSize - 1;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
+            jedis.select(0);
             Set<String> keySet = jedis.zrange(this.tableIndexKey, start, end);
             resultList = new ArrayList<String>(keySet.size());
             resultList.addAll(keySet);
@@ -511,8 +530,8 @@ public class RedisHandlerImpl implements RedisHandler {
         long end = pageIndex * pageSize - 1;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
+            jedis.select(0);
             Set<String> keySet = jedis.zrevrange(this.tableIndexKey, start, end);
             resultList = new ArrayList<String>(keySet.size());
             resultList.addAll(keySet);
@@ -528,8 +547,8 @@ public class RedisHandlerImpl implements RedisHandler {
         long result;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
+            jedis.select(0);
             result = jedis.zcard(this.tableIndexKey);
         } finally {
             //关闭连接
@@ -555,8 +574,8 @@ public class RedisHandlerImpl implements RedisHandler {
             long end = pageIndex * pageSize - 1;
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
-            jedis.select(0);
             try {
+                jedis.select(0);
                 Set<String> keySet = jedis.zrange(columnIndexKey, start, end);
                 resultList = new ArrayList<String>(keySet.size());
                 resultList.addAll(keySet);
@@ -587,8 +606,8 @@ public class RedisHandlerImpl implements RedisHandler {
             long end = pageIndex * pageSize - 1;
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
-            jedis.select(0);
             try {
+                jedis.select(0);
                 Set<String> keySet = jedis.zrevrange(columnIndexKey, start, end);
                 resultList = new ArrayList<String>(keySet.size());
                 resultList.addAll(keySet);
@@ -613,8 +632,8 @@ public class RedisHandlerImpl implements RedisHandler {
             String columnIndexKey = strBuilder.toString();
             //开启连接
             Jedis jedis = this.jedisPool.getResource();
-            jedis.select(0);
             try {
+                jedis.select(0);
                 result = jedis.zcard(columnIndexKey);
             } finally {
                 //关闭连接
@@ -634,8 +653,8 @@ public class RedisHandlerImpl implements RedisHandler {
         }
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(this.dbIndex);
         try {
+            jedis.select(this.dbIndex);
             result = jedis.hincrBy(keyValue, columnName, value);
         } finally {
             //关闭连接
@@ -648,9 +667,9 @@ public class RedisHandlerImpl implements RedisHandler {
     public void updateKeySorce(String keyValue, long sorce) {
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
-        jedis.select(0);
         try {
             //保存key索引
+            jedis.select(0);
             jedis.zadd(this.tableIndexKey, sorce, keyValue);
         } finally {
             //关闭连接

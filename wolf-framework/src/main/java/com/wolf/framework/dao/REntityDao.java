@@ -11,6 +11,13 @@ import java.util.Map;
  * @author aladdin
  */
 public interface REntityDao<T extends Entity> {
+    
+    /**
+     * 判断主键是否存在
+     * @param keyValue
+     * @return 
+     */
+    public boolean exist(String keyValue);
 
     /**
      * 根据主键查询
@@ -18,7 +25,7 @@ public interface REntityDao<T extends Entity> {
      * @param key
      * @return
      */
-    public T inquireByKey(final String keyValue);
+    public T inquireByKey(String keyValue);
 
     /**
      * 根据主键集合查询
@@ -26,14 +33,14 @@ public interface REntityDao<T extends Entity> {
      * @param keyValues
      * @return
      */
-    public List<T> inquireByKeys(final List<String> keyValues);
+    public List<T> inquireByKeys(List<String> keyValues);
 
     /**
      * 插入,返回keyValue
      *
      * @param entityMap
      */
-    public String insert(final Map<String, String> entityMap);
+    public String insert(Map<String, String> entityMap);
 
     /**
      * 插入，并返回新增实体
@@ -41,28 +48,28 @@ public interface REntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public T insertAndInquire(final Map<String, String> entityMap);
+    public T insertAndInquire(Map<String, String> entityMap);
 
     /**
      * 批量插入，无缓存
      *
      * @param entityMapList
      */
-    public void batchInsert(final List<Map<String, String>> entityMapList);
+    public void batchInsert(List<Map<String, String>> entityMapList);
 
     /**
      * 更新,返回keyValue
      *
      * @param entityMap
      */
-    public String update(final Map<String, String> entityMap);
+    public String update(Map<String, String> entityMap);
 
     /**
      * 批量更新
      *
      * @param entityMapList
      */
-    public void batchUpdate(final List<Map<String, String>> entityMapList);
+    public void batchUpdate(List<Map<String, String>> entityMapList);
 
     /**
      * 更新并返回更新结果
@@ -91,7 +98,7 @@ public interface REntityDao<T extends Entity> {
      *
      * @param keyValues
      */
-    public void batchDelete(final List<String> keyValues);
+    public void batchDelete(List<String> keyValues);
 
     /**
      * 根据得分正序全表分页查询主键
@@ -171,7 +178,7 @@ public interface REntityDao<T extends Entity> {
      * @param indexValue
      * @return
      */
-    public long countByIndex(final String indexName, final String indexValue);
+    public long countByIndex(String indexName, String indexValue);
 
     /**
      * 增加某number类型且非索引列的值

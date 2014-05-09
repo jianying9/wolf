@@ -12,6 +12,7 @@ import com.wolf.framework.dao.update.UpdateHandler;
 import com.wolf.framework.dao.update.UpdateRedisHandlerImpl;
 import com.wolf.framework.redis.RedisHandler;
 import com.wolf.framework.redis.RedisHandlerImpl;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,11 @@ public final class REntityDaoBuilder<T extends Entity> {
         this.tableName = tableName;
         this.dbIndex = dbIndex;
         this.keyHandler = keyHandler;
-        this.columnHandlerList = columnHandlerList;
+        if (columnHandlerList == null) {
+            this.columnHandlerList = new ArrayList<RColumnHandler>(0);
+        } else {
+            this.columnHandlerList = columnHandlerList;
+        }
         this.clazz = clazz;
         this.entityDaoContext = entityDaoContext;
     }
@@ -54,9 +59,6 @@ public final class REntityDaoBuilder<T extends Entity> {
         }
         if (this.keyHandler == null) {
             throw new RuntimeException("Error when building REntityDao. Cause: key is null");
-        }
-        if (this.columnHandlerList == null || this.columnHandlerList.isEmpty()) {
-            throw new RuntimeException("Error building REntityDao. Cause: columns null or empty");
         }
         //初始化redis数据库处理对象
         final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.dbIndex, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList);

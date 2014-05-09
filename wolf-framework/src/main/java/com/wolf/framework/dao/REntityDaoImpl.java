@@ -31,6 +31,11 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     }
 
     @Override
+    public boolean exist(String keyValue) {
+        return this.redisHandler.exist(keyValue);
+    }
+
+    @Override
     public T inquireByKey(String keyValue) {
         return this.inquireByKeyHandler.inquireByKey(keyValue);
     }
@@ -113,7 +118,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public List<String> inquireKeys(InquirePageContext inquirePageContext) {
         return this.redisHandler.inquireKeys(inquirePageContext);
     }
-    
+
     @Override
     public List<String> inquireKeysDESC(InquirePageContext inquirePageContext) {
         return this.redisHandler.inquireKeysDESC(inquirePageContext);
@@ -124,7 +129,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
         List<String> keyList = this.inquireKeys(inquirePageContext);
         return this.inquireByKeys(keyList);
     }
-    
+
     @Override
     public List<T> inquireDESC(InquirePageContext inquirePageContext) {
         List<String> keyList = this.inquireKeysDESC(inquirePageContext);
@@ -140,7 +145,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public List<String> inquireKeysByIndex(InquireIndexPageContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndex(inquireRedisIndexContext);
     }
-    
+
     @Override
     public List<String> inquireKeysByIndexDESC(InquireIndexPageContext inquireRedisIndexContext) {
         return this.redisHandler.inquireKeysByIndexDESC(inquireRedisIndexContext);
@@ -151,7 +156,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
         List<String> keyList = this.inquireKeysByIndex(inquireRedisIndexContext);
         return this.inquireByKeys(keyList);
     }
-    
+
     @Override
     public List<T> inquireByIndexDESC(InquireIndexPageContext inquireRedisIndexContext) {
         List<String> keyList = this.inquireKeysByIndexDESC(inquireRedisIndexContext);
@@ -173,7 +178,7 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
         String keyIndexName = this.redisHandler.getTableIndexKey();
         entityMap.put(keyIndexName, Long.toString(sorce));
     }
-    
+
     @Override
     public void updateKeySorce(String keyValue, long sorce) {
         this.redisHandler.updateKeySorce(keyValue, sorce);
