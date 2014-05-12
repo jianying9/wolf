@@ -2,6 +2,7 @@ package com.wolf.framework.service.parameter;
 
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.data.DataClassEnum;
 import static com.wolf.framework.data.DataClassEnum.DATE;
 import static com.wolf.framework.data.DataClassEnum.JSON;
 import static com.wolf.framework.data.DataClassEnum.NUMBER;
@@ -57,7 +58,7 @@ public class OutputParameterHandlerBuilder {
         //基本数据类型
         TypeEnum typeEnum = this.outputConfig.typeEnum();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(typeEnum);
-        if (dataHandler == null) {
+        if (dataHandler == null && typeEnum.getDataClassEnum().equals(DataClassEnum.JSON) == false) {
             throw new RuntimeException("Error when building OutputParameterHandler. Cause: could not find DataHandler:" + typeEnum.name());
         }
         switch (typeEnum.getDataClassEnum()) {

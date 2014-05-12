@@ -3,6 +3,7 @@ package com.wolf.framework.worker;
 import com.wolf.framework.service.parameter.InputConfig;
 import com.wolf.framework.service.parameter.OutputConfig;
 import com.wolf.framework.worker.context.WorkerContext;
+import java.util.Map;
 
 /**
  * 服务工作对象接口
@@ -20,7 +21,7 @@ public interface ServiceWorker {
             InputConfig[] minorParameter,
             OutputConfig[] returnParameter);
 
-    public String getInfo();
+    public Map<String, String> getInfoMap();
 
     public String getGroup();
 

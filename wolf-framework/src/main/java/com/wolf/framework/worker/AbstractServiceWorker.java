@@ -7,6 +7,7 @@ import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,9 +20,12 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     protected final String[] returnParameter;
     protected final Map<String, OutputParameterHandler> fieldHandlerMap;
     private final WorkHandler nextWorkHandler;
-    private String info = "";
+    private String act = "";
     private String group = "";
     private String description = "";
+    private String importantParameterInfo = "[]";
+    private String minorParameterInfo = "[]";
+    private String returnParameterInfo = "[]";
 
     public AbstractServiceWorker(String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
         this.returnParameter = returnParameter;
@@ -38,12 +42,20 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     }
 
     @Override
-    public final String getInfo() {
-        return info;
+    public Map<String, String> getInfoMap() {
+        Map<String, String> infoMap = new HashMap<String, String>(8, 1);
+        infoMap.put("actionName", this.act);
+        infoMap.put("group", this.group);
+        infoMap.put("description", this.description);
+        infoMap.put("importantParameter", this.importantParameterInfo);
+        infoMap.put("minorParameter", this.minorParameterInfo);
+        infoMap.put("returnParameter", this.returnParameterInfo);
+        return infoMap;
     }
 
     private String getInputParameterJson(InputConfig[] parameters) {
         StringBuilder jsonBuilder = new StringBuilder(64);
+        jsonBuilder.append('[');
         for (InputConfig parameterConfig : parameters) {
             jsonBuilder.append("{\"name\":\"").append(parameterConfig)
                     .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
@@ -53,11 +65,13 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         if (jsonBuilder.length() > 0) {
             jsonBuilder.setLength(jsonBuilder.length() - 1);
         }
+        jsonBuilder.append(']');
         return jsonBuilder.toString();
     }
 
     private String getOutputParameterJson(OutputConfig[] parameters) {
         StringBuilder jsonBuilder = new StringBuilder(64);
+        jsonBuilder.append('[');
         for (OutputConfig parameterConfig : parameters) {
             jsonBuilder.append("{\"name\":\"").append(parameterConfig)
                     .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
@@ -74,6 +88,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         if (jsonBuilder.length() > 0) {
             jsonBuilder.setLength(jsonBuilder.length() - 1);
         }
+        jsonBuilder.append(']');
         return jsonBuilder.toString();
     }
 
@@ -86,21 +101,13 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
             OutputConfig[] returnParameter) {
         this.group = group;
         this.description = description;
+        this.act = act;
         //构造重要参数信息
-        String importantData = this.getInputParameterJson(importantParameter);
+        this.importantParameterInfo = this.getInputParameterJson(importantParameter);
         //构造次要参数信息
-        String minorData = this.getInputParameterJson(minorParameter);
+        this.minorParameterInfo = this.getInputParameterJson(minorParameter);
         //构造返回参数信息
-        String returnData = this.getOutputParameterJson(returnParameter);
-        StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"actionName\":\"").append(act);
-        jsonBuilder.append("\",\"group\":\"").append(group);
-        jsonBuilder.append("\",\"description\":\"").append(description);
-        jsonBuilder.append("\",\"importantParameter\":[").append(importantData);
-        jsonBuilder.append("],\"minorParameter\":[").append(minorData);
-        jsonBuilder.append("],\"returnParameter\":[").append(returnData);
-        jsonBuilder.append("]}");
-        this.info = jsonBuilder.toString();
+        this.returnParameterInfo = this.getOutputParameterJson(returnParameter);
     }
 
     @Override

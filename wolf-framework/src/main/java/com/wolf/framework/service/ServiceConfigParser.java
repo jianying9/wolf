@@ -188,7 +188,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 serviceWorker = new ServiceWorkerImpl(returnNames, returnParameterMap, workHandler);
             }
             //INFO,开发模式才能会返回接口信息
-            if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
+            if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
                 serviceWorker.createInfo(actionName, group, description, importantParameter, minorParameter, returnParameter);
             }
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());

@@ -38,6 +38,7 @@ import com.wolf.framework.worker.ServiceWorkerContextImpl;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -91,8 +92,14 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
         if (packages != null) {
             String[] packageNames = packages.split(",");
+            List<String> packageNameList = new ArrayList<String>(packageNames.length);
+            packageNameList.addAll(Arrays.asList(packageNames));
+            //如果是开发模式,则加入接口文档接口
+            if(compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
+                packageNameList.add("com.wolf.framework.doc");
+            }
             final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            final List<String> classNameList = new ClassParser().findClass(classloader, packageNames);
+            final List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
             try {
                 for (String className : classNameList) {
                     this.parseClass(classloader, className);

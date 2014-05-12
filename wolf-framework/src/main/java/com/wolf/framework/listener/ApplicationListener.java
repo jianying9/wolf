@@ -7,7 +7,6 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.websocket.GlobalApplication;
-import com.wolf.framework.websocket.ManagementApplication;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import javax.servlet.annotation.WebListener;
 public class ApplicationListener implements ServletContextListener {
 
     private static GlobalApplication APP = null;
-    private static ManagementApplication MAPP = null;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -84,12 +82,6 @@ public class ApplicationListener implements ServletContextListener {
         WebSocketEngine.getEngine().register(ApplicationListener.APP);
         //注册推送服务
         ApplicationContext.CONTEXT.getCometContext().addCometHandler(ApplicationListener.APP);
-        //开启开发模式
-        String compileModel = parameterMap.get(FrameworkConfig.COMPILE_MODEL);
-        if (compileModel != null && compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            ApplicationListener.MAPP = new ManagementApplication(appContextPath);
-            WebSocketEngine.getEngine().register(ApplicationListener.MAPP);
-        }
     }
 
     @Override
@@ -97,9 +89,6 @@ public class ApplicationListener implements ServletContextListener {
         if (ApplicationListener.APP != null) {
             WebSocketEngine.getEngine().unregister(ApplicationListener.APP);
             ApplicationListener.APP.shutdown();
-        }
-        if (ApplicationListener.MAPP != null) {
-            WebSocketEngine.getEngine().unregister(ApplicationListener.MAPP);
         }
         ApplicationContext.CONTEXT.contextDestroyed();
     }

@@ -22,11 +22,11 @@ public final class ClassParser {
 
     final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
 
-    public List<String> findClass(final ClassLoader classloader, final String[] packageNames) {
+    public List<String> findClass(final ClassLoader classloader, final List<String> packageNameList) {
         final List<String> classNameList = new ArrayList<String>(200);
         Enumeration<URL> eUrl;
         try {
-            for (String packageName : packageNames) {
+            for (String packageName : packageNameList) {
                 //获取有效的url
                 eUrl = classloader.getResources(this.getPackagePath(packageName));
                 if (eUrl != null) {
