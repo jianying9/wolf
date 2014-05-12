@@ -57,12 +57,12 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         StringBuilder jsonBuilder = new StringBuilder(64);
         jsonBuilder.append('[');
         for (InputConfig parameterConfig : parameters) {
-            jsonBuilder.append("{\"name\":\"").append(parameterConfig)
+            jsonBuilder.append("{\"name\":\"").append(parameterConfig.name())
                     .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
                     .append("\",\"description\":\"").append(parameterConfig.desc())
                     .append("\"}").append(',');
         }
-        if (jsonBuilder.length() > 0) {
+        if (jsonBuilder.length() > 1) {
             jsonBuilder.setLength(jsonBuilder.length() - 1);
         }
         jsonBuilder.append(']');
@@ -73,7 +73,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         StringBuilder jsonBuilder = new StringBuilder(64);
         jsonBuilder.append('[');
         for (OutputConfig parameterConfig : parameters) {
-            jsonBuilder.append("{\"name\":\"").append(parameterConfig)
+            jsonBuilder.append("{\"name\":\"").append(parameterConfig.name())
                     .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
                     .append("\",\"description\":\"").append(parameterConfig.desc())
                     .append("\",\"filter\":\"");
@@ -85,7 +85,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
             }
             jsonBuilder.append("\"}").append(',');
         }
-        if (jsonBuilder.length() > 0) {
+        if (jsonBuilder.length() > 1) {
             jsonBuilder.setLength(jsonBuilder.length() - 1);
         }
         jsonBuilder.append(']');
