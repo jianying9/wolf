@@ -1,8 +1,8 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -18,22 +18,21 @@ import java.util.Map;
 public abstract class AbstractServiceWorker implements ServiceWorker {
 
     protected final String[] returnParameter;
-    protected final Map<String, OutputParameterHandler> fieldHandlerMap;
+    protected final Map<String, ResponseParameterHandler> fieldHandlerMap;
     private final WorkHandler nextWorkHandler;
     private String act = "";
     private String group = "";
-    private String description = "";
-    private String importantParameterInfo = "[]";
-    private String minorParameterInfo = "[]";
-    private String returnParameterInfo = "[]";
+    private String desc = "";
+    private String requestConfigs = "[]";
+    private String responseConfigs = "[]";
 
-    public AbstractServiceWorker(String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
+    public AbstractServiceWorker(String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
         this.returnParameter = returnParameter;
         this.fieldHandlerMap = fieldHandlerMap;
         this.nextWorkHandler = nextWorkHandler;
     }
 
-    protected abstract FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap);
+    protected abstract FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap);
 
     @Override
     public void doWork(WorkerContext workerContext) {
@@ -46,20 +45,20 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         Map<String, String> infoMap = new HashMap<String, String>(8, 1);
         infoMap.put("actionName", this.act);
         infoMap.put("group", this.group);
-        infoMap.put("description", this.description);
-        infoMap.put("importantParameter", this.importantParameterInfo);
-        infoMap.put("minorParameter", this.minorParameterInfo);
-        infoMap.put("returnParameter", this.returnParameterInfo);
+        infoMap.put("desc", this.desc);
+        infoMap.put("requestConfigs", this.requestConfigs);
+        infoMap.put("responseConfigs", this.responseConfigs);
         return infoMap;
     }
 
-    private String getInputParameterJson(InputConfig[] parameters) {
+    private String getRequestParameterJson(RequestConfig[] requestConfigs) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         jsonBuilder.append('[');
-        for (InputConfig parameterConfig : parameters) {
-            jsonBuilder.append("{\"name\":\"").append(parameterConfig.name())
-                    .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
-                    .append("\",\"description\":\"").append(parameterConfig.desc())
+        for (RequestConfig requestConfig : requestConfigs) {
+            jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
+                    .append("\",\"must\":\"").append(requestConfig.must())
+                    .append("\",\"type\":\"").append(requestConfig.typeEnum().name())
+                    .append("\",\"desc\":\"").append(requestConfig.desc())
                     .append("\"}").append(',');
         }
         if (jsonBuilder.length() > 1) {
@@ -69,13 +68,13 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         return jsonBuilder.toString();
     }
 
-    private String getOutputParameterJson(OutputConfig[] parameters) {
+    private String getResponseParameterJson(ResponseConfig[] responseConfigs) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         jsonBuilder.append('[');
-        for (OutputConfig parameterConfig : parameters) {
+        for (ResponseConfig parameterConfig : responseConfigs) {
             jsonBuilder.append("{\"name\":\"").append(parameterConfig.name())
                     .append("\",\"type\":\"").append(parameterConfig.typeEnum().name())
-                    .append("\",\"description\":\"").append(parameterConfig.desc())
+                    .append("\",\"desc\":\"").append(parameterConfig.desc())
                     .append("\",\"filter\":\"");
             if (parameterConfig.filterTypes().length > 0) {
                 for (FilterTypeEnum filterTypeEnum : parameterConfig.filterTypes()) {
@@ -96,18 +95,15 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     public final void createInfo(String act,
             String group,
             String description,
-            InputConfig[] importantParameter,
-            InputConfig[] minorParameter,
-            OutputConfig[] returnParameter) {
+            RequestConfig[] requestConfigs,
+            ResponseConfig[] responseConfigs) {
         this.group = group;
-        this.description = description;
+        this.desc = description;
         this.act = act;
-        //构造重要参数信息
-        this.importantParameterInfo = this.getInputParameterJson(importantParameter);
-        //构造次要参数信息
-        this.minorParameterInfo = this.getInputParameterJson(minorParameter);
+        //构造请求参数信息
+        this.requestConfigs = this.getRequestParameterJson(requestConfigs);
         //构造返回参数信息
-        this.returnParameterInfo = this.getOutputParameterJson(returnParameter);
+        this.responseConfigs = this.getResponseParameterJson(responseConfigs);
     }
 
     @Override
@@ -117,6 +113,6 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
 
     @Override
     public final String getDescription() {
-        return this.description;
+        return this.desc;
     }
 }

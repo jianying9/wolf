@@ -4,7 +4,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.MessageContext;
 import java.util.ArrayList;
@@ -20,8 +20,8 @@ import java.util.Set;
  */
 @ServiceConfig(
         actionName = "WOLF_INQUIRE_GROUP",
-        returnParameter = {
-    @OutputConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
+        responseConfigs = {
+    @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         validateSession = false,
         page = true,

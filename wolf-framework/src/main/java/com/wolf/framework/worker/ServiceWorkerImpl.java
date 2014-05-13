@@ -1,6 +1,6 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.MessageContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -14,12 +14,12 @@ import java.util.Map;
  */
 public final class ServiceWorkerImpl extends AbstractServiceWorker {
 
-    public ServiceWorkerImpl(String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
+    public ServiceWorkerImpl(String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
         super(returnParameter, fieldHandlerMap, nextWorkHandler);
     }
 
     @Override
-    protected FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap) {
+    protected FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap) {
         return new MessageContextImpl(workerContext, returnParameter, fieldHandlerMap);
     }
 }

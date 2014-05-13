@@ -4,7 +4,7 @@ package com.wolf.framework.service.parameter;
  *
  * @author aladdin
  */
-public interface InputParameterHandler {
+public interface RequestParameterHandler {
 
     public String getName();
 

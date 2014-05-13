@@ -10,13 +10,13 @@ import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.InputParameterHandler;
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.ParameterContext;
-import com.wolf.framework.service.parameter.InputParameterHandlerBuilder;
-import com.wolf.framework.service.parameter.OutputConfig;
-import com.wolf.framework.service.parameter.OutputParameterHandlerBuilder;
+import com.wolf.framework.service.parameter.RequestParameterHandlerBuilder;
+import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.parameter.ResponseParameterHandlerBuilder;
 import com.wolf.framework.worker.PageServiceWorkerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerContext;
@@ -46,8 +46,8 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
 
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-    private final InputParameterHandler pageIndexHandler;
-    private final InputParameterHandler pageSizeHandler;
+    private final RequestParameterHandler pageIndexHandler;
+    private final RequestParameterHandler pageSizeHandler;
 
     public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
         this.serviceWorkerContext = serviceWorkerContext;
@@ -71,9 +71,17 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);
             final String actionName = serviceConfig.actionName();
-            final InputConfig[] importantParameter = serviceConfig.importantParameter();
-            final InputConfig[] minorParameter = serviceConfig.minorParameter();
-            final OutputConfig[] returnParameter = serviceConfig.returnParameter();
+            final RequestConfig[] requestConfigs = serviceConfig.requestConfigs();
+            final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
+            final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
+            for (RequestConfig requestConfig : requestConfigs) {
+                if(requestConfig.must()) {
+                    importantRequestConfigList.add(requestConfig);
+                } else {
+                    minorRequestConfigList.add(requestConfig);
+                }
+            }
+            final ResponseConfig[] reponseConfigs = serviceConfig.responseConfigs();
             final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
@@ -119,37 +127,37 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //-----------------------业务执行前处理环节-----------------
             //判断取值验证类型,将对应处理对象加入到处理环节
-            InputParameterHandler inputParameterHandler;
-            InputParameterHandlerBuilder inputParameterHandlerBuilder;
+            RequestParameterHandler requestParameterHandler;
+            RequestParameterHandlerBuilder requestParameterHandlerBuilder;
             //次要参数
-            if (minorParameter.length > 0) {
+            if (minorRequestConfigList.isEmpty() == false) {
                 //获取次要参数
-                final Map<String, InputParameterHandler> minorParameterMap = new HashMap<String, InputParameterHandler>(minorParameter.length, 1);
-                List<String> minorNameList = new ArrayList<String>(minorParameter.length);
-                for (InputConfig parameterConfig : minorParameter) {
-                    inputParameterHandlerBuilder = new InputParameterHandlerBuilder(
-                            parameterConfig,
+                final Map<String, RequestParameterHandler> minorParameterMap = new HashMap<String, RequestParameterHandler>(minorRequestConfigList.size(), 1);
+                List<String> minorNameList = new ArrayList<String>(minorRequestConfigList.size());
+                for (RequestConfig requestConfig : minorRequestConfigList) {
+                    requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
+                            requestConfig,
                             this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
-                    inputParameterHandler = inputParameterHandlerBuilder.build();
-                    minorParameterMap.put(parameterConfig.name(), inputParameterHandler);
-                    minorNameList.add(parameterConfig.name());
+                    requestParameterHandler = requestParameterHandlerBuilder.build();
+                    minorParameterMap.put(requestConfig.name(), requestParameterHandler);
+                    minorNameList.add(requestConfig.name());
                 }
                 final String[] minorNames = minorNameList.toArray(new String[minorNameList.size()]);
                 workHandler = new MinorParameterWorkHandlerImpl(minorNames, minorParameterMap, workHandler);
             }
             //重要参数
-            if (importantParameter.length > 0) {
-                final Map<String, InputParameterHandler> importantParameterMap = new HashMap<String, InputParameterHandler>(minorParameter.length, 1);
-                List<String> importantNameList = new ArrayList<String>(importantParameter.length);
-                for (InputConfig parameterConfig : importantParameter) {
-                    inputParameterHandlerBuilder = new InputParameterHandlerBuilder(
-                            parameterConfig,
+            if (importantRequestConfigList.isEmpty() == false) {
+                final Map<String, RequestParameterHandler> importantParameterMap = new HashMap<String, RequestParameterHandler>(importantRequestConfigList.size(), 1);
+                List<String> importantNameList = new ArrayList<String>(importantRequestConfigList.size());
+                for (RequestConfig requestConfig : importantRequestConfigList) {
+                    requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
+                            requestConfig,
                             this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
-                    inputParameterHandler = inputParameterHandlerBuilder.build();
-                    importantParameterMap.put(parameterConfig.name(), inputParameterHandler);
-                    importantNameList.add(parameterConfig.name());
+                    requestParameterHandler = requestParameterHandlerBuilder.build();
+                    importantParameterMap.put(requestConfig.name(), requestParameterHandler);
+                    importantNameList.add(requestConfig.name());
                 }
                 final String[] importantNames = importantNameList.toArray(new String[importantNameList.size()]);
                 workHandler = new ImportantParameterWorkHandlerImpl(importantNames, importantParameterMap, workHandler);
@@ -158,16 +166,16 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             if (validateSession) {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
             }
-            OutputParameterHandler outputParameterHandler;
-            OutputParameterHandlerBuilder outputParameterHandlerBuilder;
+            ResponseParameterHandler outputParameterHandler;
+            ResponseParameterHandlerBuilder outputParameterHandlerBuilder;
             //获取返回参数
-            final Map<String, OutputParameterHandler> returnParameterMap;
+            final Map<String, ResponseParameterHandler> returnParameterMap;
             final String[] returnNames;
-            if (returnParameter.length > 0) {
-                List<String> returnNameList = new ArrayList<String>(returnParameter.length);
-                returnParameterMap = new HashMap<String, OutputParameterHandler>(returnParameter.length, 1);
-                for (OutputConfig parameterConfig : returnParameter) {
-                    outputParameterHandlerBuilder = new OutputParameterHandlerBuilder(
+            if (reponseConfigs.length > 0) {
+                List<String> returnNameList = new ArrayList<String>(reponseConfigs.length);
+                returnParameterMap = new HashMap<String, ResponseParameterHandler>(reponseConfigs.length, 1);
+                for (ResponseConfig parameterConfig : reponseConfigs) {
+                    outputParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
                             parameterConfig,
                             this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
@@ -177,7 +185,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 }
                 returnNames = returnNameList.toArray(new String[returnNameList.size()]);
             } else {
-                returnParameterMap = new HashMap<String, OutputParameterHandler>(0, 1);
+                returnParameterMap = new HashMap<String, ResponseParameterHandler>(0, 1);
                 returnNames = new String[0];
             }
             //创建对应的工作对象
@@ -189,7 +197,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                serviceWorker.createInfo(actionName, group, description, importantParameter, minorParameter, returnParameter);
+                serviceWorker.createInfo(actionName, group, description, requestConfigs, reponseConfigs);
             }
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());

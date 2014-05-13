@@ -1,7 +1,7 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,21 +28,14 @@ public @interface ServiceConfig {
      *
      * @return String[]
      */
-    public InputConfig[] importantParameter() default {};
-
-    /**
-     * 次要的参数
-     *
-     * @return String[]
-     */
-    public InputConfig[] minorParameter() default {};
+    public RequestConfig[] requestConfigs() default {};
 
     /**
      * 返回的参数
      *
      * @return String[]
      */
-    public OutputConfig[] returnParameter() default {};
+    public ResponseConfig[] responseConfigs() default {};
 
     /**
      * 事务类型 需要事务控制--true 不需要事务控制--false

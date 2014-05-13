@@ -14,15 +14,15 @@ import java.util.Set;
  *
  * @author aladdin
  */
-public class InputParameterHandlerBuilder {
+public class RequestParameterHandlerBuilder {
 
-    private final InputConfig inputConfig;
+    private final RequestConfig inputConfig;
     private final ApplicationContext applicationContext;
     private final ParameterContext parameterContext;
     private final Set<String> reservedWordSet = FrameworkConfig.getReservedWordSet();
 
-    public InputParameterHandlerBuilder(
-            final InputConfig inputConfig,
+    public RequestParameterHandlerBuilder(
+            final RequestConfig inputConfig,
             final ApplicationContext applicationContext,
             final ParameterContext parameterContext) {
         this.inputConfig = inputConfig;
@@ -30,8 +30,8 @@ public class InputParameterHandlerBuilder {
         this.parameterContext = parameterContext;
     }
 
-    public InputParameterHandler build() {
-        InputParameterHandler parameterHandler = null;
+    public RequestParameterHandler build() {
+        RequestParameterHandler parameterHandler = null;
         final String fieldName = this.inputConfig.name();
         //保留字验证
         if (reservedWordSet.contains(fieldName)) {

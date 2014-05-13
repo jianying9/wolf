@@ -1,7 +1,6 @@
 package com.wolf.framework.service.parameter;
 
 import com.wolf.framework.data.TypeEnum;
-import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,9 +13,19 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface OutputConfig {
+public @interface RequestConfig {
 
+    /**
+     * 参数名
+     * @return 
+     */
     public String name();
+
+    /**
+     * 是否必填,默认ture
+     * @return 
+     */
+    public boolean must() default true;
 
     /**
      * 数据类型
@@ -31,11 +40,4 @@ public @interface OutputConfig {
      * @return
      */
     public String desc();
-
-    /**
-     * 该parameter在输出时过滤行为
-     *
-     * @return
-     */
-    public FilterTypeEnum[] filterTypes() default {FilterTypeEnum.ESCAPE, FilterTypeEnum.SECURITY};
 }

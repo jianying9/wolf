@@ -1,7 +1,7 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.service.parameter.InputParameterHandler;
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.JsonUtils;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.List;
@@ -23,9 +23,9 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     public PageMessageContextImpl(
             WorkerContext workerContext,
             String[] returnParameter,
-            Map<String, OutputParameterHandler> parameterHandlerMap,
-            InputParameterHandler pageIndexHandler,
-            InputParameterHandler pageSizeHandler) {
+            Map<String, ResponseParameterHandler> parameterHandlerMap,
+            RequestParameterHandler pageIndexHandler,
+            RequestParameterHandler pageSizeHandler) {
         super(workerContext, returnParameter, parameterHandlerMap);
         Map<String, String> parameterMap = workerContext.getParameterMap();
         //验证分页参数

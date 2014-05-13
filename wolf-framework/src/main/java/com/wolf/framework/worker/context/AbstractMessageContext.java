@@ -4,7 +4,7 @@ import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.DefaultResponseFlags;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.session.Session;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +24,11 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     private String responseMessage = "";
     protected String flag = DefaultResponseFlags.FAILURE;
     protected final String[] returnParameter;
-    protected final Map<String, OutputParameterHandler> parameterHandlerMap;
+    protected final Map<String, ResponseParameterHandler> parameterHandlerMap;
     //session
     private Session newSession = null;
 
-    public AbstractMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> parameterHandlerMap) {
+    public AbstractMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap) {
         this.workerContext = workerContext;
         this.returnParameter = returnParameter;
         this.parameterHandlerMap = parameterHandlerMap;

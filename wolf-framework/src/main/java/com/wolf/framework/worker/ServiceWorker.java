@@ -1,7 +1,7 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -17,9 +17,8 @@ public interface ServiceWorker {
     public void createInfo(String act,
             String group,
             String description,
-            InputConfig[] importantParameter,
-            InputConfig[] minorParameter,
-            OutputConfig[] returnParameter);
+            RequestConfig[] requestConfigs,
+            ResponseConfig[] responseConfigs);
 
     public Map<String, String> getInfoMap();
 

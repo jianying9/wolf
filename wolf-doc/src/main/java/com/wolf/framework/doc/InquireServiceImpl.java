@@ -4,8 +4,8 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.MessageContext;
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ import java.util.Set;
  */
 @ServiceConfig(
         actionName = "WOLF_INQUIRE_SERVICE",
-        importantParameter = {
-    @InputConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
+        requestConfigs = {
+    @RequestConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
-        returnParameter = {
-    @OutputConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @OutputConfig(name = "description", typeEnum = TypeEnum.CHAR_255, desc = "")
+        responseConfigs = {
+    @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         validateSession = false,
         page = true,
@@ -48,7 +48,7 @@ public class InquireServiceImpl implements Service {
             if (serviceWorker.getGroup().equals(groupName)) {
                 resultMap = new HashMap<String, String>(2, 1);
                 resultMap.put("actionName", entryService.getKey());
-                resultMap.put("description", serviceWorker.getDescription());
+                resultMap.put("desc", serviceWorker.getDescription());
                 resultMapList.add(resultMap);
             }
         }

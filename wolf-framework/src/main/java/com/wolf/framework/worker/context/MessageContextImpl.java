@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.JsonUtils;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,7 @@ public final class MessageContextImpl extends AbstractMessageContext {
 
     private Map<String, String> mapData;
 
-    public MessageContextImpl(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> parameterHandlerMap) {
+    public MessageContextImpl(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap) {
         super(workerContext, returnParameter, parameterHandlerMap);
     }
 

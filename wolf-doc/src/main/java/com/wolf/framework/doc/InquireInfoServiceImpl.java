@@ -5,8 +5,8 @@ import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.SessionHandleTypeEnum;
-import com.wolf.framework.service.parameter.InputConfig;
-import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.session.SessionImpl;
 import com.wolf.framework.worker.ServiceWorker;
@@ -19,16 +19,15 @@ import java.util.UUID;
  */
 @ServiceConfig(
         actionName = "WOLF_INQUIRE_SERVICE_INFO",
-        importantParameter = {
-    @InputConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = "")
+        requestConfigs = {
+    @RequestConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
-        returnParameter = {
-    @OutputConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @OutputConfig(name = "description", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @OutputConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @OutputConfig(name = "importantParameter", typeEnum = TypeEnum.ARRAY, desc = ""),
-    @OutputConfig(name = "minorParameter", typeEnum = TypeEnum.ARRAY, desc = ""),
-    @OutputConfig(name = "returnParameter", typeEnum = TypeEnum.ARRAY, desc = "")
+        responseConfigs = {
+    @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "requestConfigs", typeEnum = TypeEnum.ARRAY, desc = ""),
+    @ResponseConfig(name = "responseConfigs", typeEnum = TypeEnum.ARRAY, desc = "")
 },
         validateSession = false,
         sessionHandleTypeEnum = SessionHandleTypeEnum.SAVE,

@@ -19,15 +19,15 @@ import java.util.Set;
  *
  * @author aladdin
  */
-public class OutputParameterHandlerBuilder {
+public class ResponseParameterHandlerBuilder {
 
-    private final OutputConfig outputConfig;
+    private final ResponseConfig outputConfig;
     private final ApplicationContext applicationContext;
     private final ParameterContext parameterContext;
     private final Set<String> reservedWordSet = FrameworkConfig.getReservedWordSet();
 
-    public OutputParameterHandlerBuilder(
-            final OutputConfig outputConfig,
+    public ResponseParameterHandlerBuilder(
+            final ResponseConfig outputConfig,
             final ApplicationContext applicationContext,
             final ParameterContext parameterContext) {
         this.outputConfig = outputConfig;
@@ -35,8 +35,8 @@ public class OutputParameterHandlerBuilder {
         this.parameterContext = parameterContext;
     }
 
-    public OutputParameterHandler build() {
-        OutputParameterHandler parameterHandler = null;
+    public ResponseParameterHandler build() {
+        ResponseParameterHandler parameterHandler = null;
         final String fieldName = this.outputConfig.name();
         //保留字验证
         if (reservedWordSet.contains(fieldName)) {

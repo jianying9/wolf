@@ -1,7 +1,7 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.parameter.InputParameterHandler;
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.PageMessageContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -15,17 +15,17 @@ import java.util.Map;
  */
 public final class PageServiceWorkerImpl extends AbstractServiceWorker {
     
-    private final InputParameterHandler pageIndexHandler;
-    private final InputParameterHandler pageSizeHandler;
+    private final RequestParameterHandler pageIndexHandler;
+    private final RequestParameterHandler pageSizeHandler;
 
-    public PageServiceWorkerImpl(InputParameterHandler pageIndexHandler, InputParameterHandler pageSizeHandler, String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
+    public PageServiceWorkerImpl(RequestParameterHandler pageIndexHandler, RequestParameterHandler pageSizeHandler, String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
         super(returnParameter, fieldHandlerMap, nextWorkHandler);
         this.pageIndexHandler = pageIndexHandler;
         this.pageSizeHandler = pageSizeHandler;
     }
 
     @Override
-    protected FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, OutputParameterHandler> fieldHandlerMap) {
+    protected FrameworkMessageContext createFrameworkMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap) {
         return new PageMessageContextImpl(workerContext, returnParameter, fieldHandlerMap, this.pageIndexHandler, this.pageSizeHandler);
     }
 }

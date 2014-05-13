@@ -5,7 +5,7 @@ package com.wolf.framework.service.parameter;
  *
  * @author aladdin
  */
-public final class JsonParameterHandlerImpl implements OutputParameterHandler {
+public final class JsonParameterHandlerImpl implements ResponseParameterHandler {
 
     private final String name;
     private final String dataType;

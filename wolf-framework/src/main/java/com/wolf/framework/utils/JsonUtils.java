@@ -1,6 +1,6 @@
 package com.wolf.framework.utils;
 
-import com.wolf.framework.service.parameter.OutputParameterHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,14 +44,14 @@ public final class JsonUtils {
         return result;
     }
 
-    public static String valueToJSON(final String value, final OutputParameterHandler fieldHandler) {
+    public static String valueToJSON(final String value, final ResponseParameterHandler fieldHandler) {
         StringBuilder jsonBuilder = new StringBuilder(32);
         jsonBuilder.append('{').append(fieldHandler.getJson(value)).append('}');
         String jsonStr = jsonBuilder.toString();
         return jsonStr;
     }
 
-    public static String valuesToJSON(final String[] values, final OutputParameterHandler fieldHandler) {
+    public static String valuesToJSON(final String[] values, final ResponseParameterHandler fieldHandler) {
         String jsonStr = "{}";//return
         if (values != null) {
             StringBuilder jsonBuilder = new StringBuilder(values.length * 32);
@@ -64,7 +64,7 @@ public final class JsonUtils {
         return jsonStr;
     }
 
-    public static String mapToJSON(final Map<String, String> parameterMap, final String[] fieldNames, final Map<String, OutputParameterHandler> fieldMap) {
+    public static String mapToJSON(final Map<String, String> parameterMap, final String[] fieldNames, final Map<String, ResponseParameterHandler> fieldMap) {
         String jsonStr = "{}";//return
         if (parameterMap != null) {
             StringBuilder jsonBuilder = new StringBuilder(fieldNames.length * 32);
@@ -74,7 +74,7 @@ public final class JsonUtils {
         return jsonStr;
     }
 
-    public static String mapListToJSON(List<Map<String, String>> parameterMapList, String[] fieldNames, Map<String, OutputParameterHandler> fieldMap) {
+    public static String mapListToJSON(List<Map<String, String>> parameterMapList, String[] fieldNames, Map<String, ResponseParameterHandler> fieldMap) {
         String jsonStr = "";//return
         if (parameterMapList != null && !parameterMapList.isEmpty()) {
             if (parameterMapList.size() == 1) {
@@ -92,9 +92,9 @@ public final class JsonUtils {
         return jsonStr;
     }
 
-    private static void mapToJSON(final Map<String, String> parameterMap, final String[] fieldNames, final Map<String, OutputParameterHandler> fieldMap, final StringBuilder jsonBuilder) {
+    private static void mapToJSON(final Map<String, String> parameterMap, final String[] fieldNames, final Map<String, ResponseParameterHandler> fieldMap, final StringBuilder jsonBuilder) {
         String value;
-        OutputParameterHandler fieldHandler;
+        ResponseParameterHandler fieldHandler;
         boolean isExist = false;
         jsonBuilder.append('{');
         for (String fieldName : fieldNames) {
