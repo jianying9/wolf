@@ -4,10 +4,14 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.TypeEnum;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
+import com.wolf.framework.service.SessionHandleTypeEnum;
 import com.wolf.framework.service.parameter.InputConfig;
 import com.wolf.framework.service.parameter.OutputConfig;
+import com.wolf.framework.session.Session;
+import com.wolf.framework.session.SessionImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.MessageContext;
+import java.util.UUID;
 
 /**
  *
@@ -27,6 +31,7 @@ import com.wolf.framework.worker.context.MessageContext;
     @OutputConfig(name = "returnParameter", typeEnum = TypeEnum.ARRAY, desc = "")
 },
         validateSession = false,
+        sessionHandleTypeEnum = SessionHandleTypeEnum.SAVE,
         response = true,
         group = "WOLF_FRAMEWORK",
         description = "")
@@ -37,6 +42,8 @@ public class InquireInfoServiceImpl implements Service {
         String actionName = messageContext.getParameter("actionName");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(actionName);
         if (serviceWorker != null) {
+            Session session = new SessionImpl(UUID.randomUUID().toString());
+            messageContext.setNewSession(session);
             messageContext.setMapData(serviceWorker.getInfoMap());
             messageContext.success();
         }
