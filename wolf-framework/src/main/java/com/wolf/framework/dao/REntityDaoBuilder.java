@@ -48,7 +48,7 @@ public final class REntityDaoBuilder<T extends Entity> {
     }
 
     public REntityDao<T> build() {
-        if (this.tableName == null || this.tableName.equals("t_")) {
+        if (this.tableName == null) {
             throw new RuntimeException("Error when building REntityDao. Cause: tableName is null or empty");
         }
         if (this.dbIndex == 0) {
