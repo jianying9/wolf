@@ -34,9 +34,14 @@ public final class MessageContextImpl extends AbstractMessageContext {
     public void setMapData(Map<String, String> parameterMap) {
         this.mapData = parameterMap;
     }
+    
+    @Override
+    public Map<String, String> getMapData() {
+        return this.mapData;
+    }
 
     @Override
-    public long getPageIndex() {
+    public final long getPageIndex() {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
     }
 
@@ -62,6 +67,11 @@ public final class MessageContextImpl extends AbstractMessageContext {
 
     @Override
     public void setMapListData(List<Map<String, String>> parameterMapList) {
+        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
+    }
+
+    @Override
+    public List<Map<String, String>> getMapListData() {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
     }
 }

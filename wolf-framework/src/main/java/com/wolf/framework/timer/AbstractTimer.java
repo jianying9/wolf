@@ -24,7 +24,7 @@ public class AbstractTimer {
             } else {
                 LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, act, parameterMap);
                 serviceWorker.doWork(localWorkerContextImpl);
-                result = localWorkerContextImpl.getResponseMessage();
+                result = serviceWorker.getResponse().getResponseMessage();
             }
         } else {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);

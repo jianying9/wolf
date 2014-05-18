@@ -25,8 +25,7 @@ public class ValidateSessionWorkHandlerImpl implements WorkHandler {
             frameworkMessageContext.unlogin();
             String message = frameworkMessageContext.createErrorMessage();
             WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
-            workerContext.setResponseMessage(message);
-            workerContext.sendMessage();
+            workerContext.sendMessage(message);
         } else {
             this.nextWorkHandler.execute(frameworkMessageContext);
         }

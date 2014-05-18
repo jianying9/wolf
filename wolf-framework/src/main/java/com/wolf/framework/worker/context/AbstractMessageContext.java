@@ -50,6 +50,11 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final Map<String, String> getParameterMap() {
         return this.parameterMap;
     }
+    
+    @Override
+    public final String getFlag() {
+        return this.flag;
+    }
 
     @Override
     public final void invalid() {
@@ -120,7 +125,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final Session getNewSession() {
         return this.newSession;
     }
-
+    
     @Override
     public final String getResponseMessage() {
         if (this.responseMessage.isEmpty()) {

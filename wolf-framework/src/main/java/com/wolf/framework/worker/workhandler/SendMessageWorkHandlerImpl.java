@@ -21,7 +21,6 @@ public class SendMessageWorkHandlerImpl implements WorkHandler {
         this.nextWorkHandler.execute(frameworkMessageContext);
         String message = frameworkMessageContext.getResponseMessage();
         WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
-        workerContext.setResponseMessage(message);
-        workerContext.sendMessage();
+        workerContext.sendMessage(message);
     }
 }

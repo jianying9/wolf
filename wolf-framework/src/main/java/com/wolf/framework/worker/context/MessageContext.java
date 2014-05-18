@@ -10,19 +10,11 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public interface MessageContext {
+public interface MessageContext extends Response {
 
     public String getParameter(String name);
 
     public Map<String, String> getParameterMap();
-
-    public long getPageIndex();
-
-    public long getPageSize();
-    
-    public long getPageTotal();
-    
-    public long getPageNum();
 
     public void setPageTotal(long pageTotal);
 
@@ -43,10 +35,6 @@ public interface MessageContext {
     public void setFlag(String flag);
 
     public ApplicationContext getApplicationContext();
-    
-    public String getResponseMessage();
-    
-    public String getResponseMessage(boolean useCache);
-    
+
     public void push(String sid, String responseMessage);
 }

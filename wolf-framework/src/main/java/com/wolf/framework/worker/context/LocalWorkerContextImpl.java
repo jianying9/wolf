@@ -22,7 +22,7 @@ public class LocalWorkerContextImpl extends AbstractWorkContext {
     }
 
     @Override
-    public void sendMessage() {
+    public void sendMessage(String message) {
     }
 
     @Override

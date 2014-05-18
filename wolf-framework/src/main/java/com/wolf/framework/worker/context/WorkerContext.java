@@ -13,17 +13,13 @@ public interface WorkerContext {
 
     public String getAct();
 
-    public void sendMessage();
+    public void sendMessage(String message);
 
     public void close();
 
     public void saveNewSession(Session session);
 
     public void removeSession();
-    
-    public Session getSession();
-    
-    public String getResponseMessage();
 
-    public void setResponseMessage(String responseMessage);
+    public Session getSession();
 }

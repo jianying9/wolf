@@ -22,7 +22,6 @@ public abstract class AbstractWorkContext implements WorkerContext {
     //input
     private final Map<String, String> parameterMap;
     private final String act;
-    protected String responseMessage = "";
 
     public AbstractWorkContext(String act, String json) {
         this.act = act;
@@ -83,15 +82,5 @@ public abstract class AbstractWorkContext implements WorkerContext {
 
     public final ApplicationContext getApplicationContext() {
         return ApplicationContext.CONTEXT;
-    }
-
-    @Override
-    public String getResponseMessage() {
-        return responseMessage;
-    }
-
-    @Override
-    public void setResponseMessage(String responseMessage) {
-        this.responseMessage = responseMessage;
     }
 }

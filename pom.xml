@@ -40,7 +40,7 @@
             <name>cloudera maven repository proxy</name>
             <url>http://local.maven.com:8081/nexus/content/repositories/cloudera</url>
         </repository>
-<!--        <repository>
+        <!--        <repository>
             <id>cloudera</id>
             <name>cloudera maven repository</name>
             <url>https://repository.cloudera.com/content/repositories/releases</url>
@@ -611,6 +611,6 @@
         <module>wolf-dao-derby</module>
         <module>wolf-dao-hbase</module>
         <module>wolf-lucene</module>
-    <module>wolf-doc</module>
-  </modules>
+        <module>wolf-doc</module>
+    </modules>
 </project>

@@ -29,7 +29,7 @@ public class FrameworkSessionBean implements FrameworkSessionBeanRemote {
             } else {
                 WorkerContext workerContext = new LocalWorkerContextImpl(null, act, parameterMap);
                 serviceWorker.doWork(workerContext);
-                result = workerContext.getResponseMessage();
+                result = serviceWorker.getResponse().getResponseMessage();
             }
         } else {
             result = "{\"flag\":\"FAILURE\",\"error\":\"System is not ready! Wait for a moment...\"}";

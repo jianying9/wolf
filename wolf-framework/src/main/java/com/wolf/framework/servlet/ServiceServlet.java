@@ -65,7 +65,7 @@ public class ServiceServlet extends HttpServlet {
             Session session = this.sessionMap.get(sid);
             WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
             serviceWorker.doWork(workerContext);
-            result = workerContext.getResponseMessage();
+            result = serviceWorker.getResponse().getResponseMessage();
         }
         HttpUtils.toWrite(request, response, result);
     }

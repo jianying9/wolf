@@ -1,5 +1,6 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -25,4 +26,6 @@ public interface ServiceWorker {
     public String getGroup();
 
     public String getDescription();
+    
+    public Response getResponse();
 }

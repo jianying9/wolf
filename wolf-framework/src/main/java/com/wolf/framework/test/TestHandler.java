@@ -6,6 +6,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.session.Session;
+import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -34,17 +35,17 @@ public final class TestHandler {
         this.session = session;
     }
 
-    public String execute(String act, Map<String, String> parameterMap) {
-        String result;
+    public Response execute(String act, Map<String, String> parameterMap) {
+        Response result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
         if (serviceWorker == null) {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
             logger.error("timer:Can not find act:".concat(act));
-            result = "{\"flag\":\"INVALID\",\"error\":\"act not exists\"}";
+            result = null;
         } else {
             WorkerContext workerContext = new LocalWorkerContextImpl(this.session, act, parameterMap);
             serviceWorker.doWork(workerContext);
-            result = workerContext.getResponseMessage();
+            result = serviceWorker.getResponse();
         }
         return result;
     }

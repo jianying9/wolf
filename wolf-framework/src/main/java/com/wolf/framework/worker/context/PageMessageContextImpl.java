@@ -47,27 +47,32 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     }
 
     @Override
-    public final void setMapListData(List<Map<String, String>> parameterMapList) {
+    public void setMapListData(List<Map<String, String>> parameterMapList) {
         this.mapListData = parameterMapList;
     }
 
     @Override
-    public final long getPageIndex() {
+    public List<Map<String, String>> getMapListData() {
+        return this.mapListData;
+    }
+
+    @Override
+    public long getPageIndex() {
         return pageIndex;
     }
 
     @Override
-    public final long getPageSize() {
+    public long getPageSize() {
         return pageSize;
     }
 
     @Override
-    public final long getPageTotal() {
+    public long getPageTotal() {
         return pageTotal;
     }
 
     @Override
-    public final void setPageTotal(long pageTotal) {
+    public void setPageTotal(long pageTotal) {
         this.pageTotal = pageTotal;
         if (this.pageTotal > 0) {
             long total = this.pageTotal;
@@ -81,7 +86,7 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     }
 
     @Override
-    public final long getPageNum() {
+    public long getPageNum() {
         return pageNum;
     }
 
@@ -104,6 +109,11 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
 
     @Override
     public void setMapData(Map<String, String> parameterMap) {
+        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be false");
+    }
+
+    @Override
+    public Map<String, String> getMapData() {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be false");
     }
 }

@@ -1,5 +1,6 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
@@ -25,6 +26,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     private String desc = "";
     private String requestConfigs = "[]";
     private String responseConfigs = "[]";
+    protected FrameworkMessageContext frameworkMessageContext;
 
     public AbstractServiceWorker(String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
         this.returnParameter = returnParameter;
@@ -36,8 +38,8 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
 
     @Override
     public void doWork(WorkerContext workerContext) {
-        FrameworkMessageContext messageContext = this.createFrameworkMessageContext(workerContext, this.returnParameter, this.fieldHandlerMap);
-        this.nextWorkHandler.execute(messageContext);
+        this.frameworkMessageContext = this.createFrameworkMessageContext(workerContext, this.returnParameter, this.fieldHandlerMap);
+        this.nextWorkHandler.execute(this.frameworkMessageContext);
     }
 
     @Override
@@ -114,5 +116,10 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     @Override
     public final String getDescription() {
         return this.desc;
+    }
+    
+    @Override
+    public final Response getResponse() {
+        return this.frameworkMessageContext;
     }
 }

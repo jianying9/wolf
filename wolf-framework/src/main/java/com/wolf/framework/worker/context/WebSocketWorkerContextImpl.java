@@ -25,8 +25,8 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
     }
 
     @Override
-    public void sendMessage() {
-        this.globalWebSocket.send(this.responseMessage);
+    public void sendMessage(String message) {
+        this.globalWebSocket.send(message);
     }
 
     @Override
