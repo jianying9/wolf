@@ -3,8 +3,14 @@ package com.wolf;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
+import com.wolf.framework.utils.StringUtils;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,5 +57,32 @@ public class FrameworkJUnitTest {
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
         applicationContextBuilder.build();
         ApplicationContext.CONTEXT.contextDestroyed();
+    }
+
+//    @Test
+    public void testJson() throws IOException {
+        String json = "{\"content\":\"人工客服服务时间为:上午8:00~11:00，下午13:30~17:00。\\n\\b\\"
+                + "欢迎大家使用智能客服momi！\"}";
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        JsonNode rootNode = null;
+        Map<String, String> parameterMap;
+        rootNode = mapper.readValue(json, JsonNode.class);
+        if (rootNode != null) {
+            //读数据
+            parameterMap = new HashMap<String, String>(8, 1);
+            Map.Entry<String, JsonNode> entry;
+            String name;
+            String value;
+            Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
+            while (iterator.hasNext()) {
+                entry = iterator.next();
+                name = entry.getKey();
+                value = entry.getValue().getTextValue();
+                value = StringUtils.trim(value);
+                parameterMap.put(name, value);
+            }
+            System.out.println(parameterMap.toString());
+        }
     }
 }

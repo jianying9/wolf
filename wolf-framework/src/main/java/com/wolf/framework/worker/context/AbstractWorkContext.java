@@ -26,6 +26,39 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public AbstractWorkContext(String act, String json) {
         this.act = act;
         if (json.isEmpty() == false) {
+            //特殊符号转义处理
+            StringBuilder stringBuilder = new StringBuilder(json.length() * 2);
+            char cht;
+            for (int index = 0; index < json.length(); index++) {
+                cht = json.charAt(index);
+                switch (cht) {
+                    case '\\':
+                        stringBuilder.append("\\\\");
+                        break;
+                    case '\b':
+                        stringBuilder.append("\\b");
+                        break;
+                    case '\n':
+                        stringBuilder.append("\\n");
+                        break;
+                    case '/':
+                        stringBuilder.append("\\/");
+                        break;
+                    case '\f':
+                        stringBuilder.append("\\f");
+                        break;
+                    case '\r':
+                        stringBuilder.append("\\r");
+                        break;
+                    case '\t':
+                        stringBuilder.append("\\t");
+                        break;
+                    default:
+                        stringBuilder.append(cht);
+                }
+            }
+            json = stringBuilder.toString();
+            //
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
             try {
