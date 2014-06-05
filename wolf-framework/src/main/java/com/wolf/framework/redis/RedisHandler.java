@@ -13,7 +13,7 @@ public interface RedisHandler {
 
     public String getTableIndexKey();
 
-    public String getColumnIndexName(String columnName, String columnValue);
+    public String getColumnIndexKey(String columnName, String columnValue);
     
     public boolean exist(String keyValue);
 
@@ -28,6 +28,8 @@ public interface RedisHandler {
     public String update(Map<String, String> entityMap);
     
     public void updateKeySorce(String keyValue, long sorce);
+    
+    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce);
 
     public void batchUpdate(List<Map<String, String>> entityMapList);
 

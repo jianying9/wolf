@@ -212,4 +212,13 @@ public interface REntityDao<T extends Entity> {
      * @param sorce
      */
     public void setIndexSorce(Map<String, String> entityMap, String columnName, long sorce);
+    
+    /**
+     * 更新index key索引的得分
+     * @param keyValue
+     * @param columnName
+     * @param columnValue
+     * @param sorce 
+     */
+    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce);
 }

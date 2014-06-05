@@ -188,8 +188,13 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public void setIndexSorce(Map<String, String> entityMap, String columnName, long sorce) {
         String columnValue = entityMap.get(columnName);
         if (columnValue != null) {
-            String indexName = this.redisHandler.getColumnIndexName(columnName, columnValue);
+            String indexName = this.redisHandler.getColumnIndexKey(columnName, columnValue);
             entityMap.put(indexName, Long.toString(sorce));
         }
+    }
+
+    @Override
+    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce) {
+        this.redisHandler.updateIndexKeySorce(keyValue, columnName, columnValue, sorce);
     }
 }

@@ -67,7 +67,7 @@ public final class RedisHandlerImpl implements RedisHandler {
     }
 
     @Override
-    public String getColumnIndexName(String columnName, String columnValue) {
+    public String getColumnIndexKey(String columnName, String columnValue) {
         StringBuilder strBuilder = new StringBuilder(32);
         strBuilder.append(this.columnIndexKeyPrefix).append(columnName)
                 .append(this.connector).append(columnValue);
@@ -671,6 +671,21 @@ public final class RedisHandlerImpl implements RedisHandler {
             //保存key索引
             jedis.select(0);
             jedis.zadd(this.tableIndexKey, sorce, keyValue);
+        } finally {
+            //关闭连接
+            this.jedisPool.returnResource(jedis);
+        }
+    }
+
+    @Override
+    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce) {
+        String columnIndexKey = this.getColumnIndexKey(columnName, columnValue);
+        //开启连接
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            //保存key索引
+            jedis.select(0);
+            jedis.zadd(columnIndexKey, sorce, keyValue);
         } finally {
             //关闭连接
             this.jedisPool.returnResource(jedis);
