@@ -109,13 +109,13 @@ public class FileUploadServlet extends HttpServlet {
                         int newHeight;
                         double sWidth = targetWidth / width;
                         double sHeight = targetHeight / height;
-                        if (sWidth > sHeight) {
+                        if (sWidth >= sHeight) {
                             //根据height等比缩小
                             newHeight = targetHeight;
-                            newWidth = (int) (width * sWidth);
+                            newWidth = (int) (width * sHeight);
                         } else {
                             //根据width等比缩小
-                            newHeight = (int) (height * sHeight);
+                            newHeight = (int) (height * sWidth);
                             newWidth = targetWidth;
                         }
                         //缩小图片
