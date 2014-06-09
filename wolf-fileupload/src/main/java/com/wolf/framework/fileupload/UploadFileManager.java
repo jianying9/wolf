@@ -1,9 +1,14 @@
 package com.wolf.framework.fileupload;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.imgscalr.Scalr;
 
 /**
  *
@@ -63,7 +68,7 @@ public class UploadFileManager {
         File tempFile = new File(this.tempPath, fileId);
         return tempFile;
     }
-    
+
     public boolean isTempExist(String fileId) {
         File tempFile = new File(this.tempPath, fileId);
         return tempFile.exists();
@@ -114,5 +119,34 @@ public class UploadFileManager {
                 mainFile.delete();
             }
         }
+    }
+
+    public BufferedImage resize(BufferedImage imageBuff, int targetHeight, int targetWidth) {
+        BufferedImage result;
+        int height = imageBuff.getHeight();
+        int width = imageBuff.getWidth();
+        //如果目标高和宽都大于图片的实际高框，则使用图片的原始高宽输出
+        if (targetWidth >= width && targetHeight >= height) {
+            result = imageBuff;
+        } else {
+            //图片需要登比缩小,判断根据width缩放还是根据height缩小
+            int newWidth;
+            int newHeight;
+            double sWidth = (double) targetWidth / width;
+            double sHeight = (double) targetHeight / height;
+            if (sWidth >= sHeight) {
+                //根据height等比缩小
+                newHeight = targetHeight;
+                newWidth = (int) (width * sHeight);
+            } else {
+                //根据width等比缩小
+                newHeight = (int) (height * sWidth);
+                newWidth = targetWidth;
+            }
+            //缩小图片
+            BufferedImage thumb = Scalr.resize(imageBuff, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, newWidth, newHeight);
+            result = thumb;
+        }
+        return result;
     }
 }

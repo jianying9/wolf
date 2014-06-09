@@ -1,7 +1,6 @@
 package com.wolf.framework.fileupload;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +19,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.imgscalr.Scalr;
 
 /**
  *
@@ -93,44 +91,15 @@ public class FileUploadServlet extends HttpServlet {
                     BufferedImage imageBuff = ImageIO.read(uploadFile);
                     int height = imageBuff.getHeight();
                     int width = imageBuff.getWidth();
-                    //如果目标高和宽都大于图片的实际高框，则使用图片的原始高宽输出
-                    if (targetWidth >= width && targetHeight >= height) {
-                        //原图像输出
-                        response.setContentType(mimeType);
-//                        response.setContentLength((int) uploadFile.length());
-                        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-                        ServletOutputStream op = response.getOutputStream();
-                        ImageIO.write(imageBuff, suffix, op);
-                        op.flush();
-                        op.close();
-                    } else {
-                        //图片需要登比缩小,判断根据width缩放还是根据height缩小
-                        int newWidth;
-                        int newHeight;
-                        double sWidth = targetWidth / width;
-                        double sHeight = targetHeight / height;
-                        if (sWidth >= sHeight) {
-                            //根据height等比缩小
-                            newHeight = targetHeight;
-                            newWidth = (int) (width * sHeight);
-                        } else {
-                            //根据width等比缩小
-                            newHeight = (int) (height * sWidth);
-                            newWidth = targetWidth;
-                        }
-                        //缩小图片
-                        BufferedImage thumb = Scalr.resize(imageBuff, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, newWidth, newHeight);
-                        ByteArrayOutputStream os = new ByteArrayOutputStream();
-                        ImageIO.write(thumb, suffix, os);
-                        response.setContentType(mimeType);
-//                        response.setContentLength(os.size());
-                        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-                        ServletOutputStream op = response.getOutputStream();
-                        os.writeTo(op);
-                        op.flush();
-                        op.close();
-                        os.close();
-                    }
+                    //根据要求压缩图片
+                    BufferedImage thumb = UploadFileManager.MANAGER.resize(imageBuff, targetHeight, targetWidth);
+                    //输出
+                    response.setContentType(mimeType);
+                    response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+                    ServletOutputStream op = response.getOutputStream();
+                    ImageIO.write(thumb, suffix, op);
+                    op.flush();
+                    op.close();
                 } else {
                     //其它类型文件
                     int bytes;
