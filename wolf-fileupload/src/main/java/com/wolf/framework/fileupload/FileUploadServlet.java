@@ -89,8 +89,6 @@ public class FileUploadServlet extends HttpServlet {
                         }
                     }
                     BufferedImage imageBuff = ImageIO.read(uploadFile);
-                    int height = imageBuff.getHeight();
-                    int width = imageBuff.getWidth();
                     //根据要求压缩图片
                     BufferedImage thumb = UploadFileManager.MANAGER.resize(imageBuff, targetHeight, targetWidth);
                     //输出
@@ -147,9 +145,6 @@ public class FileUploadServlet extends HttpServlet {
             throw new IllegalArgumentException("Request is not multipart, please 'multipart/form-data' enctype for your form.");
         }
         ServletFileUpload uploadHandler = new ServletFileUpload(new DiskFileItemFactory());
-        PrintWriter writer = response.getWriter();
-        response.setContentType("text/html");
-        response.setCharacterEncoding("utf-8");
         StringBuilder jsonBuilder = new StringBuilder(256);
         try {
             List<FileItem> items = uploadHandler.parseRequest(request);
@@ -157,16 +152,19 @@ public class FileUploadServlet extends HttpServlet {
             String suffix;
             String fileName;
             File file;
+            boolean isImage;
             for (FileItem item : items) {
                 if (item.isFormField() == false) {
                     fileName = item.getName();
                     suffix = UploadFileManager.MANAGER.getSuffix(fileName);
+                    isImage = UploadFileManager.MANAGER.isImageBySuffix(suffix);
                     file = UploadFileManager.MANAGER.createTempFile(suffix);
                     item.write(file);
                     jsonBuilder.append('{');
                     jsonBuilder.append("\"fileId\":\"").append(file.getName()).append("\",");
                     jsonBuilder.append("\"name\":\"").append(fileName).append("\",");
-                    jsonBuilder.append("\"size\":\"").append(item.getSize()).append("\"");
+                    jsonBuilder.append("\"size\":\"").append(item.getSize()).append("\",");
+                    jsonBuilder.append("\"isImage\":\"").append(isImage).append("\"");
                     jsonBuilder.append("},");
                 }
             }
@@ -178,11 +176,20 @@ public class FileUploadServlet extends HttpServlet {
             throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            writer.write(jsonBuilder.toString());
-            writer.close();
         }
-
+        response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
+        PrintWriter printWriter = null;
+        try {
+            printWriter = response.getWriter();
+            printWriter.write(jsonBuilder.toString());
+            printWriter.flush();
+        } catch (IOException e) {
+        } finally {
+            if (printWriter != null) {
+                printWriter.close();
+            }
+        }
     }
 
     private String getMimeType(File file) {
