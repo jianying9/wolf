@@ -10,7 +10,13 @@ import java.util.Map;
  * @author aladdin
  */
 public interface RedisHandler {
-
+    
+    public String META_DBINDEX = "META_DBINDEX";
+    
+    public String META_SEQUENCE = "META_SEQUENCE";
+    
+    public String SEQUENCE_DBINDEX = "DBINDEX";
+    
     public String getTableIndexKey();
 
     public String getColumnIndexKey(String columnName, String columnValue);

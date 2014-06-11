@@ -24,8 +24,6 @@ public final class REntityDaoBuilder<T extends Entity> {
 
     //table name
     private final String tableName;
-    //
-    private final int dbIndex;
     //key
     private final RColumnHandler keyHandler;
     //column
@@ -34,9 +32,8 @@ public final class REntityDaoBuilder<T extends Entity> {
     private final Class<T> clazz;
     private final REntityDaoContext<T> entityDaoContext;
 
-    public REntityDaoBuilder(String tableName, int dbIndex, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
+    public REntityDaoBuilder(String tableName, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
         this.tableName = tableName;
-        this.dbIndex = dbIndex;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
             this.columnHandlerList = new ArrayList<RColumnHandler>(0);
@@ -51,9 +48,6 @@ public final class REntityDaoBuilder<T extends Entity> {
         if (this.tableName == null) {
             throw new RuntimeException("Error when building REntityDao. Cause: tableName is null or empty");
         }
-        if (this.dbIndex == 0) {
-            throw new RuntimeException("Error when building REntityDao. Cause: dbIndex must > 0");
-        }
         if (this.clazz == null) {
             throw new RuntimeException("Error when building REntityDao. Cause: clazz is null");
         }
@@ -61,7 +55,7 @@ public final class REntityDaoBuilder<T extends Entity> {
             throw new RuntimeException("Error when building REntityDao. Cause: key is null");
         }
         //初始化redis数据库处理对象
-        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.dbIndex, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList);
+        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList);
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromRedisHandlerImpl<T>(
                 redisHandler,

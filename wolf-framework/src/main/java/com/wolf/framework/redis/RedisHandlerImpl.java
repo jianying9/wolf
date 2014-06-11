@@ -29,8 +29,7 @@ public final class RedisHandlerImpl implements RedisHandler {
     private final List<RColumnHandler> columnHandlerList;
     private final Set<String> indexColumnNameSet = new HashSet<String>(2, 1);
 
-    public RedisHandlerImpl(String tableName, int dbIndex, JedisPool jedisPool, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList) {
-        this.dbIndex = dbIndex;
+    public RedisHandlerImpl(String tableName, JedisPool jedisPool, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList) {
         this.jedisPool = jedisPool;
         this.keyHandler = keyHandler;
         this.columnHandlerList = columnHandlerList;
@@ -41,21 +40,24 @@ public final class RedisHandlerImpl implements RedisHandler {
         }
         this.tableIndexKey = "KEY" + this.connector + tableName;
         this.columnIndexKeyPrefix = "INDEX" + this.connector + tableName + this.connector;
-        //验证
+        //获取dbindex
         Jedis jedis = this.jedisPool.getResource();
         try {
-            jedis.select(this.dbIndex);
-            String thisTableName = jedis.get("TABLE_NAME");
-            if (thisTableName == null) {
-                jedis.set("TABLE_NAME", tableName);
+            jedis.select(0);
+            String dbIndexStr = jedis.hget(RedisHandler.META_DBINDEX, tableName);
+            if(dbIndexStr == null) {
+                //未分配
+                long nextDbIndex = jedis.hincrBy(RedisHandler.META_SEQUENCE, RedisHandler.SEQUENCE_DBINDEX, 1);
+                this.dbIndex = (int) nextDbIndex;
             } else {
-                if (thisTableName.equals(tableName) == false) {
-                    throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " is used by " + thisTableName);
-                }
+                //已分配
+                this.dbIndex = Integer.parseInt(dbIndexStr);
             }
-
+            //验证dbindex
+            jedis.select(this.dbIndex);
         } catch (JedisDataException ex) {
-            throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " invalid");
+            System.err.println(ex);
+            throw new RuntimeException("Error when init redis dao.entityName:" + tableName + " dbindex:" + this.dbIndex + " invalid dbIndex!");
         } finally {
             this.jedisPool.returnResource(jedis);
         }
