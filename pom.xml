@@ -625,5 +625,6 @@
         <!--<module>wolf-lucene</module>-->
         <module>wolf-doc</module>
         <module>wolf-fileupload</module>
+        <module>wolf-search</module>
     </modules>
 </project>
