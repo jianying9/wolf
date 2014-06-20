@@ -49,6 +49,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 //未分配
                 long nextDbIndex = jedis.hincrBy(RedisHandler.META_SEQUENCE, RedisHandler.SEQUENCE_DBINDEX, 1);
                 this.dbIndex = (int) nextDbIndex;
+                jedis.hset(RedisHandler.META_DBINDEX, tableName, Integer.toString(this.dbIndex));
             } else {
                 //已分配
                 this.dbIndex = Integer.parseInt(dbIndexStr);
