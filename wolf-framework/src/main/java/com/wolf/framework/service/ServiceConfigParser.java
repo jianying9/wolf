@@ -197,7 +197,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                serviceWorker.createInfo(actionName, group, description, requestConfigs, reponseConfigs);
+                serviceWorker.createInfo(actionName, page, validateSession, group, description, requestConfigs, reponseConfigs);
             }
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());

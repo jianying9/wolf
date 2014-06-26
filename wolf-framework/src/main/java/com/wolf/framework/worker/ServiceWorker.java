@@ -16,6 +16,8 @@ public interface ServiceWorker {
     public void doWork(WorkerContext workerContext);
 
     public void createInfo(String act,
+            boolean page,
+            boolean validateSession,
             String group,
             String description,
             RequestConfig[] requestConfigs,

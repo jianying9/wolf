@@ -23,6 +23,8 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     private final WorkHandler nextWorkHandler;
     private String act = "";
     private String group = "";
+    private boolean page;
+    private boolean validateSession;
     private String desc = "";
     private String requestConfigs = "[]";
     private String responseConfigs = "[]";
@@ -47,6 +49,8 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         Map<String, String> infoMap = new HashMap<String, String>(8, 1);
         infoMap.put("actionName", this.act);
         infoMap.put("group", this.group);
+        infoMap.put("page", Boolean.toString(this.page));
+        infoMap.put("validateSession", Boolean.toString(this.validateSession));
         infoMap.put("desc", this.desc);
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
@@ -95,11 +99,15 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
 
     @Override
     public final void createInfo(String act,
+            boolean page,
+            boolean validateSession,
             String group,
             String description,
             RequestConfig[] requestConfigs,
             ResponseConfig[] responseConfigs) {
         this.group = group;
+        this.page = page;
+        this.validateSession = validateSession;
         this.desc = description;
         this.act = act;
         //构造请求参数信息
@@ -117,7 +125,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     public final String getDescription() {
         return this.desc;
     }
-    
+
     @Override
     public final Response getResponse() {
         return this.frameworkMessageContext;

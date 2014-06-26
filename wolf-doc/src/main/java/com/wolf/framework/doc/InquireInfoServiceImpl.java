@@ -25,6 +25,9 @@ import java.util.UUID;
         responseConfigs = {
     @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "page", typeEnum = TypeEnum.CHAR_10, desc = ""),
+    @ResponseConfig(name = "validateSession", typeEnum = TypeEnum.CHAR_10, desc = ""),
+    @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "requestConfigs", typeEnum = TypeEnum.ARRAY, desc = ""),
     @ResponseConfig(name = "responseConfigs", typeEnum = TypeEnum.ARRAY, desc = "")
@@ -35,7 +38,7 @@ import java.util.UUID;
         group = "WOLF_FRAMEWORK",
         description = "")
 public class InquireInfoServiceImpl implements Service {
-    
+
     @Override
     public void execute(MessageContext messageContext) {
         String actionName = messageContext.getParameter("actionName");
