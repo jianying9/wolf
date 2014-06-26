@@ -22,6 +22,8 @@ public class FrameworkConfig {
     //单元测试模式
     public final static String UNIT_TEST = "UNIT_TEST";
     //----------------------------------------------------------
+    //是否开启websocket
+    public final static String WEBSOCKET = "websocket";
     //扫描注解包名集合
     public final static String ANNOTATION_SCAN_PACKAGES = "annotation.scan.packages";
     //任务线程空闲存活数量

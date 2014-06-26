@@ -76,12 +76,15 @@ public class ApplicationListener implements ServletContextListener {
         logger.info("Initializing applicationContext...");
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
         applicationContextBuilder.build();
-        logger.info("Start websocket...");
-        //开启websocket应用
-        ApplicationListener.APP = new GlobalApplication(appContextPath);
-        WebSocketEngine.getEngine().register(ApplicationListener.APP);
-        //注册推送服务
-        ApplicationContext.CONTEXT.getCometContext().addCometHandler(ApplicationListener.APP);
+        String websocket = parameterMap.get(FrameworkConfig.WEBSOCKET);
+        if (websocket != null && websocket.equals("on")) {
+            logger.info("Start websocket...");
+            //开启websocket应用
+            ApplicationListener.APP = new GlobalApplication(appContextPath);
+            WebSocketEngine.getEngine().register(ApplicationListener.APP);
+            //注册推送服务
+            ApplicationContext.CONTEXT.getCometContext().addCometHandler(ApplicationListener.APP);
+        }
     }
 
     @Override
