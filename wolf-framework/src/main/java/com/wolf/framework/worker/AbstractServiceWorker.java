@@ -1,5 +1,6 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -28,6 +29,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     private String desc = "";
     private String requestConfigs = "[]";
     private String responseConfigs = "[]";
+    private String responseStates = "[]";
     protected FrameworkMessageContext frameworkMessageContext;
 
     public AbstractServiceWorker(String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
@@ -54,6 +56,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         infoMap.put("desc", this.desc);
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
+        infoMap.put("responseStates", this.responseStates);
         return infoMap;
     }
 
@@ -104,7 +107,8 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
             String group,
             String description,
             RequestConfig[] requestConfigs,
-            ResponseConfig[] responseConfigs) {
+            ResponseConfig[] responseConfigs,
+            ResponseState[] responseStates) {
         this.group = group;
         this.page = page;
         this.validateSession = validateSession;
@@ -114,6 +118,19 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         this.requestConfigs = this.getRequestParameterJson(requestConfigs);
         //构造返回参数信息
         this.responseConfigs = this.getResponseParameterJson(responseConfigs);
+        //返回状态提示
+        StringBuilder responseStateBuilder = new StringBuilder(64);
+        responseStateBuilder.append('[');
+        for (ResponseState responseState : responseStates) {
+            responseStateBuilder.append("{\"state\":\"").append(responseState.state())
+                    .append("\",\"desc\":\"").append(responseState.desc())
+                    .append("\"}").append(',');
+        }
+        if (responseStateBuilder.length() > 1) {
+            responseStateBuilder.setLength(responseStateBuilder.length() - 1);
+        }
+        responseStateBuilder.append(']');
+        this.responseStates = responseStateBuilder.toString();
     }
 
     @Override

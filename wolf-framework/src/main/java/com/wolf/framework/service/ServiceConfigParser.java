@@ -87,8 +87,9 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
             final boolean response = serviceConfig.response();
             final boolean validateSession = serviceConfig.validateSession();
-            final String description = serviceConfig.description();
+            final String desc = serviceConfig.desc();
             final String group = serviceConfig.group();
+            final ResponseState[] responseStates = serviceConfig.responseStates();
             //开始生成业务处理链
             //实例化该clazz
             Service service = null;
@@ -197,7 +198,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                serviceWorker.createInfo(actionName, page, validateSession, group, description, requestConfigs, reponseConfigs);
+                serviceWorker.createInfo(actionName, page, validateSession, group, desc, requestConfigs, reponseConfigs, responseStates);
             }
             this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());

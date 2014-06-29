@@ -30,13 +30,15 @@ import java.util.UUID;
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "requestConfigs", typeEnum = TypeEnum.ARRAY, desc = ""),
+    @ResponseConfig(name = "responseStates", typeEnum = TypeEnum.ARRAY, desc = ""),
     @ResponseConfig(name = "responseConfigs", typeEnum = TypeEnum.ARRAY, desc = "")
 },
+        responseStates = {},
         validateSession = false,
         sessionHandleTypeEnum = SessionHandleTypeEnum.SAVE,
         response = true,
         group = "WOLF_FRAMEWORK",
-        description = "")
+        desc = "")
 public class InquireInfoServiceImpl implements Service {
 
     @Override

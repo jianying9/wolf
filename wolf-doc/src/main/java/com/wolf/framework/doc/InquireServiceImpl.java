@@ -28,11 +28,12 @@ import java.util.Set;
     @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
+        responseStates = {},
         validateSession = false,
         page = true,
         response = true,
         group = "WOLF_FRAMEWORK",
-        description = "")
+        desc = "")
 public class InquireServiceImpl implements Service {
 
     @Override

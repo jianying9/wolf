@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface ResponseFlag {
+public @interface ResponseState {
 
-    public String flag();
+    public String state();
 
-    public String description();
+    public String desc();
 }

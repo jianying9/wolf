@@ -77,7 +77,7 @@ public @interface ServiceConfig {
      *
      * @return
      */
-    public String description();
+    public String desc();
 
     /**
      * 接口分组
@@ -87,9 +87,9 @@ public @interface ServiceConfig {
     public String group() default "ungrouped";
 
     /**
-     * 自定义返回标志
+     * 返回标志描述
      *
      * @return
      */
-    public ResponseFlag[] responseFlags() default {};
+    public ResponseState[] responseStates();
 }

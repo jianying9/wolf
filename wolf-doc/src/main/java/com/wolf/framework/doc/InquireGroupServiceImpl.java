@@ -23,11 +23,12 @@ import java.util.Set;
         responseConfigs = {
     @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
+        responseStates = {},
         validateSession = false,
         page = true,
         response = true,
         group = "WOLF_FRAMEWORK",
-        description = "")
+        desc = "")
 public class InquireGroupServiceImpl implements Service {
 
     @Override

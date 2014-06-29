@@ -1,5 +1,6 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -21,7 +22,8 @@ public interface ServiceWorker {
             String group,
             String description,
             RequestConfig[] requestConfigs,
-            ResponseConfig[] responseConfigs);
+            ResponseConfig[] responseConfigs,
+            ResponseState[] responseStates);
 
     public Map<String, String> getInfoMap();
 
