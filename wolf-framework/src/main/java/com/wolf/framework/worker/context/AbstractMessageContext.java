@@ -1,7 +1,7 @@
 package com.wolf.framework.worker.context;
 
 import com.wolf.framework.comet.CometContext;
-import com.wolf.framework.config.DefaultResponseFlags;
+import com.wolf.framework.config.DefaultResponseStates;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
@@ -22,7 +22,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     //message
     private String error = "";
     private String responseMessage = "";
-    protected String flag = DefaultResponseFlags.FAILURE;
+    protected String state = DefaultResponseStates.FAILURE;
     protected final String[] returnParameter;
     protected final Map<String, ResponseParameterHandler> parameterHandlerMap;
     //session
@@ -52,28 +52,28 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     }
     
     @Override
-    public final String getFlag() {
-        return this.flag;
+    public final String getState() {
+        return this.state;
     }
 
     @Override
     public final void invalid() {
-        this.flag = DefaultResponseFlags.INVALID;
+        this.state = DefaultResponseStates.INVALID;
     }
 
     @Override
     public final void unlogin() {
-        this.flag = DefaultResponseFlags.UNLOGIN;
+        this.state = DefaultResponseStates.UNLOGIN;
     }
 
     @Override
     public final void success() {
-        this.flag = DefaultResponseFlags.SUCCESS;
+        this.state = DefaultResponseStates.SUCCESS;
     }
 
     @Override
-    public final void setFlag(String flag) {
-        this.flag = flag;
+    public final void setState(String state) {
+        this.state = state;
     }
 
     @Override
@@ -109,7 +109,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     @Override
     public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+        jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"act\":\"").append(this.workerContext.getAct())
                 .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();

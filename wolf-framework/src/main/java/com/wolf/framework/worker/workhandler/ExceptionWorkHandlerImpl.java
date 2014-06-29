@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.config.DefaultResponseFlags;
+import com.wolf.framework.config.DefaultResponseStates;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.exception.TranscationRollbackException;
 import com.wolf.framework.logger.LogFactory;
@@ -33,9 +33,9 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             logger.error("wolf-exception", t);
             if (TranscationRollbackException.class.isInstance(t)) {
                 TranscationRollbackException te = (TranscationRollbackException) t;
-                frameworkMessageContext.setFlag(te.getFlag());
+                frameworkMessageContext.setState(te.getFlag());
             } else {
-                frameworkMessageContext.setFlag(DefaultResponseFlags.EXCEPTION);
+                frameworkMessageContext.setState(DefaultResponseStates.EXCEPTION);
             }
         }
     }

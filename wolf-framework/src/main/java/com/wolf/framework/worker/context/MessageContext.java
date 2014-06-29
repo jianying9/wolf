@@ -32,7 +32,7 @@ public interface MessageContext extends Response {
 
     public void success();
 
-    public void setFlag(String flag);
+    public void setState(String state);
 
     public ApplicationContext getApplicationContext();
 

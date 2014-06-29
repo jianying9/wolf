@@ -24,7 +24,7 @@ public final class MessageContextImpl extends AbstractMessageContext {
         if (this.returnParameter.length > 0 && this.mapData != null) {
             data = JsonUtils.mapToJSON(this.mapData, this.returnParameter, this.parameterHandlerMap);
         }
-        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+        jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"act\":\"").append(this.workerContext.getAct())
                 .append("\",\"data\":").append(data).append('}');
         return jsonBuilder.toString();

@@ -17,7 +17,7 @@ public interface Response {
 
     public long getPageNum();
 
-    public String getFlag();
+    public String getState();
 
     public Map<String, String> getMapData();
 

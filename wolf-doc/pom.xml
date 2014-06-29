@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.wolf</groupId>
         <artifactId>wolf</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>4.0-SNAPSHOT</version>
     </parent>
     <groupId>com.wolf</groupId>
     <artifactId>wolf-doc</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <name>wolf-doc</name>
     <url>http://maven.apache.org</url>
     <properties>

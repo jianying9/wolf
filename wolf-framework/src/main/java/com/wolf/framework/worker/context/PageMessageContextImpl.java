@@ -16,8 +16,8 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     //page
     private long pageIndex = 1;
     private long pageSize = 6;
-    private long pageTotal = 0;
-    private long pageNum = 0;
+    private long pageTotal = -1;
+    private long pageNum = -1;
     private List<Map<String, String>> mapListData;
 
     public PageMessageContextImpl(
@@ -97,13 +97,14 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
         if (this.returnParameter.length > 0 && this.mapListData != null) {
             data = JsonUtils.mapListToJSON(this.mapListData, this.returnParameter, this.parameterHandlerMap);
         }
-        jsonBuilder.append("{\"flag\":\"").append(this.flag)
+        jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"act\":\"").append(this.workerContext.getAct())
-                .append("\",\"pageTotal\":").append(this.pageTotal)
+                .append("\",\"data\":{")
+                .append("\"pageTotal\":").append(this.pageTotal)
                 .append(",\"pageIndex\":").append(this.pageIndex)
                 .append(",\"pageSize\":").append(this.pageSize)
                 .append(",\"pageNum\":").append(this.pageNum)
-                .append(",\"data\":[").append(data).append("]}");
+                .append(",\"list\":[").append(data).append("]}}");
         return jsonBuilder.toString();
     }
 
