@@ -29,7 +29,7 @@
                     'jquery': staticRootPath + 'jquery',
                     'text': staticRootPath + 'require/text',
                     'crypto': staticRootPath + 'crypto',
-                    'jquery.datepicker': staticRootPath + 'jquery/jquery-ui-1.10.3.datepicker',
+                    'jquery.datepicker': staticRootPath + 'jquery/datepicker/jquery-ui-1.10.3.datepicker',
                     'yy/yy': staticRootPath + 'yy',
                     'yy/config': staticRootPath + 'yy',
                     'yy/module': staticRootPath + 'yy',
@@ -84,8 +84,10 @@
                     module.loadModule('info');
                 }
                 yy.setConfig({
-                    httpServer: 'http://192.168.235.114:8080/momi/service.io'
+                    httpServer: 'http://192.168.235.114:8080/momi/service.io',
+                    webSocketServer: 'ws://192.168.235.114:8080/momi/service.io'
                 });
+                yy.openWebSocket();
             });
         </script>
     </body>

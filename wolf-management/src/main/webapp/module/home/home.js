@@ -1,6 +1,5 @@
 define('home/home', ['require', 'yy/yy', 'yy/form', 'yy/button', 'yy/list', 'crypto', 'yy/module'], function(require) {
     var _yy = require('yy/yy');
-    var _module = require('yy/module');
     var self = {};
     var _event = _yy.getEvent();
     var _message = _yy.getMessage();
