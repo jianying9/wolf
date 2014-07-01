@@ -55,8 +55,8 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
         ParameterContext parametersContext = this.serviceWorkerContext.getParameterContext();
         DataHandlerFactory dataHandlerFactory = parametersContext.getDataHandlerFactory();
         DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(TypeEnum.INT);
-        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler, "页索引");
-        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler, "页大小");
+        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler);
+        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler);
     }
 
     /**
@@ -75,7 +75,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
             final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
             for (RequestConfig requestConfig : requestConfigs) {
-                if(requestConfig.must()) {
+                if (requestConfig.must()) {
                     importantRequestConfigList.add(requestConfig);
                 } else {
                     minorRequestConfigList.add(requestConfig);

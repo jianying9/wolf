@@ -9,13 +9,11 @@ public final class JsonParameterHandlerImpl implements ResponseParameterHandler 
 
     private final String name;
     private final String dataType;
-    private final String desc;
     private final String defaultValue;
 
-    public JsonParameterHandlerImpl(String name, String dataType, String desc, String defaultValue) {
+    public JsonParameterHandlerImpl(String name, String dataType, String defaultValue) {
         this.name = name;
         this.dataType = dataType;
-        this.desc = desc;
         this.defaultValue = defaultValue;
     }
 
@@ -32,11 +30,6 @@ public final class JsonParameterHandlerImpl implements ResponseParameterHandler 
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.desc;
     }
 
     @Override

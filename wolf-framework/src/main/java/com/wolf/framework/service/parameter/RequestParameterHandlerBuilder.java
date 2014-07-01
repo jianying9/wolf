@@ -38,16 +38,6 @@ public class RequestParameterHandlerBuilder {
             throw new RuntimeException("Error when build InputParameterHandler. Cause: reserved word : ".concat(fieldName));
         }
         //
-        //获取描述
-        String compileModel = this.applicationContext.getParameter(FrameworkConfig.COMPILE_MODEL);
-        final String desc;
-        if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            //开发模式，保留参数描述信息
-            desc = this.inputConfig.desc();
-        } else {
-            desc = "";
-        }
-        //
         final DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         //基本数据类型
         TypeEnum typeEnum = this.inputConfig.typeEnum();
@@ -59,13 +49,13 @@ public class RequestParameterHandlerBuilder {
             case JSON:
                 throw new RuntimeException("Error building InputParameterHandler. Cause: input not support JSON");
             case STRING:
-                parameterHandler = new StringParameterHandlerImpl(fieldName, null, dataHandler, desc);
+                parameterHandler = new StringParameterHandlerImpl(fieldName, null, dataHandler);
                 break;
             case DATE:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler, desc);
+                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case NUMBER:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, desc);
+                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler);
                 break;
         }
         return parameterHandler;

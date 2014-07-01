@@ -33,7 +33,7 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             logger.error("wolf-exception", t);
             if (TranscationRollbackException.class.isInstance(t)) {
                 TranscationRollbackException te = (TranscationRollbackException) t;
-                frameworkMessageContext.setState(te.getFlag());
+                frameworkMessageContext.setState(te.getState());
             } else {
                 frameworkMessageContext.setState(DefaultResponseStates.EXCEPTION);
             }

@@ -10,8 +10,6 @@ public interface RequestParameterHandler {
 
     public String getDataType();
 
-    public String getDescription();
-
     public String validate(String value);
     
     public String convertToInput(String value);

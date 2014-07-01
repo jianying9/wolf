@@ -43,18 +43,9 @@ public class ResponseParameterHandlerBuilder {
             throw new RuntimeException("Error when build OutputParameterHandler. Cause: reserved word : ".concat(fieldName));
         }
         //
-        //获取描述
-        String compileModel = this.applicationContext.getParameter(FrameworkConfig.COMPILE_MODEL);
-        final String desc;
-        if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-            //开发模式，保留参数描述信息
-            desc = this.outputConfig.desc();
-        } else {
-            desc = "";
-        }
+        final FilterFactory filterFactory = this.parameterContext.getFilterFactory();
         //
         final DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
-        final FilterFactory filterFactory = this.parameterContext.getFilterFactory();
         //基本数据类型
         TypeEnum typeEnum = this.outputConfig.typeEnum();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(typeEnum);
@@ -67,14 +58,13 @@ public class ResponseParameterHandlerBuilder {
                 if (typeEnum.equals(TypeEnum.ARRAY)) {
                     defaultValue = "[]";
                 }
-                parameterHandler = new JsonParameterHandlerImpl(fieldName, typeEnum.name(), desc, defaultValue);
+                parameterHandler = new JsonParameterHandlerImpl(fieldName, typeEnum.name(), defaultValue);
                 break;
             case STRING:
                 Filter[] filters;
                 if (typeEnum != TypeEnum.UUID) {
                     //获取过滤对象
                     FilterTypeEnum[] filterTypeEnums = this.outputConfig.filterTypes();
-
                     if (filterTypeEnums.length > 0) {
                         Filter filter;
                         filters = new Filter[filterTypeEnums.length];
@@ -91,13 +81,13 @@ public class ResponseParameterHandlerBuilder {
                 } else {
                     filters = new Filter[0];
                 }
-                parameterHandler = new StringParameterHandlerImpl(fieldName, filters, dataHandler, desc);
+                parameterHandler = new StringParameterHandlerImpl(fieldName, filters, dataHandler);
                 break;
             case DATE:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler, desc);
+                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case NUMBER:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, desc);
+                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler);
                 break;
         }
         return parameterHandler;

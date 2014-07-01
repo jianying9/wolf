@@ -10,12 +10,10 @@ import com.wolf.framework.data.DataHandler;
 public abstract class AbstractParameterHandler {
 
     protected final String name;
-    protected final String description;
     protected final DataHandler dataHandler;
 
-    protected AbstractParameterHandler(final String name, final DataHandler dataHandler, final String description) {
+    protected AbstractParameterHandler(final String name, final DataHandler dataHandler) {
         this.name = name;
-        this.description = description;
         this.dataHandler = dataHandler;
     }
 
@@ -25,10 +23,6 @@ public abstract class AbstractParameterHandler {
 
     public final String getDataType() {
         return this.dataHandler.getDataTypeEnum().name();
-    }
-
-    public final String getDescription() {
-        return this.description;
     }
 
     public final DataHandler getDataHandler() {

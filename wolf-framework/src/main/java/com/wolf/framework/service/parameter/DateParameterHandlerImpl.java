@@ -9,8 +9,8 @@ import com.wolf.framework.data.DataHandler;
  */
 public final class DateParameterHandlerImpl extends AbstractParameterHandler implements RequestParameterHandler, ResponseParameterHandler {
 
-    DateParameterHandlerImpl(final String name, final DataHandler dataHandler, final String desc) {
-        super(name, dataHandler, desc);
+    DateParameterHandlerImpl(final String name, final DataHandler dataHandler) {
+        super(name, dataHandler);
     }
 
     @Override

@@ -12,8 +12,8 @@ public final class StringParameterHandlerImpl extends AbstractParameterHandler i
 
     private final Filter[] filters;
 
-    StringParameterHandlerImpl(final String name, final Filter[] filters, final DataHandler dataHandler, final String desc) {
-        super(name, dataHandler, desc);
+    StringParameterHandlerImpl(final String name, final Filter[] filters, final DataHandler dataHandler) {
+        super(name, dataHandler);
         this.filters = filters;
     }
 
