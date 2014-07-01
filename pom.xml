@@ -15,13 +15,13 @@
     
     <!-- local.maven.com内网地址为192.168.59.99 -->
     <!--远程资源库地址-->
-    <repositories>
+    <!--    <repositories>
         <repository>
             <id>cloudera</id>
             <name>cloudera maven repository</name>
             <url>https://repository.cloudera.com/content/repositories/releases</url>
         </repository>
-    </repositories>
+    </repositories>-->
     <!--发布资源库地址-->
     <distributionManagement>
         <repository>
@@ -593,5 +593,6 @@
         <module>wolf-doc</module>
         <module>wolf-fileupload</module>
         <module>wolf-search</module>
+        <!--<module>wolf-management</module>-->
     </modules>
 </project>
