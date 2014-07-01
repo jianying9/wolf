@@ -68,7 +68,7 @@ define('info/info', ['require', 'yy/yy', 'yy/label', 'yy/form', 'yy/button', 'yy
                 //动态渲染测试表单
                 var testRequestForm = thisModule.findByKey('test-request-form');
                 var inputHtml = '';
-                if (data.page) {
+                if (data.page === "true") {
                     inputHtml += '<div class="form_label">pageIndex:</div>'
                             + '<input name="pageIndex" value="1" />'
                             + '<div class="form_label">pageSize:</div>'

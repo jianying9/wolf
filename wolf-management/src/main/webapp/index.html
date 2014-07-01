@@ -6,12 +6,14 @@
         <meta http-equiv="content-type" content="text/html;charset=utf-8">
         <title>在线接口文档</title>
         <script src="http://192.168.235.114:8080/yy/min/libs/require/require.js"></script>
+        <!--<script src="http://115.28.77.1/yy/min/libs/require/require.js"></script>-->
     </head>
     <body class="global_background">
         <script>
             var staticRootPath = "http://192.168.235.114:8080/yy/min/libs/";
+//            var staticRootPath = "http://115.28.77.1/yy/min/libs/";
 //            var v = new Date().getTime();
-            var v = 29;
+            var v = 31;
             require.config({
                 packages: [
                     {
@@ -79,6 +81,9 @@
                     webSocketServer: 'ws://192.168.235.114:8080/momi/service.io'
                 });
                 yy.openWebSocket();
+//                yy.setConfig({
+//                    httpServer: 'http://115.28.77.1/happy/service.io'
+//                });
             });
         </script>
     </body>
