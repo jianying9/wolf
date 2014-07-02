@@ -25,8 +25,8 @@ import java.util.UUID;
         responseConfigs = {
     @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @ResponseConfig(name = "page", typeEnum = TypeEnum.CHAR_10, desc = ""),
-    @ResponseConfig(name = "validateSession", typeEnum = TypeEnum.CHAR_10, desc = ""),
+    @ResponseConfig(name = "page", typeEnum = TypeEnum.BOOLEAN, desc = ""),
+    @ResponseConfig(name = "validateSession", typeEnum = TypeEnum.BOOLEAN, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "requestConfigs", typeEnum = TypeEnum.ARRAY, desc = ""),
