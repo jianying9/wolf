@@ -51,10 +51,10 @@ define('info/info', ['require', 'yy/yy', 'yy/label', 'yy/form', 'yy/button', 'yy
                 var descriptionLabel = thisModule.findByKey('description-label');
                 descriptionLabel.setLabel(data.desc);
                 var otherInfo = '';
-                if (data.page === 'true') {
+                if (data.page) {
                     otherInfo = otherInfo + '分页请求:pageIndex,pageSize,响应:pageIndex,pageSize,pageNum,pageTotal;';
                 }
-                if (data.validateSession === 'true') {
+                if (data.validateSession) {
                     otherInfo = otherInfo + 'session验证;';
                 }
                 var otherLabel = thisModule.findByKey('other-label');
@@ -68,7 +68,7 @@ define('info/info', ['require', 'yy/yy', 'yy/label', 'yy/form', 'yy/button', 'yy
                 //动态渲染测试表单
                 var testRequestForm = thisModule.findByKey('test-request-form');
                 var inputHtml = '';
-                if (data.page === "true") {
+                if (data.page) {
                     inputHtml += '<div class="form_label">pageIndex:</div>'
                             + '<input name="pageIndex" value="1" />'
                             + '<div class="form_label">pageSize:</div>'
