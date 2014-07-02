@@ -18,11 +18,6 @@ public class DateTimeDataHandlerImpl implements DataHandler {
     }
 
     @Override
-    public final String getDefaultValue() {
-        return DataHandler.DEFAULT_DATE_VALUE;
-    }
-
-    @Override
     public final String validate(final String value) {
         Matcher matcher = this.pattern.matcher(value);
         boolean result = matcher.matches();
@@ -37,11 +32,6 @@ public class DateTimeDataHandlerImpl implements DataHandler {
     @Override
     public TypeEnum getDataTypeEnum() {
         return TypeEnum.DATE_TIME;
-    }
-
-    @Override
-    public String getNextValue() {
-        return this.getRandomValue();
     }
 
     @Override

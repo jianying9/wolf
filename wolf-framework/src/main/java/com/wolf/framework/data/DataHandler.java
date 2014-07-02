@@ -7,11 +7,6 @@ package com.wolf.framework.data;
  */
 public interface DataHandler {
 
-    public String DEFAULT_CHAR_VALUE = "";
-    public String DEFAULT_NUMBER_VALUE = "-1";
-    public String DEFAULT_DECIMAL_VALUE = "0";
-    public String DEFAULT_DATE_VALUE = "0";
-
     /**
      * 返回空字符串代表验证成功,否则会返回错误消息
      * @param value
@@ -19,11 +14,7 @@ public interface DataHandler {
      */
     public String validate(String value);
 
-    public String getDefaultValue();
-
     public String getRandomValue();
-    
-    public String getNextValue();
     
     public TypeEnum getDataTypeEnum();
     

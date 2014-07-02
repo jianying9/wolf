@@ -98,6 +98,12 @@ public enum TypeEnum {
             return DataClassEnum.STRING;
         }
     },
+    BOOLEAN {
+        @Override
+        public DataClassEnum getDataClassEnum() {
+            return DataClassEnum.BOOLEAN;
+        }
+    },
     //json对象
     OBJECT {
         @Override

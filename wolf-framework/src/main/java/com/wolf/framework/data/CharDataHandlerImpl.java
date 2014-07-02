@@ -21,11 +21,6 @@ public class CharDataHandlerImpl implements DataHandler {
     }
 
     @Override
-    public final String getDefaultValue() {
-        return DataHandler.DEFAULT_CHAR_VALUE;
-    }
-
-    @Override
     public final String validate(final String value) {
         return value.length() <= this.length ? "" : this.error_message;
     }
@@ -38,11 +33,6 @@ public class CharDataHandlerImpl implements DataHandler {
     @Override
     public TypeEnum getDataTypeEnum() {
         return this.dataTypeEnum;
-    }
-
-    @Override
-    public String getNextValue() {
-        return UUID.randomUUID().toString();
     }
 
     @Override

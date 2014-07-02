@@ -5,22 +5,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 数字类型-999999999到999999999
+ * boolean:true|false
  *
  * @author aladdin
  */
-public final class IntDataHandlerImpl implements DataHandler {
+public final class BooleanDataHandlerImpl implements DataHandler {
 
-    private final String error_message = " must be int[-999999999~999999999]";
-    private final Pattern pattern = Pattern.compile("^\\d|[1-9]\\d{1,8}|-[1-9]\\d{0,8}$");
+    private final String error_message = " must be boolean[true,false]";
+    private final Pattern pattern = Pattern.compile("^true|false$");
 
-    IntDataHandlerImpl() {
+    BooleanDataHandlerImpl() {
     }
-
+    
     @Override
     public String getRandomValue() {
-        int value = NumberUtils.getRandomIntegerValue();
-        return Integer.toString(value);
+        long value = NumberUtils.getRandomLongValue();
+        boolean result;
+        if(value % 2 == 0) {
+            result = true;
+        } else {
+            result = false;
+        }
+        return Boolean.toString(result);
     }
 
     @Override
@@ -32,7 +38,7 @@ public final class IntDataHandlerImpl implements DataHandler {
 
     @Override
     public TypeEnum getDataTypeEnum() {
-        return TypeEnum.INT;
+        return TypeEnum.BOOLEAN;
     }
     
     @Override

@@ -15,15 +15,9 @@ public final class DateParameterHandlerImpl extends AbstractParameterHandler imp
 
     @Override
     public String getJson(String value) {
-        if (value.equals(DataHandler.DEFAULT_DATE_VALUE)) {
-            value = "";
-        } else {
-            value = this.dataHandler.convertToOutput(value);
-        }
-        String result;
+        value = this.dataHandler.convertToOutput(value);
         StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 5);
         jsonBuilder.append('"').append(this.name).append("\":\"").append(value).append('"');
-        result = jsonBuilder.toString();
-        return result;
+        return jsonBuilder.toString();
     }
 }

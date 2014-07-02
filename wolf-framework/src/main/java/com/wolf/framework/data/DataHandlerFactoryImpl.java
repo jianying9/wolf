@@ -15,6 +15,7 @@ public final class DataHandlerFactoryImpl implements DataHandlerFactory {
         this.dataHandlerMap.put(TypeEnum.LONG, new LongDataHandlerImpl());
         this.dataHandlerMap.put(TypeEnum.DOUBLE, null);
         this.dataHandlerMap.put(TypeEnum.DATE_TIME, new DateTimeDataHandlerImpl());
+        this.dataHandlerMap.put(TypeEnum.BOOLEAN, new BooleanDataHandlerImpl());
         this.dataHandlerMap.put(TypeEnum.DATE, new DateDataHandlerImpl());
         this.dataHandlerMap.put(TypeEnum.UUID, new CharDataHandlerImpl(" must be uuid", 36, TypeEnum.UUID));
         this.dataHandlerMap.put(TypeEnum.CHAR_10, new CharDataHandlerImpl(" must be char10", 10, TypeEnum.CHAR_10));

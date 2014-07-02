@@ -102,21 +102,41 @@ public final class SecurityUtils {
     private static String EncodingToBase64(byte[] str) {
         return new sun.misc.BASE64Encoder().encode(str);
     }
-
-    public static String encryptByDesGb2312(String text, String key) {
+    
+    public static String encryptByDes(String text, String key) {
         String result = "";
         try {
-            byte[] keyByte = key.getBytes("gb2312");
+            byte[] keyByte = key.getBytes();
             Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
             DESKeySpec desKeySpec = new DESKeySpec(keyByte);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
             IvParameterSpec iv = new IvParameterSpec(keyByte);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
-            byte[] textByte = text.getBytes("gb2312");
+            byte[] textByte = text.getBytes();
             byte[] resultByte = cipher.doFinal(textByte);
             result = byteToHexString(resultByte);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+    public static String decryptByDes(String text, String key) {
+        String result = "";
+        try {
+            byte[] keyByte = key.getBytes();
+            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            DESKeySpec desKeySpec = new DESKeySpec(keyByte);
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
+            IvParameterSpec iv = new IvParameterSpec(keyByte);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
+            byte[] textByte = text.getBytes();
+            byte[] resultByte = cipher.doFinal(textByte);
+            result = byteToHexString(resultByte);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }

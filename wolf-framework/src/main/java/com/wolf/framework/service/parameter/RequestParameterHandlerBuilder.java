@@ -57,6 +57,9 @@ public class RequestParameterHandlerBuilder {
             case NUMBER:
                 parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler);
                 break;
+            case BOOLEAN:
+                parameterHandler = new BooleanParameterHandlerImpl(fieldName, dataHandler);
+                break;
         }
         return parameterHandler;
     }
