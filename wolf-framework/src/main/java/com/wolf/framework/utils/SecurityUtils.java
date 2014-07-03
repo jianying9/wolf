@@ -1,6 +1,5 @@
 package com.wolf.framework.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
@@ -37,7 +36,13 @@ public final class SecurityUtils {
         return result;
     }
 
-    private static String byteToHexString(byte[] textByte) {
+    /**
+     * byte转16进制字符
+     *
+     * @param textByte
+     * @return
+     */
+    public static String byteToHexString(byte[] textByte) {
         StringBuilder hexString = new StringBuilder(32);
         int byteValue;
         for (byte bt : textByte) {
@@ -52,59 +57,32 @@ public final class SecurityUtils {
     }
 
     /**
-     * B64可逆加密
+     * 16进制字符转byte
      *
-     * @param source
-     * @param key
+     * @param hexString
      * @return
      */
-    public static String commonEncrypt(String source, String key) {
-        String result = "";
-        String str = encryptByMd5("128");
-        int startIndex = 0;
-        int endIndex = 1;
-        byte[] sourceByte = source.getBytes();
-        byte[] destiationByte = new byte[sourceByte.length * 2];
-        for (int index = 0; index < sourceByte.length; index++) {
-            if (startIndex == str.length()) {
-                startIndex = 0;
-                endIndex = 1;
-            }
-            destiationByte[index * 2] = str.substring(startIndex, endIndex).getBytes()[0];
-            destiationByte[index * 2 + 1] = (byte) (sourceByte[index] ^ destiationByte[index * 2]);
-            startIndex++;
-            endIndex++;
-        }
-        try {
-            result = EncodingToBase64(keyED(destiationByte, key));
-        } catch (UnsupportedEncodingException e) {
+    public static byte[] hexStringToByte(String hexString) {
+        byte[] result = new byte[hexString.length() / 2];
+        String str;
+        int byteValue;
+        for (int index = 0; index < hexString.length(); index = index + 2) {
+            str = hexString.substring(index, index + 2);
+            byteValue = Integer.parseInt(str, 16);
+            result[index / 2] = (byte) byteValue;
         }
         return result;
     }
 
-    private static byte[] keyED(byte[] source, String key) throws UnsupportedEncodingException {
-        String str = encryptByMd5(key);
-        int startIndex = 0;
-        int endIndex = 1;
-        for (int index = 0; index < source.length; index++) {
-            if (str.length() == startIndex) {
-                startIndex = 0;
-                endIndex = 1;
-            }
-            int num = source[index] ^ str.substring(startIndex, endIndex).getBytes()[0];
-            source[index] = (byte) num;
-            startIndex++;
-            endIndex++;
-        }
-        return source;
-    }
-
-    private static String EncodingToBase64(byte[] str) {
-        return new sun.misc.BASE64Encoder().encode(str);
-    }
-    
-    public static String encryptByDes(String text, String key) {
-        String result = "";
+    /**
+     * des加密
+     *
+     * @param text
+     * @param key
+     * @return
+     */
+    public static byte[] encryptByDes(String text, String key) {
+        byte[] resultByte = {};
         try {
             byte[] keyByte = key.getBytes();
             Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
@@ -114,15 +92,20 @@ public final class SecurityUtils {
             IvParameterSpec iv = new IvParameterSpec(keyByte);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
             byte[] textByte = text.getBytes();
-            byte[] resultByte = cipher.doFinal(textByte);
-            result = byteToHexString(resultByte);
+            resultByte = cipher.doFinal(textByte);
         } catch (Exception e) {
-            e.printStackTrace();
         }
-        return result;
+        return resultByte;
     }
-    
-    public static String decryptByDes(String text, String key) {
+
+    /**
+     * des解密
+     *
+     * @param entryByte
+     * @param key
+     * @return
+     */
+    public static String decryptByDes(byte[] entryByte, String key) {
         String result = "";
         try {
             byte[] keyByte = key.getBytes();
@@ -132,11 +115,31 @@ public final class SecurityUtils {
             SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
             IvParameterSpec iv = new IvParameterSpec(keyByte);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
-            byte[] textByte = text.getBytes();
-            byte[] resultByte = cipher.doFinal(textByte);
-            result = byteToHexString(resultByte);
+            byte[] resultByte = cipher.doFinal(entryByte);
+            result = new String(resultByte);
         } catch (Exception e) {
-            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 时间类型验证
+     * @param entrySeed
+     * @param key
+     * @return 
+     */
+    public static boolean isSafeTime(String entrySeed, String key) {
+        boolean result = false;
+        byte[] entiryByte = hexStringToByte(entrySeed);
+        String seedText = decryptByDes(entiryByte, key);
+        long seed = 0;
+        try {
+            seed = Long.parseLong(seedText);
+        } catch (RuntimeException e) {
+        }
+        long difftime = System.currentTimeMillis() - seed;
+        if (difftime > -60000 && difftime < 60000) {
+            result = true;
         }
         return result;
     }

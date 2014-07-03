@@ -51,6 +51,8 @@ public class FrameworkConfig {
     public final static String REDIS_MAX_POOL_SIZE = "redis.max.pool.size";
     //redis连接池最小连接数
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
+    //加密校验的key,8位字符
+    public final static String SEED_DES_KEY = "seed.des.key";
     //保留字段集合
 
     public static Set<String> getReservedWordSet() {
@@ -60,6 +62,7 @@ public class FrameworkConfig {
         wordSet.add("filters");
         wordSet.add("sid");
         wordSet.add("entry");
+        wordSet.add("seed");
         wordSet.add("pageIndex");
         wordSet.add("pageSize");
         wordSet.add("pageNum");

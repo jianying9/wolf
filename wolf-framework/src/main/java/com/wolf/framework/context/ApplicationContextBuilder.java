@@ -68,6 +68,12 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     }
 
     public final void build() {
+        //校验密钥
+        String key = this.parameterMap.get(FrameworkConfig.SEED_DES_KEY);
+        if (key == null || key.length() != 8) {
+            key = "wolf2014";
+            this.parameterMap.put(FrameworkConfig.SEED_DES_KEY, key);
+        }
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
         //检测服务器hostname的ip不能为127.0.0.1,否则提供rmi远程调用类服务时会出现异常
@@ -95,7 +101,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             List<String> packageNameList = new ArrayList<String>(packageNames.length);
             packageNameList.addAll(Arrays.asList(packageNames));
             //如果是开发模式,则加入接口文档接口
-            if(compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
+            if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
                 packageNameList.add("com.wolf.framework.doc");
             }
             final ClassLoader classloader = Thread.currentThread().getContextClassLoader();

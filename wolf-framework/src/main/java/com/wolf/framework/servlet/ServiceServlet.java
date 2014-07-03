@@ -1,10 +1,12 @@
 package com.wolf.framework.servlet;
 
+import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.HttpUtils;
+import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
@@ -47,25 +49,44 @@ public class ServiceServlet extends HttpServlet {
         String act = request.getParameter("act");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
         if (serviceWorker == null) {
-            this.logger.error("invalid act value:{}", act);
-            //无效的act
-            result = "{\"flag\":\"INVALID\",\"error\":\"act not exist\"}";
-        } else {
-            Enumeration<String> names = request.getParameterNames();
-            Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
-            String name;
-            String value;
-            while (names.hasMoreElements()) {
-                name = names.nextElement();
-                value = request.getParameter(name);
-                value = StringUtils.trim(value);
-                parameterMap.put(name, value);
+            String wolf = request.getParameter("wolf");
+            if (wolf != null && wolf.equals("TIME")) {
+                long time = System.currentTimeMillis();
+                StringBuilder resultBuilder = new StringBuilder(25);
+                resultBuilder.append("{\"wolf\":\"TIME\",\"time\":").append(Long.toString(time)).append('}');
+                result = resultBuilder.toString();
+            } else {
+                this.logger.error("invalid act value:{}", act);
+                //无效的act
+                result = "{\"state\":\"INVALID\",\"error\":\"act not exist\"}";
             }
-            String sid = parameterMap.get("sid");
-            Session session = this.sessionMap.get(sid);
-            WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
-            serviceWorker.doWork(workerContext);
-            result = serviceWorker.getResponse().getResponseMessage();
+        } else {
+            String entrySeed = request.getParameter("seed");
+            if (entrySeed == null) {
+                result = "{\"state\":\"DENIED\"}";
+            } else {
+                String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
+                boolean safe = SecurityUtils.isSafeTime(entrySeed, key);
+                if (safe) {
+                    Enumeration<String> names = request.getParameterNames();
+                    Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
+                    String name;
+                    String value;
+                    while (names.hasMoreElements()) {
+                        name = names.nextElement();
+                        value = request.getParameter(name);
+                        value = StringUtils.trim(value);
+                        parameterMap.put(name, value);
+                    }
+                    String sid = parameterMap.get("sid");
+                    Session session = this.sessionMap.get(sid);
+                    WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
+                    serviceWorker.doWork(workerContext);
+                    result = serviceWorker.getResponse().getResponseMessage();
+                } else {
+                    result = "{\"state\":\"DENIED\",\"error\":\"time less\"}";
+                }
+            }
         }
         HttpUtils.toWrite(request, response, result);
     }

@@ -15,7 +15,6 @@ import java.util.Map;
  */
 public final class ApplicationContext {
 
-    public final static String REDIS_HOST = "redisHost";
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
