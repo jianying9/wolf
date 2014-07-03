@@ -103,19 +103,28 @@ define('info/info', ['require', 'yy/yy', 'yy/label', 'yy/form', 'yy/button', 'yy
                                 } else {
                                     result += '[';
                                     result += _parse(json[0], indent + 1) + ',\n';
+                                    var hasData = false;
                                     for (var index = 1; index < json.length; index++) {
+                                        hasData = true;
                                         result += childTab +  _parse(json[index], indent + 1) + ',\n';
                                     }
-                                    result = result.substr(0, result.length - 2);
+                                    if(hasData) {
+                                        result = result.substr(0, result.length - 2);
+                                    }
                                     result += ']';
                                 }
                             } else {
-                                result += '{\n';
+                                var child = '';
                                 for (var id in json) {
-                                    result += childTab + '\"' + id + '\":' + _parse(json[id], indent + 1) + ',\n';
+                                    child += childTab + '\"' + id + '\":' + _parse(json[id], indent + 1) + ',\n';
                                 }
-                                result = result.substr(0, result.length - 2);
-                                result += '\n' + thisTab + '}';
+                                if(child !== '') {
+                                    result += '{\n';
+                                    result += child.substr(0, child.length - 2);
+                                    result += '\n' + thisTab + '}';
+                                } else {
+                                    result += '{}';
+                                }
                             }
                             break;
                         case 'number':
