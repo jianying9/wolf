@@ -1,7 +1,6 @@
 package com.wolf.framework.data;
 
 import com.wolf.framework.utils.StringUtils;
-import java.util.UUID;
 
 /**
  * 字符数据类型抽象类

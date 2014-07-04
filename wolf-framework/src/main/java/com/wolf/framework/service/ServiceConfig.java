@@ -45,11 +45,17 @@ public @interface ServiceConfig {
     public boolean requireTransaction() default false;
 
     /**
-     * 是否验证session是否过期
+     * 是否验证session
      *
      * @return
      */
     public boolean validateSession() default true;
+    /**
+     * 是否验证访问来至合法的客户端
+     *
+     * @return
+     */
+    public boolean validateSecurity() default true;
 
     /**
      * 是否设置session(用于保持连接)

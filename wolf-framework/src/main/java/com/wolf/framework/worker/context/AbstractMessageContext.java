@@ -55,6 +55,11 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final String getState() {
         return this.state;
     }
+    
+    @Override
+    public final void denied() {
+        this.state = DefaultResponseStates.DENIED;
+    }
 
     @Override
     public final void invalid() {

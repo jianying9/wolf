@@ -11,6 +11,8 @@ public interface FrameworkMessageContext extends MessageContext {
     public WorkerContext getWorkerContext();
     
     public void putParameter(String name, String value);
+    
+    public void denied();
 
     public void invalid();
 

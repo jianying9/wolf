@@ -1,12 +1,10 @@
 package com.wolf.framework.servlet;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.HttpUtils;
-import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
@@ -61,32 +59,21 @@ public class ServiceServlet extends HttpServlet {
                 result = "{\"state\":\"INVALID\",\"error\":\"act not exist\"}";
             }
         } else {
-            String entrySeed = request.getParameter("seed");
-            if (entrySeed == null) {
-                result = "{\"state\":\"DENIED\"}";
-            } else {
-                String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
-                boolean safe = SecurityUtils.isSafeTime(entrySeed, key);
-                if (safe) {
-                    Enumeration<String> names = request.getParameterNames();
-                    Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
-                    String name;
-                    String value;
-                    while (names.hasMoreElements()) {
-                        name = names.nextElement();
-                        value = request.getParameter(name);
-                        value = StringUtils.trim(value);
-                        parameterMap.put(name, value);
-                    }
-                    String sid = parameterMap.get("sid");
-                    Session session = this.sessionMap.get(sid);
-                    WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
-                    serviceWorker.doWork(workerContext);
-                    result = serviceWorker.getResponse().getResponseMessage();
-                } else {
-                    result = "{\"state\":\"DENIED\",\"error\":\"time less\"}";
-                }
+            Enumeration<String> names = request.getParameterNames();
+            Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
+            String name;
+            String value;
+            while (names.hasMoreElements()) {
+                name = names.nextElement();
+                value = request.getParameter(name);
+                value = StringUtils.trim(value);
+                parameterMap.put(name, value);
             }
+            String sid = parameterMap.get("sid");
+            Session session = this.sessionMap.get(sid);
+            WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
+            serviceWorker.doWork(workerContext);
+            result = serviceWorker.getResponse().getResponseMessage();
         }
         HttpUtils.toWrite(request, response, result);
     }

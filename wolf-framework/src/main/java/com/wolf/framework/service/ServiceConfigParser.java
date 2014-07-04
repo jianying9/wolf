@@ -29,6 +29,7 @@ import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SendMessageWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.TransactionWorkHandlerImpl;
+import com.wolf.framework.worker.workhandler.ValidateSecurityWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ValidateSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
             final boolean response = serviceConfig.response();
             final boolean validateSession = serviceConfig.validateSession();
+            final boolean validateSecurity = serviceConfig.validateSecurity();
             final String desc = serviceConfig.desc();
             final String group = serviceConfig.group();
             final ResponseState[] responseStates = serviceConfig.responseStates();
@@ -166,6 +168,11 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //是否验证session
             if (validateSession) {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
+            }
+            //是否验证访问来源是否安全
+            if(validateSecurity) {
+                String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
+                workHandler = new ValidateSecurityWorkHandlerImpl(key, workHandler);
             }
             ResponseParameterHandler outputParameterHandler;
             ResponseParameterHandlerBuilder outputParameterHandlerBuilder;
