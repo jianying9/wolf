@@ -13,7 +13,7 @@
 //            var v = new Date().getTime();
             var staticRootPath = "http://192.168.235.114:8080/yy/min/libs/";
 //            var staticRootPath = "http://115.28.77.1/yy/min/libs/";
-            var v = 39;
+            var v = 46;
             require.config({
                 packages: [
                     {
@@ -62,37 +62,38 @@
                 urlArgs: 'v=' + v
             });
             require(['yy/yy', 'yy/module'], function(yy, module) {
-                yy.setConfig({
+                yy.init({
                     httpServer: 'http://192.168.235.114:8080/momi/service.io',
-                    webSocketServer: 'ws://192.168.235.114:8080/momi/service.io'
+                    webSocketServer: 'ws://192.168.235.114:8080/momi/service.io',
+                    websocket: 'on',
+                    key: '6d6f6d6932303134'
+                            //
+//                    httpServer: 'http://115.28.77.1/happy/service.io',
+//                    key: '34313032676e6162'
+                }, function() {
+                    //加载css
+                    var cssLink = document.createElement("link");
+                    cssLink.type = "text/css";
+                    cssLink.rel = "stylesheet";
+                    cssLink.href = 'stylesheets/management.css' + '?v=' + v;
+                    document.getElementsByTagName("head")[0].appendChild(cssLink);
+                    var yyLink = document.createElement("link");
+                    yyLink.type = "text/css";
+                    yyLink.rel = "stylesheet";
+                    yyLink.href = staticRootPath + 'yy/stylesheets/yy.css' + '?v=' + v;
+                    document.getElementsByTagName("head")[0].appendChild(yyLink);
+                    //解析参数
+                    var paras = yy.getUrlPara();
+                    var actionName = paras.actionName;
+                    if (!actionName) {
+                        $('body').append("no actionName...");
+                    } else {
+                        document.title = actionName;
+                        yy.setSession(paras);
+                        //加载模块
+                        module.loadModule('info');
+                    }
                 });
-                yy.openWebSocket();
-//                yy.setConfig({
-//                    httpServer: 'http://115.28.77.1/happy/service.io'
-//                });
-                yy.setKey('6d6f6d6932303134');
-                //加载css
-                var cssLink = document.createElement("link");
-                cssLink.type = "text/css";
-                cssLink.rel = "stylesheet";
-                cssLink.href = 'stylesheets/management.css' + '?v=' + v;
-                document.getElementsByTagName("head")[0].appendChild(cssLink);
-                var yyLink = document.createElement("link");
-                yyLink.type = "text/css";
-                yyLink.rel = "stylesheet";
-                yyLink.href = staticRootPath + 'yy/stylesheets/yy.css' + '?v=' + v;
-                document.getElementsByTagName("head")[0].appendChild(yyLink);
-                //解析参数
-                var paras = yy.getUrlPara();
-                var actionName = paras.actionName;
-                if (!actionName) {
-                    $('body').append("no actionName...");
-                } else {
-                    document.title = actionName;
-                    yy.setSession(paras);
-                    //加载模块
-                    module.loadModule('info');
-                }
             });
         </script>
     </body>
