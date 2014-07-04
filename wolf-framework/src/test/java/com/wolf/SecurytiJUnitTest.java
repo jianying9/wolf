@@ -1,21 +1,6 @@
 package com.wolf;
 
 import com.wolf.framework.utils.SecurityUtils;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.IvParameterSpec;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,12 +34,16 @@ public class SecurytiJUnitTest {
     
     @Test
     public void desTest() {
-        String key = "momi2014";
+        String key = "4102gnab";
         byte[] keyByte = key.getBytes();
         String text = SecurityUtils.byteToHexString(keyByte);
         System.out.println(text);
         //
         boolean result = SecurityUtils.isSafeTime("e4f2b4f998a0d7ae70b285b3e8a8f63a", key);
         System.out.println(result);
+        
+        String time = "1404471463588";
+        String s = SecurityUtils.byteToHexString(SecurityUtils.encryptByDes(time, key));
+        System.out.println(s);
     }
 }

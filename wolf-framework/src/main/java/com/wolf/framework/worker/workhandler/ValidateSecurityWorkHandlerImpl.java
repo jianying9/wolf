@@ -13,12 +13,15 @@ public class ValidateSecurityWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final String key;
+    private final long error;
 
     public ValidateSecurityWorkHandlerImpl(
             final String key,
+            final long error,
             final WorkHandler workHandler) {
         this.nextWorkHandler = workHandler;
         this.key = key;
+        this.error = error;
     }
 
     @Override
@@ -43,7 +46,8 @@ public class ValidateSecurityWorkHandlerImpl implements WorkHandler {
             } catch (NumberFormatException ex) {
             }
             long diffTime = systemTime - clientTime;
-            if (diffTime >= -60000 && diffTime <= 60000) {
+            long min = - error;
+            if (diffTime >= min && diffTime <= error) {
                 //时间相差在60秒以内
                 //验证通过
                 this.nextWorkHandler.execute(frameworkMessageContext);

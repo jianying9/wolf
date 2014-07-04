@@ -53,6 +53,8 @@ public class FrameworkConfig {
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
     //加密校验的key,8位字符
     public final static String SEED_DES_KEY = "seed.des.key";
+    //seed允许时间的最大误差值,毫秒，默认为180000
+    public final static String SEED_ERROR = "seed.error";
     //保留字段集合
 
     public static Set<String> getReservedWordSet() {

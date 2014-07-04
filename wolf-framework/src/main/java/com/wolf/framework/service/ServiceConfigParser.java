@@ -172,7 +172,12 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //是否验证访问来源是否安全
             if(validateSecurity) {
                 String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
-                workHandler = new ValidateSecurityWorkHandlerImpl(key, workHandler);
+                long error = 180000;
+                String errorText = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_ERROR);
+                if(errorText != null) {
+                    error = Long.parseLong(errorText);
+                }
+                workHandler = new ValidateSecurityWorkHandlerImpl(key, error, workHandler);
             }
             ResponseParameterHandler outputParameterHandler;
             ResponseParameterHandlerBuilder outputParameterHandlerBuilder;
