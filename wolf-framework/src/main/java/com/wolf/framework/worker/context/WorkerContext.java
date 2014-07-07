@@ -17,8 +17,8 @@ public interface WorkerContext {
 
     public void close();
 
-    public void saveNewSession(Session session);
-
+    public void saveNewSession(Session newSession);
+    
     public void removeSession();
 
     public Session getSession();

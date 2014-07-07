@@ -7,7 +7,7 @@ import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import com.wolf.framework.worker.context.ServletWorkerContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -71,7 +71,7 @@ public class ServiceServlet extends HttpServlet {
             }
             String sid = parameterMap.get("sid");
             Session session = this.sessionMap.get(sid);
-            WorkerContext workerContext = new LocalWorkerContextImpl(session, act, parameterMap);
+            WorkerContext workerContext = new ServletWorkerContextImpl(this.sessionMap, session, act, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse().getResponseMessage();
         }

@@ -1,6 +1,7 @@
 package com.wolf.framework.worker.context;
 
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
+import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.JsonUtils;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,12 @@ public final class MessageContextImpl extends AbstractMessageContext {
         }
         jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"act\":\"").append(this.workerContext.getAct())
-                .append("\",\"data\":").append(data).append('}');
+                .append("\",\"data\":").append(data);
+        Session session = this.getNewSession();
+        if(session != null) {
+            jsonBuilder.append(",\"sid\":\"").append(session.getSid()).append('"');
+        }
+        jsonBuilder.append('}');
         return jsonBuilder.toString();
     }
 

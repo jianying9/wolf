@@ -7,13 +7,15 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class LocalWorkerContextImpl extends AbstractWorkContext {
+public class ServletWorkerContextImpl extends AbstractWorkContext {
 
     private final Session session;
+    private final Map<String, Session> sessionMap;
 
-    public LocalWorkerContextImpl(Session session, String act, Map<String, String> parameterMap) {
+    public ServletWorkerContextImpl(Map<String, Session> sessionMap, Session session, String act, Map<String, String> parameterMap) {
         super(act, parameterMap);
         this.session = session;
+        this.sessionMap = sessionMap;
     }
 
     @Override
@@ -31,9 +33,16 @@ public class LocalWorkerContextImpl extends AbstractWorkContext {
 
     @Override
     public void saveNewSession(Session newSession) {
+        if (newSession != null) {
+            String newSid = newSession.getSid();
+            this.sessionMap.put(newSid, newSession);
+        }
     }
 
     @Override
     public void removeSession() {
+        if (this.session != null) {
+            this.sessionMap.remove(this.session.getSid());
+        }
     }
 }
