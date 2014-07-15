@@ -39,9 +39,6 @@ public class SecurytiJUnitTest {
         String text = SecurityUtils.byteToHexString(keyByte);
         System.out.println(text);
         //
-        boolean result = SecurityUtils.isSafeTime("e4f2b4f998a0d7ae70b285b3e8a8f63a", key);
-        System.out.println(result);
-        
         String time = "1404471463588";
         String s = SecurityUtils.byteToHexString(SecurityUtils.encryptByDes(time, key));
         System.out.println(s);

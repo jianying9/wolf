@@ -76,22 +76,24 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         }
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
-        //检测服务器hostname的ip不能为127.0.0.1,否则提供rmi远程调用类服务时会出现异常
-        String ip = null;
-        try {
-            //获取本地ip
-            InetAddress address = InetAddress.getLocalHost();
-            ip = address.getHostAddress();
-        } catch (UnknownHostException ex) {
-            throw new RuntimeException(ex);
-        }
-        if (ip == null || ip.equals("127.0.0.1")) {
-            throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
-        }
         //获取运行模式
         String compileModel = this.getParameter(FrameworkConfig.COMPILE_MODEL);
         if (compileModel == null) {
             compileModel = FrameworkConfig.SERVER;
+        }
+        //检测服务器hostname的ip不能为127.0.0.1,否则提供rmi远程调用类服务时会出现异常
+        if (compileModel.equals(FrameworkConfig.SERVER)) {
+            String ip = null;
+            try {
+                //获取本地ip
+                InetAddress address = InetAddress.getLocalHost();
+                ip = address.getHostAddress();
+            } catch (UnknownHostException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (ip == null || ip.equals("127.0.0.1")) {
+                throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
+            }
         }
         //查找注解类
         this.logger.info("Finding annotation...");

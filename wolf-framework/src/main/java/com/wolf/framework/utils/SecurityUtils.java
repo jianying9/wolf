@@ -121,26 +121,4 @@ public final class SecurityUtils {
         }
         return result;
     }
-
-    /**
-     * 时间类型验证
-     * @param entrySeed
-     * @param key
-     * @return 
-     */
-    public static boolean isSafeTime(String entrySeed, String key) {
-        boolean result = false;
-        byte[] entiryByte = hexStringToByte(entrySeed);
-        String seedText = decryptByDes(entiryByte, key);
-        long seed = 0;
-        try {
-            seed = Long.parseLong(seedText);
-        } catch (RuntimeException e) {
-        }
-        long difftime = System.currentTimeMillis() - seed;
-        if (difftime > -60000 && difftime < 60000) {
-            result = true;
-        }
-        return result;
-    }
 }
