@@ -20,4 +20,10 @@ public @interface RDaoConfig {
      * @return
      */
     public String tableName();
+    
+    /**
+     * 可以排序的set集合定义
+     * @return 
+     */
+    public String[] sortedSets() default {};
 }

@@ -14,6 +14,7 @@ import com.wolf.framework.redis.RedisHandler;
 import com.wolf.framework.redis.RedisHandlerImpl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 实体数据访问对象创建类
@@ -26,13 +27,15 @@ public final class REntityDaoBuilder<T extends Entity> {
     private final String tableName;
     //key
     private final RColumnHandler keyHandler;
+    //sortedSetNames
+    private final Set<String> sortedSetNames;
     //column
     private final List<RColumnHandler> columnHandlerList;
     //实体class
     private final Class<T> clazz;
     private final REntityDaoContext<T> entityDaoContext;
 
-    public REntityDaoBuilder(String tableName, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
+    public REntityDaoBuilder(String tableName, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Set<String> sortedSetNames, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
         this.tableName = tableName;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
@@ -40,6 +43,7 @@ public final class REntityDaoBuilder<T extends Entity> {
         } else {
             this.columnHandlerList = columnHandlerList;
         }
+        this.sortedSetNames = sortedSetNames;
         this.clazz = clazz;
         this.entityDaoContext = entityDaoContext;
     }
@@ -55,7 +59,7 @@ public final class REntityDaoBuilder<T extends Entity> {
             throw new RuntimeException("Error when building REntityDao. Cause: key is null");
         }
         //初始化redis数据库处理对象
-        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList);
+        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList, this.sortedSetNames);
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromRedisHandlerImpl<T>(
                 redisHandler,

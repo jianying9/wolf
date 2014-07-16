@@ -5,6 +5,7 @@ import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import com.wolf.framework.dao.parser.RColumnHandler;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +26,13 @@ public final class RedisHandlerImpl implements RedisHandler {
     private final String connector = "_";
     private final String tableIndexKey;
     private final String columnIndexKeyPrefix;
+    private final String sortedSetPrefix;
     private final RColumnHandler keyHandler;
     private final List<RColumnHandler> columnHandlerList;
+    private final Set<String> sortedSetNames;
     private final Set<String> indexColumnNameSet = new HashSet<String>(2, 1);
 
-    public RedisHandlerImpl(String tableName, JedisPool jedisPool, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList) {
+    public RedisHandlerImpl(String tableName, JedisPool jedisPool, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Set<String> sortedSetNames) {
         this.jedisPool = jedisPool;
         this.keyHandler = keyHandler;
         this.columnHandlerList = columnHandlerList;
@@ -38,14 +41,16 @@ public final class RedisHandlerImpl implements RedisHandler {
                 this.indexColumnNameSet.add(rColumnHandler.getColumnName());
             }
         }
+        this.sortedSetNames = sortedSetNames;
         this.tableIndexKey = "KEY" + this.connector + tableName;
         this.columnIndexKeyPrefix = "INDEX" + this.connector + tableName + this.connector;
+        this.sortedSetPrefix = "SORTED_SET" + this.connector;
         //获取dbindex
         Jedis jedis = this.jedisPool.getResource();
         try {
             jedis.select(0);
             String dbIndexStr = jedis.hget(RedisHandler.META_DBINDEX, tableName);
-            if(dbIndexStr == null) {
+            if (dbIndexStr == null) {
                 //未分配
                 long nextDbIndex = jedis.hincrBy(RedisHandler.META_SEQUENCE, RedisHandler.SEQUENCE_DBINDEX, 1);
                 this.dbIndex = (int) nextDbIndex;
@@ -667,13 +672,13 @@ public final class RedisHandlerImpl implements RedisHandler {
     }
 
     @Override
-    public void updateKeySorce(String keyValue, long sorce) {
+    public void updateKeySorce(String keyValue, long score) {
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
         try {
             //保存key索引
             jedis.select(0);
-            jedis.zadd(this.tableIndexKey, sorce, keyValue);
+            jedis.zadd(this.tableIndexKey, score, keyValue);
         } finally {
             //关闭连接
             this.jedisPool.returnResource(jedis);
@@ -681,17 +686,121 @@ public final class RedisHandlerImpl implements RedisHandler {
     }
 
     @Override
-    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce) {
+    public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long score) {
         String columnIndexKey = this.getColumnIndexKey(columnName, columnValue);
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
         try {
             //保存key索引
             jedis.select(0);
-            jedis.zadd(columnIndexKey, sorce, keyValue);
+            jedis.zadd(columnIndexKey, score, keyValue);
         } finally {
             //关闭连接
             this.jedisPool.returnResource(jedis);
+        }
+    }
+    
+    private String createSortedSetKey(String keyValue, String sortedSetName) {
+        StringBuilder stringBuilder = new StringBuilder(32);
+        stringBuilder.append(this.sortedSetPrefix).append(sortedSetName)
+                .append(this.connector).append(keyValue);
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public void sortedSetAdd(String keyValue, String sortedSetName, String value, long score) {
+        if (this.sortedSetNames.contains(sortedSetName)) {
+            String key = this.createSortedSetKey(keyValue, sortedSetName);
+            //开启连接
+            Jedis jedis = this.jedisPool.getResource();
+            try {
+                //保存key索引
+                jedis.select(this.dbIndex);
+                jedis.zadd(key, score, value);
+            } finally {
+                //关闭连接
+                this.jedisPool.returnResource(jedis);
+            }
+        }
+    }
+
+    @Override
+    public void sortedSetRemove(String keyValue, String sortedSetName, String value) {
+        if (this.sortedSetNames.contains(sortedSetName)) {
+            String key = this.createSortedSetKey(keyValue, sortedSetName);
+            //开启连接
+            Jedis jedis = this.jedisPool.getResource();
+            try {
+                //保存key索引
+                jedis.select(this.dbIndex);
+                jedis.zrem(key, value);
+            } finally {
+                //关闭连接
+                this.jedisPool.returnResource(jedis);
+            }
+        }
+    }
+
+    @Override
+    public List<String> sortedSet(String keyValue, String sortedSetName) {
+        List<String> resultList;
+        if (this.sortedSetNames.contains(sortedSetName)) {
+            String key = this.createSortedSetKey(keyValue, sortedSetName);
+            //开启连接
+            Jedis jedis = this.jedisPool.getResource();
+            try {
+                //保存key索引
+                jedis.select(this.dbIndex);
+                Set<String> keySet = jedis.zrange(key, 0, 199);
+                resultList = new ArrayList<String>(keySet.size());
+                resultList.addAll(keySet);
+            } finally {
+                //关闭连接
+                this.jedisPool.returnResource(jedis);
+            }
+        } else {
+            resultList = Collections.EMPTY_LIST;
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<String> sortedSetDESC(String keyValue, String sortedSetName) {
+        List<String> resultList;
+        if (this.sortedSetNames.contains(sortedSetName)) {
+            String key = this.createSortedSetKey(keyValue, sortedSetName);
+            //开启连接
+            Jedis jedis = this.jedisPool.getResource();
+            try {
+                //保存key索引
+                jedis.select(this.dbIndex);
+                Set<String> keySet = jedis.zrevrange(key, 0, 199);
+                resultList = new ArrayList<String>(keySet.size());
+                resultList.addAll(keySet);
+            } finally {
+                //关闭连接
+                this.jedisPool.returnResource(jedis);
+            }
+        } else {
+            resultList = Collections.EMPTY_LIST;
+        }
+        return resultList;
+    }
+
+    @Override
+    public void sortedSetClear(String keyValue, String sortedSetName) {
+        if (this.sortedSetNames.contains(sortedSetName)) {
+            String key = this.sortedSetPrefix + sortedSetName + this.connector + keyValue;
+            //开启连接
+            Jedis jedis = this.jedisPool.getResource();
+            try {
+                //保存key索引
+                jedis.select(this.dbIndex);
+                jedis.del(key);
+            } finally {
+                //关闭连接
+                this.jedisPool.returnResource(jedis);
+            }
         }
     }
 }

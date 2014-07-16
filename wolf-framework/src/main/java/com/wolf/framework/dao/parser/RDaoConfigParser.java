@@ -12,7 +12,10 @@ import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 
 /**
@@ -21,10 +24,10 @@ import org.slf4j.Logger;
  * @author aladdin
  */
 public class RDaoConfigParser<T extends Entity> {
-
+    
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     private final REntityDaoContext<T> entityDaoContext;
-
+    
     public RDaoConfigParser(REntityDaoContext<T> entityDaoContext) {
         this.entityDaoContext = entityDaoContext;
     }
@@ -38,11 +41,15 @@ public class RDaoConfigParser<T extends Entity> {
     public void parse(final Class<T> clazz) {
         this.logger.debug("--parsing redis entity DAO {}--", clazz.getName());
         if (clazz.isAnnotationPresent(RDaoConfig.class)) {
-            //1.获取注解RDaoConfig
+            //获取注解RDaoConfig
             final RDaoConfig rDaoConfig = clazz.getAnnotation(RDaoConfig.class);
-            //3.获取实体标识
+            //获取实体标识
             final String tableName = rDaoConfig.tableName();
-            //5获取该实体所有字段集合
+            //获取sortedSets
+            String[] sortedSets = rDaoConfig.sortedSets();
+            final Set<String> sortedSetNames = new HashSet<String>(sortedSets.length, 1);
+            sortedSetNames.addAll(Arrays.asList(sortedSets));
+            //获取该实体所有字段集合
             Field[] fieldTemp = clazz.getDeclaredFields();
             //ColumnHandler
             RColumnHandler keyHandler = null;
@@ -82,6 +89,7 @@ public class RDaoConfigParser<T extends Entity> {
                     tableName,
                     keyHandler,
                     columnHandlerList,
+                    sortedSetNames,
                     clazz,
                     this.entityDaoContext);
             REntityDao<T> entityDao = entityDaoBuilder.build();
