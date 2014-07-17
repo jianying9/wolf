@@ -197,4 +197,29 @@ public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
     public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce) {
         this.redisHandler.updateIndexKeySorce(keyValue, columnName, columnValue, sorce);
     }
+
+    @Override
+    public void sortedSetAdd(String keyValue, String sortedSetName, String value, long score) {
+        this.redisHandler.sortedSetAdd(keyValue, sortedSetName, value, score);
+    }
+
+    @Override
+    public void sortedSetRemove(String keyValue, String sortedSetName, String value) {
+        this.redisHandler.sortedSetRemove(keyValue, sortedSetName, value);
+    }
+
+    @Override
+    public List<String> sortedSet(String keyValue, String sortedSetName) {
+        return this.redisHandler.sortedSet(keyValue, sortedSetName);
+    }
+
+    @Override
+    public List<String> sortedSetDESC(String keyValue, String sortedSetName) {
+        return this.redisHandler.sortedSetDESC(keyValue, sortedSetName);
+    }
+
+    @Override
+    public void sortedSetClear(String keyValue, String sortedSetName) {
+        this.redisHandler.sortedSetClear(keyValue, sortedSetName);
+    }
 }

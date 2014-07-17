@@ -221,4 +221,44 @@ public interface REntityDao<T extends Entity> {
      * @param sorce 
      */
     public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce);
+    
+    /**
+     * 指定某个sorted set的类型的扩展列,增加一个键值
+     * @param keyValue
+     * @param sortSetName
+     * @param value
+     * @param score 
+     */
+    public void sortedSetAdd(String keyValue, String sortedSetName, String value, long score);
+    
+    /**
+     * 指定某个sorted set的类型的扩展列,删除一个键值
+     * @param keyValue
+     * @param sortSetName
+     * @param value 
+     */
+    public void sortedSetRemove(String keyValue, String sortedSetName, String value);
+    
+    /**
+     * 获取指定sorted set的类型的扩展列的所有键值,正序排列，最多取前200
+     * @param keyValue
+     * @param sortSetName
+     * @return 
+     */
+    public List<String> sortedSet(String keyValue, String sortedSetName);
+    
+    /**
+     * 获取指定sorted set的类型的扩展列的所有键值,倒序排列，最多取前200
+     * @param keyValue
+     * @param sortSetName
+     * @return 
+     */
+    public List<String> sortedSetDESC(String keyValue, String sortedSetName);
+    
+    /**
+     * 清除指定sorted set的类型的扩展列的所有键值
+     * @param keyValue
+     * @param sortedSetName 
+     */
+    public void sortedSetClear(String keyValue, String sortedSetName);
 }
