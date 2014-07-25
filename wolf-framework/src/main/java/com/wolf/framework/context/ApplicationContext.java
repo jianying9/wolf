@@ -2,6 +2,7 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
+import com.wolf.framework.redis.RedisAdminContext;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,7 @@ public final class ApplicationContext {
     private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
     private final CometContext cometContext = new CometContextImpl();
+    private RedisAdminContext redisAdminContext;
     
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
@@ -62,5 +64,13 @@ public final class ApplicationContext {
 
     public CometContext getCometContext() {
         return cometContext;
+    }
+
+    public RedisAdminContext getRedisAdminContext() {
+        return redisAdminContext;
+    }
+
+    void setRedisAdminContext(RedisAdminContext redisAdminContext) {
+        this.redisAdminContext = redisAdminContext;
     }
 }

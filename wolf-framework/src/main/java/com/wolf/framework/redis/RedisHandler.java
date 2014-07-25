@@ -196,4 +196,10 @@ public interface RedisHandler {
      * @param sortedSetName 
      */
     public void sortedSetClear(String keyValue, String sortedSetName);
+    
+    
+    /**
+     * 清空表
+     */
+    public void truncate();
 }

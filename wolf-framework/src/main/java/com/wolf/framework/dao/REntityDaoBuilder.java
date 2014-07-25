@@ -10,11 +10,13 @@ import com.wolf.framework.dao.insert.InsertRedisHandlerImpl;
 import com.wolf.framework.dao.parser.RColumnHandler;
 import com.wolf.framework.dao.update.UpdateHandler;
 import com.wolf.framework.dao.update.UpdateRedisHandlerImpl;
+import com.wolf.framework.redis.RedisAdminContext;
 import com.wolf.framework.redis.RedisHandler;
 import com.wolf.framework.redis.RedisHandlerImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import redis.clients.jedis.JedisPool;
 
 /**
  * 实体数据访问对象创建类
@@ -59,7 +61,9 @@ public final class REntityDaoBuilder<T extends Entity> {
             throw new RuntimeException("Error when building REntityDao. Cause: key is null");
         }
         //初始化redis数据库处理对象
-        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, this.entityDaoContext.getJedisPool(), this.keyHandler, this.columnHandlerList, this.sortedSetNames);
+        final RedisAdminContext redisAdminContext = this.entityDaoContext.getRedisAdminContext();
+        final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, redisAdminContext.getJedisPool(), this.keyHandler, this.columnHandlerList, this.sortedSetNames);
+        redisAdminContext.putRedisHandler(this.clazz, redisHandler, this.tableName);
         //---------------------------构造根据key查询数据库entity处理对象
         InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromRedisHandlerImpl<T>(
                 redisHandler,

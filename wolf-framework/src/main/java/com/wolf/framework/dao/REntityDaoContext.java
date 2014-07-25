@@ -1,8 +1,7 @@
 package com.wolf.framework.dao;
 
-import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.redis.RedisAdminContext;
 import java.util.Map;
-import redis.clients.jedis.JedisPool;
 
 /**
  *
@@ -17,8 +16,6 @@ public interface REntityDaoContext<T extends Entity> {
     public Map<Class<T>, REntityDao<T>> getREntityDaoMap();
 
     public boolean assertExistREntity(final Class<T> clazz);
-
-    public ApplicationContext getApplicationContext();
     
-    public JedisPool getJedisPool();
+    public RedisAdminContext getRedisAdminContext();
 }

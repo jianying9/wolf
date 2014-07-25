@@ -25,6 +25,8 @@ import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.paser.ClassParser;
+import com.wolf.framework.redis.RedisAdminContext;
+import com.wolf.framework.redis.RedisAdminContextImpl;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
@@ -55,6 +57,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<Class<LeaveEventHandler>> leaveEventHandlerClassList = new ArrayList<Class<LeaveEventHandler>>();
+    protected RedisAdminContext redisAdminContext;
     protected REntityDaoContext<T> rEntityDaoContext;
     protected ServiceWorkerContext serviceWorkerContext;
     private final Map<String, String> parameterMap;
@@ -138,15 +141,17 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             }
             taskExecutor = new TaskExecutorImpl(corePoolSize, maxPoolSize);
         }
+        this.redisAdminContext = new RedisAdminContextImpl(ApplicationContext.CONTEXT);
         //解析redis EntityDao
         if (this.rEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation RDaoConfig...");
-            this.rEntityDaoContext = new REntityDaoContextImpl<T>(ApplicationContext.CONTEXT);
+            this.rEntityDaoContext = new REntityDaoContextImpl<T>(this.redisAdminContext);
             final RDaoConfigParser<T> rEntityConfigDaoParser = new RDaoConfigParser<T>(this.rEntityDaoContext);
             for (Class<T> clazz : this.rEntityClassList) {
                 rEntityConfigDaoParser.parse(clazz);
             }
         }
+        ApplicationContext.CONTEXT.setRedisAdminContext(this.redisAdminContext);
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
         final LocalServiceContext localServiceContextBuilder = new LocalServiceContextImpl();

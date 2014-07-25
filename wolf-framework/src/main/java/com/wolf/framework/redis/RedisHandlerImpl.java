@@ -699,7 +699,7 @@ public final class RedisHandlerImpl implements RedisHandler {
             this.jedisPool.returnResource(jedis);
         }
     }
-    
+
     private String createSortedSetKey(String keyValue, String sortedSetName) {
         StringBuilder stringBuilder = new StringBuilder(32);
         stringBuilder.append(this.sortedSetPrefix).append(sortedSetName)
@@ -801,6 +801,28 @@ public final class RedisHandlerImpl implements RedisHandler {
                 //关闭连接
                 this.jedisPool.returnResource(jedis);
             }
+        }
+    }
+
+    @Override
+    public void truncate() {
+        //开启连接
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            jedis.select(0);
+            //删除主键索引
+            jedis.del(this.tableIndexKey);
+            //删除外键索引
+            Set<String> indexKeys = jedis.keys(this.columnIndexKeyPrefix + "*");
+            for (String indexKey : indexKeys) {
+                jedis.del(indexKey);
+            }
+            //删除表数据
+            jedis.select(this.dbIndex);
+            jedis.flushDB();
+        } finally {
+            //关闭连接
+            this.jedisPool.returnResource(jedis);
         }
     }
 }
