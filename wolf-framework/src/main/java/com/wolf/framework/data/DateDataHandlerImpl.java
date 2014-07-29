@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
+ *
  *
  * @author aladdin
  */
@@ -33,7 +33,7 @@ public class DateDataHandlerImpl implements DataHandler {
     public TypeEnum getDataTypeEnum() {
         return TypeEnum.DATE;
     }
-    
+
     @Override
     public String convertToInput(String value) {
         long result = TimeUtils.convertYYYYMMDDToMillisecond(value);
@@ -42,8 +42,13 @@ public class DateDataHandlerImpl implements DataHandler {
 
     @Override
     public String convertToOutput(String value) {
-        long milliseconds = Long.parseLong(value);
-        String result = TimeUtils.convertMillisecondToYYYYMMDD(milliseconds);
+        String result;
+        if (value.isEmpty()) {
+            result = value;
+        } else {
+            long milliseconds = Long.parseLong(value);
+            result = TimeUtils.convertMillisecondToYYYYMMDD(milliseconds);
+        }
         return result;
     }
 }

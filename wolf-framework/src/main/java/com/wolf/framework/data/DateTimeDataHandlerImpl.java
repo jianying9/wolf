@@ -42,8 +42,13 @@ public class DateTimeDataHandlerImpl implements DataHandler {
 
     @Override
     public String convertToOutput(String value) {
-        long milliseconds = Long.parseLong(value);
-        String result = TimeUtils.convertMillisecondToYYYYMMDDHHmmSS(milliseconds);
+        String result;
+        if (value.isEmpty()) {
+            result = value;
+        } else {
+            long milliseconds = Long.parseLong(value);
+            result = TimeUtils.convertMillisecondToYYYYMMDDHHmmSS(milliseconds);
+        }
         return result;
     }
 }
