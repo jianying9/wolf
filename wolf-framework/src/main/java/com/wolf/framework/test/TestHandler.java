@@ -102,4 +102,37 @@ public final class TestHandler {
             redisHandler.delete(keyValue);
         }
     }
+    
+    /**
+     * 指定某个sorted set的类型的扩展列,增加一个键值
+     * @param <T>
+     * @param clazz
+     * @param keyValue
+     * @param sortedSetName
+     * @param value
+     * @param score 
+     */
+    public <T extends Entity> void sortedSetAdd(Class<T> clazz, String keyValue, String sortedSetName, String value, long score) {
+        RedisAdminContext redisAdminContext = ApplicationContext.CONTEXT.getRedisAdminContext();
+        RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
+        if (redisHandler != null) {
+            redisHandler.sortedSetAdd(keyValue, sortedSetName, value, score);
+        }
+    }
+    
+    /**
+     * 指定某个sorted set的类型的扩展列,删除一个键值
+     * @param <T>
+     * @param clazz
+     * @param keyValue
+     * @param sortedSetName
+     * @param value 
+     */
+    public <T extends Entity> void sortedSetRemove(Class<T> clazz, String keyValue, String sortedSetName, String value) {
+        RedisAdminContext redisAdminContext = ApplicationContext.CONTEXT.getRedisAdminContext();
+        RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
+        if (redisHandler != null) {
+            redisHandler.sortedSetRemove(keyValue, sortedSetName, value);
+        }
+    }
 }
