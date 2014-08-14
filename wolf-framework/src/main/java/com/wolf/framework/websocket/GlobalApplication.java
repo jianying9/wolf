@@ -6,7 +6,6 @@ import com.sun.grizzly.websockets.ProtocolHandler;
 import com.sun.grizzly.websockets.WebSocket;
 import com.sun.grizzly.websockets.WebSocketApplication;
 import com.sun.grizzly.websockets.WebSocketListener;
-import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
@@ -59,16 +58,13 @@ public final class GlobalApplication extends WebSocketApplication implements Com
         Session session = globalWebSocket.getSession();
         if (session != null) {
             this.webSockets.remove(session.getSid());
-            //触发comet用户离开事件
-            CometContext cometContext = ApplicationContext.CONTEXT.getCometContext();
-            cometContext.invokeLeaveEvent(session);
         }
         socket.close();
     }
 
     @Override
     public void onMessage(WebSocket socket, String text) {
-        this.logger.debug(text);
+        this.logger.debug("wobsocket: {}", text);
         GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
         //获取act
         Matcher matcher = this.actPattern.matcher(text);
@@ -76,7 +72,6 @@ public final class GlobalApplication extends WebSocketApplication implements Com
             String act = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
             if (serviceWorker == null) {
-                this.logger.debug("invalid act value:{}", act);
                 //无效的act
                 socket.send("{\"state\":\"INVALID\",\"error\":\"act not exist\"}");
             } else {
@@ -91,7 +86,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
                 if (wolf.equals("TIME")) {
                     //返回服务器时间
                     long time = System.currentTimeMillis();
-                    StringBuilder resultBuilder = new StringBuilder(25);
+                    StringBuilder resultBuilder = new StringBuilder(36);
                     resultBuilder.append("{\"wolf\":\"TIME\",\"time\":").append(Long.toString(time)).append('}');
                     socket.send(resultBuilder.toString());
                 }
@@ -131,6 +126,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
     public void shutdown() {
         for (GlobalWebSocket webSocket : this.webSockets.values()) {
             if (webSocket.isConnected()) {
+                webSocket.send("{\"wolf\":\"SHUTDOWN\"}");
                 webSocket.close();
             }
         }

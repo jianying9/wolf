@@ -2,6 +2,8 @@ package com.wolf.framework.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +24,7 @@ public class HttpUtils {
      * @param response
      * @param jsonStr
      */
-    public static void toWrite(HttpServletRequest request, HttpServletResponse response, String jsonStr) {
+    public static void toWrite(ServletRequest request, ServletResponse response, String jsonStr) {
         //获取跨域请求标志，并对输出内容做跨域处理
         String jsoncallback = request.getParameter("callback");
         if (jsoncallback == null || jsoncallback.equals("?")) {
@@ -41,7 +43,7 @@ public class HttpUtils {
      * @param response
      * @param jsonStr
      */
-    private static void toWrite(HttpServletResponse response, String jsonStr) {
+    private static void toWrite(ServletResponse response, String jsonStr) {
         response.setContentType("application/x-javascript");
         response.setCharacterEncoding("utf-8");
         PrintWriter printWriter = null;
@@ -61,7 +63,8 @@ public class HttpUtils {
      * 输出CSS
      *
      * @param request
-     * @param response      *
+     * @param response
+     *
      * @param cssString
      */
     public static void toWirteCss(HttpServletRequest request, HttpServletResponse response, String cssString) {
