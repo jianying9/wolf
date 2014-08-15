@@ -95,7 +95,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                         //同sid冲突检测
                         AsyncContext ctx = this.asyncContextMap.get(sid);
                         if (ctx != null) {
-                            String stopMessage = "{\"wolf\":\"PUSH-STOP\"}";
+                            String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
                             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
                             ctx.complete();
                             this.asyncContextMap.remove(sid);
@@ -106,7 +106,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                         this.asyncContextMap.put(sid, ctx);
                     }
                     //该请求为一个长轮询推送请求
-                    result = "{\"wolf\":\"PUSH-START\"}";
+                    result = "{\"wolf\":\"PUSH_START\"}";
                 } else {
                     //无效的wolf
                     result = "{\"wolf\":\"INVALID\",\"error\":\"wolf not exist\"}";
@@ -191,7 +191,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             AsyncContext ctx = event.getAsyncContext();
             String sid = ctx.getRequest().getParameter("sid");
             asyncContextMap.remove(sid);
-            String continueMessage = "{\"wolf\":\"PUSH-TIMEOUT\"}";
+            String continueMessage = "{\"wolf\":\"PUSH_TIMEOUT\"}";
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), continueMessage);
             ctx.complete();
         }

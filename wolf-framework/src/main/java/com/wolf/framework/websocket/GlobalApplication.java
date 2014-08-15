@@ -109,7 +109,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
         GlobalWebSocket other = this.webSockets.get(sid);
         if (other != null) {
             //该用户已经在其他地方登录，强退
-            other.send("{\"state\":\"SUCCESS\",\"act\":\"FORCED_LOGOUT\",\"data\":[]}");
+            other.send("{\"wolf\":\"CLOSE\"}");
             other.close();
         }
         this.webSockets.put(session.getSid(), globalWebSocket);
