@@ -5,6 +5,7 @@ package com.wolf.framework.session;
  *
  * @author aladdin
  */
+@Deprecated
 public interface Session {
     
     public String getSid();

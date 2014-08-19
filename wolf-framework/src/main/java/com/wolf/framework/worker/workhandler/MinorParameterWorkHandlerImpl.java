@@ -59,8 +59,7 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
         } else {
             frameworkMessageContext.invalid();
             frameworkMessageContext.setError(errorMsg);
-            String message = frameworkMessageContext.createErrorMessage();
-            workerContext.sendMessage(message);
+            frameworkMessageContext.createErrorMessage();
         }
     }
 }

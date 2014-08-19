@@ -27,7 +27,6 @@ import com.wolf.framework.worker.workhandler.ImportantParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.MinorParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.SendMessageWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.TransactionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ValidateSecurityWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ValidateSessionWorkHandlerImpl;
@@ -86,7 +85,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
-            final boolean response = serviceConfig.response();
             final boolean validateSession = serviceConfig.validateSession();
             final boolean validateSecurity = serviceConfig.validateSecurity();
             final String desc = serviceConfig.desc();
@@ -115,10 +113,6 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             //异常处理
             workHandler = new ExceptionWorkHandlerImpl(workHandler);
             //--------------------------------业务执行后处理环节------------------
-            if (response) {
-                //是否响应消息
-                workHandler = new SendMessageWorkHandlerImpl(workHandler);
-            }
             //session处理
             switch (sessionHandleTypeEnum) {
                 case SAVE:
@@ -170,11 +164,11 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
                 workHandler = new ValidateSessionWorkHandlerImpl(workHandler);
             }
             //是否验证访问来源是否安全
-            if(validateSecurity) {
+            if (validateSecurity) {
                 String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
                 long error = 180000;
                 String errorText = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_ERROR);
-                if(errorText != null) {
+                if (errorText != null) {
                     error = Long.parseLong(errorText);
                 }
                 workHandler = new ValidateSecurityWorkHandlerImpl(key, error, workHandler);

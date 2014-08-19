@@ -5,7 +5,6 @@ import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.session.Session;
 import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
@@ -34,7 +33,6 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = 2005719241528799747L;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-    private final Map<String, Session> sessionMap = new HashMap<String, Session>(4096, 1);
     Map<String, AsyncContext> asyncContextMap = new HashMap<String, AsyncContext>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
@@ -89,7 +87,9 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                     StringBuilder resultBuilder = new StringBuilder(25);
                     resultBuilder.append("{\"wolf\":\"TIME\",\"time\":").append(Long.toString(time)).append('}');
                     result = resultBuilder.toString();
+                    HttpUtils.toWrite(request, response, result);
                 } else if (wolf.equals("PUSH")) {
+                    //该请求为一个长轮询推送请求
                     String sid = parameterMap.get("sid");
                     synchronized (this) {
                         //同sid冲突检测
@@ -105,24 +105,23 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                         ctx.addListener(this.asyncListener);
                         this.asyncContextMap.put(sid, ctx);
                     }
-                    //该请求为一个长轮询推送请求
-                    result = "{\"wolf\":\"PUSH_START\"}";
                 } else {
                     //无效的wolf
                     result = "{\"wolf\":\"INVALID\",\"error\":\"wolf not exist\"}";
+                    HttpUtils.toWrite(request, response, result);
                 }
             } else {
                 //无效的act
                 result = "{\"state\":\"INVALID\",\"error\":\"act not exist\"}";
+                HttpUtils.toWrite(request, response, result);
             }
         } else {
             String sid = parameterMap.get("sid");
-            Session session = this.sessionMap.get(sid);
-            WorkerContext workerContext = new ServletWorkerContextImpl(this.sessionMap, session, act, parameterMap);
+            WorkerContext workerContext = new ServletWorkerContextImpl(sid, act, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse().getResponseMessage();
+            HttpUtils.toWrite(request, response, result);
         }
-        HttpUtils.toWrite(request, response, result);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

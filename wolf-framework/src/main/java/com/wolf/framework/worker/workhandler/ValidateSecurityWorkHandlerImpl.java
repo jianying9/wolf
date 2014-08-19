@@ -34,8 +34,7 @@ public class ValidateSecurityWorkHandlerImpl implements WorkHandler {
         if (entrySeedHex == null) {
             //客户端没有提交时间的加密，直接阻止
             frameworkMessageContext.denied();
-            String message = frameworkMessageContext.createErrorMessage();
-            workerContext.sendMessage(message);
+            frameworkMessageContext.createErrorMessage();
         } else {
             //16进制编码转成byte[]
             byte[] entrySeedByte = SecurityUtils.hexStringToByte(entrySeedHex);
@@ -55,8 +54,7 @@ public class ValidateSecurityWorkHandlerImpl implements WorkHandler {
                 //时间验证不过，阻止访问，返回正确的时间
                 frameworkMessageContext.denied();
                 frameworkMessageContext.setError(Long.toString(System.currentTimeMillis()));
-                String message = frameworkMessageContext.createErrorMessage();
-                workerContext.sendMessage(message);
+                frameworkMessageContext.createErrorMessage();
             }
         }
     }

@@ -18,9 +18,13 @@ public interface MessageContext extends Response {
 
     public void setPageTotal(long pageTotal);
 
+    @Deprecated
     public Session getSession();
 
+    @Deprecated
     public void setNewSession(Session session);
+    
+    public void setNewSessionId(String sid);
 
     public void setMapData(Map<String, String> parameterMap);
 

@@ -1,6 +1,5 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.session.Session;
 import java.util.Map;
 
 /**
@@ -9,40 +8,25 @@ import java.util.Map;
  */
 public class ServletWorkerContextImpl extends AbstractWorkContext {
 
-    private final Session session;
-    private final Map<String, Session> sessionMap;
+    private String sid;
 
-    public ServletWorkerContextImpl(Map<String, Session> sessionMap, Session session, String act, Map<String, String> parameterMap) {
+    public ServletWorkerContextImpl(String sid, String act, Map<String, String> parameterMap) {
         super(act, parameterMap);
-        this.session = session;
-        this.sessionMap = sessionMap;
+        this.sid = sid;
     }
 
     @Override
-    public Session getSession() {
-        return this.session;
+    public String getSessionId() {
+        return this.sid;
     }
 
     @Override
-    public void sendMessage(String message) {
-    }
-
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public void saveNewSession(Session newSession) {
-        if (newSession != null) {
-            String newSid = newSession.getSid();
-            this.sessionMap.put(newSid, newSession);
-        }
+    public void saveNewSession(String sid) {
+        this.sid = sid;
     }
 
     @Override
     public void removeSession() {
-        if (this.session != null) {
-            this.sessionMap.remove(this.session.getSid());
-        }
+        this.sid = null;
     }
 }

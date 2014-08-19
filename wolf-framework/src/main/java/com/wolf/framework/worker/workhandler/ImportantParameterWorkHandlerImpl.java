@@ -64,8 +64,7 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
             errorMsg = errorParaName.concat(errorMsg);
             frameworkMessageContext.invalid();
             frameworkMessageContext.setError(errorMsg);
-            String message = frameworkMessageContext.createErrorMessage();
-            workerContext.sendMessage(message);
+            frameworkMessageContext.createErrorMessage();
         }
     }
 }

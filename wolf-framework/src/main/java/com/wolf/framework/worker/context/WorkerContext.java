@@ -1,6 +1,5 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.session.Session;
 import java.util.Map;
 
 /**
@@ -13,13 +12,9 @@ public interface WorkerContext {
 
     public String getAct();
 
-    public void sendMessage(String message);
-
-    public void close();
-
-    public void saveNewSession(Session newSession);
+    public String getSessionId();
+    
+    public void saveNewSession(String sid);
     
     public void removeSession();
-
-    public Session getSession();
 }

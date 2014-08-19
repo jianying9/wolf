@@ -76,6 +76,7 @@ public @interface ServiceConfig {
      *
      * @return
      */
+    @Deprecated
     public boolean response() default true;
 
     /**

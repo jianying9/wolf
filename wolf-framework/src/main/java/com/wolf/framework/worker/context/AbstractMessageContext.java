@@ -6,6 +6,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.session.Session;
+import com.wolf.framework.session.SessionImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     protected final String[] returnParameter;
     protected final Map<String, ResponseParameterHandler> parameterHandlerMap;
     //session
-    private Session newSession = null;
+    private String newSid;
 
     public AbstractMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap) {
         this.workerContext = workerContext;
@@ -50,12 +51,12 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final Map<String, String> getParameterMap() {
         return this.parameterMap;
     }
-    
+
     @Override
     public final String getState() {
         return this.state;
     }
-    
+
     @Override
     public final void denied() {
         this.state = DefaultResponseStates.DENIED;
@@ -103,7 +104,12 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
 
     @Override
     public final void setNewSession(Session session) {
-        this.newSession = session;
+        this.newSid = session.getSid();
+    }
+
+    @Override
+    public void setNewSessionId(String sid) {
+        this.newSid = sid;
     }
 
     @Override
@@ -123,14 +129,24 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
 
     @Override
     public final Session getSession() {
-        return this.workerContext.getSession();
+        String sid = this.workerContext.getSessionId();
+        if (sid == null) {
+            return null;
+        } else {
+            return new SessionImpl(sid);
+        }
     }
 
     @Override
-    public final Session getNewSession() {
-        return this.newSession;
+    public final String getSessionId() {
+        return this.workerContext.getSessionId();
     }
-    
+
+    @Override
+    public final String getNewSessionId() {
+        return this.newSid;
+    }
+
     @Override
     public final String getResponseMessage() {
         if (this.responseMessage.isEmpty()) {

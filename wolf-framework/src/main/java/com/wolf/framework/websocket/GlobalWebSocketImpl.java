@@ -3,36 +3,31 @@ package com.wolf.framework.websocket;
 import com.sun.grizzly.websockets.DefaultWebSocket;
 import com.sun.grizzly.websockets.ProtocolHandler;
 import com.sun.grizzly.websockets.WebSocketListener;
-import com.wolf.framework.session.Session;
 
 /**
  *
  * @author aladdin
  */
 public final class GlobalWebSocketImpl extends DefaultWebSocket implements GlobalWebSocket {
-    
-    private Session session;
-    
+
+    private String sid;
+
     public GlobalWebSocketImpl(ProtocolHandler protocolHandler, WebSocketListener... listeners) {
         super(protocolHandler, listeners);
     }
-    
-    @Override
-    public Session getSession() {
-        return session;
-    }
-    
-    @Override
-    public void setSession(Session session) {
-        this.session = session;
-    }
-    
+
     @Override
     public String toString() {
-        String sid = "null";
-        if(this.session != null) {
-            sid = this.session.getSid();
-        }
-        return super.toString() + " sid:" + sid;
+        return "sid:" + this.sid + super.toString();
+    }
+
+    @Override
+    public String getSessionId() {
+        return this.sid;
+    }
+
+    @Override
+    public void setSessionId(String sid) {
+        this.sid = sid;
     }
 }

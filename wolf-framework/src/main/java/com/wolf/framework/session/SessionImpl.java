@@ -4,6 +4,7 @@ package com.wolf.framework.session;
  *
  * @author aladdin
  */
+@Deprecated
 public class SessionImpl implements Session {
 
     private final String sid;

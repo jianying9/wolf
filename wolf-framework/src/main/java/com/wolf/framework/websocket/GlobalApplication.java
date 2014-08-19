@@ -10,7 +10,6 @@ import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.session.Session;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -55,9 +54,9 @@ public final class GlobalApplication extends WebSocketApplication implements Com
     @Override
     public void onClose(WebSocket socket, DataFrame frame) {
         GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
-        Session session = globalWebSocket.getSession();
-        if (session != null) {
-            this.webSockets.remove(session.getSid());
+        String sid = globalWebSocket.getSessionId();
+        if (sid != null) {
+            this.webSockets.remove(sid);
         }
         socket.close();
     }
@@ -78,6 +77,9 @@ public final class GlobalApplication extends WebSocketApplication implements Com
                 //创建消息对象并执行服务
                 WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, act, text);
                 serviceWorker.doWork(workerContext);
+                //返回消息
+                String result = serviceWorker.getResponse().getResponseMessage();
+                socket.send(result);
             }
         } else {
             matcher = this.wolfPattern.matcher(text);
@@ -93,8 +95,8 @@ public final class GlobalApplication extends WebSocketApplication implements Com
             }
         }
         //如果改socket没有session，则关闭
-        Session session = globalWebSocket.getSession();
-        if (session == null) {
+        String sid = globalWebSocket.getSessionId();
+        if (sid == null) {
             globalWebSocket.close();
         }
     }
@@ -103,24 +105,23 @@ public final class GlobalApplication extends WebSocketApplication implements Com
         return Collections.unmodifiableMap(this.webSockets);
     }
 
+    public void removGlobalWebSocket(String sid) {
+        this.webSockets.remove(sid);
+    }
+
     public synchronized void putGlobalWebSocket(GlobalWebSocket globalWebSocket) {
-        Session session = globalWebSocket.getSession();
-        String sid = session.getSid();
+        String sid = globalWebSocket.getSessionId();
         GlobalWebSocket other = this.webSockets.get(sid);
         if (other != null) {
             //该用户已经在其他地方登录，强退
             other.send("{\"wolf\":\"CLOSE\"}");
             other.close();
         }
-        this.webSockets.put(session.getSid(), globalWebSocket);
+        this.webSockets.put(sid, globalWebSocket);
     }
 
     public GlobalWebSocket getGlobalWebSocket(String userId) {
         return this.webSockets.get(userId);
-    }
-
-    public void removGlobalWebSocket(GlobalWebSocket globalWebSocket) {
-        this.webSockets.remove(globalWebSocket.getSession().getSid());
     }
 
     public void shutdown() {

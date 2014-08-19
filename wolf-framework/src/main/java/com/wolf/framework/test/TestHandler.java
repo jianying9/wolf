@@ -23,7 +23,7 @@ import org.slf4j.Logger;
  */
 public final class TestHandler {
 
-    private Session session;
+    private String sid;
 
     public TestHandler(Map<String, String> parameterMap) {
         synchronized (TestHandler.class) {
@@ -35,8 +35,13 @@ public final class TestHandler {
         }
     }
 
+    @Deprecated
     public void setSession(Session session) {
-        this.session = session;
+        this.sid = session.getSid();
+    }
+
+    public void setSessionId(String sid) {
+        this.sid = sid;
     }
 
     public Response execute(String act, Map<String, String> parameterMap) {
@@ -52,7 +57,7 @@ public final class TestHandler {
             byte[] entrySeedByte = SecurityUtils.encryptByDes(seed, key);
             String engrySeedHex = SecurityUtils.byteToHexString(entrySeedByte);
             parameterMap.put("seed", engrySeedHex);
-            WorkerContext workerContext = new LocalWorkerContextImpl(this.session, act, parameterMap);
+            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, act, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse();
         }
@@ -102,15 +107,16 @@ public final class TestHandler {
             redisHandler.delete(keyValue);
         }
     }
-    
+
     /**
      * 指定某个sorted set的类型的扩展列,增加一个键值
+     *
      * @param <T>
      * @param clazz
      * @param keyValue
      * @param sortedSetName
      * @param value
-     * @param score 
+     * @param score
      */
     public <T extends Entity> void sortedSetAdd(Class<T> clazz, String keyValue, String sortedSetName, String value, long score) {
         RedisAdminContext redisAdminContext = ApplicationContext.CONTEXT.getRedisAdminContext();
@@ -119,14 +125,15 @@ public final class TestHandler {
             redisHandler.sortedSetAdd(keyValue, sortedSetName, value, score);
         }
     }
-    
+
     /**
      * 指定某个sorted set的类型的扩展列,删除一个键值
+     *
      * @param <T>
      * @param clazz
      * @param keyValue
      * @param sortedSetName
-     * @param value 
+     * @param value
      */
     public <T extends Entity> void sortedSetRemove(Class<T> clazz, String keyValue, String sortedSetName, String value) {
         RedisAdminContext redisAdminContext = ApplicationContext.CONTEXT.getRedisAdminContext();

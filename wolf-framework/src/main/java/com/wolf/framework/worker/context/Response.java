@@ -22,8 +22,10 @@ public interface Response {
     public Map<String, String> getMapData();
 
     public List<Map<String, String>> getMapListData();
-    
+
     public String getResponseMessage();
-    
+
     public String getResponseMessage(boolean useCache);
+    
+    public String getSessionId();
 }
