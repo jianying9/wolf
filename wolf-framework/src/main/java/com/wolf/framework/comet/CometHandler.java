@@ -6,6 +6,6 @@ package com.wolf.framework.comet;
  */
 public interface CometHandler {
 
-    public void push(String sid, String message);
+    public boolean push(String sid, String message);
     
 }

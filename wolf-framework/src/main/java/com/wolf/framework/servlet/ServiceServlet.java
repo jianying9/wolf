@@ -166,14 +166,17 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     @Override
-    public void push(String sid, String message) {
+    public boolean push(String sid, String message) {
+        boolean result = false;
         //同sid冲突检测
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
+            result = true;
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
             this.asyncContextMap.remove(sid);
         }
+        return result;
     }
 
     /**

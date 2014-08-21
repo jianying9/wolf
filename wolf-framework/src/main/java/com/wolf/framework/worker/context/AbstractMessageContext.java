@@ -175,8 +175,8 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     }
 
     @Override
-    public void push(String sid, String responseMessage) {
+    public boolean push(String sid, String responseMessage) {
         CometContext cometContext = this.getApplicationContext().getCometContext();
-        cometContext.push(sid, responseMessage);
+        return cometContext.push(sid, responseMessage);
     }
 }

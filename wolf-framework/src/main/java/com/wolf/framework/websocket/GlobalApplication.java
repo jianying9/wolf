@@ -135,10 +135,13 @@ public final class GlobalApplication extends WebSocketApplication implements Com
     }
 
     @Override
-    public void push(String sid, String message) {
+    public boolean push(String sid, String message) {
+        boolean result = false;
         WebSocket webSocket = this.webSockets.get(sid);
         if (webSocket != null) {
+            result = true;
             webSocket.send(message);
         }
+        return result;
     }
 }

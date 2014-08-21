@@ -40,5 +40,5 @@ public interface MessageContext extends Response {
 
     public ApplicationContext getApplicationContext();
 
-    public void push(String sid, String responseMessage);
+    public boolean push(String sid, String responseMessage);
 }

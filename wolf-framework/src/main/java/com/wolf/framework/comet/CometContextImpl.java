@@ -12,10 +12,16 @@ public final class CometContextImpl implements CometContext {
     private final List<CometHandler> cometHanlderList = new ArrayList<CometHandler>(2);
 
     @Override
-    public void push(String sid, String message) {
+    public boolean push(String sid, String message) {
+        boolean result = false;
+        boolean isPush;
         for (CometHandler cometHandler : this.cometHanlderList) {
-            cometHandler.push(sid, message);
+            isPush = cometHandler.push(sid, message);
+            if(isPush) {
+                result = true;
+            }
         }
+        return result;
     }
 
     @Override
