@@ -104,7 +104,9 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
 
     @Override
     public final void setNewSession(Session session) {
-        this.newSid = session.getSid();
+        if(session != null) {
+            this.newSid = session.getSid();
+        }
     }
 
     @Override
