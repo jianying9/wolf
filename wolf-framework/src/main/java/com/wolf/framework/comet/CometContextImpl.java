@@ -1,13 +1,18 @@
 package com.wolf.framework.comet;
 
+import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
 
 /**
  *
  * @author jianying9
  */
 public final class CometContextImpl implements CometContext {
+    
+    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
 
     private final List<CometHandler> cometHanlderList = new ArrayList<CometHandler>(2);
 
@@ -26,6 +31,7 @@ public final class CometContextImpl implements CometContext {
 
     @Override
     public void addCometHandler(CometHandler cometHandler) {
+        this.logger.debug("CometContext add cometHandler:{}", cometHandler);
         this.cometHanlderList.add(cometHandler);
     }
 }

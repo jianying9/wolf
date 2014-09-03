@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 @WebServlet(name = "service.io", loadOnStartup = 1, urlPatterns = {"/service.io"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
-    private static final long serialVersionUID = 2005719241528799747L;
+    private static final long serialVersionUID = -6962831111898397302L;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     Map<String, AsyncContext> asyncContextMap = new HashMap<String, AsyncContext>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
@@ -117,7 +117,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             }
         } else {
             String sid = parameterMap.get("sid");
-            WorkerContext workerContext = new ServletWorkerContextImpl(sid, act, parameterMap);
+            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, act, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
@@ -167,6 +167,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     @Override
     public boolean push(String sid, String message) {
+        this.logger.debug("async-servlet push message:{},{}", sid, message);
         boolean result = false;
         //同sid冲突检测
         AsyncContext ctx = this.asyncContextMap.get(sid);
@@ -175,8 +176,15 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
             this.asyncContextMap.remove(sid);
+        } else {
+            this.logger.debug("async-servlet push message:sid not exist:{}", sid);
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "async-servlet:".concat(super.toString());
     }
 
     /**
@@ -204,6 +212,21 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
         @Override
         public void onStartAsync(AsyncEvent event) throws IOException {
+        }
+    }
+
+    public void saveNewSession(String sid) {
+        this.logger.debug("async-servlet add session:{}", sid);
+    }
+
+    public void removeSession(String sid) {
+        this.logger.debug("async-servlet remove session:{}", sid);
+        AsyncContext ctx = this.asyncContextMap.get(sid);
+        if (ctx != null) {
+            String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
+            HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
+            ctx.complete();
+            this.asyncContextMap.remove(sid);
         }
     }
 }

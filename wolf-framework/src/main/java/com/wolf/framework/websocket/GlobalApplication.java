@@ -107,6 +107,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
 
     public void removGlobalWebSocket(String sid) {
         this.webSockets.remove(sid);
+        this.logger.debug("websocket remove session:{}", sid);
     }
 
     public synchronized void putGlobalWebSocket(GlobalWebSocket globalWebSocket) {
@@ -118,6 +119,7 @@ public final class GlobalApplication extends WebSocketApplication implements Com
             other.close();
         }
         this.webSockets.put(sid, globalWebSocket);
+        this.logger.debug("websocket add session:{}", sid);
     }
 
     public GlobalWebSocket getGlobalWebSocket(String userId) {
@@ -136,12 +138,20 @@ public final class GlobalApplication extends WebSocketApplication implements Com
 
     @Override
     public boolean push(String sid, String message) {
+        this.logger.debug("websocket push message:{},{}", sid, message);
         boolean result = false;
         WebSocket webSocket = this.webSockets.get(sid);
         if (webSocket != null) {
             result = true;
             webSocket.send(message);
+        } else {
+            this.logger.debug("websocket push message:sid not exist:{}", sid);
         }
         return result;
+    }
+    
+    @Override
+    public String toString() {
+        return "websokcet:".concat(super.toString());
     }
 }
