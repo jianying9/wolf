@@ -449,6 +449,12 @@ public final class RedisHandlerImpl implements RedisHandler {
                 jedis.zrem(this.tableIndexKey, keyValue);
                 //删除
                 jedis.del(keyValue);
+                //删除扩展的sortedset
+                String sortedSetKey;
+                for (String sortedSetName : this.sortedSetNames) {
+                    sortedSetKey = this.createSortedSetKey(keyValue, sortedSetName);
+                    jedis.del(sortedSetKey);
+                }
             }
         } finally {
             //关闭连接
@@ -463,6 +469,7 @@ public final class RedisHandlerImpl implements RedisHandler {
         String columnName;
         String columnIndexKey;
         Map<String, String> entityMap;
+        String sortedSetKey;
         //开启连接
         Jedis jedis = this.jedisPool.getResource();
         try {
@@ -489,6 +496,11 @@ public final class RedisHandlerImpl implements RedisHandler {
                     jedis.zrem(this.tableIndexKey, keyValue);
                     //删除
                     jedis.del(keyValue);
+                    //删除扩展的sortedset
+                    for (String sortedSetName : this.sortedSetNames) {
+                        sortedSetKey = this.createSortedSetKey(keyValue, sortedSetName);
+                        jedis.del(sortedSetKey);
+                    }
                 }
             }
         } finally {
@@ -706,6 +718,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 //保存key索引
                 jedis.select(this.dbIndex);
                 jedis.zadd(key, score, value);
+                jedis.zadd(this.tableIndexKey, System.currentTimeMillis(), keyValue);
             } finally {
                 //关闭连接
                 this.jedisPool.returnResource(jedis);
