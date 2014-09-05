@@ -105,9 +105,8 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
                 .append(",\"pageSize\":").append(this.pageSize)
                 .append(",\"pageNum\":").append(this.pageNum)
                 .append(",\"list\":[").append(data).append("]}");
-        String sid = this.getSessionId();
-        if (sid != null) {
-            jsonBuilder.append(",\"sid\":\"").append(sid).append('"');
+        if (this.newSid != null) {
+            jsonBuilder.append(",\"sid\":\"").append(this.newSid).append('"');
         }
         jsonBuilder.append('}');
         return jsonBuilder.toString();

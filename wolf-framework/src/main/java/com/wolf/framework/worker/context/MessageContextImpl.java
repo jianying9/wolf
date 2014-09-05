@@ -27,9 +27,8 @@ public final class MessageContextImpl extends AbstractMessageContext {
         jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"act\":\"").append(this.workerContext.getAct())
                 .append("\",\"data\":").append(data);
-        String sid = this.getSessionId();
-        if (sid != null) {
-            jsonBuilder.append(",\"sid\":\"").append(sid).append('"');
+        if (this.newSid != null) {
+            jsonBuilder.append(",\"sid\":\"").append(this.newSid).append('"');
         }
         jsonBuilder.append('}');
         return jsonBuilder.toString();

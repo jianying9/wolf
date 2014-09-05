@@ -27,7 +27,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     protected final String[] returnParameter;
     protected final Map<String, ResponseParameterHandler> parameterHandlerMap;
     //session
-    private String newSid;
+    protected String newSid;
 
     public AbstractMessageContext(WorkerContext workerContext, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap) {
         this.workerContext = workerContext;
