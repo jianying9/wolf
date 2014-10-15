@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.List;
 import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
@@ -146,6 +147,7 @@ public class FileUploadServlet extends HttpServlet {
         }
         ServletFileUpload uploadHandler = new ServletFileUpload(new DiskFileItemFactory());
         StringBuilder jsonBuilder = new StringBuilder(256);
+        String redirectUrl = "";
         try {
             List<FileItem> items = uploadHandler.parseRequest(request);
             jsonBuilder.append("{\"files\":[");
@@ -155,6 +157,7 @@ public class FileUploadServlet extends HttpServlet {
             boolean isImage;
             for (FileItem item : items) {
                 if (item.isFormField() == false) {
+                    //文件
                     fileName = item.getName();
                     suffix = UploadFileManager.MANAGER.getSuffix(fileName);
                     isImage = UploadFileManager.MANAGER.isImageBySuffix(suffix);
@@ -166,6 +169,11 @@ public class FileUploadServlet extends HttpServlet {
                     jsonBuilder.append("\"size\":\"").append(item.getSize()).append("\",");
                     jsonBuilder.append("\"isImage\":\"").append(isImage).append("\"");
                     jsonBuilder.append("},");
+                } else {
+                    //判断是否需要重定向
+                    if (item.getFieldName().equals("redirect")) {
+                        redirectUrl = item.getString();
+                    }
                 }
             }
             if (items.isEmpty() == false) {
@@ -177,17 +185,25 @@ public class FileUploadServlet extends HttpServlet {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        response.setContentType("text/html");
-        response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = null;
-        try {
-            printWriter = response.getWriter();
-            printWriter.write(jsonBuilder.toString());
-            printWriter.flush();
-        } catch (IOException e) {
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
+        if (redirectUrl.length() > 0) {
+            //重将结果重定向
+            String result = URLEncoder.encode(jsonBuilder.toString(), "utf-8");
+            redirectUrl = redirectUrl.replaceFirst("%s", result);
+            response.sendRedirect(redirectUrl);
+        } else {
+            //正常返回
+            response.setContentType("text/html");
+            response.setCharacterEncoding("utf-8");
+            PrintWriter printWriter = null;
+            try {
+                printWriter = response.getWriter();
+                printWriter.write(jsonBuilder.toString());
+                printWriter.flush();
+            } catch (IOException e) {
+            } finally {
+                if (printWriter != null) {
+                    printWriter.close();
+                }
             }
         }
     }
