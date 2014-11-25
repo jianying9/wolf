@@ -264,6 +264,6 @@ public class FileUploadServlet extends HttpServlet {
         } else {
             mimetype = this.mtMap.getContentType(file);
         }
-        return mimetype;
+        return "application/download";
     }
 }
