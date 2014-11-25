@@ -1,12 +1,9 @@
 package com.wolf.framework.fileupload;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.imgscalr.Scalr;
 

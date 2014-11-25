@@ -133,6 +133,47 @@ public class FileUploadServlet extends HttpServlet {
             }
         }
     }
+    
+    private String doEscapteFilter(final String value) {
+        String result = "";
+        if (!value.isEmpty()) {
+            StringBuilder stringBuilder = new StringBuilder(value.length() * 2);
+            char cht;
+            for (int index = 0; index < value.length(); index++) {
+                cht = value.charAt(index);
+                switch (cht) {
+                    case '\"':
+                        stringBuilder.append("\\\"");
+                        break;
+                    case '\\':
+                        stringBuilder.append("\\\\");
+                        break;
+                    case '\b':
+                        stringBuilder.append("\\b");
+                        break;
+                    case '\n':
+                        stringBuilder.append("\\n");
+                        break;
+                    case '/':
+                        stringBuilder.append("\\/");
+                        break;
+                    case '\f':
+                        stringBuilder.append("\\f");
+                        break;
+                    case '\r':
+                        stringBuilder.append("\\r");
+                        break;
+                    case '\t':
+                        stringBuilder.append("\\t");
+                        break;
+                    default:
+                        stringBuilder.append(cht);
+                }
+            }
+            result = stringBuilder.toString();
+        }
+        return result;
+    }
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -159,6 +200,7 @@ public class FileUploadServlet extends HttpServlet {
                 if (item.isFormField() == false) {
                     //文件
                     fileName = item.getName();
+                    fileName = this.doEscapteFilter(fileName);
                     suffix = UploadFileManager.MANAGER.getSuffix(fileName);
                     isImage = UploadFileManager.MANAGER.isImageBySuffix(suffix);
                     file = UploadFileManager.MANAGER.createTempFile(suffix);
@@ -212,13 +254,13 @@ public class FileUploadServlet extends HttpServlet {
         String mimetype;
         String suffix = UploadFileManager.MANAGER.getSuffix(file.getName());
         if (suffix.equalsIgnoreCase("png")) {
-            mimetype = "image/png";
+            mimetype = "application/x-png";
         } else if (suffix.equalsIgnoreCase("jpg")) {
-            mimetype = "image/jpg";
+            mimetype = "application/x-jpg";
         } else if (suffix.equalsIgnoreCase("jpeg")) {
-            mimetype = "image/jpeg";
+            mimetype = "application/x-jpeg";
         } else if (suffix.equalsIgnoreCase("gif")) {
-            mimetype = "image/gif";
+            mimetype = "application/x-gif";
         } else {
             mimetype = this.mtMap.getContentType(file);
         }
