@@ -64,10 +64,16 @@ public class FileUploadServlet extends HttpServlet {
         String fileId = request.getParameter("fileId");
         String fileName = request.getParameter("fileName");
         String sid = request.getParameter("sid");
+        String download = request.getParameter("download");
         if (fileId != null && fileId.isEmpty() == false && fileName != null && fileName.isEmpty() == false && sid != null && sid.isEmpty() == false) {
             //
             File uploadFile = UploadFileManager.MANAGER.getMainFile(sid, fileId);
             if (uploadFile != null) {
+                //请求类型
+                String dType = "inline";
+                if(download != null && download.equals("true")) {
+                    dType = "attachment";
+                }
                 //判断文件类型
                 String mimeType = this.getMimeType(uploadFile);
                 String suffix = UploadFileManager.MANAGER.getSuffix(fileId);
@@ -94,7 +100,7 @@ public class FileUploadServlet extends HttpServlet {
                     BufferedImage thumb = UploadFileManager.MANAGER.resize(imageBuff, targetHeight, targetWidth);
                     //输出
                     response.setContentType(mimeType);
-                    response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+                    response.setHeader("Content-Disposition", dType + "; filename=\"" + fileName + "\"");
                     ServletOutputStream op = response.getOutputStream();
                     ImageIO.write(thumb, suffix, op);
                     op.flush();
@@ -105,7 +111,7 @@ public class FileUploadServlet extends HttpServlet {
                     ServletOutputStream op = response.getOutputStream();
                     response.setContentType(mimeType);
 //                    response.setContentLength((int) uploadFile.length());
-                    response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+                    response.setHeader("Content-Disposition", dType + "; filename=\"" + fileName + "\"");
                     byte[] bbuf = new byte[1024];
                     DataInputStream in = new DataInputStream(new FileInputStream(uploadFile));
                     while ((bytes = in.read(bbuf)) != -1) {
@@ -254,16 +260,16 @@ public class FileUploadServlet extends HttpServlet {
         String mimetype;
         String suffix = UploadFileManager.MANAGER.getSuffix(file.getName());
         if (suffix.equalsIgnoreCase("png")) {
-            mimetype = "application/x-png";
+            mimetype = "image/png";
         } else if (suffix.equalsIgnoreCase("jpg")) {
-            mimetype = "application/x-jpg";
+            mimetype = "image/jpg";
         } else if (suffix.equalsIgnoreCase("jpeg")) {
-            mimetype = "application/x-jpeg";
+            mimetype = "image/jpeg";
         } else if (suffix.equalsIgnoreCase("gif")) {
-            mimetype = "application/x-gif";
+            mimetype = "image/gif";
         } else {
             mimetype = this.mtMap.getContentType(file);
         }
-        return "application/download";
+        return mimetype;
     }
 }
