@@ -2,6 +2,7 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
+import com.wolf.framework.local.Local;
 import com.wolf.framework.redis.RedisAdminContext;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
@@ -13,17 +14,19 @@ import java.util.Map;
 /**
  *
  * @author aladdin
+ * @param <L>
  */
-public final class ApplicationContext {
+public final class ApplicationContext<L extends Local> {
 
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
-    private Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
+    private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
+    private final Map<Class<? extends Local>, L> localServiceMap = new HashMap<Class<? extends Local>, L>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
     private final CometContext cometContext = new CometContextImpl();
     private RedisAdminContext redisAdminContext;
-    
+
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
     }
@@ -34,6 +37,14 @@ public final class ApplicationContext {
 
     void setServiceWorkerMap(Map<String, ServiceWorker> serviceWorkerMap) {
         this.serviceWorkerMap.putAll(serviceWorkerMap);
+    }
+
+    public L getLocalService(Class<? extends Local> clazz) {
+        return this.localServiceMap.get(clazz);
+    }
+
+    void setLocalServiceMap(Map<Class<? extends Local>, L> localServiceMap) {
+        this.localServiceMap.putAll(localServiceMap);
     }
 
     public String getParameter(String name) {

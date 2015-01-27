@@ -9,6 +9,7 @@ import java.util.Map;
  * redis entity dao
  *
  * @author aladdin
+ * @param <T>
  */
 public interface REntityDao<T extends Entity> {
     
@@ -22,7 +23,7 @@ public interface REntityDao<T extends Entity> {
     /**
      * 根据主键查询
      *
-     * @param key
+     * @param keyValue
      * @return
      */
     public T inquireByKey(String keyValue);
@@ -39,6 +40,7 @@ public interface REntityDao<T extends Entity> {
      * 插入,返回keyValue
      *
      * @param entityMap
+     * @return 
      */
     public String insert(Map<String, String> entityMap);
 
@@ -61,6 +63,7 @@ public interface REntityDao<T extends Entity> {
      * 更新,返回keyValue
      *
      * @param entityMap
+     * @return 
      */
     public String update(Map<String, String> entityMap);
 

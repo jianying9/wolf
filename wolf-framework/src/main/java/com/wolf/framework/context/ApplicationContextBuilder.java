@@ -45,6 +45,8 @@ import org.slf4j.Logger;
  * 全局上下文对象构造函数抽象类
  *
  * @author aladdin
+ * @param <T>
+ * @param <K>
  */
 public class ApplicationContextBuilder<T extends Entity, K extends Service> {
 
@@ -154,6 +156,8 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         for (Class<Local> clazz : this.localServiceClassList) {
             localServiceConfigParser.parse(clazz);
         }
+        //将LocalService放入ApplicationContext
+        ApplicationContext.CONTEXT.setLocalServiceMap(localServiceContextBuilder.getLocalServiceMap());
         this.logger.info("parse annotation LocalServiceConfig finished.");
         //RDAO注入管理对象
         final Injecter rDaoInjecter = new RDaoInjecterImpl(this.rEntityDaoContext);
