@@ -6,15 +6,14 @@ import java.util.Map;
 /**
  *
  * @author aladdin
- * @param <L>
  */
-public interface LocalServiceContext<L extends Local> {
+public interface LocalServiceContext {
 
-    public void putLocalService(final Class<? extends Local> clazz, final L l);
+    public void putLocalService(final Class<? extends Local> clazz, final Local local);
 
     public Local getLocalService(Class<? extends Local> clazz);
 
-    public Map<Class<? extends Local>, L> getLocalServiceMap();
+    public Map<Class<? extends Local>, Local> getLocalServiceMap();
     
     public void inject(Injecter injecter);
 }

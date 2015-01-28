@@ -16,13 +16,13 @@ import java.util.Map;
  * @author aladdin
  * @param <L>
  */
-public final class ApplicationContext<L extends Local> {
+public final class ApplicationContext {
 
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
     private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
-    private final Map<Class<? extends Local>, L> localServiceMap = new HashMap<Class<? extends Local>, L>(2, 1);
+    private final Map<Class<? extends Local>, Local> localServiceMap = new HashMap<Class<? extends Local>, Local>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
     private final CometContext cometContext = new CometContextImpl();
     private RedisAdminContext redisAdminContext;
@@ -39,11 +39,11 @@ public final class ApplicationContext<L extends Local> {
         this.serviceWorkerMap.putAll(serviceWorkerMap);
     }
 
-    public L getLocalService(Class<? extends Local> clazz) {
-        return this.localServiceMap.get(clazz);
+    public <L extends Local> L getLocalService(Class<? extends Local> clazz) {
+        return (L)this.localServiceMap.get(clazz);
     }
 
-    void setLocalServiceMap(Map<Class<? extends Local>, L> localServiceMap) {
+    void setLocalServiceMap(Map<Class<? extends Local>, Local> localServiceMap) {
         this.localServiceMap.putAll(localServiceMap);
     }
 

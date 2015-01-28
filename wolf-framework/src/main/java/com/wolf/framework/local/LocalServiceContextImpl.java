@@ -8,19 +8,18 @@ import java.util.Map;
 /**
  *
  * @author aladdin
- * @param <L>
  */
-public final class LocalServiceContextImpl<L extends Local> implements LocalServiceContext<L> {
+public final class LocalServiceContextImpl implements LocalServiceContext {
 
-    private final Map<Class<? extends Local>, L> localServiceMap;
+    private final Map<Class<? extends Local>, Local> localServiceMap;
 
     public LocalServiceContextImpl() {
-        this.localServiceMap = new HashMap<Class<? extends Local>, L>(16, 1);
+        this.localServiceMap = new HashMap<Class<? extends Local>, Local>(8, 1);
     }
 
     @Override
-    public void putLocalService(Class<? extends Local> clazz, L l) {
-        this.localServiceMap.put(clazz, l);
+    public void putLocalService(Class<? extends Local> clazz, Local local) {
+        this.localServiceMap.put(clazz, local);
     }
 
     @Override
