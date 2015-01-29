@@ -45,6 +45,15 @@
         </pluginRepository>
     </pluginRepositories>
     
+    <!--发布资源库地址-->
+    <distributionManagement>
+        <repository>
+            <id>local.maven.com-snapshots</id>
+            <name>local snapshots maven repository</name>
+            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/snapshots/</url>
+        </repository>
+    </distributionManagement>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
