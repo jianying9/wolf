@@ -5,8 +5,6 @@ import com.wolf.framework.config.DefaultResponseStates;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
-import com.wolf.framework.session.Session;
-import com.wolf.framework.session.SessionImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,13 +101,6 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     }
 
     @Override
-    public final void setNewSession(Session session) {
-        if(session != null) {
-            this.newSid = session.getSid();
-        }
-    }
-
-    @Override
     public void setNewSessionId(String sid) {
         this.newSid = sid;
     }
@@ -127,16 +118,6 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
                 .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
         return this.responseMessage;
-    }
-
-    @Override
-    public final Session getSession() {
-        String sid = this.workerContext.getSessionId();
-        if (sid == null) {
-            return null;
-        } else {
-            return new SessionImpl(sid);
-        }
     }
 
     @Override

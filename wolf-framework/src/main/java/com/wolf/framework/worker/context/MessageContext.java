@@ -2,7 +2,6 @@ package com.wolf.framework.worker.context;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.session.Session;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +16,6 @@ public interface MessageContext extends Response {
     public Map<String, String> getParameterMap();
 
     public void setPageTotal(long pageTotal);
-
-    @Deprecated
-    public Session getSession();
-
-    @Deprecated
-    public void setNewSession(Session session);
     
     public void setNewSessionId(String sid);
 

@@ -2,18 +2,15 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.dao.DaoConfig;
+import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.REntityDaoContext;
-import com.wolf.framework.dao.REntityDaoContextImpl;
-import com.wolf.framework.dao.annotation.RDaoConfig;
-import com.wolf.framework.dao.parser.RDaoConfigParser;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataHandlerFactoryImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
-import com.wolf.framework.injecter.LocalServiceInjecterImpl;
-import com.wolf.framework.injecter.RDaoInjecterImpl;
-import com.wolf.framework.injecter.TaskExecutorInjecterImpl;
+import com.wolf.framework.local.LocalServiceInjecterImpl;
+import com.wolf.framework.service.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceConfigParser;
@@ -21,8 +18,6 @@ import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.paser.ClassParser;
-import com.wolf.framework.redis.RedisAdminContext;
-import com.wolf.framework.redis.RedisAdminContextImpl;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
@@ -49,24 +44,23 @@ import org.slf4j.Logger;
  * @param <K>
  */
 public class ApplicationContextBuilder<T extends Entity, K extends Service> {
-
+    
     protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
-    protected RedisAdminContext redisAdminContext;
-    protected REntityDaoContext<T> rEntityDaoContext;
+    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
     protected ServiceWorkerContext serviceWorkerContext;
     private final Map<String, String> parameterMap;
-
+    
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
     }
-
+    
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
-
+    
     public final void build() {
         //校验密钥
         String key = this.parameterMap.get(FrameworkConfig.SEED_DES_KEY);
@@ -95,19 +89,44 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                 throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
             }
         }
+        final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        List<String> packageNameList = new ArrayList<String>();
+        //动态查找需要搜索的dao注解创建对象
+        this.logger.info("Finding dao annotation...");
+        packageNameList.add("com.wolf.framework.dao");
+        List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
+        DaoConfigBuilder daoConfigBuilder;
+        Class<?> clazz;
+        try {
+            for (String className : classNameList) {
+                clazz = classloader.loadClass(className);
+                if (clazz.isAnnotationPresent(DaoConfig.class) && DaoConfigBuilder.class.isAssignableFrom(clazz)) {
+                    //发现DaoConfig类型,实例化
+                    daoConfigBuilder = (DaoConfigBuilder) clazz.newInstance();
+                    //初始化
+                    daoConfigBuilder.init(ApplicationContext.CONTEXT);
+                    this.daoConfigBuilderList.add(daoConfigBuilder);
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            this.logger.error("Error when find DaoConfig. Cause:", e);
+        } catch (InstantiationException ex) {
+            this.logger.error("Error when instance DaoConfig. Cause:", ex);
+        } catch (IllegalAccessException ex) {
+            this.logger.error("Error when instance DaoConfig. Cause:", ex);
+        }
         //查找注解类
         this.logger.info("Finding annotation...");
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
         if (packages != null) {
             String[] packageNames = packages.split(",");
-            List<String> packageNameList = new ArrayList<String>(packageNames.length);
+            packageNameList = new ArrayList<String>(packageNames.length);
             packageNameList.addAll(Arrays.asList(packageNames));
             //如果是开发模式,则加入接口文档接口
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
                 packageNameList.add("com.wolf.framework.doc");
             }
-            final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            final List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
+            classNameList = new ClassParser().findClass(classloader, packageNameList);
             try {
                 for (String className : classNameList) {
                     this.parseClass(classloader, className);
@@ -138,38 +157,32 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             }
             taskExecutor = new TaskExecutorImpl(corePoolSize, maxPoolSize);
         }
-        this.redisAdminContext = new RedisAdminContextImpl(ApplicationContext.CONTEXT);
-        //解析redis EntityDao
-        if (this.rEntityClassList.isEmpty() == false) {
-            this.logger.info("parsing annotation RDaoConfig...");
-            this.rEntityDaoContext = new REntityDaoContextImpl<T>(this.redisAdminContext);
-            final RDaoConfigParser<T> rEntityConfigDaoParser = new RDaoConfigParser<T>(this.rEntityDaoContext);
-            for (Class<T> clazz : this.rEntityClassList) {
-                rEntityConfigDaoParser.parse(clazz);
-            }
+        //解析Dao
+        for (DaoConfigBuilder dcBuilder : this.daoConfigBuilderList) {
+            dcBuilder.build();
         }
-        ApplicationContext.CONTEXT.setRedisAdminContext(this.redisAdminContext);
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
         final LocalServiceContext localServiceContextBuilder = new LocalServiceContextImpl();
         final LocalServiceConfigParser localServiceConfigParser = new LocalServiceConfigParser(localServiceContextBuilder);
-        for (Class<Local> clazz : this.localServiceClassList) {
-            localServiceConfigParser.parse(clazz);
+        for (Class<Local> clazzl : this.localServiceClassList) {
+            localServiceConfigParser.parse(clazzl);
         }
         //将LocalService放入ApplicationContext
         ApplicationContext.CONTEXT.setLocalServiceMap(localServiceContextBuilder.getLocalServiceMap());
         this.logger.info("parse annotation LocalServiceConfig finished.");
-        //RDAO注入管理对象
-        final Injecter rDaoInjecter = new RDaoInjecterImpl(this.rEntityDaoContext);
         //LocalService注入管理对象
         final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextBuilder);
         //TaskExecutor注入管理对象
         final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
         InjecterListImpl injecterListImpl = new InjecterListImpl();
-        injecterListImpl.addInjecter(rDaoInjecter);
         injecterListImpl.addInjecter(localServiceInjecter);
         injecterListImpl.addInjecter(taskExecutorInjecter);
+        //DAO注入管理对象
+        for (DaoConfigBuilder dcBuilder : this.daoConfigBuilderList) {
+            injecterListImpl.addInjecter(dcBuilder.getInjecter());
+        }
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
         localServiceContextBuilder.inject(injecterList);
@@ -187,8 +200,8 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                 parametersContext,
                 ApplicationContext.CONTEXT);
         final ServiceConfigParser<K, T> serviceConfigParser = new ServiceConfigParser<K, T>(this.serviceWorkerContext);
-        for (Class<K> clazz : this.serviceClassList) {
-            serviceConfigParser.parse(clazz);
+        for (Class<K> clazzs : this.serviceClassList) {
+            serviceConfigParser.parse(clazzs);
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.serviceWorkerContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");
@@ -204,33 +217,26 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
      */
     private void parseClass(final ClassLoader classloader, final String className) throws ClassNotFoundException {
         Class<?> clazz = classloader.loadClass(className);
-        Class<T> clazzt;
         Class<K> clazzk;
         Class<Local> clazzl;
-        //是否是实体
-        if (Entity.class.isAssignableFrom(clazz)) {
-            clazzt = (Class<T>) clazz;
-            if (clazzt.isAnnotationPresent(RDaoConfig.class)) {
-                if (this.rEntityClassList.contains(clazzt) == false) {
-                    this.rEntityClassList.add(clazzt);
-                    this.logger.debug("find redis entity class ".concat(className));
-                }
-            }
-        }
-        //是否是服务
         if (Service.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(ServiceConfig.class)) {
+            //是外部服务
             clazzk = (Class<K>) clazz;
             if (this.serviceClassList.contains(clazzk) == false) {
                 this.serviceClassList.add(clazzk);
                 this.logger.debug("find service class ".concat(className));
             }
-        }
-        //是否是内部服务
-        if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
+        } else if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
+            //是内部服务
             clazzl = (Class<Local>) clazz;
             if (this.localServiceClassList.contains(clazzl) == false) {
                 this.localServiceClassList.add(clazzl);
                 this.logger.debug("find local service class ".concat(className));
+            }
+        } else {
+            //其他注解类型
+            for (DaoConfigBuilder daoConfigBuilder : this.daoConfigBuilderList) {
+                daoConfigBuilder.putClazz(clazz);
             }
         }
     }

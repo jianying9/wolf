@@ -53,41 +53,42 @@ public abstract class AbstractInquireConditionHandler {
                 columnName = condition.getColumnName();
                 columnHandler = this.getColumnHandler(columnName);
                 if (columnHandler != null) {
-                    dataTypeEnum = columnHandler.getDataHandler().getDataTypeEnum();
-                    if (dataTypeEnum == TypeEnum.DATE) {
-                        operateTypeEnum = condition.getOperateTypeEnum();
-                        columnValue = condition.getColumnValue();
-                        switch (operateTypeEnum) {
-                            case EQUAL:
-                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
-                                existConditionList.add(newCondition);
-                                columnValue = this.getNextDayMilliseconds(columnValue);
-                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
-                                existConditionList.add(newCondition);
-                                break;
-                            case LESS_OR_EQUAL:
-                                columnValue = this.getNextDayMilliseconds(columnValue);
-                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
-                                existConditionList.add(newCondition);
-                                break;
-                            case NOT_EQUAL:
-                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
-                                existConditionList.add(newCondition);
-                                columnValue = this.getNextDayMilliseconds(columnValue);
-                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
-                                existConditionList.add(newCondition);
-                                break;
-                            case GREATER:
-                                columnValue = this.getNextDayMilliseconds(columnValue);
-                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
-                                existConditionList.add(newCondition);
-                                break;
-                            default:
-                                existConditionList.add(condition);
-                        }
-                    } else {
-                        existConditionList.add(condition);
-                    }
+//                    dataTypeEnum = columnHandler.getDataHandler().getDataTypeEnum();
+//                    if (dataTypeEnum == TypeEnum.DATE) {
+//                        operateTypeEnum = condition.getOperateTypeEnum();
+//                        columnValue = condition.getColumnValue();
+//                        switch (operateTypeEnum) {
+//                            case EQUAL:
+//                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
+//                                existConditionList.add(newCondition);
+//                                columnValue = this.getNextDayMilliseconds(columnValue);
+//                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
+//                                existConditionList.add(newCondition);
+//                                break;
+//                            case LESS_OR_EQUAL:
+//                                columnValue = this.getNextDayMilliseconds(columnValue);
+//                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
+//                                existConditionList.add(newCondition);
+//                                break;
+//                            case NOT_EQUAL:
+//                                newCondition = new Condition(columnName, OperateTypeEnum.LESS, columnValue);
+//                                existConditionList.add(newCondition);
+//                                columnValue = this.getNextDayMilliseconds(columnValue);
+//                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
+//                                existConditionList.add(newCondition);
+//                                break;
+//                            case GREATER:
+//                                columnValue = this.getNextDayMilliseconds(columnValue);
+//                                newCondition = new Condition(columnName, OperateTypeEnum.GREATER_OR_EQUAL, columnValue);
+//                                existConditionList.add(newCondition);
+//                                break;
+//                            default:
+//                                existConditionList.add(condition);
+//                        }
+//                    } else {
+//                        existConditionList.add(condition);
+//                    }
+                    existConditionList.add(condition);
                 }
             }
             resultList = existConditionList;

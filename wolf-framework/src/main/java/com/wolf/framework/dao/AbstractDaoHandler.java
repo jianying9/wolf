@@ -11,6 +11,7 @@ import org.slf4j.Logger;
  * dynamic entity dao
  *
  * @author aladdin
+ * @param <T>
  */
 public abstract class AbstractDaoHandler<T extends Entity> {
 

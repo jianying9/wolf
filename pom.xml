@@ -617,5 +617,6 @@
         <module>wolf-fileupload</module>
         <module>wolf-search</module>
         <!--<module>wolf-management</module>-->
+        <module>wolf-reids</module>
     </modules>
 </project>
