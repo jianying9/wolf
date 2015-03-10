@@ -1,6 +1,5 @@
 package com.wolf.framework.dao.reids;
 
-import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ public final class TestRedisHandler {
      * @param <T>
      * @param clazz
      */
-    public <T extends Entity> void truncateRedis(Class<T> clazz) {
+    public static <T extends Entity> void truncateRedis(Class<T> clazz) {
         RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
         if (redisHandler != null) {
             redisHandler.truncate();
@@ -32,7 +31,7 @@ public final class TestRedisHandler {
      * @param clazz
      * @param entityMap
      */
-    public <T extends Entity> void insertRedis(Class<T> clazz, Map<String, String> entityMap) {
+    public static <T extends Entity> void insertRedis(Class<T> clazz, Map<String, String> entityMap) {
         RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
         if (redisHandler != null) {
             redisHandler.insert(entityMap);
@@ -46,7 +45,7 @@ public final class TestRedisHandler {
      * @param clazz
      * @param keyValue
      */
-    public <T extends Entity> void deleteRedis(Class<T> clazz, String keyValue) {
+    public static <T extends Entity> void deleteRedis(Class<T> clazz, String keyValue) {
         RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
         if (redisHandler != null) {
             redisHandler.delete(keyValue);
@@ -63,7 +62,7 @@ public final class TestRedisHandler {
      * @param value
      * @param score
      */
-    public <T extends Entity> void sortedSetAdd(Class<T> clazz, String keyValue, String sortedSetName, String value, long score) {
+    public static <T extends Entity> void sortedSetAdd(Class<T> clazz, String keyValue, String sortedSetName, String value, long score) {
         RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
         if (redisHandler != null) {
             redisHandler.sortedSetAdd(keyValue, sortedSetName, value, score);
@@ -79,7 +78,7 @@ public final class TestRedisHandler {
      * @param sortedSetName
      * @param value
      */
-    public <T extends Entity> void sortedSetRemove(Class<T> clazz, String keyValue, String sortedSetName, String value) {
+    public static <T extends Entity> void sortedSetRemove(Class<T> clazz, String keyValue, String sortedSetName, String value) {
         RedisHandler redisHandler = redisAdminContext.getRedisHandler(clazz);
         if (redisHandler != null) {
             redisHandler.sortedSetRemove(keyValue, sortedSetName, value);

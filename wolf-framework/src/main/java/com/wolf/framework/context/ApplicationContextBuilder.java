@@ -61,6 +61,17 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         return this.parameterMap.get(name);
     }
     
+    private boolean checkException(Throwable e) {
+        boolean result = true;
+        String error = e.getMessage();
+        if(error.indexOf("javax/servlet/") == 0) {
+            result = false;
+        } else if(error.indexOf("com/sun/grizzly/websockets/") == 0) {
+            result = false;
+        }
+        return result;
+    }
+    
     public final void build() {
         //校验密钥
         String key = this.parameterMap.get(FrameworkConfig.SEED_DES_KEY);
@@ -96,10 +107,20 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         packageNameList.add("com.wolf.framework.dao");
         List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
         DaoConfigBuilder daoConfigBuilder;
-        Class<?> clazz;
+        Class<?> clazz = null;
         try {
             for (String className : classNameList) {
-                clazz = classloader.loadClass(className);
+                try {
+                    clazz = classloader.loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    if(this.checkException(e)) {
+                        this.logger.error("ClassNotFoundException:", e);
+                    }
+                } catch (NoClassDefFoundError e) {
+                    if(this.checkException(e)) {
+                        this.logger.error("NoClassDefFoundError:", e);
+                    }
+                }
                 if (clazz.isAnnotationPresent(DaoConfig.class) && DaoConfigBuilder.class.isAssignableFrom(clazz)) {
                     //发现DaoConfig类型,实例化
                     daoConfigBuilder = (DaoConfigBuilder) clazz.newInstance();
@@ -108,8 +129,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                     this.daoConfigBuilderList.add(daoConfigBuilder);
                 }
             }
-        } catch (ClassNotFoundException e) {
-            this.logger.error("Error when find DaoConfig. Cause:", e);
         } catch (InstantiationException ex) {
             this.logger.error("Error when instance DaoConfig. Cause:", ex);
         } catch (IllegalAccessException ex) {
