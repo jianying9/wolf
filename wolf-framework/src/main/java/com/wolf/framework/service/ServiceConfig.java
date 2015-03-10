@@ -17,11 +17,11 @@ import java.lang.annotation.Target;
 public @interface ServiceConfig {
 
     /**
-     * 服务标志
+     * 路由地址
      *
-     * @return ActionEnum
+     * @return route
      */
-    public String actionName();
+    public String route();
 
     /**
      * 重要的参数
@@ -72,14 +72,6 @@ public @interface ServiceConfig {
     public boolean page() default false;
 
     /**
-     * 是否响应消息
-     *
-     * @return
-     */
-    @Deprecated
-    public boolean response() default true;
-
-    /**
      * 描述
      *
      * @return
@@ -91,7 +83,7 @@ public @interface ServiceConfig {
      *
      * @return
      */
-    public String group() default "ungrouped";
+    public String group() default "default";
 
     /**
      * 返回标志描述

@@ -28,8 +28,8 @@ public final class ApplicationContext {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
     }
 
-    public ServiceWorker getServiceWorker(String act) {
-        return this.serviceWorkerMap.get(act);
+    public ServiceWorker getServiceWorker(String route) {
+        return this.serviceWorkerMap.get(route);
     }
 
     void setServiceWorkerMap(Map<String, ServiceWorker> serviceWorkerMap) {

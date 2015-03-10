@@ -26,14 +26,15 @@ import org.slf4j.Logger;
  */
 public final class GlobalApplication extends WebSocketApplication implements CometHandler {
 
-    private final ConcurrentHashMap<String, GlobalWebSocket> webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(4096, 1);
+    private final ConcurrentHashMap<String, GlobalWebSocket> webSockets;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-    private final Pattern actPattern = Pattern.compile("(?:\"act\":\")([A-Z_]+)(?:\")");
+    private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([A-Z_]+)(?:\")");
     private final Pattern wolfPattern = Pattern.compile("(?:\"wolf\":\")([A-Z_]+)(?:\")");
     private final String pathEnd;
 
     public GlobalApplication(String appContextPath) {
-        this.pathEnd = appContextPath.concat("/service.io");
+        this.webSockets = new ConcurrentHashMap<String, GlobalWebSocket>(4096, 1);
+        this.pathEnd = appContextPath.concat("/server.io");
     }
 
     @Override
@@ -66,16 +67,16 @@ public final class GlobalApplication extends WebSocketApplication implements Com
         this.logger.debug("wobsocket: {}", text);
         GlobalWebSocket globalWebSocket = (GlobalWebSocket) socket;
         //获取act
-        Matcher matcher = this.actPattern.matcher(text);
+        Matcher matcher = this.routePattern.matcher(text);
         if (matcher.find()) {
-            String act = matcher.group(1);
-            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
+            String route = matcher.group(1);
+            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //无效的act
-                socket.send("{\"state\":\"INVALID\",\"error\":\"act not exist\"}");
+                socket.send("{\"state\":\"INVALID\",\"error\":\"route not exist\"}");
             } else {
                 //创建消息对象并执行服务
-                WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, act, text);
+                WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, route, text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
                 String result = serviceWorker.getResponse().getResponseMessage();

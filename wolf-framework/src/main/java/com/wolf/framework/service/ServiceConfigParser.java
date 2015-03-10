@@ -41,8 +41,9 @@ import org.slf4j.Logger;
  * 负责解析annotation ServiceConfig
  *
  * @author aladdin
+ * @param <K>
  */
-public class ServiceConfigParser<K extends Service, T extends Entity> {
+public class ServiceConfigParser<K extends Service> {
 
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
@@ -63,14 +64,13 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
      * 解析方法
      *
      * @param clazz
-     * @param serviceCtxBuilder
      */
     public void parse(final Class<K> clazz) {
         this.logger.debug("--parsing service {}--", clazz.getName());
         if (clazz.isAnnotationPresent(ServiceConfig.class)) {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);
-            final String actionName = serviceConfig.actionName();
+            final String route = serviceConfig.route();
             final RequestConfig[] requestConfigs = serviceConfig.requestConfigs();
             final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
             final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(requestConfigs.length);
@@ -95,9 +95,12 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             Service service = null;
             try {
                 service = clazz.newInstance();
-            } catch (Exception e) {
+            } catch (InstantiationException e) {
                 this.logger.error("Error when instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
-                throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
+                throw new RuntimeException("InstantiationException when instancing class ".concat(clazz.getName()));
+            } catch (IllegalAccessException e) {
+                this.logger.error("Error when instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
+                throw new RuntimeException("IllegalAccessException when instancing class ".concat(clazz.getName()));
             }
             //注入相关对象
             Injecter injecter = this.serviceWorkerContext.getInjecter();
@@ -204,9 +207,9 @@ public class ServiceConfigParser<K extends Service, T extends Entity> {
             }
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                serviceWorker.createInfo(actionName, page, validateSession, group, desc, requestConfigs, reponseConfigs, responseStates);
+                serviceWorker.createInfo(route, page, validateSession, group, desc, requestConfigs, reponseConfigs, responseStates);
             }
-            this.serviceWorkerContext.putServiceWorker(actionName, serviceWorker, clazz.getName());
+            this.serviceWorkerContext.putServiceWorker(route, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());
         } else {
             this.logger.error("--parse service {} missing annotation ServiceConfig--", clazz.getName());

@@ -16,12 +16,12 @@ import java.util.UUID;
  * @author aladdin
  */
 @ServiceConfig(
-        actionName = "WOLF_INQUIRE_SERVICE_INFO",
+        route = "/wolf/service/info",
         requestConfigs = {
-    @RequestConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = "")
+    @RequestConfig(name = "route", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         responseConfigs = {
-    @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "route", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "page", typeEnum = TypeEnum.BOOLEAN, desc = ""),
     @ResponseConfig(name = "validateSession", typeEnum = TypeEnum.BOOLEAN, desc = ""),

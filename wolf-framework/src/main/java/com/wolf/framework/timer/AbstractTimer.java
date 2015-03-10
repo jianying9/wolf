@@ -16,20 +16,20 @@ import org.slf4j.Logger;
  */
 public class AbstractTimer {
 
-    protected String executeService(final String act, final Map<String, String> parameterMap) {
+    protected String executeService(final String route, final Map<String, String> parameterMap) {
         String result = "";
         if (ApplicationContext.CONTEXT.isReady()) {
-            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
+            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-                logger.error("timer:Can not find act:".concat(act));
+                logger.error("timer:Can not find route:".concat(route));
             } else {
                 String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
                 String seed = Long.toString(System.currentTimeMillis());
                 byte[] entrySeedByte = SecurityUtils.encryptByDes(seed, key);
                 String engrySeedHex = SecurityUtils.byteToHexString(entrySeedByte);
                 parameterMap.put("seed", engrySeedHex);
-                LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, act, parameterMap);
+                LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, route, parameterMap);
                 serviceWorker.doWork(localWorkerContextImpl);
                 result = serviceWorker.getResponse().getResponseMessage();
             }

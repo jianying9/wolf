@@ -28,7 +28,7 @@ import org.slf4j.Logger;
  *
  * @author aladdin
  */
-@WebServlet(name = "service.io", loadOnStartup = 1, urlPatterns = {"/service.io"}, asyncSupported = true)
+@WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -6962831111898397302L;
@@ -76,8 +76,8 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         }
         this.logger.debug("http: {}", parameterMap);
         //
-        String act = parameterMap.get("act");
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
+        String route = request.getServletPath();
+        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             String wolf = parameterMap.get("wolf");
             if (wolf != null) {
@@ -118,12 +118,12 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //无效的act
-                result = "{\"state\":\"INVALID\",\"error\":\"act not exist\"}";
+                result = "{\"state\":\"INVALID\",\"error\":\"route not exist\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
             String sid = parameterMap.get("sid");
-            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, act, parameterMap);
+            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, route, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
@@ -168,7 +168,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
      */
     @Override
     public String getServletInfo() {
-        return "service.io";
+        return "server";
     }
 
     @Override

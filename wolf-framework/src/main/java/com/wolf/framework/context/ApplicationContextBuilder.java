@@ -218,7 +218,7 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                 injecterListImpl,
                 parametersContext,
                 ApplicationContext.CONTEXT);
-        final ServiceConfigParser<K, T> serviceConfigParser = new ServiceConfigParser<K, T>(this.serviceWorkerContext);
+        final ServiceConfigParser<K> serviceConfigParser = new ServiceConfigParser<K>(this.serviceWorkerContext);
         for (Class<K> clazzs : this.serviceClassList) {
             serviceConfigParser.parse(clazzs);
         }

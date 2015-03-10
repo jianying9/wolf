@@ -20,18 +20,17 @@ import java.util.Set;
  * @author aladdin
  */
 @ServiceConfig(
-        actionName = "WOLF_INQUIRE_SERVICE",
+        route = "/wolf/service",
         requestConfigs = {
     @RequestConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         responseConfigs = {
-    @ResponseConfig(name = "actionName", typeEnum = TypeEnum.CHAR_255, desc = ""),
+    @ResponseConfig(name = "route", typeEnum = TypeEnum.CHAR_255, desc = ""),
     @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         responseStates = {},
         validateSession = false,
         page = true,
-        response = true,
         group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireServiceImpl implements Service {
@@ -48,7 +47,7 @@ public class InquireServiceImpl implements Service {
             serviceWorker = entryService.getValue();
             if (serviceWorker.getGroup().equals(groupName)) {
                 resultMap = new HashMap<String, String>(2, 1);
-                resultMap.put("actionName", entryService.getKey());
+                resultMap.put("route", entryService.getKey());
                 resultMap.put("desc", serviceWorker.getDescription());
                 resultMapList.add(resultMap);
             }

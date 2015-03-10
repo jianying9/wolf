@@ -35,12 +35,12 @@ public final class TestHandler {
         this.sid = sid;
     }
 
-    public Response execute(String act, Map<String, String> parameterMap) {
+    public Response execute(String route, Map<String, String> parameterMap) {
         Response result;
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(act);
+        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
-            logger.error("timer:Can not find act:".concat(act));
+            logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
             String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
@@ -48,7 +48,7 @@ public final class TestHandler {
             byte[] entrySeedByte = SecurityUtils.encryptByDes(seed, key);
             String engrySeedHex = SecurityUtils.byteToHexString(entrySeedByte);
             parameterMap.put("seed", engrySeedHex);
-            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, act, parameterMap);
+            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, route, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse();
         }

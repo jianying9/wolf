@@ -19,14 +19,13 @@ import java.util.Set;
  * @author aladdin
  */
 @ServiceConfig(
-        actionName = "WOLF_INQUIRE_GROUP",
+        route = "/wolf/group",
         responseConfigs = {
     @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
 },
         responseStates = {},
         validateSession = false,
         page = true,
-        response = true,
         group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireGroupServiceImpl implements Service {

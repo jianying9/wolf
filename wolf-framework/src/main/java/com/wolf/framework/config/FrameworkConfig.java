@@ -66,7 +66,7 @@ public class FrameworkConfig {
     public static Set<String> getReservedWordSet() {
         Set<String> wordSet = new HashSet<String>(4, 1);
         //保留接口参数
-        wordSet.add("act");
+        wordSet.add("route");
         wordSet.add("filters");
         wordSet.add("sid");
         wordSet.add("entry");

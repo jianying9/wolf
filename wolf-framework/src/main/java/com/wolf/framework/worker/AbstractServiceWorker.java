@@ -24,7 +24,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     protected final String[] returnParameter;
     protected final Map<String, ResponseParameterHandler> fieldHandlerMap;
     private final WorkHandler nextWorkHandler;
-    private String act = "";
+    private String route = "";
     private String group = "";
     private boolean page;
     private boolean validateSession;
@@ -51,7 +51,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     @Override
     public Map<String, String> getInfoMap() {
         Map<String, String> infoMap = new HashMap<String, String>(8, 1);
-        infoMap.put("actionName", this.act);
+        infoMap.put("route", this.route);
         infoMap.put("group", this.group);
         infoMap.put("page", Boolean.toString(this.page));
         infoMap.put("validateSession", Boolean.toString(this.validateSession));
@@ -103,7 +103,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
     }
 
     @Override
-    public final void createInfo(String act,
+    public final void createInfo(String route,
             boolean page,
             boolean validateSession,
             String group,
@@ -116,7 +116,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         this.page = page;
         this.validateSession = validateSession;
         this.desc = escapeFilter.doFilter(description);
-        this.act = act;
+        this.route = route;
         //构造请求参数信息
         this.requestConfigs = this.getRequestParameterJson(requestConfigs, escapeFilter);
         //构造返回参数信息
