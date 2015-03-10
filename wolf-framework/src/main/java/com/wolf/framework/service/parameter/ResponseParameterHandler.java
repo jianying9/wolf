@@ -11,6 +11,4 @@ public interface ResponseParameterHandler {
     public String getDataType();
 
     public String getJson(String value);
-
-    public String getRandomValue();
 }

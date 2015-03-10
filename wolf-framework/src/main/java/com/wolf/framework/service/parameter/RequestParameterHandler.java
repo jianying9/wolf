@@ -13,6 +13,4 @@ public interface RequestParameterHandler {
     public String validate(String value);
     
     public String convertToInput(String value);
-
-    public String getRandomValue();
 }

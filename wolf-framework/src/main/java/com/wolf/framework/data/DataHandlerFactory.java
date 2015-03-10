@@ -7,5 +7,5 @@ package com.wolf.framework.data;
  */
 public interface DataHandlerFactory {
 
-    public DataHandler getDataHandler(final TypeEnum dataTypeEnum);
+    public DataHandler getDataHandler(final DataType dataTypeEnum);
 }

@@ -1,7 +1,7 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.TypeEnum;
+import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.SessionHandleTypeEnum;
@@ -18,18 +18,18 @@ import java.util.UUID;
 @ServiceConfig(
         route = "/wolf/service/info",
         requestConfigs = {
-    @RequestConfig(name = "route", typeEnum = TypeEnum.CHAR_255, desc = "")
+    @RequestConfig(name = "route", dataType = DataType.CHAR, max = 200, desc = "")
 },
         responseConfigs = {
-    @ResponseConfig(name = "route", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @ResponseConfig(name = "page", typeEnum = TypeEnum.BOOLEAN, desc = ""),
-    @ResponseConfig(name = "validateSession", typeEnum = TypeEnum.BOOLEAN, desc = ""),
-    @ResponseConfig(name = "desc", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = ""),
-    @ResponseConfig(name = "requestConfigs", typeEnum = TypeEnum.ARRAY, desc = ""),
-    @ResponseConfig(name = "responseStates", typeEnum = TypeEnum.ARRAY, desc = ""),
-    @ResponseConfig(name = "responseConfigs", typeEnum = TypeEnum.ARRAY, desc = "")
+    @ResponseConfig(name = "route", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
+    @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
+    @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
+    @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
+    @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = "")
 },
         responseStates = {},
         validateSession = false,
@@ -40,8 +40,8 @@ public class InquireInfoServiceImpl implements Service {
 
     @Override
     public void execute(MessageContext messageContext) {
-        String actionName = messageContext.getParameter("actionName");
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(actionName);
+        String route = messageContext.getParameter("route");
+        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker != null) {
             messageContext.setNewSessionId(UUID.randomUUID().toString());
             messageContext.setMapData(serviceWorker.getInfoMap());

@@ -14,8 +14,14 @@ public final class DateParameterHandlerImpl extends AbstractParameterHandler imp
     }
 
     @Override
+    public String validate(final String value) {
+        boolean result = this.dataHandler.validate(value);
+        return result ? "" : this.dataHandler.getErrorInfo();
+    }
+
+    @Override
     public String getJson(String value) {
-        value = this.dataHandler.convertToOutput(value);
+        value = this.convertToOutput(value);
         StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 5);
         jsonBuilder.append('"').append(this.name).append("\":\"").append(value).append('"');
         return jsonBuilder.toString();

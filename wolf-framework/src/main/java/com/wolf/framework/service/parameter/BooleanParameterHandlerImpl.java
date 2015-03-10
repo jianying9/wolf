@@ -14,6 +14,12 @@ public final class BooleanParameterHandlerImpl extends AbstractParameterHandler 
     }
 
     @Override
+    public String validate(final String value) {
+        boolean result = this.dataHandler.validate(value);
+        return result ? "" : this.dataHandler.getErrorInfo();
+    }
+
+    @Override
     public String getJson(final String value) {
         String result;
         StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 3);

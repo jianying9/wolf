@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.TypeEnum;
+import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,7 +26,7 @@ public @interface ResponseConfig {
      *
      * @return
      */
-    public TypeEnum typeEnum();
+    public DataType dataType();
 
     /**
      * 描述

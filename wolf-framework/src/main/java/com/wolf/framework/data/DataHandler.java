@@ -12,11 +12,11 @@ public interface DataHandler {
      * @param value
      * @return 
      */
-    public String validate(String value);
-
-    public String getRandomValue();
+    public boolean validate(String value);
     
-    public TypeEnum getDataTypeEnum();
+    public String getErrorInfo();
+
+    public DataType getDataType();
     
     public String convertToInput(String value);
     

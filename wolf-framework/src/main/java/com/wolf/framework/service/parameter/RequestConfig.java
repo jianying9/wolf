@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.TypeEnum;
+import com.wolf.framework.data.DataType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +32,19 @@ public @interface RequestConfig {
      *
      * @return
      */
-    public TypeEnum typeEnum();
+    public DataType dataType();
+    
+    /**
+     * 最大
+     * @return 
+     */
+    public long max() default 16;
+    
+    /**
+     * 最小
+     * @return 
+     */
+    public long min() default 0;
 
     /**
      * 描述

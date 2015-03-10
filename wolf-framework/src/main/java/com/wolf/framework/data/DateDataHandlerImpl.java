@@ -11,27 +11,27 @@ import java.util.regex.Pattern;
  */
 public class DateDataHandlerImpl implements DataHandler {
 
-    private final String error_message = " must be date";
     private final Pattern pattern = Pattern.compile("[1-9]\\d{3}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\\d|3[0-1])");
+    private final String errorInfo = " must be date[yyyy-mm-dd]";
+    
 
     DateDataHandlerImpl() {
     }
 
     @Override
-    public final String validate(final String value) {
+    public final boolean validate(final String value) {
         Matcher matcher = this.pattern.matcher(value);
-        boolean result = matcher.matches();
-        return result ? "" : this.error_message;
+        return matcher.matches();
+    }
+    
+    @Override
+    public String getErrorInfo() {
+        return this.errorInfo;
     }
 
     @Override
-    public String getRandomValue() {
-        return TimeUtils.getDateFotmatYYMMDD();
-    }
-
-    @Override
-    public TypeEnum getDataTypeEnum() {
-        return TypeEnum.DATE;
+    public DataType getDataType() {
+        return DataType.DATE;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.TypeEnum;
+import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -21,8 +21,8 @@ import java.util.Set;
 @ServiceConfig(
         route = "/wolf/group",
         responseConfigs = {
-    @ResponseConfig(name = "groupName", typeEnum = TypeEnum.CHAR_255, desc = "")
-},
+            @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = "")
+        },
         responseStates = {},
         validateSession = false,
         page = true,

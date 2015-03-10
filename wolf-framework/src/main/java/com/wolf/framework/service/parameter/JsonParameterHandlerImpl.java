@@ -33,11 +33,6 @@ public final class JsonParameterHandlerImpl implements ResponseParameterHandler 
     }
 
     @Override
-    public String getRandomValue() {
-        return this.defaultValue;
-    }
-
-    @Override
     public String getDataType() {
         return this.dataType;
     }

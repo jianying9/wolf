@@ -1,6 +1,5 @@
 package com.wolf.framework.data;
 
-import com.wolf.framework.utils.NumberUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,29 +10,26 @@ import java.util.regex.Pattern;
  */
 public final class DoubleDataHandlerImpl implements DataHandler {
 
-    private final String error_message = " must be double[-9999999999999999.999999,9999999999999999.999999]";
+    private final String errorInfo = " must be double";
     private final Pattern pattern = Pattern.compile("^\\d(\\.\\d{1,6})?|[1-9]\\d{1,15}(\\.\\d{1,6})?|-[1-9]\\d{0,15}(\\.\\d{1,24})?$");
 
     DoubleDataHandlerImpl() {
     }
 
     @Override
-    public String getRandomValue() {
-        double value = NumberUtils.getRandomDoubleValue();
-        String result = NumberUtils.NUMBER_FORMAT.format(value);
-        return result;
-    }
-
-    @Override
-    public String validate(String value) {
+    public boolean validate(String value) {
         Matcher matcher = this.pattern.matcher(value);
-        boolean result = matcher.matches();
-        return result ? "" : this.error_message;
+        return matcher.matches();
+    }
+    
+    @Override
+    public String getErrorInfo() {
+        return this.errorInfo;
     }
 
     @Override
-    public TypeEnum getDataTypeEnum() {
-        return TypeEnum.DOUBLE;
+    public DataType getDataType() {
+        return DataType.DOUBLE;
     }
     
     @Override

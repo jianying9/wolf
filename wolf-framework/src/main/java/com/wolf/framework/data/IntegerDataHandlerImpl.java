@@ -4,18 +4,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * boolean:true|false
+ * 数字类型-999999999999999999到999999999999999999
  *
  * @author aladdin
  */
-public final class BooleanDataHandlerImpl implements DataHandler {
+public final class IntegerDataHandlerImpl implements DataHandler {
 
-    private final Pattern pattern = Pattern.compile("^true|false$");
-    private final String errorInfo = " must be boolean[true,false]";
+    private final String errorInfo = " must be integer";
+    private final Pattern pattern = Pattern.compile("^\\d|[1-9]\\d{1,17}|-[1-9]\\d{0,17}$");
 
-    BooleanDataHandlerImpl() {
+    IntegerDataHandlerImpl() {
     }
-    
+
     @Override
     public boolean validate(String value) {
         Matcher matcher = this.pattern.matcher(value);
@@ -29,7 +29,7 @@ public final class BooleanDataHandlerImpl implements DataHandler {
 
     @Override
     public DataType getDataType() {
-        return DataType.BOOLEAN;
+        return DataType.INTEGER;
     }
     
     @Override

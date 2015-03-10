@@ -3,10 +3,9 @@ package com.wolf.framework.service;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLoggerEnum;
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.dao.Entity;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.TypeEnum;
+import com.wolf.framework.data.DataType;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
@@ -55,9 +54,9 @@ public class ServiceConfigParser<K extends Service> {
         //初始化分页参数配置
         ParameterContext parametersContext = this.serviceWorkerContext.getParameterContext();
         DataHandlerFactory dataHandlerFactory = parametersContext.getDataHandlerFactory();
-        DataHandler intTypeHandler = dataHandlerFactory.getDataHandler(TypeEnum.INT);
-        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, intTypeHandler);
-        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, intTypeHandler);
+        DataHandler longTypeHandler = dataHandlerFactory.getDataHandler(DataType.INTEGER);
+        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, longTypeHandler, 999, 1);
+        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, longTypeHandler, 999, 1);
     }
 
     /**
@@ -137,7 +136,6 @@ public class ServiceConfigParser<K extends Service> {
                 for (RequestConfig requestConfig : minorRequestConfigList) {
                     requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                             requestConfig,
-                            this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
                     requestParameterHandler = requestParameterHandlerBuilder.build();
                     minorParameterMap.put(requestConfig.name(), requestParameterHandler);
@@ -153,7 +151,6 @@ public class ServiceConfigParser<K extends Service> {
                 for (RequestConfig requestConfig : importantRequestConfigList) {
                     requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                             requestConfig,
-                            this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
                     requestParameterHandler = requestParameterHandlerBuilder.build();
                     importantParameterMap.put(requestConfig.name(), requestParameterHandler);
@@ -187,7 +184,6 @@ public class ServiceConfigParser<K extends Service> {
                 for (ResponseConfig parameterConfig : reponseConfigs) {
                     outputParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
                             parameterConfig,
-                            this.serviceWorkerContext.getApplicationContext(),
                             this.serviceWorkerContext.getParameterContext());
                     outputParameterHandler = outputParameterHandlerBuilder.build();
                     returnParameterMap.put(parameterConfig.name(), outputParameterHandler);

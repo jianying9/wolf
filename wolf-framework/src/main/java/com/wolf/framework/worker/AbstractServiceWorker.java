@@ -68,7 +68,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         for (RequestConfig requestConfig : requestConfigs) {
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
                     .append("\",\"must\":\"").append(requestConfig.must())
-                    .append("\",\"type\":\"").append(requestConfig.typeEnum().name())
+                    .append("\",\"type\":\"").append(requestConfig.dataType().name())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
         }
@@ -84,7 +84,7 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         jsonBuilder.append('[');
         for (ResponseConfig responseConfig : responseConfigs) {
             jsonBuilder.append("{\"name\":\"").append(responseConfig.name())
-                    .append("\",\"type\":\"").append(responseConfig.typeEnum().name())
+                    .append("\",\"type\":\"").append(responseConfig.dataType().name())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseConfig.desc()))
                     .append("\",\"filter\":\"");
             if (responseConfig.filterTypes().length > 0) {
