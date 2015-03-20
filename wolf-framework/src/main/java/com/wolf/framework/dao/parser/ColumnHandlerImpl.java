@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.parser;
 
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 
 /**
  *
@@ -9,11 +9,11 @@ import com.wolf.framework.dao.annotation.ColumnTypeEnum;
 public class ColumnHandlerImpl implements ColumnHandler {
 
     private final String columnName;
-    private final ColumnTypeEnum columnTypeEnum;
+    private final ColumnType columnTypeEnum;
     private final String desc;
     private final String defaultValue;
 
-    public ColumnHandlerImpl(String columnName, ColumnTypeEnum columnTypeEnum, String desc, String defaultValue) {
+    public ColumnHandlerImpl(String columnName, ColumnType columnTypeEnum, String desc, String defaultValue) {
         this.columnName = columnName;
         this.columnTypeEnum = columnTypeEnum;
         this.desc = desc;
@@ -26,7 +26,7 @@ public class ColumnHandlerImpl implements ColumnHandler {
     }
 
     @Override
-    public ColumnTypeEnum getColumnType() {
+    public ColumnType getColumnType() {
         return this.columnTypeEnum;
     }
 

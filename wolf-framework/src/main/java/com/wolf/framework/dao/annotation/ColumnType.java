@@ -5,7 +5,7 @@ package com.wolf.framework.dao.annotation;
  *
  * @author aladdin
  */
-public enum ColumnTypeEnum {
+public enum ColumnType {
 
     //主键
     KEY,

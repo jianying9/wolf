@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.parser;
 
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 
 /**
  *
@@ -10,7 +10,7 @@ public interface ColumnHandler {
 
     public String getColumnName();
     
-    public ColumnTypeEnum getColumnType();
+    public ColumnType getColumnType();
     
     public String getDesc();
     
