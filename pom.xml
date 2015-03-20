@@ -618,5 +618,6 @@
         <module>wolf-search</module>
         <!--<module>wolf-management</module>-->
         <module>wolf-reids</module>
+        <module>wolf-cassandra</module>
     </modules>
 </project>

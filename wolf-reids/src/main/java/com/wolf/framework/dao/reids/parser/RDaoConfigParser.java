@@ -36,7 +36,6 @@ public class RDaoConfigParser<T extends Entity> {
     /**
      * 解析方法
      *
-     * @param <T>
      * @param clazz
      */
     public void parse(final Class<T> clazz) {
@@ -60,7 +59,7 @@ public class RDaoConfigParser<T extends Entity> {
             int modifier;
             String fieldName;
             RColumnConfig columnConfig;
-            ColumnType columnTypeEnum;
+            ColumnType columnType;
             for (Field field : fieldTemp) {
                 modifier = field.getModifiers();
                 if (!Modifier.isStatic(modifier)) {
@@ -69,15 +68,15 @@ public class RDaoConfigParser<T extends Entity> {
                     if (field.isAnnotationPresent(RColumnConfig.class)) {
                         //
                         columnConfig = field.getAnnotation(RColumnConfig.class);
-                        columnTypeEnum = columnConfig.columnType();
-                        if (columnTypeEnum == ColumnType.KEY) {
+                        columnType = columnConfig.columnType();
+                        if (columnType == ColumnType.KEY) {
                             if (keyHandler == null) {
-                                keyHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc(), "-1");
+                                keyHandler = new RColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), "-1");
                             } else {
                                 throw new RuntimeException("There was an error building REntityDao:" + clazz.getName() + ". Cause:too many key");
                             }
                         } else {
-                            columnHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc(), columnConfig.defaultValue());
+                            columnHandler = new RColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), columnConfig.defaultValue());
                             columnHandlerList.add(columnHandler);
                         }
                     }
