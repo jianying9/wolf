@@ -5,7 +5,7 @@ import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.reids.REntityDao;
 import com.wolf.framework.dao.reids.REntityDaoBuilder;
 import com.wolf.framework.dao.reids.REntityDaoContext;
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 import com.wolf.framework.dao.reids.annotation.RColumnConfig;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
 import com.wolf.framework.logger.LogFactory;
@@ -60,7 +60,7 @@ public class RDaoConfigParser<T extends Entity> {
             int modifier;
             String fieldName;
             RColumnConfig columnConfig;
-            ColumnTypeEnum columnTypeEnum;
+            ColumnType columnTypeEnum;
             for (Field field : fieldTemp) {
                 modifier = field.getModifiers();
                 if (!Modifier.isStatic(modifier)) {
@@ -69,8 +69,8 @@ public class RDaoConfigParser<T extends Entity> {
                     if (field.isAnnotationPresent(RColumnConfig.class)) {
                         //
                         columnConfig = field.getAnnotation(RColumnConfig.class);
-                        columnTypeEnum = columnConfig.columnTypeEnum();
-                        if (columnTypeEnum == ColumnTypeEnum.KEY) {
+                        columnTypeEnum = columnConfig.columnType();
+                        if (columnTypeEnum == ColumnType.KEY) {
                             if (keyHandler == null) {
                                 keyHandler = new RColumnHandlerImpl(fieldName, columnTypeEnum, columnConfig.desc(), "-1");
                             } else {

@@ -1,7 +1,7 @@
 package com.wolf.framework.dao.redis;
 
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 import com.wolf.framework.dao.reids.annotation.RColumnConfig;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
 import java.util.HashMap;
@@ -17,10 +17,10 @@ import java.util.Map;
         tableName = "TestRedis")
 public final class TestRedisEntity extends Entity {
 
-    @RColumnConfig(columnTypeEnum = ColumnTypeEnum.KEY, desc = "id")
+    @RColumnConfig(columnType = ColumnType.KEY, desc = "id")
     private String id;
 
-    @RColumnConfig(columnTypeEnum = ColumnTypeEnum.INDEX, desc = "type")
+    @RColumnConfig(columnType = ColumnType.INDEX, desc = "type")
     private String type;
 
     @RColumnConfig(desc = "name")

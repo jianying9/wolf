@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.reids.annotation;
 
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,7 +20,7 @@ public @interface RColumnConfig {
      *
      * @return
      */
-    public ColumnTypeEnum columnTypeEnum() default ColumnTypeEnum.COLUMN;
+    public ColumnType columnType() default ColumnType.COLUMN;
     
     /**
      * redis数据为空时，取默认值

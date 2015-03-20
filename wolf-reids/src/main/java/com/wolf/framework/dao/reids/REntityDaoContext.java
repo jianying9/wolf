@@ -1,12 +1,12 @@
 package com.wolf.framework.dao.reids;
 
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.reids.RedisAdminContext;
 import java.util.Map;
 
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public interface REntityDaoContext<T extends Entity> {
 

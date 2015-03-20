@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.reids;
 
-import com.wolf.framework.dao.annotation.ColumnTypeEnum;
+import com.wolf.framework.dao.annotation.ColumnType;
 import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import com.wolf.framework.dao.reids.parser.RColumnHandler;
@@ -37,7 +37,7 @@ public final class RedisHandlerImpl implements RedisHandler {
         this.keyHandler = keyHandler;
         this.columnHandlerList = columnHandlerList;
         for (RColumnHandler rColumnHandler : columnHandlerList) {
-            if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+            if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                 this.indexColumnNameSet.add(rColumnHandler.getColumnName());
             }
         }
@@ -173,7 +173,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 columnValue = entityMap.get(columnName);
                 if (columnValue != null) {
                     insertMap.put(columnName, columnValue);
-                    if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                    if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                         //如果该列是索引类型，则额外更新列信息
                         strBuilder.append(this.columnIndexKeyPrefix).append(columnName)
                                 .append(this.connector).append(columnValue);
@@ -233,7 +233,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                     columnValue = entityMap.get(columnName);
                     if (columnValue != null) {
                         insertMap.put(columnName, columnValue);
-                        if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                        if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                             //如果该列是索引类型，则额外更新列信息
                             strBuilder.append(this.columnIndexKeyPrefix).append(columnName)
                                     .append(this.connector).append(columnValue);
@@ -297,7 +297,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                             //列值发生变化
                             updateMap.put(columnName, columnValue);
                         }
-                        if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                        if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                             //是索引列
                             if (oldColumnValue != null && oldColumnValue.equals(columnValue) == false) {
                                 //删除旧索引
@@ -376,7 +376,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                                     //值变化
                                     updateMap.put(columnName, columnValue);
                                 }
-                                if (rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                                if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                                     //是索引列
                                     if (oldColumnValue != null && oldColumnValue.equals(columnValue) == false) {
                                         //删除旧索引
@@ -436,7 +436,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 for (RColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
-                    if (columnValue != null && rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                    if (columnValue != null && rColumnHandler.getColumnType() == ColumnType.INDEX) {
                         //如果该列是索引类型，则额外更新列信息
                         strBuilder.append(this.columnIndexKeyPrefix).append(columnName)
                                 .append(this.connector).append(columnValue);
@@ -483,7 +483,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                     for (RColumnHandler rColumnHandler : this.columnHandlerList) {
                         columnName = rColumnHandler.getColumnName();
                         columnValue = entityMap.get(columnName);
-                        if (columnValue != null && rColumnHandler.getColumnType() == ColumnTypeEnum.INDEX) {
+                        if (columnValue != null && rColumnHandler.getColumnType() == ColumnType.INDEX) {
                             //如果该列是索引类型，则额外更新列信息
                             strBuilder.append(this.columnIndexKeyPrefix).append(columnName)
                                     .append(this.connector).append(columnValue);
