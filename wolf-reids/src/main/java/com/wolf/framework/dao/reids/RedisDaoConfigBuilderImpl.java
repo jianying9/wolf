@@ -63,7 +63,6 @@ public class RedisDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBui
 //        解析redis EntityDao
         if (this.rEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation RDaoConfig...");
-            this.rEntityDaoContext = new REntityDaoContextImpl<T>(this.redisAdminContext);
             final RDaoConfigParser<T> rEntityConfigDaoParser = new RDaoConfigParser<T>(this.rEntityDaoContext);
             for (Class<T> clazzt : this.rEntityClassList) {
                 rEntityConfigDaoParser.parse(clazzt);
