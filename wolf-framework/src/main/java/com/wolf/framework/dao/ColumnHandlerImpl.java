@@ -1,7 +1,4 @@
-package com.wolf.framework.dao.cassandra;
-
-import com.wolf.framework.dao.cassandra.annotation.ColumnType;
-
+package com.wolf.framework.dao;
 
 /**
  *

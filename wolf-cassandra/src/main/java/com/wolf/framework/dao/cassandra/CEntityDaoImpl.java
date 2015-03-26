@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
 
-    private final InsertHandler<T> insertHandler;
+    private final InsertHandler insertHandler;
     private final UpdateHandler updateHandler;
     private final DeleteHandler deleteHandler;
     private final InquireByKeyHandler<T> inquireByKeyHandler;
@@ -136,11 +136,6 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
 
     @Override
     public long count() {
-        return 0;
-    }
-
-    @Override
-    public long increase(String keyValue, String columnName, long value) {
         return 0;
     }
 }

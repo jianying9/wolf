@@ -6,7 +6,6 @@ import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
-import com.wolf.framework.dao.reids.injecter.RDaoInjecterImpl;
 import com.wolf.framework.dao.reids.parser.RDaoConfigParser;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;

@@ -1,4 +1,4 @@
-package com.wolf.framework.dao.reids.injecter;
+package com.wolf.framework.dao.reids;
 
 import com.wolf.framework.dao.reids.REntityDaoContext;
 import com.wolf.framework.dao.reids.annotation.InjectRDao;

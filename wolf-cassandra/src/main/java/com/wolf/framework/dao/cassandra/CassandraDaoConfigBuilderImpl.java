@@ -2,11 +2,13 @@ package com.wolf.framework.dao.cassandra;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.ColumnHandlerImpl;
+import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.cassandra.annotation.ColumnConfig;
-import com.wolf.framework.dao.cassandra.annotation.ColumnType;
 import com.wolf.framework.dao.cassandra.annotation.CDaoConfig;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
@@ -27,10 +29,12 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final List<Class<T>> cEntityClassList = new ArrayList<Class<T>>();
     private CEntityDaoContext<T> cEntityDaoContext;
+    private CassandraAdminContext cassandraAdminContext;
 
     @Override
     public void init(ApplicationContext context) {
         this.cEntityDaoContext = new CEntityDaoContextImpl<T>();
+        this.cassandraAdminContext = new CassandraAdminContextImpl(context);
     }
 
     @Override
@@ -116,7 +120,9 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                             keyHandler,
                             columnHandlerList,
                             clazz,
-                            this.cEntityDaoContext);
+                            this.cEntityDaoContext,
+                            this.cassandraAdminContext
+                    );
                     CEntityDao<T> entityDao = entityDaoBuilder.build();
                     this.cEntityDaoContext.putCEntityDao(clazz, entityDao, table);
                     this.logger.debug("--parse CEntity DAO {} finished--", clazz.getName());

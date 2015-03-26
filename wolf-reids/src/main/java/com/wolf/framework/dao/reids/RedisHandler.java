@@ -1,7 +1,11 @@
 package com.wolf.framework.dao.reids;
 
+import com.wolf.framework.dao.DatabaseHandler;
 import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireIndexPageContext;
+import com.wolf.framework.dao.delete.DeleteHandler;
+import com.wolf.framework.dao.insert.InsertHandler;
+import com.wolf.framework.dao.update.UpdateHandler;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +13,7 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public interface RedisHandler {
+public interface RedisHandler extends DatabaseHandler, UpdateHandler, DeleteHandler, InsertHandler{
     
     public String META_DBINDEX = "META_DBINDEX";
     
@@ -32,47 +36,6 @@ public interface RedisHandler {
     public String getColumnIndexKey(String columnName, String columnValue);
     
     /**
-     * 判断某个主键值是否存在
-     * @param keyValue
-     * @return 
-     */
-    public boolean exist(String keyValue);
-
-    /**
-     * 根据主键查询一行记录
-     * @param keyValue
-     * @return 
-     */
-    public Map<String, String> inquireByKey(String keyValue);
-
-    /**
-     * 根据主键集合查询多行记录
-     * @param keyValueList
-     * @return 
-     */
-    public List<Map<String, String>> inquireBykeys(List<String> keyValueList);
-
-    /**
-     * 插入一行记录
-     * @param entityMap
-     * @return 
-     */
-    public String insert(Map<String, String> entityMap);
-
-    /**
-     * 批量插入多行记录
-     * @param entityMapList 
-     */
-    public void batchInsert(List<Map<String, String>> entityMapList);
-
-    /**
-     * 更新一行记录
-     * @param entityMap
-     * @return 
-     */
-    public String update(Map<String, String> entityMap);
-    
-    /**
      * 更新指定主键值在索引用的排序得分
      * @param keyValue
      * @param sorce 
@@ -89,24 +52,6 @@ public interface RedisHandler {
     public void updateIndexKeySorce(String keyValue, String columnName, String columnValue, long sorce);
 
     /**
-     * 批量更新多行记录
-     * @param entityMapList 
-     */
-    public void batchUpdate(List<Map<String, String>> entityMapList);
-
-    /**
-     * 删除一行记录
-     * @param keyValue 
-     */
-    public void delete(String keyValue);
-
-    /**
-     * 批量删除多行记录
-     * @param keyValueList 
-     */
-    public void batchDelete(List<String> keyValueList);
-
-    /**
      * 分页查询主键索引,根据主键得分正序排列
      * @param inquirePageContext
      * @return 
@@ -119,12 +64,6 @@ public interface RedisHandler {
      * @return 
      */
     public List<String> inquireKeysDESC(InquirePageContext inquirePageContext);
-
-    /**
-     * 查询总记录数
-     * @return 
-     */
-    public long count();
 
     /**
      * 分页查询列值索引,根据主键得分正序排列
@@ -160,7 +99,7 @@ public interface RedisHandler {
     /**
      * 指定某个sorted set的类型的扩展列,增加一个键值
      * @param keyValue
-     * @param sortSetName
+     * @param sortedSetName
      * @param value
      * @param score 
      */
@@ -169,7 +108,7 @@ public interface RedisHandler {
     /**
      * 指定某个sorted set的类型的扩展列,删除一个键值
      * @param keyValue
-     * @param sortSetName
+     * @param sortedSetName
      * @param value 
      */
     public void sortedSetRemove(String keyValue, String sortedSetName, String value);
@@ -177,7 +116,7 @@ public interface RedisHandler {
     /**
      * 获取指定sorted set的类型的扩展列的所有键值,正序排列，最多取前200
      * @param keyValue
-     * @param sortSetName
+     * @param sortedSetName
      * @return 
      */
     public List<String> sortedSet(String keyValue, String sortedSetName);
@@ -185,7 +124,7 @@ public interface RedisHandler {
     /**
      * 获取指定sorted set的类型的扩展列的所有键值,倒序排列，最多取前200
      * @param keyValue
-     * @param sortSetName
+     * @param sortedSetName
      * @return 
      */
     public List<String> sortedSetDESC(String keyValue, String sortedSetName);

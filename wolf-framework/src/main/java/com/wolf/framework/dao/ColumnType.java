@@ -1,4 +1,4 @@
-package com.wolf.framework.dao.cassandra.annotation;
+package com.wolf.framework.dao;
 
 /**
  * data type

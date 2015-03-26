@@ -1,6 +1,11 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.Session;
+import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireByKeyFromDatabaseHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +29,12 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final List<ColumnHandler> columnHandlerList;
     //实体class
     private final Class<T> clazz;
+    //
     private final CEntityDaoContext<T> entityDaoContext;
+    //
+    private final CassandraAdminContext cassandraAdminContext;
 
-    public CEntityDaoBuilder(String keyspace, String tableName, boolean counter, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Class<T> clazz, CEntityDaoContext<T> entityDaoContext) {
+    public CEntityDaoBuilder(String keyspace, String tableName, boolean counter, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Class<T> clazz, CEntityDaoContext<T> entityDaoContext, CassandraAdminContext cassandraAdminContext) {
         this.keyspace = keyspace;
         this.table = tableName;
         this.counter = counter;
@@ -38,6 +46,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         }
         this.clazz = clazz;
         this.entityDaoContext = entityDaoContext;
+        this.cassandraAdminContext = cassandraAdminContext;
     }
 
     public CEntityDao<T> build() {
@@ -53,6 +62,25 @@ public final class CEntityDaoBuilder<T extends Entity> {
         if (this.keyHandler == null) {
             throw new RuntimeException("Error when building CEntityDao. Cause: key is null");
         }
+        //session
+        final Session session = this.cassandraAdminContext.getSession();
+        //构造CassandraHandler
+        CassandraHandler cassandraHandler;
+        if(this.counter) {
+            //counter 表
+            cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
+        } else {
+            //普通表
+            cassandraHandler = new CassandraHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
+        }
+        this.cassandraAdminContext.putCassandraHandler(this.clazz, cassandraHandler, this.keyspace, this.table);
+        //
+        //---------------------------构造根据key查询数据库entity处理对象
+        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDatabaseHandlerImpl<T>(
+                cassandraHandler,
+                this.clazz,
+                this.columnHandlerList);
+        inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
         
         CEntityDao<T> entityDao = new CEntityDaoImpl(
                 null,

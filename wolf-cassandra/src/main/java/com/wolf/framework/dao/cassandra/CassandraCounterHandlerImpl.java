@@ -9,6 +9,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.in;
 import com.datastax.driver.core.querybuilder.Select;
 import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
 import java.util.HashMap;

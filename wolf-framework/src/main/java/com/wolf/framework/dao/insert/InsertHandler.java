@@ -1,6 +1,5 @@
 package com.wolf.framework.dao.insert;
 
-import com.wolf.framework.dao.Entity;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +7,7 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public interface InsertHandler<T extends Entity> {
+public interface InsertHandler {
 
     /**
      * 返回key值

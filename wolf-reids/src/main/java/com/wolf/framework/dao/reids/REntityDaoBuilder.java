@@ -1,15 +1,10 @@
 package com.wolf.framework.dao.reids;
 
+import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.delete.DeleteHandler;
-import com.wolf.framework.dao.reids.delete.DeleteRedisHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
-import com.wolf.framework.dao.reids.inquire.InquireByKeyFromRedisHandlerImpl;
+import com.wolf.framework.dao.inquire.InquireByKeyFromDatabaseHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
-import com.wolf.framework.dao.insert.InsertHandler;
-import com.wolf.framework.dao.reids.insert.InsertRedisHandlerImpl;
-import com.wolf.framework.dao.update.UpdateHandler;
-import com.wolf.framework.dao.reids.update.UpdateRedisHandlerImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -62,27 +57,17 @@ public final class REntityDaoBuilder<T extends Entity> {
         final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, redisAdminContext.getJedisPool(), this.keyHandler, this.columnHandlerList, this.sortedSetNames);
         redisAdminContext.putRedisHandler(this.clazz, redisHandler, this.tableName);
         //---------------------------构造根据key查询数据库entity处理对象
-        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromRedisHandlerImpl<T>(
+        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDatabaseHandlerImpl<T>(
                 redisHandler,
                 this.clazz,
                 this.columnHandlerList);
         inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
         //
         //----------------------------------构造数据增、删、改操作对象
-        //构造插入数据库处理对象
-        InsertHandler<T> insertHandler = new InsertRedisHandlerImpl<T>(
-                redisHandler,
-                this.clazz);
-        //构造更新数据库处理对象
-        UpdateHandler updateHandler = new UpdateRedisHandlerImpl(
-                redisHandler,
-                this.clazz);
-        //构造删除数据库处理对象
-        DeleteHandler deleteHandler = new DeleteRedisHandlerImpl(redisHandler);
         REntityDao<T> entityDao = new REntityDaoImpl(
-                insertHandler,
-                updateHandler,
-                deleteHandler,
+                redisHandler,
+                redisHandler,
+                redisHandler,
                 inquireByKeyHandler,
                 redisHandler);
         return entityDao;

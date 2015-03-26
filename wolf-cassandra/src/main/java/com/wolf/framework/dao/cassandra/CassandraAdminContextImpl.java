@@ -47,7 +47,7 @@ public class CassandraAdminContextImpl implements CassandraAdminContext {
     public <T extends Entity> void putCassandraHandler(Class<T> clazz, CassandraHandler cassandraHandler, String keyspace, String table) {
         if (this.cassandraHandlerMap.containsKey(clazz)) {
             StringBuilder errBuilder = new StringBuilder(1024);
-            errBuilder.append("Error putting CassandraHandler. Cause: keyspace and table duplicated : ")
+            errBuilder.append("Error putting CassandraHandler. Cause: keyspace.table duplicated : ")
                     .append(keyspace).append('(').append(table).append(")\n");
             throw new RuntimeException(errBuilder.toString());
         }

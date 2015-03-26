@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * 查询过滤
  * @author aladdin
+ * @param <T>
  */
 public final class InquireByKeyFilterHandlerImpl<T extends Entity> implements InquireByKeyHandler<T> {
 

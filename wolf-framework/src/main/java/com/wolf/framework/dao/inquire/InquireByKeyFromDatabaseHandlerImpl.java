@@ -1,10 +1,9 @@
-package com.wolf.framework.dao.reids.inquire;
+package com.wolf.framework.dao.inquire;
 
 import com.wolf.framework.dao.AbstractDaoHandler;
+import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.DatabaseHandler;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.inquire.InquireByKeyHandler;
-import com.wolf.framework.dao.reids.ColumnHandler;
-import com.wolf.framework.dao.reids.RedisHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +13,17 @@ import java.util.Map;
  * @author aladdin
  * @param <T>
  */
-public final class InquireByKeyFromRedisHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
+public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
 
-    private final RedisHandler redisHandler;
+    private final DatabaseHandler databaseHandler;
     private final List<ColumnHandler> columnHandlerList;
 
-    public InquireByKeyFromRedisHandlerImpl(RedisHandler redisHandler, Class<T> clazz, List<ColumnHandler> columnHandlerList) {
+    public InquireByKeyFromDatabaseHandlerImpl(DatabaseHandler databaseHandler, Class<T> clazz, List<ColumnHandler> columnHandlerList) {
         super(clazz);
-        this.redisHandler = redisHandler;
+        this.databaseHandler = databaseHandler;
         this.columnHandlerList = columnHandlerList;
     }
-
+    
     private void checkRedisData(Map<String, String> entityMap) {
         String columnName;
         for (ColumnHandler rColumnHandler : columnHandlerList) {
@@ -38,7 +37,7 @@ public final class InquireByKeyFromRedisHandlerImpl<T extends Entity> extends Ab
     @Override
     public T inquireByKey(String keyValue) {
         T t = null;
-        Map<String, String> entityMap = this.redisHandler.inquireByKey(keyValue);
+        Map<String, String> entityMap = this.databaseHandler.inquireByKey(keyValue);
         if (entityMap != null) {
             this.checkRedisData(entityMap);
             t = this.newInstance(entityMap);
@@ -49,7 +48,7 @@ public final class InquireByKeyFromRedisHandlerImpl<T extends Entity> extends Ab
     @Override
     public List<T> inquireByKeys(List<String> keyValues) {
         List<T> tList;
-        List<Map<String, String>> entityMapList = this.redisHandler.inquireBykeys(keyValues);
+        List<Map<String, String>> entityMapList = this.databaseHandler.inquireBykeys(keyValues);
         if (entityMapList.isEmpty() == false) {
             tList = new ArrayList<T>(entityMapList.size());
             T t;

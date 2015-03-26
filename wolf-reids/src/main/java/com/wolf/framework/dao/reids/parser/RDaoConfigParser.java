@@ -2,12 +2,12 @@ package com.wolf.framework.dao.reids.parser;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.reids.ColumnHandler;
-import com.wolf.framework.dao.reids.ColumnHandlerImpl;
+import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.ColumnHandlerImpl;
 import com.wolf.framework.dao.reids.REntityDao;
 import com.wolf.framework.dao.reids.REntityDaoBuilder;
 import com.wolf.framework.dao.reids.REntityDaoContext;
-import com.wolf.framework.dao.reids.annotation.ColumnType;
+import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.reids.annotation.ColumnConfig;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
 import com.wolf.framework.logger.LogFactory;

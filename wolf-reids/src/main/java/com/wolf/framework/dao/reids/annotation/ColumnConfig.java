@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.reids.annotation;
 
+import com.wolf.framework.dao.ColumnType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

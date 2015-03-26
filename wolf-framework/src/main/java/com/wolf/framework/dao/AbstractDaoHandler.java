@@ -33,9 +33,10 @@ public abstract class AbstractDaoHandler<T extends Entity> {
         T t;
         try {
             t = clazz.newInstance();
-        } catch (Exception e) {
-            logger.error("There was an error instancing  class {}.Cause: {}", clazz.getName(), e.getMessage());
-            throw new RuntimeException("There was an error instancing class ".concat(clazz.getName()));
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Error instancing class ".concat(clazz.getName()));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error instancing class ".concat(clazz.getName()));
         }
         t.parseMap(entityMap);
         return t;

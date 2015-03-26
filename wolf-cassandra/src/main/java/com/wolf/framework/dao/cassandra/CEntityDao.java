@@ -142,15 +142,4 @@ public interface CEntityDao<T extends Entity> {
      * @return
      */
     public long count();
-
-
-    /**
-     * 增加某number类型且非索引列的值
-     *
-     * @param keyValue
-     * @param columnName
-     * @param value
-     * @return
-     */
-    public long increase(String keyValue, String columnName, long value);
 }

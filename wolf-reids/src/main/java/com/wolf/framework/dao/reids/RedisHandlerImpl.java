@@ -1,6 +1,7 @@
 package com.wolf.framework.dao.reids;
 
-import com.wolf.framework.dao.reids.annotation.ColumnType;
+import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireIndexPageContext;
 import java.util.ArrayList;

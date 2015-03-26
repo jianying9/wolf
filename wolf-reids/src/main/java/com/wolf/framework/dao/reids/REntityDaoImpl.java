@@ -7,17 +7,17 @@ import com.wolf.framework.dao.delete.DeleteHandler;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import com.wolf.framework.dao.insert.InsertHandler;
 import com.wolf.framework.dao.update.UpdateHandler;
-import com.wolf.framework.dao.reids.RedisHandler;
 import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public class REntityDaoImpl<T extends Entity> implements REntityDao<T> {
 
-    private final InsertHandler<T> insertHandler;
+    private final InsertHandler insertHandler;
     private final UpdateHandler updateHandler;
     private final DeleteHandler deleteHandler;
     private final InquireByKeyHandler<T> inquireByKeyHandler;

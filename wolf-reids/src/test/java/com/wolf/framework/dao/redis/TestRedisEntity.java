@@ -1,7 +1,7 @@
 package com.wolf.framework.dao.redis;
 
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.reids.annotation.ColumnType;
+import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.reids.annotation.ColumnConfig;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
 import java.util.HashMap;

@@ -1,6 +1,5 @@
 package com.wolf.framework.dao.insert;
 
-import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.cache.InquireCache;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +8,12 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class InsertCacheHandlerImpl<T extends Entity> implements InsertHandler<T> {
+public class InsertCacheHandlerImpl implements InsertHandler {
 
     private final InquireCache inquireCache;
-    private final InsertHandler<T> insertHandler;
+    private final InsertHandler insertHandler;
 
-    public InsertCacheHandlerImpl(InquireCache inquireCache, InsertHandler<T> insertHandler) {
+    public InsertCacheHandlerImpl(InquireCache inquireCache, InsertHandler insertHandler) {
         this.inquireCache = inquireCache;
         this.insertHandler = insertHandler;
     }
