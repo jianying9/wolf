@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.reids;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 @DaoConfig()
 public class RedisDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     private RedisAdminContext redisAdminContext;
     private REntityDaoContext<T> rEntityDaoContext;

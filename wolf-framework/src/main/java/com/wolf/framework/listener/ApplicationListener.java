@@ -2,7 +2,7 @@ package com.wolf.framework.listener;
 
 import com.sun.grizzly.websockets.WebSocketEngine;
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
@@ -32,7 +32,7 @@ public class ApplicationListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+        Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
         //1.加载系统配置
         String appFilePath = sce.getServletContext().getRealPath("");
         String appContextPath = sce.getServletContext().getContextPath();

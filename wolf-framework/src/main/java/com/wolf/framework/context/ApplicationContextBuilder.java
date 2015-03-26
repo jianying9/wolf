@@ -1,7 +1,7 @@
 package com.wolf.framework.context;
 
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
@@ -45,7 +45,7 @@ import org.slf4j.Logger;
  */
 public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     
-    protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();

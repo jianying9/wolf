@@ -1,6 +1,6 @@
 package com.wolf.framework.injecter;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -12,7 +12,7 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractInjecter<A extends Annotation> {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     protected abstract Class<A> getAnnotation();
 

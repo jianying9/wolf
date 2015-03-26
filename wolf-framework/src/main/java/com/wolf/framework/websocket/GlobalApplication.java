@@ -7,7 +7,7 @@ import com.sun.grizzly.websockets.WebSocket;
 import com.sun.grizzly.websockets.WebSocketApplication;
 import com.sun.grizzly.websockets.WebSocketListener;
 import com.wolf.framework.comet.CometHandler;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 public final class GlobalApplication extends WebSocketApplication implements CometHandler {
 
     private final ConcurrentHashMap<String, GlobalWebSocket> webSockets;
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([A-Z_]+)(?:\")");
     private final Pattern wolfPattern = Pattern.compile("(?:\"wolf\":\")([A-Z_]+)(?:\")");
     private final String pathEnd;

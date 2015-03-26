@@ -1,15 +1,13 @@
 package com.wolf.framework.dao.cassandra;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.annotation.ColumnType;
-import com.wolf.framework.dao.cassandra.annotation.CColumnConfig;
+import com.wolf.framework.dao.cassandra.annotation.ColumnConfig;
+import com.wolf.framework.dao.cassandra.annotation.ColumnType;
 import com.wolf.framework.dao.cassandra.annotation.CDaoConfig;
-import com.wolf.framework.dao.parser.ColumnHandler;
-import com.wolf.framework.dao.parser.ColumnHandlerImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
@@ -26,7 +24,7 @@ import org.slf4j.Logger;
 @DaoConfig()
 public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final List<Class<T>> cEntityClassList = new ArrayList<Class<T>>();
     private CEntityDaoContext<T> cEntityDaoContext;
 
@@ -73,6 +71,8 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     final String keyspace = cDaoConfig.keyspace();
                     //表
                     final String table = cDaoConfig.table();
+                    //是否计数表
+                    final boolean counter = cDaoConfig.counter();
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
@@ -82,16 +82,16 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
-                    CColumnConfig columnConfig;
+                    ColumnConfig columnConfig;
                     ColumnType columnType;
                     for (Field field : fieldTemp) {
                         modifier = field.getModifiers();
                         if (!Modifier.isStatic(modifier)) {
                             //非静态字段
                             fieldName = field.getName();
-                            if (field.isAnnotationPresent(CColumnConfig.class)) {
+                            if (field.isAnnotationPresent(ColumnConfig.class)) {
                                 //
-                                columnConfig = field.getAnnotation(CColumnConfig.class);
+                                columnConfig = field.getAnnotation(ColumnConfig.class);
                                 columnType = columnConfig.columnType();
                                 if (columnType == ColumnType.KEY) {
                                     if (keyHandler == null) {
@@ -110,7 +110,9 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                         throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:can not find key");
                     }
                     CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<T>(
+                            keyspace,
                             table,
+                            counter,
                             keyHandler,
                             columnHandlerList,
                             clazz,

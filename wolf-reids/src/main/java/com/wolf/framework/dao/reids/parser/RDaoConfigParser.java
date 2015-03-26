@@ -1,12 +1,14 @@
 package com.wolf.framework.dao.reids.parser;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.dao.reids.ColumnHandler;
+import com.wolf.framework.dao.reids.ColumnHandlerImpl;
 import com.wolf.framework.dao.reids.REntityDao;
 import com.wolf.framework.dao.reids.REntityDaoBuilder;
 import com.wolf.framework.dao.reids.REntityDaoContext;
-import com.wolf.framework.dao.annotation.ColumnType;
-import com.wolf.framework.dao.reids.annotation.RColumnConfig;
+import com.wolf.framework.dao.reids.annotation.ColumnType;
+import com.wolf.framework.dao.reids.annotation.ColumnConfig;
 import com.wolf.framework.dao.reids.annotation.RDaoConfig;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
@@ -26,7 +28,7 @@ import org.slf4j.Logger;
  */
 public class RDaoConfigParser<T extends Entity> {
     
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final REntityDaoContext<T> entityDaoContext;
     
     public RDaoConfigParser(REntityDaoContext<T> entityDaoContext) {
@@ -52,31 +54,31 @@ public class RDaoConfigParser<T extends Entity> {
             //获取该实体所有字段集合
             Field[] fieldTemp = clazz.getDeclaredFields();
             //ColumnHandler
-            RColumnHandler keyHandler = null;
+            ColumnHandler keyHandler = null;
             //column
-            List<RColumnHandler> columnHandlerList = new ArrayList<RColumnHandler>(fieldTemp.length);
-            RColumnHandler columnHandler;
+            List<ColumnHandler> columnHandlerList = new ArrayList<ColumnHandler>(fieldTemp.length);
+            ColumnHandler columnHandler;
             int modifier;
             String fieldName;
-            RColumnConfig columnConfig;
+            ColumnConfig columnConfig;
             ColumnType columnType;
             for (Field field : fieldTemp) {
                 modifier = field.getModifiers();
                 if (!Modifier.isStatic(modifier)) {
                     //非静态字段
                     fieldName = field.getName();
-                    if (field.isAnnotationPresent(RColumnConfig.class)) {
+                    if (field.isAnnotationPresent(ColumnConfig.class)) {
                         //
-                        columnConfig = field.getAnnotation(RColumnConfig.class);
+                        columnConfig = field.getAnnotation(ColumnConfig.class);
                         columnType = columnConfig.columnType();
                         if (columnType == ColumnType.KEY) {
                             if (keyHandler == null) {
-                                keyHandler = new RColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), "-1");
+                                keyHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), "-1");
                             } else {
                                 throw new RuntimeException("There was an error building REntityDao:" + clazz.getName() + ". Cause:too many key");
                             }
                         } else {
-                            columnHandler = new RColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), columnConfig.defaultValue());
+                            columnHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), columnConfig.defaultValue());
                             columnHandlerList.add(columnHandler);
                         }
                     }

@@ -1,7 +1,7 @@
 package com.wolf.framework.test;
 
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
@@ -39,7 +39,7 @@ public final class TestHandler {
         Response result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
-            Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+            Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {

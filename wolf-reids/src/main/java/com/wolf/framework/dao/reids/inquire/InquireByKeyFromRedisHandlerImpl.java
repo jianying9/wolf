@@ -3,7 +3,7 @@ package com.wolf.framework.dao.reids.inquire;
 import com.wolf.framework.dao.AbstractDaoHandler;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
-import com.wolf.framework.dao.reids.parser.RColumnHandler;
+import com.wolf.framework.dao.reids.ColumnHandler;
 import com.wolf.framework.dao.reids.RedisHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +12,14 @@ import java.util.Map;
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public final class InquireByKeyFromRedisHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
 
     private final RedisHandler redisHandler;
-    private final List<RColumnHandler> columnHandlerList;
+    private final List<ColumnHandler> columnHandlerList;
 
-    public InquireByKeyFromRedisHandlerImpl(RedisHandler redisHandler, Class<T> clazz, List<RColumnHandler> columnHandlerList) {
+    public InquireByKeyFromRedisHandlerImpl(RedisHandler redisHandler, Class<T> clazz, List<ColumnHandler> columnHandlerList) {
         super(clazz);
         this.redisHandler = redisHandler;
         this.columnHandlerList = columnHandlerList;
@@ -26,7 +27,7 @@ public final class InquireByKeyFromRedisHandlerImpl<T extends Entity> extends Ab
 
     private void checkRedisData(Map<String, String> entityMap) {
         String columnName;
-        for (RColumnHandler rColumnHandler : columnHandlerList) {
+        for (ColumnHandler rColumnHandler : columnHandlerList) {
             columnName = rColumnHandler.getColumnName();
             if (entityMap.containsKey(columnName) == false) {
                 entityMap.put(columnName, rColumnHandler.getDefaultValue());

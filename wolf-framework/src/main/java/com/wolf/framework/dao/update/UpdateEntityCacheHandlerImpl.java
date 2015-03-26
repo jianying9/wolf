@@ -1,6 +1,5 @@
 package com.wolf.framework.dao.update;
 
-import com.wolf.framework.dao.parser.ColumnHandler;
 import java.util.List;
 import java.util.Map;
 import net.sf.ehcache.Cache;
@@ -12,12 +11,12 @@ import net.sf.ehcache.Cache;
 public class UpdateEntityCacheHandlerImpl implements UpdateHandler {
 
     private final Cache entityCache;
-    private final ColumnHandler keyHandler;
+    private final String keyName;
     private final UpdateHandler updateHandler;
 
-    public UpdateEntityCacheHandlerImpl(Cache entityCache, ColumnHandler keyHandler, UpdateHandler updateHandler) {
+    public UpdateEntityCacheHandlerImpl(Cache entityCache, String keyName, UpdateHandler updateHandler) {
         this.entityCache = entityCache;
-        this.keyHandler = keyHandler;
+        this.keyName = keyName;
         this.updateHandler = updateHandler;
     }
 
@@ -31,10 +30,9 @@ public class UpdateEntityCacheHandlerImpl implements UpdateHandler {
     @Override
     public void batchUpdate(List<Map<String, String>> entityMapList) {
         this.updateHandler.batchUpdate(entityMapList);
-        String keyName = this.keyHandler.getColumnName();
         String keyValue;
         for (Map<String, String> entityMap : entityMapList) {
-            keyValue = entityMap.get(keyName);
+            keyValue = entityMap.get(this.keyName);
             this.entityCache.removeQuiet(keyValue);
         }
     }

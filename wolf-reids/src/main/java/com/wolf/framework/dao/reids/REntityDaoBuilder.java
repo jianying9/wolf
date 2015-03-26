@@ -8,41 +8,37 @@ import com.wolf.framework.dao.reids.inquire.InquireByKeyFromRedisHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import com.wolf.framework.dao.insert.InsertHandler;
 import com.wolf.framework.dao.reids.insert.InsertRedisHandlerImpl;
-import com.wolf.framework.dao.reids.parser.RColumnHandler;
 import com.wolf.framework.dao.update.UpdateHandler;
 import com.wolf.framework.dao.reids.update.UpdateRedisHandlerImpl;
-import com.wolf.framework.dao.reids.RedisAdminContext;
-import com.wolf.framework.dao.reids.RedisHandler;
-import com.wolf.framework.dao.reids.RedisHandlerImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import redis.clients.jedis.JedisPool;
 
 /**
  * 实体数据访问对象创建类
  *
  * @author aladdin
+ * @param <T>
  */
 public final class REntityDaoBuilder<T extends Entity> {
 
     //table name
     private final String tableName;
     //key
-    private final RColumnHandler keyHandler;
+    private final ColumnHandler keyHandler;
     //sortedSetNames
     private final Set<String> sortedSetNames;
     //column
-    private final List<RColumnHandler> columnHandlerList;
+    private final List<ColumnHandler> columnHandlerList;
     //实体class
     private final Class<T> clazz;
     private final REntityDaoContext<T> entityDaoContext;
 
-    public REntityDaoBuilder(String tableName, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Set<String> sortedSetNames, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
+    public REntityDaoBuilder(String tableName, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Set<String> sortedSetNames, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
         this.tableName = tableName;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
-            this.columnHandlerList = new ArrayList<RColumnHandler>(0);
+            this.columnHandlerList = new ArrayList<ColumnHandler>(0);
         } else {
             this.columnHandlerList = columnHandlerList;
         }

@@ -6,7 +6,7 @@ import com.wolf.framework.logger.LoggerType;
  *
  * @author aladdin
  */
-public enum FrameworkLoggerEnum implements LoggerType{
+public enum FrameworkLogger implements LoggerType{
     FRAMEWORK,
     DAO,
     LUCENE;

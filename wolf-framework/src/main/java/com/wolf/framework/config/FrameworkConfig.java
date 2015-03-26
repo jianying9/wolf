@@ -58,6 +58,8 @@ public class FrameworkConfig {
     //seed允许时间的最大误差值,毫秒，默认为180000
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
     //cassandra 节点地址
+    public final static String CASSANDRA_CONTACT_POINT = "cassandra.contact.point";
+    //cassandra 帐号密码
     public final static String CASSANDRA_USERNAME = "cassandra.username";
     //cassandra 帐号密码
     public final static String CASSANDRA_PASSWORD = "cassandra.password";

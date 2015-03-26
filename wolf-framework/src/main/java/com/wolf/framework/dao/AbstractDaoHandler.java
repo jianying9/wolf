@@ -1,6 +1,6 @@
 package com.wolf.framework.dao;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractDaoHandler<T extends Entity> {
 
-    protected final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.DAO);
+    protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     //实体class
     private final Class<T> clazz;
 

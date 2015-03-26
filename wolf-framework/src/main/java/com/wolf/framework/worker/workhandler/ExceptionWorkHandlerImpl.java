@@ -1,7 +1,7 @@
 package com.wolf.framework.worker.workhandler;
 
 import com.wolf.framework.config.DefaultResponseStates;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.exception.ResponseStateException;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
@@ -29,7 +29,7 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             if (t == null) {
                 t = re;
             }
-            Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+            Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.error("wolf-exception", t);
             if (ResponseStateException.class.isInstance(t)) {
                 ResponseStateException te = (ResponseStateException) t;

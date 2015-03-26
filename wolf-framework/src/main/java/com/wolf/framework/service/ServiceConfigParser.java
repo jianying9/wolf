@@ -1,7 +1,7 @@
 package com.wolf.framework.service;
 
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 public class ServiceConfigParser<K extends Service> {
 
     private final ServiceWorkerContext serviceWorkerContext;
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final RequestParameterHandler pageIndexHandler;
     private final RequestParameterHandler pageSizeHandler;
 

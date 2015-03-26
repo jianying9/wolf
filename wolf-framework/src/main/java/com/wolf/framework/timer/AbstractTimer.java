@@ -1,7 +1,7 @@
 package com.wolf.framework.timer;
 
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.SecurityUtils;
@@ -21,7 +21,7 @@ public class AbstractTimer {
         if (ApplicationContext.CONTEXT.isReady()) {
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
-                Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+                Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
                 logger.error("timer:Can not find route:".concat(route));
             } else {
                 String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
@@ -34,7 +34,7 @@ public class AbstractTimer {
                 result = serviceWorker.getResponse().getResponseMessage();
             }
         } else {
-            Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+            Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.warn("timer:System is not ready! Wait for next time.");
         }
         return result;

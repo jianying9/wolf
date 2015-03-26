@@ -26,4 +26,10 @@ public @interface CDaoConfig{
      * @return
      */
     public String table();
+    
+    /**
+     * 是否是计数表
+     * @return 
+     */
+    public boolean counter() default false;
 }

@@ -13,7 +13,7 @@ public final class LogFactory {
     /**
      * 根据LoggerNameEnum获取对应的logger对象
      *
-     * @param loggerNameEnum
+     * @param loggerType
      * @return
      */
     public static Logger getLogger(LoggerType loggerType) {

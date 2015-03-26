@@ -1,6 +1,6 @@
 package com.wolf.framework.utils;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +17,7 @@ public final class TimeUtils {
     /**
      * 日志对象
      */
-    private final static Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final static Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YYMMDD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.context;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.StringUtils;
@@ -31,7 +31,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
             try {
                 rootNode = mapper.readValue(json, JsonNode.class);
             } catch (IOException e) {
-                Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+                Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
                 logger.error("error json message:{}", json);
                 logger.error("parse json error:", e);
             }

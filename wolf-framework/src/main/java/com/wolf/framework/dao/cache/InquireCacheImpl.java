@@ -1,6 +1,6 @@
 package com.wolf.framework.dao.cache;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.condition.Condition;
 import com.wolf.framework.dao.condition.InquireContext;
 import com.wolf.framework.dao.condition.OperateTypeEnum;
@@ -19,7 +19,7 @@ import org.slf4j.Logger;
  */
 public final class InquireCacheImpl implements InquireCache {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.DAO);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     //缓存数据对象
     private final Cache cache;
     //

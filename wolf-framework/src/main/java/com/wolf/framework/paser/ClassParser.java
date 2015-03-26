@@ -1,6 +1,6 @@
 package com.wolf.framework.paser;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import org.slf4j.Logger;
  */
 public final class ClassParser {
 
-    final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     public List<String> findClass(final ClassLoader classloader, final List<String> packageNameList) {
         final List<String> classNameList = new ArrayList<String>(200);

@@ -1,6 +1,6 @@
 package com.wolf.framework.local;
 
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import org.slf4j.Logger;
 
@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 public final class LocalServiceConfigParser {
 
     private final LocalServiceContext localServiceContextBuilder;
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     public LocalServiceConfigParser(LocalServiceContext localServiceContextBuilder) {
         this.localServiceContextBuilder = localServiceContextBuilder;

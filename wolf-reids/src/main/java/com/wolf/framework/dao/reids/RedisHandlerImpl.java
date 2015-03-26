@@ -1,9 +1,8 @@
 package com.wolf.framework.dao.reids;
 
-import com.wolf.framework.dao.annotation.ColumnType;
+import com.wolf.framework.dao.reids.annotation.ColumnType;
 import com.wolf.framework.dao.condition.InquirePageContext;
 import com.wolf.framework.dao.condition.InquireIndexPageContext;
-import com.wolf.framework.dao.reids.parser.RColumnHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,16 +26,16 @@ public final class RedisHandlerImpl implements RedisHandler {
     private final String tableIndexKey;
     private final String columnIndexKeyPrefix;
     private final String sortedSetPrefix;
-    private final RColumnHandler keyHandler;
-    private final List<RColumnHandler> columnHandlerList;
+    private final ColumnHandler keyHandler;
+    private final List<ColumnHandler> columnHandlerList;
     private final Set<String> sortedSetNames;
     private final Set<String> indexColumnNameSet = new HashSet<String>(2, 1);
 
-    public RedisHandlerImpl(String tableName, JedisPool jedisPool, RColumnHandler keyHandler, List<RColumnHandler> columnHandlerList, Set<String> sortedSetNames) {
+    public RedisHandlerImpl(String tableName, JedisPool jedisPool, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Set<String> sortedSetNames) {
         this.jedisPool = jedisPool;
         this.keyHandler = keyHandler;
         this.columnHandlerList = columnHandlerList;
-        for (RColumnHandler rColumnHandler : columnHandlerList) {
+        for (ColumnHandler rColumnHandler : columnHandlerList) {
             if (rColumnHandler.getColumnType() == ColumnType.INDEX) {
                 this.indexColumnNameSet.add(rColumnHandler.getColumnName());
             }
@@ -168,7 +167,7 @@ public final class RedisHandlerImpl implements RedisHandler {
         try {
             //过滤多余的列，并更新index
             jedis.select(this.dbIndex);
-            for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+            for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                 columnName = rColumnHandler.getColumnName();
                 columnValue = entityMap.get(columnName);
                 if (columnValue != null) {
@@ -228,7 +227,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 defaultScore = System.currentTimeMillis();
                 insertMap.clear();
                 //过滤多余的列，并更新index
-                for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
                     if (columnValue != null) {
@@ -288,7 +287,7 @@ public final class RedisHandlerImpl implements RedisHandler {
             Jedis jedis = this.jedisPool.getResource();
             try {
                 jedis.select(this.dbIndex);
-                for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
                     if (columnValue != null) {
@@ -367,7 +366,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                         defaultScore = System.currentTimeMillis();
                         updateMap.clear();
                         //比对变化，更新数据及索引
-                        for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                        for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                             columnName = rColumnHandler.getColumnName();
                             columnValue = entityMap.get(columnName);
                             if (columnValue != null) {
@@ -433,7 +432,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 String columnIndexKey;
                 StringBuilder strBuilder = new StringBuilder(32);
                 jedis.select(this.dbIndex);
-                for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                     columnName = rColumnHandler.getColumnName();
                     columnValue = entityMap.get(columnName);
                     if (columnValue != null && rColumnHandler.getColumnType() == ColumnType.INDEX) {
@@ -480,7 +479,7 @@ public final class RedisHandlerImpl implements RedisHandler {
                 entityMap = this.localInquireByKey(keyValue, jedis);
                 if (entityMap != null) {
                     //删除索引列
-                    for (RColumnHandler rColumnHandler : this.columnHandlerList) {
+                    for (ColumnHandler rColumnHandler : this.columnHandlerList) {
                         columnName = rColumnHandler.getColumnName();
                         columnValue = entityMap.get(columnName);
                         if (columnValue != null && rColumnHandler.getColumnType() == ColumnType.INDEX) {

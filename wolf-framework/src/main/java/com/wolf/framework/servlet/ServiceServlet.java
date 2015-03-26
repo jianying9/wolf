@@ -2,7 +2,7 @@ package com.wolf.framework.servlet;
 
 import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.config.FrameworkLoggerEnum;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.HttpUtils;
@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -6962831111898397302L;
-    private final Logger logger = LogFactory.getLogger(FrameworkLoggerEnum.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     Map<String, AsyncContext> asyncContextMap = new HashMap<String, AsyncContext>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
