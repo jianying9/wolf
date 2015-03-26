@@ -66,7 +66,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         final Session session = this.cassandraAdminContext.getSession();
         //构造CassandraHandler
         CassandraHandler cassandraHandler;
-        if(this.counter) {
+        if (this.counter) {
             //counter 表
             cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
         } else {
@@ -81,12 +81,14 @@ public final class CEntityDaoBuilder<T extends Entity> {
                 this.clazz,
                 this.columnHandlerList);
         inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
-        
+
         CEntityDao<T> entityDao = new CEntityDaoImpl(
-                null,
-                null,
-                null,
-                null);
+                cassandraHandler,
+                cassandraHandler,
+                cassandraHandler,
+                inquireByKeyHandler,
+                cassandraHandler
+        );
         return entityDao;
     }
 }

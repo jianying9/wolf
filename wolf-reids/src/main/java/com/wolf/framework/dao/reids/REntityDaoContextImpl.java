@@ -1,7 +1,6 @@
 package com.wolf.framework.dao.reids;
 
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.reids.RedisAdminContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,18 +8,16 @@ import java.util.Map;
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContext<T> {
 
     private final Map<String, String> existClassMap = new HashMap<String, String>(8, 1);
     //entity处理类集合
     private final Map<Class<T>, REntityDao<T>> entityDaoMap;
-    //
-    private final RedisAdminContext redisAdminContext;
 
-    public REntityDaoContextImpl(RedisAdminContext redisAdminContext) {
+    public REntityDaoContextImpl() {
         this.entityDaoMap = new HashMap<Class<T>, REntityDao<T>>(8, 1);
-        this.redisAdminContext = redisAdminContext;
     }
 
     @Override
@@ -54,10 +51,5 @@ public class REntityDaoContextImpl<T extends Entity> implements REntityDaoContex
     @Override
     public boolean assertExistREntity(Class<T> clazz) {
         return this.entityDaoMap.containsKey(clazz);
-    }
-
-    @Override
-    public RedisAdminContext getRedisAdminContext() {
-        return this.redisAdminContext;
     }
 }

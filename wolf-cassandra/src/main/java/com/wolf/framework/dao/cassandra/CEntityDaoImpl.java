@@ -20,12 +20,14 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     private final UpdateHandler updateHandler;
     private final DeleteHandler deleteHandler;
     private final InquireByKeyHandler<T> inquireByKeyHandler;
+    private final CassandraHandler cassandraHandler;
 
-    public CEntityDaoImpl(InsertHandler insertHandler, UpdateHandler updateHandler, DeleteHandler deleteHandler, InquireByKeyHandler<T> inquireByKeyHandler) {
+    public CEntityDaoImpl(InsertHandler insertHandler, UpdateHandler updateHandler, DeleteHandler deleteHandler, InquireByKeyHandler<T> inquireByKeyHandler, CassandraHandler cassandraHandler) {
         this.insertHandler = insertHandler;
         this.updateHandler = updateHandler;
         this.deleteHandler = deleteHandler;
         this.inquireByKeyHandler = inquireByKeyHandler;
+        this.cassandraHandler = cassandraHandler;
     }
 
     @Override

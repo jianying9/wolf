@@ -27,9 +27,9 @@ public final class REntityDaoBuilder<T extends Entity> {
     private final List<ColumnHandler> columnHandlerList;
     //实体class
     private final Class<T> clazz;
-    private final REntityDaoContext<T> entityDaoContext;
+    private final RedisAdminContext redisAdminContext;
 
-    public REntityDaoBuilder(String tableName, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Set<String> sortedSetNames, Class<T> clazz, REntityDaoContext<T> entityDaoContext) {
+    public REntityDaoBuilder(String tableName, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Set<String> sortedSetNames, Class<T> clazz, RedisAdminContext redisAdminContext) {
         this.tableName = tableName;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
@@ -39,7 +39,7 @@ public final class REntityDaoBuilder<T extends Entity> {
         }
         this.sortedSetNames = sortedSetNames;
         this.clazz = clazz;
-        this.entityDaoContext = entityDaoContext;
+        this.redisAdminContext = redisAdminContext;
     }
 
     public REntityDao<T> build() {
@@ -53,7 +53,6 @@ public final class REntityDaoBuilder<T extends Entity> {
             throw new RuntimeException("Error when building REntityDao. Cause: key is null");
         }
         //初始化redis数据库处理对象
-        final RedisAdminContext redisAdminContext = this.entityDaoContext.getRedisAdminContext();
         final RedisHandler redisHandler = new RedisHandlerImpl(this.tableName, redisAdminContext.getJedisPool(), this.keyHandler, this.columnHandlerList, this.sortedSetNames);
         redisAdminContext.putRedisHandler(this.clazz, redisHandler, this.tableName);
         //---------------------------构造根据key查询数据库entity处理对象

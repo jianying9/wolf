@@ -265,4 +265,19 @@ public class CassandraHandlerImpl implements CassandraHandler {
         }
         return result;
     }
+
+    @Override
+    public void batchUpdate(List<Map<String, String>> entityMapList) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void batchDelete(List<String> keyValues) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void batchInsert(List<Map<String, String>> entityMapList) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

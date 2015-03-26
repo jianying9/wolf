@@ -17,6 +17,4 @@ public interface REntityDaoContext<T extends Entity> {
     public Map<Class<T>, REntityDao<T>> getREntityDaoMap();
 
     public boolean assertExistREntity(final Class<T> clazz);
-    
-    public RedisAdminContext getRedisAdminContext();
 }
