@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 
 /**
  * 普通表
+ *
  * @author jianying9
  */
 public class CassandraHandlerImpl implements CassandraHandler {
@@ -194,6 +196,40 @@ public class CassandraHandlerImpl implements CassandraHandler {
     }
 
     @Override
+    public void batchInsert(List<Map<String, String>> entityMapList) {
+        if (entityMapList.isEmpty() == false) {
+            String keyValue;
+            String value;
+            List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
+            PreparedStatement ps = this.session.prepare(this.insertCql);
+            BatchStatement batch = new BatchStatement();
+            for (Map<String, String> entityMap : entityMapList) {
+                keyValue = entityMap.get(this.keyName);
+                if (keyValue != null) {
+                    valueList.clear();
+                    valueList.add(keyValue);
+                    for (ColumnHandler ch : this.columnHandlerList) {
+                        value = entityMap.get(ch.getColumnName());
+                        if (value == null) {
+                            value = "";
+                        }
+                        valueList.add(value);
+                    }
+                    batch.add(ps.bind(valueList));
+                }
+            }
+            ResultSetFuture rsf = this.session.executeAsync(batch);
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
     public String update(Map<String, String> entityMap) {
         String keyValue = entityMap.get(this.keyName);
         if (keyValue == null) {
@@ -233,6 +269,51 @@ public class CassandraHandlerImpl implements CassandraHandler {
     }
 
     @Override
+    public void batchUpdate(List<Map<String, String>> entityMapList) {
+        if (entityMapList.isEmpty() == false) {
+            String keyValue;
+            String value;
+            List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
+            StringBuilder cqlBuilder = new StringBuilder(256);
+            BatchStatement batch = new BatchStatement();
+            boolean hasUpdate = false;
+            PreparedStatement ps;
+            for (Map<String, String> entityMap : entityMapList) {
+                keyValue = entityMap.get(this.keyName);
+                if (keyValue != null) {
+                    valueList.clear();
+                    cqlBuilder.setLength(0);
+                    cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                            .append(this.table).append(" SET ");
+                    for (ColumnHandler ch : this.columnHandlerList) {
+                        value = entityMap.get(ch.getColumnName());
+                        if (value != null) {
+                            hasUpdate = true;
+                            valueList.add(value);
+                            cqlBuilder.append(ch.getColumnName()).append(" = ?, ");
+                        }
+                    }
+                }
+                if (hasUpdate) {
+                    cqlBuilder.setLength(cqlBuilder.length() - 1);
+                    cqlBuilder.append(" WHERE ").append(this.keyName).append("= ? IF EXISTS;");
+                    valueList.add(keyValue);
+                    ps = this.session.prepare(cqlBuilder.toString());
+                    batch.add(ps.bind(valueList));
+                }
+            }
+            ResultSetFuture rsf = this.session.executeAsync(batch);
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
     public void delete(String keyValue) {
         PreparedStatement ps = this.session.prepare(this.deleteCql);
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
@@ -242,6 +323,25 @@ public class CassandraHandlerImpl implements CassandraHandler {
             throw new RuntimeException(ex);
         } catch (ExecutionException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void batchDelete(List<String> keyValues) {
+        if (keyValues.isEmpty() == false) {
+            BatchStatement batch = new BatchStatement();
+            PreparedStatement ps = this.session.prepare(this.deleteCql);
+            for (String keyValue : keyValues) {
+                batch.add(ps.bind(keyValue));
+            }
+            ResultSetFuture rsf = this.session.executeAsync(batch);
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -264,20 +364,5 @@ public class CassandraHandlerImpl implements CassandraHandler {
             result = r.getLong(0);
         }
         return result;
-    }
-
-    @Override
-    public void batchUpdate(List<Map<String, String>> entityMapList) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void batchDelete(List<String> keyValues) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void batchInsert(List<Map<String, String>> entityMapList) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

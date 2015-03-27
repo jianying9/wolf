@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
@@ -147,6 +148,11 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
     public String insert(Map<String, String> entityMap) {
         throw new RuntimeException("Not supported,counter table can not insert.");
     }
+    
+    @Override
+    public void batchInsert(List<Map<String, String>> entityMapList) {
+        throw new RuntimeException("Not supported,counter table can not batch insert.");
+    }
 
     @Override
     public String update(Map<String, String> entityMap) {
@@ -187,6 +193,11 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
         }
         return keyValue;
     }
+    
+    @Override
+    public void batchUpdate(List<Map<String, String>> entityMapList) {
+        throw new RuntimeException("Not supported,counter table can not batch update.");
+    }
 
     @Override
     public void delete(String keyValue) {
@@ -198,6 +209,25 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
             throw new RuntimeException(ex);
         } catch (ExecutionException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+    
+    @Override
+    public void batchDelete(List<String> keyValues) {
+        if (keyValues.isEmpty() == false) {
+            BatchStatement batch = new BatchStatement();
+            PreparedStatement ps = this.session.prepare(this.deleteCql);
+            for (String keyValue : keyValues) {
+                batch.add(ps.bind(keyValue));
+            }
+            ResultSetFuture rsf = this.session.executeAsync(batch);
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -220,20 +250,5 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
             result = r.getLong(0);
         }
         return result;
-    }
-
-    @Override
-    public void batchUpdate(List<Map<String, String>> entityMapList) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void batchDelete(List<String> keyValues) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void batchInsert(List<Map<String, String>> entityMapList) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
