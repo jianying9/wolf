@@ -389,84 +389,215 @@ public class CassandraHandlerImpl implements CassandraHandler {
 
     @Override
     public void addSet(String keyValue, String columnName, String value) {
-        Set<String> set = new HashSet<String>(1, 1);
+        Set<String> set = new HashSet<String>(2, 1);
         set.add(value);
         this.addSet(keyValue, columnName, set);
     }
 
     @Override
     public void addSet(String keyValue, String columnName, Set<String> values) {
-        StringBuilder cqlBuilder = new StringBuilder(128);
-        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                .append(this.table).append(" SET ").append(columnName)
-                .append(" = ").append(columnName).append(" + ? WHERE ")
-                .append(this.keyName).append(" = ?;");
-        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-        try {
-            rsf.get();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        if (this.sets.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" + ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
         }
     }
 
     @Override
     public void removeSet(String keyValue, String columnName, String value) {
-        Set<String> set = new HashSet<String>(1, 1);
+        Set<String> set = new HashSet<String>(2, 1);
         set.add(value);
         this.removeSet(keyValue, columnName, set);
     }
 
     @Override
     public void removeSet(String keyValue, String columnName, Set<String> values) {
-        StringBuilder cqlBuilder = new StringBuilder(128);
-        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                .append(this.table).append(" SET ").append(columnName)
-                .append(" = ").append(columnName).append(" - ? WHERE ")
-                .append(this.keyName).append(" = ?;");
-        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-        try {
-            rsf.get();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        if (this.sets.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" - ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
         }
     }
 
     @Override
     public void clearSet(String keyValue, String columnName) {
-        StringBuilder cqlBuilder = new StringBuilder(128);
-        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                .append(this.table).append(" SET ").append(columnName)
-                .append(" = {} WHERE ").append(this.keyName).append(" = ?;");
-        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-        try {
-            rsf.get();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        if (this.sets.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = {} WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
         }
     }
 
     @Override
     public Set<String> getSet(String keyValue, String columnName) {
         Set<String> result = Collections.EMPTY_SET;
-        StringBuilder cqlBuilder = new StringBuilder(128);
-        cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
-                .append(this.keyspace).append('.').append(this.table)
-                .append(" WHERE ").append(this.keyName).append(" = ?;");
-        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-        ResultSet rs;
-        Row r = null;
-        try {
-            rs = rsf.get();
-            r = rs.one();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        if (this.sets.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+            if (r != null) {
+                result = r.getSet(0, String.class);
+            }
         }
-        if (r != null) {
-            result = r.getSet(0, String.class);
+        return result;
+    }
+
+    @Override
+    public void addList(String keyValue, String columnName, String value) {
+        if (this.lists.contains(columnName)) {
+            List<String> list = new ArrayList<String>(1);
+            list.add(value);
+            this.addList(keyValue, columnName, list);
+        }
+    }
+
+    @Override
+    public void addList(String keyValue, String columnName, List<String> values) {
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" + ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void addFirstList(String keyValue, String columnName, String value) {
+        if (this.lists.contains(columnName)) {
+            List<String> list = new ArrayList<String>(1);
+            list.add(value);
+            this.addFirstList(keyValue, columnName, list);
+        }
+    }
+
+    @Override
+    public void addFirstList(String keyValue, String columnName, List<String> values) {
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append("? + ").append(columnName).append(" WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void removeList(String keyValue, String columnName, String value) {
+        if (this.lists.contains(columnName)) {
+            List<String> list = new ArrayList<String>(1);
+            list.add(value);
+            this.removeList(keyValue, columnName, list);
+        }
+    }
+
+    @Override
+    public void removeList(String keyValue, String columnName, List<String> values) {
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" - ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void clearList(String keyValue, String columnName) {
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = [] WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public List<String> getList(String keyValue, String columnName) {
+        List<String> result = Collections.EMPTY_LIST;
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+            if (r != null) {
+                result = r.getList(0, String.class);
+            }
         }
         return result;
     }

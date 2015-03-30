@@ -15,7 +15,8 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.in;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.set;
 import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Update;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.junit.After;
@@ -115,15 +116,15 @@ public class CassandraJUnitTest {
             System.out.println(num);
         }
         //
-        ps = session.prepare("update test.users set tags = tags + ? where username = ?;");
-        Set<String> sets = new HashSet<String>();
-        sets.add("e");
-        rsf = session.executeAsync(ps.bind(sets, "test"));
-        try {
-            rs = rsf.get();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
-        }
+//        ps = session.prepare("update test.users set tags = tags + ? where username = ?;");
+//        Set<String> sets = new HashSet<String>();
+//        sets.add("e");
+//        rsf = session.executeAsync(ps.bind(sets, "test"));
+//        try {
+//            rs = rsf.get();
+//        } catch (InterruptedException ex) {
+//        } catch (ExecutionException ex) {
+//        }
         //
         ps = session.prepare("select tags from test.users where username = 'test';");
         rsf = session.executeAsync(ps.bind());
@@ -138,5 +139,8 @@ public class CassandraJUnitTest {
             System.out.println(tags);
         }
         cluster.close();
+        
+        List<String> a = new ArrayList<String>(2);
+        
     }
 }

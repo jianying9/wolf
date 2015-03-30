@@ -282,4 +282,44 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
     public Set<String> getSet(String keyValue, String columnName) {
         throw new RuntimeException("Not supported,counter table can not use set.");
     }
+
+    @Override
+    public void addList(String keyValue, String columnName, String value) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void addList(String keyValue, String columnName, List<String> values) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void addFirstList(String keyValue, String columnName, String value) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void addFirstList(String keyValue, String columnName, List<String> values) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void removeList(String keyValue, String columnName, String value) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void removeList(String keyValue, String columnName, List<String> values) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public void clearList(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
+
+    @Override
+    public List<String> getList(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use list.");
+    }
 }
