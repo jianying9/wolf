@@ -322,4 +322,34 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
     public List<String> getList(String keyValue, String columnName) {
         throw new RuntimeException("Not supported,counter table can not use list.");
     }
+
+    @Override
+    public void addMap(String keyValue, String columnName, String mapKeyValue, String mapValue) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public void addMap(String keyValue, String columnName, Map<String, String> values) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public void removeMap(String keyValue, String columnName, String mapKeyValue) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public void clearMap(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public Map<String, String> getMap(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use map.");
+    }
 }

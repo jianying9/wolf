@@ -601,4 +601,98 @@ public class CassandraHandlerImpl implements CassandraHandler {
         }
         return result;
     }
+
+    @Override
+    public void addMap(String keyValue, String columnName, String mapKeyValue, String mapValue) {
+        if (this.maps.contains(columnName)) {
+            Map<String, String> map = new HashMap<String, String>(2, 1);
+            this.addMap(keyValue, columnName, map);
+        }
+    }
+
+    @Override
+    public void addMap(String keyValue, String columnName, Map<String, String> values) {
+        if (this.maps.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" + ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void removeMap(String keyValue, String columnName, String mapKeyValue) {
+        if (this.maps.contains(columnName)) {
+            Set<String> set = new HashSet<String>(2, 1);
+            this.removeMap(keyValue, columnName, set);
+        }
+    }
+
+    @Override
+    public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
+        if (this.maps.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = ").append(columnName).append(" - ? WHERE ")
+                    .append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(mapKeyValues, keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void clearMap(String keyValue, String columnName) {
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnName)
+                    .append(" = {} WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+        }
+    }
+
+    @Override
+    public Map<String, String> getMap(String keyValue, String columnName) {
+        Map<String, String> result = Collections.EMPTY_MAP;
+        if (this.lists.contains(columnName)) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ").append(this.keyName).append(" = ?;");
+            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException ex) {
+            } catch (ExecutionException ex) {
+            }
+            if (r != null) {
+                result = r.getMap(0, String.class, String.class);
+            }
+        }
+        return result;
+    }
 }
