@@ -7,7 +7,10 @@ import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyFromDatabaseHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 实体数据访问对象创建类
@@ -23,6 +26,12 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String table;
     //是否是counter
     private final boolean counter;
+    //set类型集合
+    private final String[] sets;
+    //list类型集合
+    private final String[] lists;
+    //map类型集合
+    private final String[] maps;
     //key
     private final ColumnHandler keyHandler;
     //column
@@ -34,7 +43,18 @@ public final class CEntityDaoBuilder<T extends Entity> {
     //
     private final CassandraAdminContext cassandraAdminContext;
 
-    public CEntityDaoBuilder(String keyspace, String tableName, boolean counter, ColumnHandler keyHandler, List<ColumnHandler> columnHandlerList, Class<T> clazz, CEntityDaoContext<T> entityDaoContext, CassandraAdminContext cassandraAdminContext) {
+    public CEntityDaoBuilder(
+            String keyspace,
+            String tableName,
+            boolean counter,
+            ColumnHandler keyHandler,
+            List<ColumnHandler> columnHandlerList,
+            String[] sets,
+            String[] lists,
+            String[] maps,
+            Class<T> clazz,
+            CEntityDaoContext<T> entityDaoContext,
+            CassandraAdminContext cassandraAdminContext) {
         this.keyspace = keyspace;
         this.table = tableName;
         this.counter = counter;
@@ -45,6 +65,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
             this.columnHandlerList = columnHandlerList;
         }
         this.clazz = clazz;
+        this.sets = sets;
+        this.lists = lists;
+        this.maps = maps;
         this.entityDaoContext = entityDaoContext;
         this.cassandraAdminContext = cassandraAdminContext;
     }
@@ -71,7 +94,15 @@ public final class CEntityDaoBuilder<T extends Entity> {
             cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
         } else {
             //普通表
-            cassandraHandler = new CassandraHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
+            cassandraHandler = new CassandraHandlerImpl(
+                    session,
+                    this.keyspace,
+                    this.table,
+                    this.keyHandler.getColumnName(),
+                    this.columnHandlerList,
+                    sets,
+                    lists,
+                    maps);
         }
         this.cassandraAdminContext.putCassandraHandler(this.clazz, cassandraHandler, this.keyspace, this.table);
         //

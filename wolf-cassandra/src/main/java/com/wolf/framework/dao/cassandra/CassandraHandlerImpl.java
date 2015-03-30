@@ -13,9 +13,13 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 
@@ -36,14 +40,32 @@ public class CassandraHandlerImpl implements CassandraHandler {
     private final String insertCql;
     private final String deleteCql;
     private final String countCql;
+    private final Set<String> sets;
+    private final Set<String> lists;
+    private final Set<String> maps;
 
-    public CassandraHandlerImpl(Session session, String keyspace, String table, String keyName, List<ColumnHandler> columnHandlerList) {
+    public CassandraHandlerImpl(
+            Session session,
+            String keyspace,
+            String table,
+            String keyName,
+            List<ColumnHandler> columnHandlerList,
+            String[] sets,
+            String[] lists,
+            String[] maps
+    ) {
         this.session = session;
         this.keyspace = keyspace;
         this.table = table;
         this.keyName = keyName;
         this.columnHandlerList = columnHandlerList;
-        StringBuilder cqlBuilder = new StringBuilder(256);
+        this.sets = new HashSet<String>(sets.length, 1);
+        this.sets.addAll(Arrays.asList(sets));
+        this.lists = new HashSet<String>(lists.length, 1);
+        this.lists.addAll(Arrays.asList(lists));
+        this.maps = new HashSet<String>(maps.length, 1);
+        this.maps.addAll(Arrays.asList(maps));
+        StringBuilder cqlBuilder = new StringBuilder(128);
         //inquire by key
         cqlBuilder.append("SELECT * FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(" WHERE ")
@@ -85,7 +107,6 @@ public class CassandraHandlerImpl implements CassandraHandler {
         this.countCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
         this.logger.debug("{} countCql:{}", this.table, this.countCql);
-        //
     }
 
     @Override
@@ -235,7 +256,7 @@ public class CassandraHandlerImpl implements CassandraHandler {
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
         }
-        StringBuilder cqlBuilder = new StringBuilder(256);
+        StringBuilder cqlBuilder = new StringBuilder(128);
         List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
         String value;
         boolean hasUpdate = false;
@@ -274,7 +295,7 @@ public class CassandraHandlerImpl implements CassandraHandler {
             String keyValue;
             String value;
             List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
-            StringBuilder cqlBuilder = new StringBuilder(256);
+            StringBuilder cqlBuilder = new StringBuilder(128);
             BatchStatement batch = new BatchStatement();
             boolean hasUpdate = false;
             PreparedStatement ps;
@@ -362,6 +383,90 @@ public class CassandraHandlerImpl implements CassandraHandler {
         }
         if (r != null) {
             result = r.getLong(0);
+        }
+        return result;
+    }
+
+    @Override
+    public void addSet(String keyValue, String columnName, String value) {
+        Set<String> set = new HashSet<String>(1, 1);
+        set.add(value);
+        this.addSet(keyValue, columnName, set);
+    }
+
+    @Override
+    public void addSet(String keyValue, String columnName, Set<String> values) {
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                .append(this.table).append(" SET ").append(columnName)
+                .append(" = ").append(columnName).append(" + ? WHERE ")
+                .append(this.keyName).append(" = ?;");
+        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+        try {
+            rsf.get();
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
+    }
+
+    @Override
+    public void removeSet(String keyValue, String columnName, String value) {
+        Set<String> set = new HashSet<String>(1, 1);
+        set.add(value);
+        this.removeSet(keyValue, columnName, set);
+    }
+
+    @Override
+    public void removeSet(String keyValue, String columnName, Set<String> values) {
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                .append(this.table).append(" SET ").append(columnName)
+                .append(" = ").append(columnName).append(" - ? WHERE ")
+                .append(this.keyName).append(" = ?;");
+        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+        try {
+            rsf.get();
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
+    }
+
+    @Override
+    public void clearSet(String keyValue, String columnName) {
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                .append(this.table).append(" SET ").append(columnName)
+                .append(" = {} WHERE ").append(this.keyName).append(" = ?;");
+        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        try {
+            rsf.get();
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
+    }
+
+    @Override
+    public Set<String> getSet(String keyValue, String columnName) {
+        Set<String> result = Collections.EMPTY_SET;
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                .append(this.keyspace).append('.').append(this.table)
+                .append(" WHERE ").append(this.keyName).append(" = ?;");
+        PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSet rs;
+        Row r = null;
+        try {
+            rs = rsf.get();
+            r = rs.one();
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
+        if (r != null) {
+            result = r.getSet(0, String.class);
         }
         return result;
     }

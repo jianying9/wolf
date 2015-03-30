@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 
@@ -250,5 +251,35 @@ public class CassandraCounterHandlerImpl implements CassandraHandler {
             result = r.getLong(0);
         }
         return result;
+    }
+
+    @Override
+    public void addSet(String keyValue, String columnName, String value) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
+    }
+    
+    @Override
+    public void addSet(String keyValue, String columnName, Set<String> values) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
+    }
+
+    @Override
+    public void removeSet(String keyValue, String columnName, String value) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
+    }
+    
+    @Override
+    public void removeSet(String keyValue, String columnName, Set<String> values) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
+    }
+
+    @Override
+    public void clearSet(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
+    }
+
+    @Override
+    public Set<String> getSet(String keyValue, String columnName) {
+        throw new RuntimeException("Not supported,counter table can not use set.");
     }
 }

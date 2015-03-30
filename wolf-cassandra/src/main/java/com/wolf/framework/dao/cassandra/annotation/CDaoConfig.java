@@ -32,4 +32,22 @@ public @interface CDaoConfig{
      * @return 
      */
     public boolean counter() default false;
+    
+    /**
+     * set类型列定义
+     * @return 
+     */
+    public String[] sets() default {};
+    
+    /**
+     * list类型列定义
+     * @return 
+     */
+    public String[] lists() default {};
+    
+    /**
+     * map类型列定义
+     * @return 
+     */
+    public String[] maps() default {};
 }

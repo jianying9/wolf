@@ -77,6 +77,12 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     final String table = cDaoConfig.table();
                     //是否计数表
                     final boolean counter = cDaoConfig.counter();
+                    //set类型集合
+                    final String[] sets = cDaoConfig.sets();
+                    //list类型集合
+                    final String[] lists = cDaoConfig.lists();
+                    //map类型集合
+                    final String[] maps = cDaoConfig.maps();
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
@@ -119,6 +125,9 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                             counter,
                             keyHandler,
                             columnHandlerList,
+                            sets,
+                            lists,
+                            maps,
                             clazz,
                             this.cEntityDaoContext,
                             this.cassandraAdminContext
