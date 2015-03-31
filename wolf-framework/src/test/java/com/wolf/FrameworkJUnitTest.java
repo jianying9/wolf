@@ -56,7 +56,6 @@ public class FrameworkJUnitTest {
         parameterMap.put(FrameworkConfig.REDIS_MIN_POOL_SIZE, "10");
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
         applicationContextBuilder.build();
-        ApplicationContext.CONTEXT.contextDestroyed();
     }
 
 //    @Test

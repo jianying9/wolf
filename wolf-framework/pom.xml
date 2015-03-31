@@ -75,10 +75,5 @@
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-websockets</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

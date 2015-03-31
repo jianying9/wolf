@@ -619,5 +619,6 @@
         <!--<module>wolf-management</module>-->
         <module>wolf-reids</module>
         <module>wolf-cassandra</module>
+        <module>wolf-websocket</module>
     </modules>
 </project>

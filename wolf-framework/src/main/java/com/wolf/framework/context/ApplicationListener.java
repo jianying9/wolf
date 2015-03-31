@@ -1,12 +1,8 @@
-package com.wolf.framework.listener;
+package com.wolf.framework.context;
 
-import com.sun.grizzly.websockets.WebSocketEngine;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
-import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.websocket.GlobalApplication;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,14 +24,14 @@ import javax.servlet.annotation.WebListener;
 @WebListener()
 public class ApplicationListener implements ServletContextListener {
 
-    private static GlobalApplication APP = null;
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-        //1.加载系统配置
+        //应用根目录
         String appFilePath = sce.getServletContext().getRealPath("");
         String appContextPath = sce.getServletContext().getContextPath();
+        ApplicationContext.CONTEXT.setAppContextPath(appContextPath);
+        //加载系统配置
         StringBuilder fileBuilder = new StringBuilder(64);
         fileBuilder.append(appFilePath).append(File.separator).append("WEB-INF").append(File.separator).append(FrameworkConfig.CONFIG_FILE);
         String filePath = fileBuilder.toString();
@@ -76,23 +72,10 @@ public class ApplicationListener implements ServletContextListener {
         logger.info("Initializing applicationContext...");
         ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
         applicationContextBuilder.build();
-        String websocket = parameterMap.get(FrameworkConfig.WEBSOCKET);
-        if (websocket != null && websocket.equals("on")) {
-            logger.info("Start websocket...");
-            //开启websocket应用
-            ApplicationListener.APP = new GlobalApplication(appContextPath);
-            WebSocketEngine.getEngine().register(ApplicationListener.APP);
-            //注册推送服务
-            ApplicationContext.CONTEXT.getCometContext().addCometHandler(ApplicationListener.APP);
-        }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        if (ApplicationListener.APP != null) {
-            WebSocketEngine.getEngine().unregister(ApplicationListener.APP);
-            ApplicationListener.APP.shutdown();
-        }
         ApplicationContext.CONTEXT.contextDestroyed();
     }
 }

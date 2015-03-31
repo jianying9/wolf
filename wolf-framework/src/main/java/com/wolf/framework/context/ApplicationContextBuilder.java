@@ -17,6 +17,8 @@ import com.wolf.framework.local.LocalServiceConfigParser;
 import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.module.Module;
+import com.wolf.framework.module.ModuleConfig;
 import com.wolf.framework.paser.ClassParser;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
@@ -44,7 +46,7 @@ import org.slf4j.Logger;
  * @param <K>
  */
 public class ApplicationContextBuilder<T extends Entity, K extends Service> {
-    
+
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
@@ -52,26 +54,26 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
     protected ServiceWorkerContext serviceWorkerContext;
     private final Map<String, String> parameterMap;
-    
+
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
     }
-    
+
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
-    
+
     private boolean checkException(Throwable e) {
         boolean result = true;
         String error = e.getMessage();
-        if(error.indexOf("javax/servlet/") == 0) {
+        if (error.indexOf("javax/servlet/") == 0) {
             result = false;
-        } else if(error.indexOf("com/sun/grizzly/websockets/") == 0) {
+        } else if (error.indexOf("com/sun/grizzly/websockets/") == 0) {
             result = false;
         }
         return result;
     }
-    
+
     public final void build() {
         //校验密钥
         String key = this.parameterMap.get(FrameworkConfig.SEED_DES_KEY);
@@ -107,20 +109,10 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         packageNameList.add("com.wolf.framework.dao");
         List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
         DaoConfigBuilder daoConfigBuilder;
-        Class<?> clazz = null;
-        try {
-            for (String className : classNameList) {
-                try {
-                    clazz = classloader.loadClass(className);
-                } catch (ClassNotFoundException e) {
-                    if(this.checkException(e)) {
-                        this.logger.error("ClassNotFoundException:", e);
-                    }
-                } catch (NoClassDefFoundError e) {
-                    if(this.checkException(e)) {
-                        this.logger.error("NoClassDefFoundError:", e);
-                    }
-                }
+        Class<?> clazz;
+        for (String className : classNameList) {
+            try {
+                clazz = classloader.loadClass(className);
                 if (clazz.isAnnotationPresent(DaoConfig.class) && DaoConfigBuilder.class.isAssignableFrom(clazz)) {
                     //发现DaoConfig类型,实例化
                     daoConfigBuilder = (DaoConfigBuilder) clazz.newInstance();
@@ -128,11 +120,20 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                     daoConfigBuilder.init(ApplicationContext.CONTEXT);
                     this.daoConfigBuilderList.add(daoConfigBuilder);
                 }
+            } catch (ClassNotFoundException e) {
+                if (this.checkException(e)) {
+                    this.logger.error("ClassNotFoundException:", e);
+                }
+            } catch (NoClassDefFoundError e) {
+                if (this.checkException(e)) {
+                    this.logger.error("NoClassDefFoundError:", e);
+                }
+            } catch (InstantiationException ex) {
+                this.logger.error("Error when instance DaoConfig. Cause:", ex);
+            } catch (IllegalAccessException ex) {
+                this.logger.error("Error when instance DaoConfig. Cause:", ex);
             }
-        } catch (InstantiationException ex) {
-            this.logger.error("Error when instance DaoConfig. Cause:", ex);
-        } catch (IllegalAccessException ex) {
-            this.logger.error("Error when instance DaoConfig. Cause:", ex);
+
         }
         //查找注解类
         this.logger.info("Finding annotation...");
@@ -224,6 +225,35 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.serviceWorkerContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");
+        //load module
+        packageNameList.clear();
+        packageNameList.add("com.wolf.framework.module");
+        classNameList = new ClassParser().findClass(classloader, packageNameList);
+        Module module;
+        for (String className : classNameList) {
+            try {
+                clazz = classloader.loadClass(className);
+                if (clazz.isAnnotationPresent(ModuleConfig.class) && Module.class.isAssignableFrom(clazz)) {
+                    //发现Module,实例化
+                    module = (Module) clazz.newInstance();
+                    //初始化
+                    module.init(ApplicationContext.CONTEXT);
+                }
+            } catch (ClassNotFoundException e) {
+                if (this.checkException(e)) {
+                    this.logger.error("ClassNotFoundException:", e);
+                }
+            } catch (NoClassDefFoundError e) {
+                if (this.checkException(e)) {
+                    this.logger.error("NoClassDefFoundError:", e);
+                }
+            } catch (InstantiationException ex) {
+                this.logger.error("Error when instance ModuleConfig. Cause:", ex);
+            } catch (IllegalAccessException ex) {
+                this.logger.error("Error when instance ModuleConfig. Cause:", ex);
+            }
+        }
+        //
         ApplicationContext.CONTEXT.ready();
     }
 

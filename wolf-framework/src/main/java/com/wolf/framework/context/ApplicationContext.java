@@ -23,6 +23,7 @@ public final class ApplicationContext {
     private final Map<Class<? extends Local>, Local> localServiceMap = new HashMap<Class<? extends Local>, Local>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
     private final CometContext cometContext = new CometContextImpl();
+    private String appContextPath ="/";
 
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
@@ -64,7 +65,7 @@ public final class ApplicationContext {
         this.resourceList.add(resource);
     }
 
-    public void contextDestroyed() {
+    void contextDestroyed() {
         for (Resource resource : this.resourceList) {
             resource.destory();
         }
@@ -72,5 +73,13 @@ public final class ApplicationContext {
 
     public CometContext getCometContext() {
         return cometContext;
+    }
+
+    public String getAppContextPath() {
+        return appContextPath;
+    }
+
+    void setAppContextPath(String appContextPath) {
+        this.appContextPath = appContextPath;
     }
 }

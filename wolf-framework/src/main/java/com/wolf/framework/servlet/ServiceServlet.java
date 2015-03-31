@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 @WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
-    private static final long serialVersionUID = -6962831111898397302L;
+    private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     Map<String, AsyncContext> asyncContextMap = new HashMap<String, AsyncContext>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
@@ -51,9 +51,8 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -132,8 +131,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -147,8 +145,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
