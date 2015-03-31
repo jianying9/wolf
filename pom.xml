@@ -625,5 +625,6 @@
         <module>wolf-reids</module>
         <module>wolf-cassandra</module>
         <module>wolf-websocket</module>
-    </modules>
+    <module>wolf-demo</module>
+  </modules>
 </project>
