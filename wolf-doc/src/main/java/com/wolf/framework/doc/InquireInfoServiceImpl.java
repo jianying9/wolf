@@ -33,7 +33,6 @@ import java.util.UUID;
 },
         responseStates = {},
         validateSession = false,
-        sessionHandleTypeEnum = SessionHandleTypeEnum.SAVE,
         group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireInfoServiceImpl implements Service {
