@@ -2,6 +2,7 @@ package com.wolf.framework.local;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.service.Service;
 import org.slf4j.Logger;
 
 /**
@@ -26,16 +27,27 @@ public final class LocalServiceConfigParser {
     public void parse(final Class<Local> clazz) {
         this.logger.debug("--parsing local service {}--", clazz.getName());
         if (clazz.isAnnotationPresent(LocalServiceConfig.class)) {
-            //1.获取注解ServiceConfig
+            //判断是否实现Local接口
+            Class<? extends Local> clazzi = null;
+            Class<?>[] clazzInterfaces = clazz.getInterfaces();
+            for (Class<?> clazzInterface : clazzInterfaces) {
+                if (Local.class.isAssignableFrom(clazzInterface)) {
+                    clazzi = (Class<? extends Local>) clazzInterface;
+                    break;
+                }
+            }
+            //判断是否实现Local接口
+            if (clazzi == null) {
+                throw new RuntimeException("Error when parse class:" + clazz.getName() + ". Not implements Local");
+            }
+            //获取注解ServiceConfig
             final LocalServiceConfig localServiceConfig = clazz.getAnnotation(LocalServiceConfig.class);
-            final Class<? extends Local> clazzi = localServiceConfig.interfaceInfo();
             //实例化该clazz
             Local local = null;
             try {
                 local = clazz.newInstance();
             } catch (Exception e) {
-                this.logger.error("There was an error instancing class {}. Cause: {}", clazz.getName(), e.getMessage());
-                throw new RuntimeException("There wa an error instancing class ".concat(clazz.getName()));
+                throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
             }
             //创建对应的工作对象
             this.localServiceContextBuilder.putLocalService(clazzi, local);

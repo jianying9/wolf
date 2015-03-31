@@ -42,11 +42,11 @@ public class FrameworkJUnitTest {
     public void tearDown() {
     }
 
-//    @Test
+    @Test
     public void hello() {
         Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.DEVELOPMENT);
-        parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.wolf");
+        parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.test");
         parameterMap.put(FrameworkConfig.TASK_CORE_POOL_SIZE, "10");
         parameterMap.put(FrameworkConfig.TASK_MAX_POOL_SIZE, "20");
         //
@@ -61,7 +61,7 @@ public class FrameworkJUnitTest {
 
 //    @Test
     public void testJson() throws IOException {
-        String json = "{\"content\":\"人工客服服务时间为:上午8:00~11:00，下午13:30~17:00。\\n\\b\\"
+        String json = "{\"content\":\"人工客服服务时间为:上午8:00~11:00，下午13:30~17:00。"
                 + "欢迎大家使用智能客服momi！\"}";
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);

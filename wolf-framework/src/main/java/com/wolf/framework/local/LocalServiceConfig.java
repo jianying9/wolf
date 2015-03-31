@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface LocalServiceConfig {
 
-    Class<? extends Local> interfaceInfo();
-
     /**
      * 描述
      *
