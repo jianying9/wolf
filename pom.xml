@@ -508,7 +508,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.8.2</version>
+                <version>4.11</version>
             </dependency>
             <dependency>
                 <groupId>javax</groupId>
@@ -556,6 +556,11 @@
                 <artifactId>mmseg4j-analysis</artifactId>
                 <version>1.9.1</version>
                 <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>2.1.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
