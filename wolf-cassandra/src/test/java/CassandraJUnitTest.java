@@ -1,4 +1,5 @@
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.Metadata;
@@ -74,11 +75,10 @@ public class CassandraJUnitTest {
         System.out.println(select.toString());
 //        ResultSet results = session.execute(select.toString());
         //SELECT * FROM test.users WHERE username='?';
-        PreparedStatement ps = session.prepare("SELECT * FROM test.users WHERE username=?;");
+        PreparedStatement ps = session.prepare("SELECT * FROM test.user WHERE user_name=?;");
         ResultSetFuture rsf = session.executeAsync(ps.bind("test"));
         ResultSet rs = rsf.get();
         Row r = rs.one();
-        String aaa = r.getString(0);
         System.out.println(r);
         //
         Insert insert = QueryBuilder
@@ -88,7 +88,7 @@ public class CassandraJUnitTest {
         System.out.println(insert.toString());
         //INSERT INTO addressbook.contact(firstName,lastName,email) VALUES ('Dwayne','Garcia','dwayne@example.com');
         //INSERT INTO test.users(username,password) VALUES ('test1','123456');
-        ps = session.prepare("INSERT INTO test.users(username,password) VALUES (?,?);");
+        ps = session.prepare("INSERT INTO test.user(user_name,password) VALUES (?,?);");
         rsf = session.executeAsync(ps.bind("test2", "1234567"));
         rs = rsf.get();
         r = rs.one();
@@ -104,7 +104,7 @@ public class CassandraJUnitTest {
         delete.where(eq("username", "dgarcia"));
         System.out.println(delete.toString());
         //
-        ps = session.prepare("SELECT COUNT(*) FROM test.users;");
+        ps = session.prepare("SELECT COUNT(*) FROM test.user;");
         rsf = session.executeAsync(ps.bind());
         try {
             rs = rsf.get();
@@ -127,7 +127,7 @@ public class CassandraJUnitTest {
 //        } catch (ExecutionException ex) {
 //        }
         //
-        ps = session.prepare("select tags from test.users where username = 'test';");
+        ps = session.prepare("select tag from test.user where user_name = 'test';");
         rsf = session.executeAsync(ps.bind());
         try {
             rs = rsf.get();
@@ -139,9 +139,22 @@ public class CassandraJUnitTest {
             Set<String> tags = r.getSet(0, String.class);
             System.out.println(tags);
         }
+        //'
+        System.out.println("batch test.....");
+        BatchStatement batch = new BatchStatement();
+        ps = session.prepare("update test.user_count set login = login + 1 where user_name = 'test';");
+        batch.add(ps.bind());
+        ps = session.prepare("select login from test.user_count where user_name = 'test';");
+        batch.add(ps.bind());
+        try {
+            rs = rsf.get();
+            for (Row row : rs) {
+                System.out.println(row.getString(0));
+            }
+        } catch (InterruptedException ex) {
+        } catch (ExecutionException ex) {
+        }
+
         cluster.close();
-        
-        List<String> a = new ArrayList<String>(2);
-        
     }
 }

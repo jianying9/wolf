@@ -53,4 +53,6 @@ public interface CassandraHandler extends DatabaseHandler, UpdateHandler, Delete
     public void clearMap(String keyValue, String columnName);
 
     public Map<String, String> getMap(String keyValue, String columnName);
+    
+    public long increase(String keyValue, String columnName, long value);
 }

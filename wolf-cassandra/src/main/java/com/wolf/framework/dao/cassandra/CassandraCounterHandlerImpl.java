@@ -1,7 +1,10 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.ColumnHandler;
 import java.util.ArrayList;
@@ -12,10 +15,10 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * counter表
+ *
  * @author jianying9
  */
 public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implements CassandraHandler {
-
 
     public CassandraCounterHandlerImpl(
             Session session,
@@ -31,7 +34,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
     public String insert(Map<String, String> entityMap) {
         throw new RuntimeException("Not supported,counter table can not insert.");
     }
-    
+
     @Override
     public void batchInsert(List<Map<String, String>> entityMapList) {
         throw new RuntimeException("Not supported,counter table can not batch insert.");
@@ -62,7 +65,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
         if (hasUpdate) {
             final String keyDataMap = this.keyColumnHandler.getDataMap();
             cqlBuilder.setLength(cqlBuilder.length() - 1);
-            cqlBuilder.append(" WHERE ").append(keyDataMap).append("= ?;");
+            cqlBuilder.append(" WHERE ").append(keyDataMap).append(" = ?;");
             valueList.add(keyValue);
             String updateCql = cqlBuilder.toString();
             this.logger.debug("{} updateCql:{}", this.table, updateCql);
@@ -78,7 +81,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
         }
         return keyValue;
     }
-    
+
     @Override
     public void batchUpdate(List<Map<String, String>> entityMapList) {
         throw new RuntimeException("Not supported,counter table can not batch update.");
@@ -88,7 +91,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
     public void addSet(String keyValue, String columnName, String value) {
         throw new RuntimeException("Not supported,counter table can not use set.");
     }
-    
+
     @Override
     public void addSet(String keyValue, String columnName, Set<String> values) {
         throw new RuntimeException("Not supported,counter table can not use set.");
@@ -98,7 +101,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
     public void removeSet(String keyValue, String columnName, String value) {
         throw new RuntimeException("Not supported,counter table can not use set.");
     }
-    
+
     @Override
     public void removeSet(String keyValue, String columnName, Set<String> values) {
         throw new RuntimeException("Not supported,counter table can not use set.");
@@ -182,5 +185,64 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
     @Override
     public Map<String, String> getMap(String keyValue, String columnName) {
         throw new RuntimeException("Not supported,counter table can not use map.");
+    }
+
+    @Override
+    public long increase(String keyValue, String columnName, long value) {
+        long result = 0;
+        ColumnHandler columnHandler = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                columnHandler = ch;
+                break;
+            }
+        }
+        if (columnHandler != null) {
+            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String columnDataMap = columnHandler.getDataMap();
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(columnDataMap)
+                    .append(" = ").append(columnDataMap).append(" + ? WHERE ")
+                    .append(keyDataMap).append(" = ");
+            cqlBuilder.setLength(cqlBuilder.length() - 1);
+            cqlBuilder.append(" WHERE ").append(keyDataMap).append(" = ?;");
+            String updateCql = cqlBuilder.toString();
+            //
+            List<String> valueList = new ArrayList<String>(2);
+            valueList.add(Long.toString(value));
+            valueList.add(keyValue);
+            this.logger.debug("{} increase-updateCql:{}", this.table, updateCql);
+            PreparedStatement updatePs = this.session.prepare(updateCql);
+            BoundStatement update = updatePs.bind(valueList);
+            //
+            cqlBuilder.setLength(0);
+            cqlBuilder.append("SELECT ").append(columnDataMap).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ").append(keyDataMap).append(" = ?");
+            String selectCql = cqlBuilder.toString();
+            this.logger.debug("{} increase-selectCql:{}", this.table, selectCql);
+            PreparedStatement selectPs = this.session.prepare(selectCql);
+            BoundStatement select = selectPs.bind(keyValue);
+            //同步
+            Row r = null;
+            synchronized (this) {
+                ResultSetFuture rsf = this.session.executeAsync(update);
+                try {
+                    rsf.get();
+                    rsf = this.session.executeAsync(select);
+                    ResultSet rs  = rsf.get();
+                    r = rs.one();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } catch (ExecutionException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            if(r != null) {
+                result = r.getLong(0);
+            }
+        }
+        return result;
     }
 }

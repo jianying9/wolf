@@ -545,4 +545,9 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
         }
         return result;
     }
+
+    @Override
+    public long increase(String keyValue, String columnName, long value) {
+        throw new RuntimeException("Not supported,counter table can use increase.");
+    }
 }
