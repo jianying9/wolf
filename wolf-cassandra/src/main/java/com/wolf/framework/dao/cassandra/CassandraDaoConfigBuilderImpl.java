@@ -15,7 +15,9 @@ import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 
 /**
@@ -61,6 +63,21 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
         return new CDaoInjecterImpl(this.cEntityDaoContext);
     }
 
+    private String getDefaultDataMap(String columnName) {
+        StringBuilder sb = new StringBuilder(columnName.length() + 5);
+        char[] chs = columnName.toCharArray();
+        for (char ch : chs) {
+            if (ch >= 65 && ch <= 90) {
+                if (sb.length() > 0) {
+                    sb.append('_');
+                }
+                ch = (char) (ch + 32);
+            }
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+
     @Override
     public void build() {
         //解析cassandra EntityDao
@@ -77,12 +94,25 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     final String table = cDaoConfig.table();
                     //是否计数表
                     final boolean counter = cDaoConfig.counter();
+                    String dataMap;
                     //set类型集合
-                    final String[] sets = cDaoConfig.sets();
+                    Map<String, String> sets = new HashMap<String, String>(4, 1);
+                    for (String name : cDaoConfig.sets()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        sets.put(name, dataMap);
+                    }
                     //list类型集合
-                    final String[] lists = cDaoConfig.lists();
+                    Map<String, String> lists = new HashMap<String, String>(4, 1);
+                    for (String name : cDaoConfig.lists()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        sets.put(name, dataMap);
+                    }
                     //map类型集合
-                    final String[] maps = cDaoConfig.maps();
+                    Map<String, String> maps = new HashMap<String, String>(4, 1);
+                    for (String name : cDaoConfig.maps()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        sets.put(name, dataMap);
+                    }
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
@@ -102,15 +132,20 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                             if (field.isAnnotationPresent(ColumnConfig.class)) {
                                 //
                                 columnConfig = field.getAnnotation(ColumnConfig.class);
+                                dataMap = columnConfig.dataMap();
+                                if (dataMap.isEmpty()) {
+                                    //大写转小写，并加下划线
+                                    dataMap = this.getDefaultDataMap(fieldName);
+                                }
                                 columnType = columnConfig.columnType();
                                 if (columnType == ColumnType.KEY) {
                                     if (keyHandler == null) {
-                                        keyHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), "-1");
+                                        keyHandler = new ColumnHandlerImpl(fieldName, dataMap, columnType, columnConfig.desc(), "-1");
                                     } else {
                                         throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:too many key");
                                     }
                                 } else {
-                                    columnHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), columnConfig.defaultValue());
+                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, columnType, columnConfig.desc(), columnConfig.defaultValue());
                                     columnHandlerList.add(columnHandler);
                                 }
                             }

@@ -23,6 +23,12 @@ public @interface ColumnConfig {
     public ColumnType columnType() default ColumnType.COLUMN;
     
     /**
+     * 列映射
+     * @return 
+     */
+    public String dataMap() default "";
+    
+    /**
      * redis数据为空时，取默认值
      * @return 
      */

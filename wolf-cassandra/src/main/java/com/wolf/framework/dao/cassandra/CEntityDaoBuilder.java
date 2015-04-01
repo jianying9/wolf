@@ -8,6 +8,7 @@ import com.wolf.framework.dao.inquire.InquireByKeyFromDatabaseHandlerImpl;
 import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 实体数据访问对象创建类
@@ -23,12 +24,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String table;
     //是否是counter
     private final boolean counter;
-    //set类型集合
-    private final String[] sets;
-    //list类型集合
-    private final String[] lists;
-    //map类型集合
-    private final String[] maps;
+    private final Map<String, String> sets;
+    private final Map<String, String> lists;
+    private final Map<String, String> maps;
     //key
     private final ColumnHandler keyHandler;
     //column
@@ -46,9 +44,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
             boolean counter,
             ColumnHandler keyHandler,
             List<ColumnHandler> columnHandlerList,
-            String[] sets,
-            String[] lists,
-            String[] maps,
+            Map<String, String> sets,
+            Map<String, String> lists,
+            Map<String, String> maps,
             Class<T> clazz,
             CEntityDaoContext<T> entityDaoContext,
             CassandraAdminContext cassandraAdminContext) {
@@ -88,14 +86,15 @@ public final class CEntityDaoBuilder<T extends Entity> {
         CassandraHandler cassandraHandler;
         if (this.counter) {
             //counter 表
-            cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler.getColumnName(), this.columnHandlerList);
+            cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler, this.columnHandlerList);
         } else {
             //普通表
+            
             cassandraHandler = new CassandraHandlerImpl(
                     session,
                     this.keyspace,
                     this.table,
-                    this.keyHandler.getColumnName(),
+                    this.keyHandler,
                     this.columnHandlerList,
                     sets,
                     lists,

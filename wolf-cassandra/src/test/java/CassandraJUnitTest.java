@@ -56,7 +56,7 @@ public class CassandraJUnitTest {
     @Test
     public void hello() throws ExecutionException, InterruptedException {
         cluster = Cluster.builder()
-                .addContactPoint("192.168.181.35")
+                .addContactPoint("192.168.181.41")
                 .withCredentials("test", "test")
                 .build();
         Metadata metadata = cluster.getMetadata();
@@ -78,6 +78,7 @@ public class CassandraJUnitTest {
         ResultSetFuture rsf = session.executeAsync(ps.bind("test"));
         ResultSet rs = rsf.get();
         Row r = rs.one();
+        String aaa = r.getString(0);
         System.out.println(r);
         //
         Insert insert = QueryBuilder
