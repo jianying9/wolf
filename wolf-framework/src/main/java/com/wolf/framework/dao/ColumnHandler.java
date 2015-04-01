@@ -9,6 +9,8 @@ public interface ColumnHandler {
 
     public String getColumnName();
     
+    public String getDataMap();
+    
     public ColumnType getColumnType();
     
     public String getDesc();

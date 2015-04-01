@@ -7,13 +7,23 @@ package com.wolf.framework.dao;
 public class ColumnHandlerImpl implements ColumnHandler {
 
     private final String columnName;
-    private final ColumnType columnTypeEnum;
+    private final String dataMap;
+    private final ColumnType columnType;
     private final String desc;
     private final String defaultValue;
 
-    public ColumnHandlerImpl(String columnName, ColumnType columnTypeEnum, String desc, String defaultValue) {
+    public ColumnHandlerImpl(String columnName, ColumnType columnType, String desc, String defaultValue) {
         this.columnName = columnName;
-        this.columnTypeEnum = columnTypeEnum;
+        this.dataMap = this.columnName;
+        this.columnType = columnType;
+        this.desc = desc;
+        this.defaultValue = defaultValue;
+    }
+
+    public ColumnHandlerImpl(String columnName, String dataMap, ColumnType columnType, String desc, String defaultValue) {
+        this.columnName = columnName;
+        this.dataMap = dataMap;
+        this.columnType = columnType;
         this.desc = desc;
         this.defaultValue = defaultValue;
     }
@@ -24,8 +34,13 @@ public class ColumnHandlerImpl implements ColumnHandler {
     }
 
     @Override
+    public String getDataMap() {
+        return this.dataMap;
+    }
+
+    @Override
     public ColumnType getColumnType() {
-        return this.columnTypeEnum;
+        return this.columnType;
     }
 
     @Override
