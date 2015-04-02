@@ -27,7 +27,7 @@ public final class TestCassandraHandler {
      * @param clazz
      * @param entityMap
      */
-    public static <T extends Entity> void insert(Class<T> clazz, Map<String, String> entityMap) {
+    public static <T extends Entity> void insert(Class<T> clazz, Map<String, Object> entityMap) {
         CassandraHandler cassandraHandler = cassandraAdminContext.getCassandraHandler(clazz);
         if (cassandraHandler != null) {
             cassandraHandler.insert(entityMap);
@@ -41,7 +41,7 @@ public final class TestCassandraHandler {
      * @param clazz
      * @param keyValue
      */
-    public static <T extends Entity> void delete(Class<T> clazz, String keyValue) {
+    public static <T extends Entity> void delete(Class<T> clazz, Object keyValue) {
         CassandraHandler cassandraHandler = cassandraAdminContext.getCassandraHandler(clazz);
         if (cassandraHandler != null) {
             cassandraHandler.delete(keyValue);

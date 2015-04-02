@@ -103,12 +103,12 @@ public class RedisDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                                 columnType = columnConfig.columnType();
                                 if (columnType == ColumnType.KEY) {
                                     if (keyHandler == null) {
-                                        keyHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), "-1");
+                                        keyHandler = new ColumnHandlerImpl(fieldName, fieldName, field, columnType, columnConfig.desc(), "-1");
                                     } else {
                                         throw new RuntimeException("Error building REntityDao:" + clazzt.getName() + ". Cause:too many key");
                                     }
                                 } else {
-                                    columnHandler = new ColumnHandlerImpl(fieldName, columnType, columnConfig.desc(), columnConfig.defaultValue());
+                                    columnHandler = new ColumnHandlerImpl(fieldName, fieldName, field, columnType, columnConfig.desc(), columnConfig.defaultValue());
                                     columnHandlerList.add(columnHandler);
                                 }
                             }

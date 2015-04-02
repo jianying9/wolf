@@ -29,20 +29,12 @@ public interface CEntityDao<T extends Entity> {
     public T inquireByKey(Object keyValue);
 
     /**
-     * 根据主键集合查询
-     *
-     * @param keyValues
-     * @return
-     */
-    public List<T> inquireByKeys(List<Object> keyValues);
-
-    /**
      * 插入,返回keyValue
      *
      * @param entityMap
      * @return
      */
-    public String insert(Map<String, Object> entityMap);
+    public Object[] insert(Map<String, Object> entityMap);
 
     /**
      * 插入，并返回新增实体
@@ -65,7 +57,7 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public String update(Map<String, Object> entityMap);
+    public Object[] update(Map<String, Object> entityMap);
 
     /**
      * 批量更新
@@ -94,7 +86,7 @@ public interface CEntityDao<T extends Entity> {
      *
      * @param keyValues
      */
-    public void batchDelete(List<Object> keyValues);
+    public void batchDelete(List<Object[]> keyValues);
 
     /**
      * 统计全表总记录

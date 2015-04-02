@@ -27,7 +27,7 @@ public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> impleme
         for (ColumnHandler rColumnHandler : columnHandlerList) {
             columnName = rColumnHandler.getColumnName();
             if (entityMap.containsKey(columnName) == false) {
-                entityMap.put(columnName, rColumnHandler.getDefaultValue());
+//                entityMap.put(columnName, rColumnHandler.getDefaultValue());
             }
         }
     }

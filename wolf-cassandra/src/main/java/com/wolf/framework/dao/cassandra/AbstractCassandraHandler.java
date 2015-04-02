@@ -6,13 +6,9 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.in;
-import com.datastax.driver.core.querybuilder.Select;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.logger.LogFactory;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +26,7 @@ public class AbstractCassandraHandler {
     protected final String keyspace;
     protected final String table;
     protected final Session session;
-    protected final ColumnHandler keyColumnHandler;
+    protected final List<ColumnHandler> keyHandlerList;
     protected final List<ColumnHandler> columnHandlerList;
     private final String inquireByKeyCql;
     private final String deleteCql;
@@ -40,34 +36,42 @@ public class AbstractCassandraHandler {
             Session session,
             String keyspace,
             String table,
-            ColumnHandler keyColumnHandler,
+            List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList
     ) {
         this.session = session;
         this.keyspace = keyspace;
         this.table = table;
-        this.keyColumnHandler = keyColumnHandler;
+        this.keyHandlerList = keyHandlerList;
         this.columnHandlerList = columnHandlerList;
-        final String keyDataMap = this.keyColumnHandler.getDataMap();
         StringBuilder cqlBuilder = new StringBuilder(128);
         //inquire by key
-        cqlBuilder.append("SELECT ").append(keyDataMap).append(", ");
-        if (this.columnHandlerList.isEmpty() == false) {
-            for (ColumnHandler columnHandler : this.columnHandlerList) {
-                cqlBuilder.append(columnHandler.getDataMap()).append(", ");
-            }
+        cqlBuilder.append("SELECT ");
+        for (ColumnHandler columnHandler : this.keyHandlerList) {
+            cqlBuilder.append(columnHandler.getDataMap()).append(", ");
+        }
+        for (ColumnHandler columnHandler : this.columnHandlerList) {
+            cqlBuilder.append(columnHandler.getDataMap()).append(", ");
         }
         cqlBuilder.setLength(cqlBuilder.length() - 2);
         cqlBuilder.append(" FROM  ").append(this.keyspace)
-                .append('.').append(this.table).append(" WHERE ")
-                .append(keyDataMap).append(" = ?;");
+                .append('.').append(this.table).append(" WHERE ");
+        for (ColumnHandler columnHandler : this.keyHandlerList) {
+            cqlBuilder.append(columnHandler.getDataMap()).append(" = ? AND ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 4);
+        cqlBuilder.append(';');
         this.inquireByKeyCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
         this.logger.debug("{} inquireByKeyCql:{}", this.table, this.inquireByKeyCql);
         //delete
         cqlBuilder.append("DELETE FROM ").append(this.keyspace).append('.')
-                .append(this.table).append(" WHERE ").append(keyDataMap)
-                .append(" = ?;");
+                .append(this.table).append(" WHERE ");
+        for (ColumnHandler columnHandler : this.keyHandlerList) {
+            cqlBuilder.append(columnHandler.getDataMap()).append(" = ? AND ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 4);
+        cqlBuilder.append(';');
         this.deleteCql = cqlBuilder.toString();
         this.logger.debug("{} deleteCql:{}", this.table, this.deleteCql);
         cqlBuilder.setLength(0);
@@ -79,9 +83,27 @@ public class AbstractCassandraHandler {
         this.logger.debug("{} countCql:{}", this.table, this.countCql);
     }
 
-    public final boolean exist(String keyValue) {
+    protected final Object getValue(Row row, ColumnHandler columnHander, int index) {
+        Object result;
+        switch (columnHander.getColumnDataType()) {
+            case STRING:
+                result = row.getString(index);
+                break;
+            case LONG:
+                result = row.getLong(index);
+                break;
+            case INT:
+                result = row.getInt(index);
+                break;
+            default:
+                result = row.getBool(index);
+        }
+        return result;
+    }
+
+    public final boolean exist(Object... keyValues) {
         PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValues));
         ResultSet rs;
         Row r = null;
         try {
@@ -95,10 +117,10 @@ public class AbstractCassandraHandler {
         return r != null;
     }
 
-    public final Map<String, String> inquireByKey(String keyValue) {
-        Map<String, String> result = null;
+    public final Map<String, Object> inquireByKey(Object... keyValues) {
+        Map<String, Object> result = null;
         PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValues));
         ResultSet rs;
         Row r = null;
         try {
@@ -110,13 +132,21 @@ public class AbstractCassandraHandler {
             throw new RuntimeException(ex);
         }
         if (r != null) {
-            String value;
+            Object value;
             ColumnHandler ch;
-            result = new HashMap<String, String>(this.columnHandlerList.size() + 1);
-            result.put(this.keyColumnHandler.getColumnName(), r.getString(0));
+            result = new HashMap<String, Object>(this.columnHandlerList.size() + 1);
+            int keySize = this.keyHandlerList.size();
+            for (int index = 0; index < keySize; index++) {
+                ch = this.keyHandlerList.get(index);
+                value = this.getValue(r, ch, index);
+                if (value == null || value.equals("null")) {
+                    value = ch.getDefaultValue();
+                }
+                result.put(ch.getColumnName(), value);
+            }
             for (int index = 0; index < this.columnHandlerList.size(); index++) {
                 ch = this.columnHandlerList.get(index);
-                value = r.getString(index + 1);
+                value = this.getValue(r, ch, index + keySize);
                 if (value == null || value.equals("null")) {
                     value = ch.getDefaultValue();
                 }
@@ -126,43 +156,7 @@ public class AbstractCassandraHandler {
         return result;
     }
 
-    public final List<Map<String, String>> inquireBykeys(List<String> keyValueList) {
-        final String keyDataMap = this.keyColumnHandler.getDataMap();
-        final String keyColumnName = this.keyColumnHandler.getColumnName();
-        List<Map<String, String>> resultList = new ArrayList<Map<String, String>>(keyValueList.size());
-        Select select = QueryBuilder.select().all().from(this.keyspace, this.table);
-        select.where(in(keyDataMap, keyValueList));
-        PreparedStatement ps = this.session.prepare(select.toString());
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind());
-        ResultSet rs;
-        Map<String, String> result;
-        String value;
-        ColumnHandler ch;
-        try {
-            rs = rsf.get();
-            for (Row r : rs) {
-                result = new HashMap<String, String>(this.columnHandlerList.size() + 1, 1);
-                result.put(this.keyColumnHandler.getColumnName(), r.getString(0));
-                result.put(keyColumnName, r.getString(0));
-                for (int index = 0; index < this.columnHandlerList.size(); index++) {
-                    ch = this.columnHandlerList.get(index);
-                    value = r.getString(index + 1);
-                    if (value == null || value.equals("null")) {
-                        value = ch.getDefaultValue();
-                    }
-                    result.put(ch.getColumnName(), value);
-                }
-                resultList.add(result);
-            }
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
-            throw new RuntimeException(ex);
-        }
-        return resultList;
-    }
-
-    public final void delete(String keyValue) {
+    public final void delete(Object... keyValue) {
         PreparedStatement ps = this.session.prepare(this.deleteCql);
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
         try {
@@ -174,11 +168,11 @@ public class AbstractCassandraHandler {
         }
     }
 
-    public final void batchDelete(List<String> keyValues) {
+    public final void batchDelete(List<Object[]> keyValues) {
         if (keyValues.isEmpty() == false) {
             BatchStatement batch = new BatchStatement();
             PreparedStatement ps = this.session.prepare(this.deleteCql);
-            for (String keyValue : keyValues) {
+            for (Object[] keyValue : keyValues) {
                 batch.add(ps.bind(keyValue));
             }
             ResultSetFuture rsf = this.session.executeAsync(batch);

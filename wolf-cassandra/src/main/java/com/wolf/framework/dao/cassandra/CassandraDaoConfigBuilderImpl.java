@@ -116,9 +116,9 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
-                    ColumnHandler keyHandler = null;
+                    List<ColumnHandler> keyHandlerList = new ArrayList<ColumnHandler>(1);
                     //column
-                    List<ColumnHandler> columnHandlerList = new ArrayList<ColumnHandler>(fieldTemp.length);
+                    List<ColumnHandler> columnHandlerList = new ArrayList<ColumnHandler>(0);
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
@@ -126,7 +126,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     ColumnType columnType;
                     for (Field field : fieldTemp) {
                         modifier = field.getModifiers();
-                        if (!Modifier.isStatic(modifier)) {
+                        if (Modifier.isStatic(modifier) == false) {
                             //非静态字段
                             fieldName = field.getName();
                             if (field.isAnnotationPresent(ColumnConfig.class)) {
@@ -139,26 +139,23 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                                 }
                                 columnType = columnConfig.columnType();
                                 if (columnType == ColumnType.KEY) {
-                                    if (keyHandler == null) {
-                                        keyHandler = new ColumnHandlerImpl(fieldName, dataMap, columnType, columnConfig.desc(), "-1");
-                                    } else {
-                                        throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:too many key");
-                                    }
+                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, field, columnType, columnConfig.desc(), null);
+                                    keyHandlerList.add(columnHandler);
                                 } else {
-                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, columnType, columnConfig.desc(), columnConfig.defaultValue());
+                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, field, columnType, columnConfig.desc(), columnConfig.defaultValue());
                                     columnHandlerList.add(columnHandler);
                                 }
                             }
                         }
                     }
-                    if (keyHandler == null) {
+                    if (keyHandlerList.isEmpty()) {
                         throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:can not find key");
                     }
                     CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<T>(
                             keyspace,
                             table,
                             counter,
-                            keyHandler,
+                            keyHandlerList,
                             columnHandlerList,
                             sets,
                             lists,

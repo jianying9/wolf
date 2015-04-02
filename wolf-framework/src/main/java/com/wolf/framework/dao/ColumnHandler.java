@@ -1,5 +1,7 @@
 package com.wolf.framework.dao;
 
+import java.lang.reflect.Field;
+
 
 /**
  *
@@ -11,9 +13,13 @@ public interface ColumnHandler {
     
     public String getDataMap();
     
+    public Field getField();
+    
     public ColumnType getColumnType();
+    
+    public ColumnDataType getColumnDataType();
     
     public String getDesc();
     
-    public String getDefaultValue();
+    public Object getDefaultValue();
 }

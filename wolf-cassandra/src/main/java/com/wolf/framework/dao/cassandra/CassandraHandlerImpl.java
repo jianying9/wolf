@@ -32,35 +32,34 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
             Session session,
             String keyspace,
             String table,
-            ColumnHandler keyColumnHandler,
+            List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
             Map<String, String> sets,
             Map<String, String> lists,
             Map<String, String> maps
     ) {
-        super(session, keyspace, table, keyColumnHandler, columnHandlerList);
-        final String keyDataMap = this.keyColumnHandler.getDataMap();
+        super(session, keyspace, table, keyHandlerList, columnHandlerList);
         this.sets = sets;
         this.lists = lists;
         this.maps = maps;
         StringBuilder cqlBuilder = new StringBuilder(128);
         // insert
         cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
-                .append(this.table).append('(').append(keyDataMap)
-                .append(',');
-        if (this.columnHandlerList.isEmpty() == false) {
-            for (ColumnHandler ch : this.columnHandlerList) {
-                cqlBuilder.append(ch.getDataMap()).append(',');
-            }
-            cqlBuilder.setLength(cqlBuilder.length() - 1);
+                .append(this.table).append('(');
+        for (ColumnHandler ch : this.keyHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
         }
-        cqlBuilder.append(") values(");
-        long num = this.columnHandlerList.size() + 1;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        cqlBuilder.append(") values (");
+        long num = this.columnHandlerList.size() + this.keyHandlerList.size();
         while (num > 0) {
-            cqlBuilder.append("?,");
+            cqlBuilder.append("?, ");
             num--;
         }
-        cqlBuilder.setLength(cqlBuilder.length() - 1);
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
         cqlBuilder.append(") IF NOT EXISTS;");
         this.insertCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
@@ -68,24 +67,27 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public String insert(Map<String, String> entityMap) {
-        final String keyColumnName = this.keyColumnHandler.getColumnName();
-        String keyValue = entityMap.get(keyColumnName);
-        if (keyValue == null) {
-            throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
-        }
-        PreparedStatement ps = this.session.prepare(this.insertCql);
-        List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
-        valueList.add(keyValue);
-        String value;
-        for (ColumnHandler ch : this.columnHandlerList) {
+    public Object[] insert(Map<String, Object> entityMap) {
+        List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        Object value;
+        for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
             if (value == null) {
-                value = "";
+                throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
             }
             valueList.add(value);
         }
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(valueList));
+        Object[] keyValue = valueList.toArray();
+        for (ColumnHandler ch : this.columnHandlerList) {
+            value = entityMap.get(ch.getColumnName());
+            if (value == null) {
+                value = ch.getDefaultValue();
+            }
+            valueList.add(value);
+        }
+        PreparedStatement ps = this.session.prepare(this.insertCql);
+        Object[] values = valueList.toArray();
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
         try {
             rsf.get();
         } catch (InterruptedException ex) {
@@ -97,27 +99,35 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public void batchInsert(List<Map<String, String>> entityMapList) {
+    public void batchInsert(List<Map<String, Object>> entityMapList) {
         if (entityMapList.isEmpty() == false) {
-            String keyValue;
-            String value;
-            final String keyColumnName = this.keyColumnHandler.getColumnName();
-            List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
+            Object value;
+            List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
             PreparedStatement ps = this.session.prepare(this.insertCql);
             BatchStatement batch = new BatchStatement();
-            for (Map<String, String> entityMap : entityMapList) {
-                keyValue = entityMap.get(keyColumnName);
-                if (keyValue != null) {
-                    valueList.clear();
-                    valueList.add(keyValue);
+            boolean canInsert;
+            Object[] values;
+            for (Map<String, Object> entityMap : entityMapList) {
+                canInsert = true;
+                valueList.clear();
+                for (ColumnHandler ch : this.keyHandlerList) {
+                    value = entityMap.get(ch.getColumnName());
+                    if (value == null) {
+                        canInsert = false;
+                        break;
+                    }
+                    valueList.add(value);
+                }
+                if (canInsert) {
                     for (ColumnHandler ch : this.columnHandlerList) {
                         value = entityMap.get(ch.getColumnName());
                         if (value == null) {
-                            value = "";
+                            value = ch.getDefaultValue();
                         }
                         valueList.add(value);
                     }
-                    batch.add(ps.bind(valueList));
+                    values = valueList.toArray();
+                    batch.add(ps.bind(values));
                 }
             }
             ResultSetFuture rsf = this.session.executeAsync(batch);
@@ -132,35 +142,45 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public String update(Map<String, String> entityMap) {
-        final String keyColumnName = this.keyColumnHandler.getColumnName();
-        String keyValue = entityMap.get(keyColumnName);
-        if (keyValue == null) {
-            throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+    public Object[] update(Map<String, Object> entityMap) {
+        List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        Object value;
+        for (ColumnHandler ch : this.keyHandlerList) {
+            value = entityMap.get(ch.getColumnName());
+            if (value == null) {
+                throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+            }
+            valueList.add(value);
         }
+        Object[] keyValue = valueList.toArray();
+        valueList.clear();
         StringBuilder cqlBuilder = new StringBuilder(128);
-        List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
-        String value;
-        boolean hasUpdate = false;
+        boolean canUpdate = false;
         cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                 .append(this.table).append(" SET ");
         for (ColumnHandler ch : this.columnHandlerList) {
             value = entityMap.get(ch.getColumnName());
             if (value != null) {
-                hasUpdate = true;
+                canUpdate = true;
                 valueList.add(value);
                 cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
             }
         }
-        if (hasUpdate) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
-            cqlBuilder.setLength(cqlBuilder.length() - 1);
-            cqlBuilder.append(" WHERE ").append(keyDataMap).append("= ? IF EXISTS;");
-            valueList.add(keyValue);
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        if (canUpdate) {
+            cqlBuilder.append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+                value = entityMap.get(ch.getColumnName());
+                valueList.add(value);
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 2);
+            cqlBuilder.append(" IF EXISTS;");
+            Object[] values = valueList.toArray();
             String updateCql = cqlBuilder.toString();
             this.logger.debug("{} updateCql:{}", this.table, updateCql);
             PreparedStatement ps = this.session.prepare(updateCql);
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(valueList));
+            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
             try {
                 rsf.get();
             } catch (InterruptedException ex) {
@@ -173,39 +193,46 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public void batchUpdate(List<Map<String, String>> entityMapList) {
+    public void batchUpdate(List<Map<String, Object>> entityMapList) {
         if (entityMapList.isEmpty() == false) {
-            final String keyColumnName = this.keyColumnHandler.getColumnName();
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
-            String keyValue;
-            String value;
-            List<String> valueList = new ArrayList<String>(this.columnHandlerList.size() + 1);
+            Object value;
+            Object[] values;
+            List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + 1);
             StringBuilder cqlBuilder = new StringBuilder(128);
             BatchStatement batch = new BatchStatement();
-            boolean hasUpdate = false;
+            boolean canUpdate;
             PreparedStatement ps;
-            for (Map<String, String> entityMap : entityMapList) {
-                keyValue = entityMap.get(keyColumnName);
-                if (keyValue != null) {
-                    valueList.clear();
-                    cqlBuilder.setLength(0);
-                    cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                            .append(this.table).append(" SET ");
-                    for (ColumnHandler ch : this.columnHandlerList) {
-                        value = entityMap.get(ch.getColumnName());
-                        if (value != null) {
-                            hasUpdate = true;
-                            valueList.add(value);
-                            cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
-                        }
+            for (Map<String, Object> entityMap : entityMapList) {
+                valueList.clear();
+                canUpdate = false;
+                cqlBuilder.setLength(0);
+                cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                        .append(this.table).append(" SET ");
+                for (ColumnHandler ch : this.columnHandlerList) {
+                    value = entityMap.get(ch.getColumnName());
+                    if (value != null) {
+                        canUpdate = true;
+                        valueList.add(value);
+                        cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
                     }
                 }
-                if (hasUpdate) {
-                    cqlBuilder.setLength(cqlBuilder.length() - 1);
-                    cqlBuilder.append(" WHERE ").append(keyDataMap).append("= ? IF EXISTS;");
-                    valueList.add(keyValue);
+                cqlBuilder.setLength(cqlBuilder.length() - 2);
+                cqlBuilder.append(" WHERE ");
+                for (ColumnHandler ch : this.keyHandlerList) {
+                    cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+                    value = entityMap.get(ch.getColumnName());
+                    if(value == null) {
+                        canUpdate = false;
+                        break;
+                    }
+                    valueList.add(value);
+                }
+                cqlBuilder.setLength(cqlBuilder.length() - 2);
+                cqlBuilder.append(" IF EXISTS;");
+                if (canUpdate) {
                     ps = this.session.prepare(cqlBuilder.toString());
-                    batch.add(ps.bind(valueList));
+                    values = valueList.toArray();
+                    batch.add(ps.bind(values));
                 }
             }
             ResultSetFuture rsf = this.session.executeAsync(batch);
@@ -230,7 +257,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void addSet(String keyValue, String columnName, Set<String> values) {
         String dataMap = this.sets.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -257,7 +284,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void removeSet(String keyValue, String columnName, Set<String> values) {
         String dataMap = this.sets.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -277,7 +304,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void clearSet(String keyValue, String columnName) {
         String dataMap = this.sets.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -297,7 +324,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
         Set<String> result = Collections.EMPTY_SET;
         String dataMap = this.sets.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
                     .append(this.keyspace).append('.').append(this.table)
@@ -330,7 +357,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void addList(String keyValue, String columnName, List<String> values) {
         String dataMap = this.lists.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -357,7 +384,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void addFirstList(String keyValue, String columnName, List<String> values) {
         String dataMap = this.lists.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -384,7 +411,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void removeList(String keyValue, String columnName, List<String> values) {
         String dataMap = this.lists.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -404,7 +431,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void clearList(String keyValue, String columnName) {
         String dataMap = this.lists.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -424,7 +451,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
         List<String> result = Collections.EMPTY_LIST;
         String dataMap = this.lists.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
                     .append(this.keyspace).append('.').append(this.table)
@@ -457,7 +484,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void addMap(String keyValue, String columnName, Map<String, String> values) {
         String dataMap = this.maps.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -484,7 +511,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
         String dataMap = this.maps.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -504,7 +531,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     public void clearMap(String keyValue, String columnName) {
         String dataMap = this.maps.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(dataMap)
@@ -524,7 +551,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
         Map<String, String> result = Collections.EMPTY_MAP;
         String dataMap = this.maps.get(columnName);
         if (dataMap != null) {
-            final String keyDataMap = this.keyColumnHandler.getDataMap();
+            final String keyDataMap = "";
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
                     .append(this.keyspace).append('.').append(this.table)
@@ -547,7 +574,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public long increase(String keyValue, String columnName, long value) {
+    public long increase(String columnName, long value, Object... keyValue) {
         throw new RuntimeException("Not supported,counter table can use increase.");
     }
 }

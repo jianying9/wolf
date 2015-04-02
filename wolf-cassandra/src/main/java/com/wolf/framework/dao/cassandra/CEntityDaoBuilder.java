@@ -3,9 +3,6 @@ package com.wolf.framework.dao.cassandra;
 import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.inquire.InquireByKeyFilterHandlerImpl;
-import com.wolf.framework.dao.inquire.InquireByKeyFromDatabaseHandlerImpl;
-import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +25,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final Map<String, String> lists;
     private final Map<String, String> maps;
     //key
-    private final ColumnHandler keyHandler;
+    private final List<ColumnHandler> keyHandlerList;
     //column
     private final List<ColumnHandler> columnHandlerList;
     //实体class
@@ -42,7 +39,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
             String keyspace,
             String tableName,
             boolean counter,
-            ColumnHandler keyHandler,
+            List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
             Map<String, String> sets,
             Map<String, String> lists,
@@ -53,7 +50,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         this.keyspace = keyspace;
         this.table = tableName;
         this.counter = counter;
-        this.keyHandler = keyHandler;
+        this.keyHandlerList = keyHandlerList;
         if (columnHandlerList == null) {
             this.columnHandlerList = new ArrayList<ColumnHandler>(0);
         } else {
@@ -77,8 +74,11 @@ public final class CEntityDaoBuilder<T extends Entity> {
         if (this.clazz == null) {
             throw new RuntimeException("Error when building CEntityDao. Cause: clazz is null");
         }
-        if (this.keyHandler == null) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: key is null");
+        if (this.keyHandlerList.isEmpty()) {
+            throw new RuntimeException("Error when building CEntityDao. Cause: key is empty");
+        }
+        if (this.columnHandlerList.isEmpty()) {
+            throw new RuntimeException("Error when building CEntityDao. Cause: column is empty");
         }
         //session
         final Session session = this.cassandraAdminContext.getSession();
@@ -86,7 +86,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         CassandraHandler cassandraHandler;
         if (this.counter) {
             //counter 表
-            cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandler, this.columnHandlerList);
+            cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandlerList, this.columnHandlerList);
         } else {
             //普通表
             
@@ -94,7 +94,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
                     session,
                     this.keyspace,
                     this.table,
-                    this.keyHandler,
+                    this.keyHandlerList,
                     this.columnHandlerList,
                     sets,
                     lists,
@@ -102,15 +102,11 @@ public final class CEntityDaoBuilder<T extends Entity> {
         }
         this.cassandraAdminContext.putCassandraHandler(this.clazz, cassandraHandler, this.keyspace, this.table);
         //
-        //---------------------------构造根据key查询数据库entity处理对象
-        InquireByKeyHandler<T> inquireByKeyHandler = new InquireByKeyFromDatabaseHandlerImpl<T>(
-                cassandraHandler,
-                this.clazz,
-                this.columnHandlerList);
-        inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
-
         CEntityDao<T> entityDao = new CEntityDaoImpl(
-                cassandraHandler
+                cassandraHandler,
+                this.keyHandlerList, 
+                this.columnHandlerList,
+                this.clazz
         );
         return entityDao;
     }

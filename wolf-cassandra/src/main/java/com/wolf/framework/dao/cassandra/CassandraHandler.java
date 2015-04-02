@@ -1,9 +1,5 @@
 package com.wolf.framework.dao.cassandra;
 
-import com.wolf.framework.dao.DatabaseHandler;
-import com.wolf.framework.dao.delete.DeleteHandler;
-import com.wolf.framework.dao.insert.InsertHandler;
-import com.wolf.framework.dao.update.UpdateHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +8,65 @@ import java.util.Set;
  *
  * @author jianying9
  */
-public interface CassandraHandler extends DatabaseHandler, UpdateHandler, DeleteHandler, InsertHandler {
+public interface CassandraHandler {
+    
+    /**
+     * 判断某个主键值是否存在
+     * @param keyValue
+     * @return 
+     */
+    public boolean exist(Object... keyValue);
+    
+    /**
+     * 根据主键查询一行记录
+     * @param keyValue
+     * @return 
+     */
+    public Map<String, Object> inquireByKey(Object... keyValue);
+    
+    /**
+     * 插入一行记录
+     * @param entityMap
+     * @return 
+     */
+    public Object[] insert(Map<String, Object> entityMap);
+    
+    /**
+     * 批量插入
+     * @param entityMapList 
+     */
+    public void batchInsert(List<Map<String, Object>> entityMapList);
+    
+    /**
+     * 更新一行记录
+     * @param entityMap
+     * @return 
+     */
+    public Object[] update(Map<String, Object> entityMap);
+    
+    /**
+     * 批量更新
+     * @param entityMapList 
+     */
+    public void batchUpdate(List<Map<String, Object>> entityMapList);
+    
+    /**
+     * 删除一行记录
+     * @param keyValue 
+     */
+    public void delete(Object... keyValue);
+    
+    /**
+     * 批量删除
+     * @param keyValues 
+     */
+    public void batchDelete(List<Object[]> keyValues);
+    
+    /**
+     * 查询总记录数
+     * @return 
+     */
+    public long count();
 
     public void addSet(String keyValue, String columnName, String value);
 
@@ -54,5 +108,5 @@ public interface CassandraHandler extends DatabaseHandler, UpdateHandler, Delete
 
     public Map<String, String> getMap(String keyValue, String columnName);
     
-    public long increase(String keyValue, String columnName, long value);
+    public long increase(String columnName, long value, Object... keyValue);
 }
