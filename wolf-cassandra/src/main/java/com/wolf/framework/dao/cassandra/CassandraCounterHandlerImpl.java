@@ -224,6 +224,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
             this.logger.debug("{} increase-selectCql:{}", this.table, selectCql);
             PreparedStatement selectPs = this.session.prepare(selectCql);
             BoundStatement select = selectPs.bind(keyValue);
+            select.setFetchSize(10);
             //同步
             Row r = null;
             synchronized (this) {

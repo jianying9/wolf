@@ -16,8 +16,6 @@ import static com.datastax.driver.core.querybuilder.QueryBuilder.in;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.set;
 import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Update;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.junit.After;
@@ -128,7 +126,8 @@ public class CassandraJUnitTest {
 //        }
         //
         ps = session.prepare("select tag from test.user where user_name = 'test';");
-        rsf = session.executeAsync(ps.bind());
+        
+        rsf = session.executeAsync(ps.bind().setFetchSize(10));
         try {
             rs = rsf.get();
             r = rs.one();
@@ -140,21 +139,14 @@ public class CassandraJUnitTest {
             System.out.println(tags);
         }
         //'
-        System.out.println("batch test.....");
-        BatchStatement batch = new BatchStatement();
-        ps = session.prepare("update test.user_count set login = login + 1 where user_name = 'test';");
-        batch.add(ps.bind());
-        ps = session.prepare("select login from test.user_count where user_name = 'test';");
-        batch.add(ps.bind());
-        try {
-            rs = rsf.get();
-            for (Row row : rs) {
-                System.out.println(row.getString(0));
-            }
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        ps = session.prepare("select * from test.user;");
+//        batch.add(ps.bind());
+        rs = session.execute(ps.bind().setFetchSize(2));
+        rs.fetchMoreResults();
+        rs.fetchMoreResults();
+        for (Row r1 : rs) {
+            System.out.println(r1);
         }
-
         cluster.close();
     }
 }

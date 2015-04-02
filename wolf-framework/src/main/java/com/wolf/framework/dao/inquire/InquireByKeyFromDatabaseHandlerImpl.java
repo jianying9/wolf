@@ -1,6 +1,5 @@
 package com.wolf.framework.dao.inquire;
 
-import com.wolf.framework.dao.AbstractDaoHandler;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.DatabaseHandler;
 import com.wolf.framework.dao.Entity;
@@ -13,13 +12,12 @@ import java.util.Map;
  * @author aladdin
  * @param <T>
  */
-public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> extends AbstractDaoHandler<T> implements InquireByKeyHandler<T> {
+public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> implements InquireByKeyHandler<T> {
 
     private final DatabaseHandler databaseHandler;
     private final List<ColumnHandler> columnHandlerList;
 
     public InquireByKeyFromDatabaseHandlerImpl(DatabaseHandler databaseHandler, Class<T> clazz, List<ColumnHandler> columnHandlerList) {
-        super(clazz);
         this.databaseHandler = databaseHandler;
         this.columnHandlerList = columnHandlerList;
     }
@@ -40,7 +38,6 @@ public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> extends
         Map<String, String> entityMap = this.databaseHandler.inquireByKey(keyValue);
         if (entityMap != null) {
             this.checkRedisData(entityMap);
-            t = this.newInstance(entityMap);
         }
         return t;
     }
@@ -54,10 +51,9 @@ public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> extends
             T t;
             for (Map<String, String> entityMap : entityMapList) {
                 this.checkRedisData(entityMap);
-                t = this.newInstance(entityMap);
-                tList.add(t);
+                //todo
+//                tList.add(t);
             }
-            tList = this.newInstance(entityMapList);
         } else {
             tList = new ArrayList<T>(0);
         }

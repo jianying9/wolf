@@ -4,7 +4,7 @@ package com.wolf.framework.dao.condition;
  *
  * @author aladdin
  */
-public enum OperateTypeEnum {
+public enum OperateType {
 
     LESS,
     LESS_OR_EQUAL,

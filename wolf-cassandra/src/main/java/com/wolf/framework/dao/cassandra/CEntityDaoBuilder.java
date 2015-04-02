@@ -110,10 +110,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
         inquireByKeyHandler = new InquireByKeyFilterHandlerImpl<T>(inquireByKeyHandler);
 
         CEntityDao<T> entityDao = new CEntityDaoImpl(
-                cassandraHandler,
-                cassandraHandler,
-                cassandraHandler,
-                inquireByKeyHandler,
                 cassandraHandler
         );
         return entityDao;

@@ -7,9 +7,9 @@ package com.wolf.framework.dao.condition;
 public final class Order {
 
     private final String columnName;
-    private final OrderTypeEnum orderType;
+    private final OrderType orderType;
 
-    public Order(String columnName, OrderTypeEnum orderType) {
+    public Order(String columnName, OrderType orderType) {
         this.columnName = columnName;
         this.orderType = orderType;
     }
@@ -18,7 +18,7 @@ public final class Order {
         return columnName;
     }
 
-    public OrderTypeEnum getOrderType() {
+    public OrderType getOrderType() {
         return orderType;
     }
 }

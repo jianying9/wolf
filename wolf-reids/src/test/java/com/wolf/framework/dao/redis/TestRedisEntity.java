@@ -52,11 +52,4 @@ public final class TestRedisEntity extends Entity {
         map.put("name", this.name);
         return map;
     }
-
-    @Override
-    protected void parseMap(Map<String, String> entityMap) {
-        this.id = entityMap.get("id");
-        this.type = entityMap.get("type");
-        this.name = entityMap.get("name");
-    }
 }

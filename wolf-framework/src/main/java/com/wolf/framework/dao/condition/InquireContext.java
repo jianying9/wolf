@@ -22,7 +22,7 @@ public final class InquireContext extends InquirePageContext {
     }
 
     public boolean hasCondition() {
-        return this.conditionList.isEmpty() ? false : true;
+        return this.conditionList.isEmpty() == false;
     }
 
     public void addCondition(Condition condition) {

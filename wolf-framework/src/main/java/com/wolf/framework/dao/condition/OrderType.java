@@ -4,7 +4,7 @@ package com.wolf.framework.dao.condition;
  *
  * @author aladdin
  */
-public enum OrderTypeEnum {
+public enum OrderType {
 
     ASC,
     DESC;

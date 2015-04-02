@@ -1,7 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.dao.condition.InquirePageContext;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public interface CEntityDao<T extends Entity> {
      * @param keyValue
      * @return
      */
-    public boolean exist(String keyValue);
+    public boolean exist(Object keyValue);
 
     /**
      * 根据主键查询
@@ -27,7 +26,7 @@ public interface CEntityDao<T extends Entity> {
      * @param keyValue
      * @return
      */
-    public T inquireByKey(String keyValue);
+    public T inquireByKey(Object keyValue);
 
     /**
      * 根据主键集合查询
@@ -35,7 +34,7 @@ public interface CEntityDao<T extends Entity> {
      * @param keyValues
      * @return
      */
-    public List<T> inquireByKeys(List<String> keyValues);
+    public List<T> inquireByKeys(List<Object> keyValues);
 
     /**
      * 插入,返回keyValue
@@ -43,7 +42,7 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public String insert(Map<String, String> entityMap);
+    public String insert(Map<String, Object> entityMap);
 
     /**
      * 插入，并返回新增实体
@@ -51,14 +50,14 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public T insertAndInquire(Map<String, String> entityMap);
+    public T insertAndInquire(Map<String, Object> entityMap);
 
     /**
      * 批量插入，无缓存
      *
      * @param entityMapList
      */
-    public void batchInsert(List<Map<String, String>> entityMapList);
+    public void batchInsert(List<Map<String, Object>> entityMapList);
 
     /**
      * 更新,返回keyValue
@@ -66,14 +65,14 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public String update(Map<String, String> entityMap);
+    public String update(Map<String, Object> entityMap);
 
     /**
      * 批量更新
      *
      * @param entityMapList
      */
-    public void batchUpdate(List<Map<String, String>> entityMapList);
+    public void batchUpdate(List<Map<String, Object>> entityMapList);
 
     /**
      * 更新并返回更新结果
@@ -81,60 +80,21 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMap
      * @return
      */
-    public T updateAndInquire(Map<String, String> entityMap);
+    public T updateAndInquire(Map<String, Object> entityMap);
 
-    /**
-     * 更新并查询后新后值
-     *
-     * @param entityMap
-     * @return
-     */
-//    public T updateAndInquire(Map<String, String> entityMap);
     /**
      * 删除
      *
      * @param keyValue
      */
-    public void delete(String keyValue);
+    public void delete(Object keyValue);
 
     /**
      * 批量删除
      *
      * @param keyValues
      */
-    public void batchDelete(List<String> keyValues);
-
-    /**
-     * 根据得分正序全表分页查询主键
-     *
-     * @param inquirePageContext
-     * @return
-     */
-    public List<String> inquireKeys(InquirePageContext inquirePageContext);
-
-    /**
-     * 根据得分倒序全表分页查询主键
-     *
-     * @param inquirePageContext
-     * @return
-     */
-    public List<String> inquireKeysDESC(InquirePageContext inquirePageContext);
-
-    /**
-     * 根据得分正序全表分页查询
-     *
-     * @param inquirePageContext
-     * @return
-     */
-    public List<T> inquire(InquirePageContext inquirePageContext);
-
-    /**
-     * 根据得分倒序全表分页查询
-     *
-     * @param inquirePageContext
-     * @return
-     */
-    public List<T> inquireDESC(InquirePageContext inquirePageContext);
+    public void batchDelete(List<Object> keyValues);
 
     /**
      * 统计全表总记录

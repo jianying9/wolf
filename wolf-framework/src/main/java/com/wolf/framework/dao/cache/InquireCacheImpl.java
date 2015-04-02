@@ -3,9 +3,9 @@ package com.wolf.framework.dao.cache;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.condition.Condition;
 import com.wolf.framework.dao.condition.InquireContext;
-import com.wolf.framework.dao.condition.OperateTypeEnum;
+import com.wolf.framework.dao.condition.OperateType;
 import com.wolf.framework.dao.condition.Order;
-import com.wolf.framework.dao.condition.OrderTypeEnum;
+import com.wolf.framework.dao.condition.OrderType;
 import com.wolf.framework.logger.LogFactory;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +32,7 @@ public final class InquireCacheImpl implements InquireCache {
     private String getCacheKey(final InquireContext inquireContext) {
         String columnName;
         String columnValue;
-        OperateTypeEnum operateTypeEnum;
+        OperateType operateTypeEnum;
         final List<Condition> conditionList = inquireContext.getConditionList();
         StringBuilder keyBuilder = new StringBuilder(conditionList.size() * 24 + 24);
         //page
@@ -45,14 +45,14 @@ public final class InquireCacheImpl implements InquireCache {
             Condition con = conditionList.get(0);
             columnName = con.getColumnName();
             columnValue = con.getColumnValue();
-            operateTypeEnum = con.getOperateTypeEnum();
+            operateTypeEnum = con.getOperateType();
             keyBuilder.append(columnName).append('_').append(operateTypeEnum.name()).append('_').append(columnValue).append('|');
         } else {
             Collections.sort(conditionList, this.conditionSort);
             for (Condition condition : conditionList) {
                 columnName = condition.getColumnName();
                 columnValue = condition.getColumnValue();
-                operateTypeEnum = condition.getOperateTypeEnum();
+                operateTypeEnum = condition.getOperateType();
                 keyBuilder.append(columnName).append('_').append(operateTypeEnum.name()).append('_').append(columnValue).append('|');
             }
         }
@@ -62,7 +62,7 @@ public final class InquireCacheImpl implements InquireCache {
                 keyBuilder.append("order:");
                 for (Order order : orderList) {
                     keyBuilder.append(order.getColumnName());
-                    if (order.getOrderType() == OrderTypeEnum.DESC) {
+                    if (order.getOrderType() == OrderType.DESC) {
                         keyBuilder.append(" desc");
                     }
                     keyBuilder.append(',');
@@ -118,20 +118,20 @@ public final class InquireCacheImpl implements InquireCache {
     private String getCacheKey(final List<Condition> conditionList) {
         String columnName;
         String columnValue;
-        OperateTypeEnum operateTypeEnum;
+        OperateType operateTypeEnum;
         StringBuilder keyBuilder = new StringBuilder(conditionList.size() * 24);
         if (conditionList.size() == 1) {
             Condition con = conditionList.get(0);
             columnName = con.getColumnName();
             columnValue = con.getColumnValue();
-            operateTypeEnum = con.getOperateTypeEnum();
+            operateTypeEnum = con.getOperateType();
             keyBuilder.append(columnName).append('_').append(operateTypeEnum.name()).append('_').append(columnValue);
         } else {
             Collections.sort(conditionList, this.conditionSort);
             for (Condition condition : conditionList) {
                 columnName = condition.getColumnName();
                 columnValue = condition.getColumnValue();
-                operateTypeEnum = condition.getOperateTypeEnum();
+                operateTypeEnum = condition.getOperateType();
                 keyBuilder.append(columnName).append('_').append(operateTypeEnum.name()).append('_').append(columnValue).append('|');
             }
             keyBuilder.setLength(keyBuilder.length() - 1);

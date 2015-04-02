@@ -7,13 +7,13 @@ package com.wolf.framework.dao.condition;
 public final class Condition {
 
     private final String columnName;
-    private final OperateTypeEnum operateTypeEnum;
+    private final OperateType operateType;
     private String columnValue;
 
-    public Condition(String columnName, OperateTypeEnum operateTypeEnum, String columnValue) {
+    public Condition(String columnName, OperateType operateType, String columnValue) {
         this.columnName = columnName;
-        this.operateTypeEnum = operateTypeEnum;
-        if (this.operateTypeEnum == OperateTypeEnum.LIKE) {
+        this.operateType = operateType;
+        if (this.operateType == OperateType.LIKE) {
             StringBuilder builder = new StringBuilder(columnValue.length() + 2);
             builder.append('%').append(columnValue).append('%');
             this.columnValue = builder.toString();
@@ -26,8 +26,8 @@ public final class Condition {
         return columnName;
     }
 
-    public OperateTypeEnum getOperateTypeEnum() {
-        return operateTypeEnum;
+    public OperateType getOperateType() {
+        return operateType;
     }
 
     public String getColumnValue() {

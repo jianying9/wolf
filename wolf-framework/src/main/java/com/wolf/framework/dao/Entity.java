@@ -24,13 +24,6 @@ public abstract class Entity {
     public abstract Map<String, String> toMap();
 
     /**
-     * 解析map信息，为实体的field赋值
-     *
-     * @param entityMap
-     */
-    protected abstract void parseMap(final Map<String, String> entityMap);
-
-    /**
      * 重载实体的toString方法，输出实体的所有field信息
      *
      * @return
