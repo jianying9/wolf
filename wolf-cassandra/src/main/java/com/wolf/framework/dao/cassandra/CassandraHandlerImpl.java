@@ -2,18 +2,12 @@ package com.wolf.framework.dao.cassandra;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.ColumnHandler;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -21,27 +15,24 @@ import java.util.concurrent.ExecutionException;
  *
  * @author jianying9
  */
-public class CassandraHandlerImpl extends AbstractCassandraHandler implements CassandraHandler {
+public class CassandraHandlerImpl extends AbstractCassandraHandler {
 
     private final String insertCql;
-    private final Map<String, String> sets;
-    private final Map<String, String> lists;
-    private final Map<String, String> maps;
+//    private final Map<String, String> sets;
+//    private final Map<String, String> lists;
+//    private final Map<String, String> maps;
 
     public CassandraHandlerImpl(
             Session session,
             String keyspace,
             String table,
             List<ColumnHandler> keyHandlerList,
-            List<ColumnHandler> columnHandlerList,
-            Map<String, String> sets,
-            Map<String, String> lists,
-            Map<String, String> maps
+            List<ColumnHandler> columnHandlerList
     ) {
         super(session, keyspace, table, keyHandlerList, columnHandlerList);
-        this.sets = sets;
-        this.lists = lists;
-        this.maps = maps;
+//        this.sets = sets;
+//        this.lists = lists;
+//        this.maps = maps;
         StringBuilder cqlBuilder = new StringBuilder(128);
         // insert
         cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
@@ -221,7 +212,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
                 for (ColumnHandler ch : this.keyHandlerList) {
                     cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
                     value = entityMap.get(ch.getColumnName());
-                    if(value == null) {
+                    if (value == null) {
                         canUpdate = false;
                         break;
                     }
@@ -247,334 +238,303 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler implements Ca
     }
 
     @Override
-    public void addSet(String keyValue, String columnName, String value) {
-        Set<String> set = new HashSet<String>(2, 1);
-        set.add(value);
-        this.addSet(keyValue, columnName, set);
-    }
-
-    @Override
-    public void addSet(String keyValue, String columnName, Set<String> values) {
-        String dataMap = this.sets.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" + ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void removeSet(String keyValue, String columnName, String value) {
-        Set<String> set = new HashSet<String>(2, 1);
-        set.add(value);
-        this.removeSet(keyValue, columnName, set);
-    }
-
-    @Override
-    public void removeSet(String keyValue, String columnName, Set<String> values) {
-        String dataMap = this.sets.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" - ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void clearSet(String keyValue, String columnName) {
-        String dataMap = this.sets.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = {} WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public Set<String> getSet(String keyValue, String columnName) {
-        Set<String> result = Collections.EMPTY_SET;
-        String dataMap = this.sets.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
-                    .append(this.keyspace).append('.').append(this.table)
-                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            ResultSet rs;
-            Row r = null;
-            try {
-                rs = rsf.get();
-                r = rs.one();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-            if (r != null) {
-                result = r.getSet(0, String.class);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public void addList(String keyValue, String columnName, String value) {
-        List<String> list = new ArrayList<String>(1);
-        list.add(value);
-        this.addList(keyValue, columnName, list);
-    }
-
-    @Override
-    public void addList(String keyValue, String columnName, List<String> values) {
-        String dataMap = this.lists.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" + ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void addFirstList(String keyValue, String columnName, String value) {
-        List<String> list = new ArrayList<String>(1);
-        list.add(value);
-        this.addFirstList(keyValue, columnName, list);
-    }
-
-    @Override
-    public void addFirstList(String keyValue, String columnName, List<String> values) {
-        String dataMap = this.lists.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append("? + ").append(dataMap).append(" WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void removeList(String keyValue, String columnName, String value) {
-        List<String> list = new ArrayList<String>(1);
-        list.add(value);
-        this.removeList(keyValue, columnName, list);
-    }
-
-    @Override
-    public void removeList(String keyValue, String columnName, List<String> values) {
-        String dataMap = this.lists.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" - ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void clearList(String keyValue, String columnName) {
-        String dataMap = this.lists.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = [] WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public List<String> getList(String keyValue, String columnName) {
-        List<String> result = Collections.EMPTY_LIST;
-        String dataMap = this.lists.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
-                    .append(this.keyspace).append('.').append(this.table)
-                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            ResultSet rs;
-            Row r = null;
-            try {
-                rs = rsf.get();
-                r = rs.one();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-            if (r != null) {
-                result = r.getList(0, String.class);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public void addMap(String keyValue, String columnName, String mapKeyValue, String mapValue) {
-        Map<String, String> map = new HashMap<String, String>(2, 1);
-        map.put(mapKeyValue, mapValue);
-        this.addMap(keyValue, columnName, map);
-    }
-
-    @Override
-    public void addMap(String keyValue, String columnName, Map<String, String> values) {
-        String dataMap = this.maps.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" + ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void removeMap(String keyValue, String columnName, String mapKeyValue) {
-        Set<String> set = new HashSet<String>(2, 1);
-        set.add(mapKeyValue);
-        this.removeMap(keyValue, columnName, set);
-    }
-
-    @Override
-    public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
-        String dataMap = this.maps.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = ").append(dataMap).append(" - ? WHERE ")
-                    .append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(mapKeyValues, keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public void clearMap(String keyValue, String columnName) {
-        String dataMap = this.maps.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                    .append(this.table).append(" SET ").append(dataMap)
-                    .append(" = {} WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            try {
-                rsf.get();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-        }
-    }
-
-    @Override
-    public Map<String, String> getMap(String keyValue, String columnName) {
-        Map<String, String> result = Collections.EMPTY_MAP;
-        String dataMap = this.maps.get(columnName);
-        if (dataMap != null) {
-            final String keyDataMap = "";
-            StringBuilder cqlBuilder = new StringBuilder(128);
-            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
-                    .append(this.keyspace).append('.').append(this.table)
-                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
-            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
-            ResultSet rs;
-            Row r = null;
-            try {
-                rs = rsf.get();
-                r = rs.one();
-            } catch (InterruptedException ex) {
-            } catch (ExecutionException ex) {
-            }
-            if (r != null) {
-                result = r.getMap(0, String.class, String.class);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public long increase(String columnName, long value, Object... keyValue) {
         throw new RuntimeException("Not supported,counter table can use increase.");
     }
+    
+//    public void addSet(String keyValue, String columnName, String value) {
+//        Set<String> set = new HashSet<String>(2, 1);
+//        set.add(value);
+//        this.addSet(keyValue, columnName, set);
+//    }
+//
+//    public void addSet(String keyValue, String columnName, Set<String> values) {
+//        String dataMap = this.sets.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" + ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+    
+//    public void removeSet(String keyValue, String columnName, String value) {
+//        Set<String> set = new HashSet<String>(2, 1);
+//        set.add(value);
+//        this.removeSet(keyValue, columnName, set);
+//    }
+//
+//    public void removeSet(String keyValue, String columnName, Set<String> values) {
+//        String dataMap = this.sets.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" - ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+
+//    public void clearSet(String keyValue, String columnName) {
+//        String dataMap = this.sets.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = {} WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+
+//    public Set<String> getSet(String keyValue, String columnName) {
+//        Set<String> result = Collections.EMPTY_SET;
+//        String dataMap = this.sets.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+//                    .append(this.keyspace).append('.').append(this.table)
+//                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            ResultSet rs;
+//            Row r = null;
+//            try {
+//                rs = rsf.get();
+//                r = rs.one();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//            if (r != null) {
+//                result = r.getSet(0, String.class);
+//            }
+//        }
+//        return result;
+//    }
+//    public void addList(String keyValue, String columnName, String value) {
+//        List<String> list = new ArrayList<String>(1);
+//        list.add(value);
+//        this.addList(keyValue, columnName, list);
+//    }
+//
+//    public void addList(String keyValue, String columnName, List<String> values) {
+//        String dataMap = this.lists.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" + ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public void addFirstList(String keyValue, String columnName, String value) {
+//        List<String> list = new ArrayList<String>(1);
+//        list.add(value);
+//        this.addFirstList(keyValue, columnName, list);
+//    }
+//
+//    public void addFirstList(String keyValue, String columnName, List<String> values) {
+//        String dataMap = this.lists.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append("? + ").append(dataMap).append(" WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public void removeList(String keyValue, String columnName, String value) {
+//        List<String> list = new ArrayList<String>(1);
+//        list.add(value);
+//        this.removeList(keyValue, columnName, list);
+//    }
+//
+//    public void removeList(String keyValue, String columnName, List<String> values) {
+//        String dataMap = this.lists.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" - ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public void clearList(String keyValue, String columnName) {
+//        String dataMap = this.lists.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = [] WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public List<String> getList(String keyValue, String columnName) {
+//        List<String> result = Collections.EMPTY_LIST;
+//        String dataMap = this.lists.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+//                    .append(this.keyspace).append('.').append(this.table)
+//                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            ResultSet rs;
+//            Row r = null;
+//            try {
+//                rs = rsf.get();
+//                r = rs.one();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//            if (r != null) {
+//                result = r.getList(0, String.class);
+//            }
+//        }
+//        return result;
+//    }
+//    public void addMap(String keyValue, String columnName, String mapKeyValue, String mapValue) {
+//        Map<String, String> map = new HashMap<String, String>(2, 1);
+//        map.put(mapKeyValue, mapValue);
+//        this.addMap(keyValue, columnName, map);
+//    }
+//    public void addMap(String keyValue, String columnName, Map<String, String> values) {
+//        String dataMap = this.maps.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" + ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public void removeMap(String keyValue, String columnName, String mapKeyValue) {
+//        Set<String> set = new HashSet<String>(2, 1);
+//        set.add(mapKeyValue);
+//        this.removeMap(keyValue, columnName, set);
+//    }
+//    public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
+//        String dataMap = this.maps.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = ").append(dataMap).append(" - ? WHERE ")
+//                    .append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(mapKeyValues, keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public void clearMap(String keyValue, String columnName) {
+//        String dataMap = this.maps.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+//                    .append(this.table).append(" SET ").append(dataMap)
+//                    .append(" = {} WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            try {
+//                rsf.get();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//        }
+//    }
+//    public Map<String, String> getMap(String keyValue, String columnName) {
+//        Map<String, String> result = Collections.EMPTY_MAP;
+//        String dataMap = this.maps.get(columnName);
+//        if (dataMap != null) {
+//            final String keyDataMap = "";
+//            StringBuilder cqlBuilder = new StringBuilder(128);
+//            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+//                    .append(this.keyspace).append('.').append(this.table)
+//                    .append(" WHERE ").append(keyDataMap).append(" = ?;");
+//            PreparedStatement ps = this.session.prepare(cqlBuilder.toString());
+//            ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+//            ResultSet rs;
+//            Row r = null;
+//            try {
+//                rs = rsf.get();
+//                r = rs.one();
+//            } catch (InterruptedException ex) {
+//            } catch (ExecutionException ex) {
+//            }
+//            if (r != null) {
+//                result = r.getMap(0, String.class, String.class);
+//            }
+//        }
+//        return result;
+//    }
 }

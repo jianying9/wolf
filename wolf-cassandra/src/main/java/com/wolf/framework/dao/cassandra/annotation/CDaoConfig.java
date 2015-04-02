@@ -37,17 +37,17 @@ public @interface CDaoConfig{
      * set类型列定义
      * @return 
      */
-    public String[] sets() default {};
+//    public String[] sets() default {};
     
     /**
      * list类型列定义
      * @return 
      */
-    public String[] lists() default {};
+//    public String[] lists() default {};
     
     /**
      * map类型列定义
      * @return 
      */
-    public String[] maps() default {};
+//    public String[] maps() default {};
 }

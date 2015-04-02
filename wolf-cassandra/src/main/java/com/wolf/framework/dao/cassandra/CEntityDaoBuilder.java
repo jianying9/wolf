@@ -5,7 +5,6 @@ import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 实体数据访问对象创建类
@@ -21,9 +20,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String table;
     //是否是counter
     private final boolean counter;
-    private final Map<String, String> sets;
-    private final Map<String, String> lists;
-    private final Map<String, String> maps;
+//    private final Map<String, String> sets;
+//    private final Map<String, String> lists;
+//    private final Map<String, String> maps;
     //key
     private final List<ColumnHandler> keyHandlerList;
     //column
@@ -41,9 +40,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
             boolean counter,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
-            Map<String, String> sets,
-            Map<String, String> lists,
-            Map<String, String> maps,
             Class<T> clazz,
             CEntityDaoContext<T> entityDaoContext,
             CassandraAdminContext cassandraAdminContext) {
@@ -57,9 +53,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
             this.columnHandlerList = columnHandlerList;
         }
         this.clazz = clazz;
-        this.sets = sets;
-        this.lists = lists;
-        this.maps = maps;
         this.entityDaoContext = entityDaoContext;
         this.cassandraAdminContext = cassandraAdminContext;
     }
@@ -89,22 +82,19 @@ public final class CEntityDaoBuilder<T extends Entity> {
             cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandlerList, this.columnHandlerList);
         } else {
             //普通表
-            
+
             cassandraHandler = new CassandraHandlerImpl(
                     session,
                     this.keyspace,
                     this.table,
                     this.keyHandlerList,
-                    this.columnHandlerList,
-                    sets,
-                    lists,
-                    maps);
+                    this.columnHandlerList);
         }
         this.cassandraAdminContext.putCassandraHandler(this.clazz, cassandraHandler, this.keyspace, this.table);
         //
         CEntityDao<T> entityDao = new CEntityDaoImpl(
                 cassandraHandler,
-                this.keyHandlerList, 
+                this.keyHandlerList,
                 this.columnHandlerList,
                 this.clazz
         );

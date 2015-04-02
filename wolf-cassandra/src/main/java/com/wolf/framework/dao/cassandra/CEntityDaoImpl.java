@@ -1,10 +1,9 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.ResultSet;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
         Map<String, Object> entityMap = this.cassandraHandler.inquireByKey(keyValue);
         return this.readMap(entityMap);
     }
-
+    
     @Override
     public Object[] insert(Map<String, Object> entityMap) {
         return this.cassandraHandler.insert(entityMap);
@@ -111,5 +110,10 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public long count() {
         return this.cassandraHandler.count();
+    }
+    
+    @Override
+    public ResultSet execute(String cql, Object... values) {
+        return this.cassandraHandler.execute(cql, values);
     }
 }

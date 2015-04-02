@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.datastax.driver.core.ResultSet;
 import com.wolf.framework.dao.Entity;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public interface CEntityDao<T extends Entity> {
      * @return
      */
     public T inquireByKey(Object keyValue);
-
+    
     /**
      * 插入,返回keyValue
      *
@@ -94,4 +95,12 @@ public interface CEntityDao<T extends Entity> {
      * @return
      */
     public long count();
+    
+    /**
+     * 自定义sql查询
+     * @param cql
+     * @param values
+     * @return 
+     */
+    public ResultSet execute(String cql, Object... values);
 }

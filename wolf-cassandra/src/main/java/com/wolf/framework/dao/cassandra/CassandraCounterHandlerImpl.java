@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -19,7 +18,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author jianying9
  */
-public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implements CassandraHandler {
+public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
 
     public CassandraCounterHandlerImpl(
             Session session,
@@ -96,106 +95,6 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler implem
     @Override
     public void batchUpdate(List<Map<String, Object>> entityMapList) {
         throw new RuntimeException("Not supported,counter table can not batch update.");
-    }
-
-    @Override
-    public void addSet(String keyValue, String columnName, String value) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public void addSet(String keyValue, String columnName, Set<String> values) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public void removeSet(String keyValue, String columnName, String value) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public void removeSet(String keyValue, String columnName, Set<String> values) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public void clearSet(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public Set<String> getSet(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use set.");
-    }
-
-    @Override
-    public void addList(String keyValue, String columnName, String value) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void addList(String keyValue, String columnName, List<String> values) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void addFirstList(String keyValue, String columnName, String value) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void addFirstList(String keyValue, String columnName, List<String> values) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void removeList(String keyValue, String columnName, String value) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void removeList(String keyValue, String columnName, List<String> values) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void clearList(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public List<String> getList(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use list.");
-    }
-
-    @Override
-    public void addMap(String keyValue, String columnName, String mapKeyValue, String mapValue) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
-    }
-
-    @Override
-    public void addMap(String keyValue, String columnName, Map<String, String> values) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
-    }
-
-    @Override
-    public void removeMap(String keyValue, String columnName, String mapKeyValue) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
-    }
-
-    @Override
-    public void removeMap(String keyValue, String columnName, Set<String> mapKeyValues) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
-    }
-
-    @Override
-    public void clearMap(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
-    }
-
-    @Override
-    public Map<String, String> getMap(String keyValue, String columnName) {
-        throw new RuntimeException("Not supported,counter table can not use map.");
     }
 
     @Override

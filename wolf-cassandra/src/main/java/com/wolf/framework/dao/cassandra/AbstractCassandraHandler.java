@@ -20,7 +20,7 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-public class AbstractCassandraHandler {
+public abstract class AbstractCassandraHandler implements CassandraHandler{
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     protected final String keyspace;
@@ -101,6 +101,7 @@ public class AbstractCassandraHandler {
         return result;
     }
 
+    @Override
     public final boolean exist(Object... keyValues) {
         PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValues));
@@ -117,6 +118,7 @@ public class AbstractCassandraHandler {
         return r != null;
     }
 
+    @Override
     public final Map<String, Object> inquireByKey(Object... keyValues) {
         Map<String, Object> result = null;
         PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
@@ -155,7 +157,23 @@ public class AbstractCassandraHandler {
         }
         return result;
     }
+    
+    @Override
+    public final ResultSet execute(String cql, Object... values) {
+        PreparedStatement ps = this.session.prepare(cql);
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+        ResultSet rs;
+        try {
+            rs = rsf.get();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex);
+        }
+        return rs;
+    }
 
+    @Override
     public final void delete(Object... keyValue) {
         PreparedStatement ps = this.session.prepare(this.deleteCql);
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
@@ -168,6 +186,7 @@ public class AbstractCassandraHandler {
         }
     }
 
+    @Override
     public final void batchDelete(List<Object[]> keyValues) {
         if (keyValues.isEmpty() == false) {
             BatchStatement batch = new BatchStatement();
@@ -186,6 +205,7 @@ public class AbstractCassandraHandler {
         }
     }
 
+    @Override
     public final long count() {
         long result = 0;
         PreparedStatement ps = this.session.prepare(this.countCql);
