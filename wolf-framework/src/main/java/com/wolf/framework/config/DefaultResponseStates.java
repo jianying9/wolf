@@ -16,6 +16,8 @@ public class DefaultResponseStates {
     public final static String INVALID = "INVALID";
     //无权限
     public final static String DENIED = "DENIED";
+    //未实现
+    public final static String UNSUPPORT = "UNSUPPORT";
     //异常
     public final static String EXCEPTION = "EXCEPTION";
 }

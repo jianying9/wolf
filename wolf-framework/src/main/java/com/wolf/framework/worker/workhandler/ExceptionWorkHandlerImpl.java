@@ -34,6 +34,8 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             if (ResponseStateException.class.isInstance(t)) {
                 ResponseStateException te = (ResponseStateException) t;
                 frameworkMessageContext.setState(te.getState());
+            } else if(UnsupportedOperationException.class.isInstance(t)) {
+                frameworkMessageContext.setState(DefaultResponseStates.UNSUPPORT);
             } else {
                 frameworkMessageContext.setState(DefaultResponseStates.EXCEPTION);
             }
