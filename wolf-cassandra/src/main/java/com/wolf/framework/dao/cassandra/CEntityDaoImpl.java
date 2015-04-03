@@ -113,6 +113,11 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     }
     
     @Override
+    public long increase(String columnName, long value, Object... keyValue) {
+        return this.cassandraHandler.increase(columnName, value, keyValue);
+    }
+    
+    @Override
     public ResultSet execute(String cql, Object... values) {
         return this.cassandraHandler.execute(cql, values);
     }

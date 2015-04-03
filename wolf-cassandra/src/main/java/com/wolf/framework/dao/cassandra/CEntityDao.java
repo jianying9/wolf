@@ -97,6 +97,16 @@ public interface CEntityDao<T extends Entity> {
     public long count();
     
     /**
+     * 自增
+     *
+     * @param columnName
+     * @param value
+     * @param keyValue
+     * @return
+     */
+    public long increase(String columnName, long value, Object... keyValue);
+    
+    /**
      * 自定义sql查询
      * @param cql
      * @param values
