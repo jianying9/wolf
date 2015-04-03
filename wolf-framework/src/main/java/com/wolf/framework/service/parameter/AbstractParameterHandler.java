@@ -28,12 +28,4 @@ public abstract class AbstractParameterHandler {
     public final DataHandler getDataHandler() {
         return this.dataHandler;
     }
-
-    public String convertToInput(String value) {
-        return this.dataHandler.convertToInput(value);
-    }
-    
-    public String convertToOutput(String value) {
-        return this.dataHandler.convertToOutput(value);
-    }
 }

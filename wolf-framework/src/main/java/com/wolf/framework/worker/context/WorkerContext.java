@@ -10,7 +10,7 @@ public interface WorkerContext {
 
     public Map<String, String> getParameterMap();
 
-    public String getAct();
+    public String getRoute();
 
     public String getSessionId();
     

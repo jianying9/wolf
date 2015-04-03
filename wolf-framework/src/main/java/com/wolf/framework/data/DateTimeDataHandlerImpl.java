@@ -1,6 +1,5 @@
 package com.wolf.framework.data;
 
-import com.wolf.framework.utils.TimeUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,23 +30,5 @@ public class DateTimeDataHandlerImpl implements DataHandler {
     @Override
     public DataType getDataType() {
         return DataType.DATE_TIME;
-    }
-
-    @Override
-    public String convertToInput(String value) {
-        long result = TimeUtils.convertYYYYMMDDHHmmSSToMillisecond(value);
-        return Long.toString(result);
-    }
-
-    @Override
-    public String convertToOutput(String value) {
-        String result;
-        if (value.isEmpty()) {
-            result = value;
-        } else {
-            long milliseconds = Long.parseLong(value);
-            result = TimeUtils.convertMillisecondToYYYYMMDDHHmmSS(milliseconds);
-        }
-        return result;
     }
 }

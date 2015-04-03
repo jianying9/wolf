@@ -17,6 +17,7 @@ public enum DataType {
     DATE,
     //Char可以包含特殊符号
     CHAR,
+    //布尔
     BOOLEAN ,
     //json对象
     OBJECT ,

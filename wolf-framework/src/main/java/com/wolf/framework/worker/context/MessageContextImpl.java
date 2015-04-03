@@ -25,7 +25,7 @@ public final class MessageContextImpl extends AbstractMessageContext {
             data = JsonUtils.mapToJSON(this.mapData, this.returnParameter, this.parameterHandlerMap);
         }
         jsonBuilder.append("{\"state\":\"").append(this.state)
-                .append("\",\"act\":\"").append(this.workerContext.getAct())
+                .append("\",\"act\":\"").append(this.workerContext.getRoute())
                 .append("\",\"data\":").append(data);
         if (this.newSid != null) {
             jsonBuilder.append(",\"sid\":\"").append(this.newSid).append('"');

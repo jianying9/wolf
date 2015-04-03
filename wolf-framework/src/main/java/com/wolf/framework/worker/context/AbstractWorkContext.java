@@ -21,10 +21,10 @@ public abstract class AbstractWorkContext implements WorkerContext {
 
     //input
     private final Map<String, String> parameterMap;
-    private final String act;
+    private final String route;
 
-    public AbstractWorkContext(String act, String json) {
-        this.act = act;
+    public AbstractWorkContext(String route, String json) {
+        this.route = route;
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -58,7 +58,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     public AbstractWorkContext(String act, Map<String, String> parameterMap) {
-        this.act = act;
+        this.route = act;
         if (parameterMap != null) {
             this.parameterMap = parameterMap;
         } else {
@@ -67,8 +67,8 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     @Override
-    public final String getAct() {
-        return act;
+    public final String getRoute() {
+        return route;
     }
 
     public final String getParameter(String name) {

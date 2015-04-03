@@ -98,7 +98,7 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
             data = JsonUtils.mapListToJSON(this.mapListData, this.returnParameter, this.parameterHandlerMap);
         }
         jsonBuilder.append("{\"state\":\"").append(this.state)
-                .append("\",\"act\":\"").append(this.workerContext.getAct())
+                .append("\",\"act\":\"").append(this.workerContext.getRoute())
                 .append("\",\"data\":{")
                 .append("\"pageTotal\":").append(this.pageTotal)
                 .append(",\"pageIndex\":").append(this.pageIndex)

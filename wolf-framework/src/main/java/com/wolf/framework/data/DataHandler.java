@@ -17,8 +17,4 @@ public interface DataHandler {
     public String getErrorInfo();
 
     public DataType getDataType();
-    
-    public String convertToInput(String value);
-    
-    public String convertToOutput(String value);
 }

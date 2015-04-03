@@ -40,9 +40,6 @@ public class ResponseParameterHandlerBuilder {
         //基本数据类型
         DataType dataType = this.outputConfig.dataType();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
-        if (dataHandler == null && dataType.equals(DataType.CHAR) == false) {
-            throw new RuntimeException("Error when building OutputParameterHandler. Cause: could not find DataHandler:" + dataType.name());
-        }
         switch (dataType) {
             case OBJECT:
                 parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType.name(), "{}");

@@ -66,12 +66,28 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     private boolean checkException(Throwable e) {
         boolean result = true;
         String error = e.getMessage();
-        if (error.indexOf("javax/servlet/") == 0) {
+        if (error.contains("javax/servlet/")) {
             result = false;
-        } else if (error.indexOf("com/sun/grizzly/websockets/") == 0) {
+        } else if (error.contains("com/sun/grizzly/websockets/")) {
             result = false;
         }
         return result;
+    }
+
+    private Class<?> loadClass(ClassLoader classloader, String className) {
+        Class<?> clazz = null;
+        try {
+            clazz = classloader.loadClass(className);
+        } catch (ClassNotFoundException ex) {
+            if (this.checkException(ex)) {
+                this.logger.error("ClassNotFoundException:", ex);
+            }
+        } catch (ClassFormatError ex) {
+            if (this.checkException(ex)) {
+                this.logger.error("ClassFormatError:", ex);
+            }
+        }
+        return clazz;
     }
 
     public final void build() {
@@ -110,30 +126,21 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
         DaoConfigBuilder daoConfigBuilder;
         Class<?> clazz;
-        for (String className : classNameList) {
-            try {
-                clazz = classloader.loadClass(className);
-                if (clazz.isAnnotationPresent(DaoConfig.class) && DaoConfigBuilder.class.isAssignableFrom(clazz)) {
+        try {
+            for (String className : classNameList) {
+                clazz = this.loadClass(classloader, className);
+                if (clazz != null && clazz.isAnnotationPresent(DaoConfig.class) && DaoConfigBuilder.class.isAssignableFrom(clazz)) {
                     //发现DaoConfig类型,实例化
                     daoConfigBuilder = (DaoConfigBuilder) clazz.newInstance();
                     //初始化
                     daoConfigBuilder.init(ApplicationContext.CONTEXT);
                     this.daoConfigBuilderList.add(daoConfigBuilder);
                 }
-            } catch (ClassNotFoundException e) {
-                if (this.checkException(e)) {
-                    this.logger.error("ClassNotFoundException:", e);
-                }
-            } catch (NoClassDefFoundError e) {
-                if (this.checkException(e)) {
-                    this.logger.error("NoClassDefFoundError:", e);
-                }
-            } catch (InstantiationException ex) {
-                this.logger.error("Error when instance DaoConfig. Cause:", ex);
-            } catch (IllegalAccessException ex) {
-                this.logger.error("Error when instance DaoConfig. Cause:", ex);
             }
-
+        } catch (InstantiationException ex) {
+            this.logger.error("Error when instance DaoConfig. Cause:", ex);
+        } catch (IllegalAccessException ex) {
+            this.logger.error("Error when instance DaoConfig. Cause:", ex);
         }
         //查找注解类
         this.logger.info("Finding annotation...");
@@ -232,20 +239,12 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         Module module;
         for (String className : classNameList) {
             try {
-                clazz = classloader.loadClass(className);
-                if (clazz.isAnnotationPresent(ModuleConfig.class) && Module.class.isAssignableFrom(clazz)) {
+                clazz = this.loadClass(classloader, className);
+                if (clazz != null && clazz.isAnnotationPresent(ModuleConfig.class) && Module.class.isAssignableFrom(clazz)) {
                     //发现Module,实例化
                     module = (Module) clazz.newInstance();
                     //初始化
                     module.init(ApplicationContext.CONTEXT);
-                }
-            } catch (ClassNotFoundException e) {
-                if (this.checkException(e)) {
-                    this.logger.error("ClassNotFoundException:", e);
-                }
-            } catch (NoClassDefFoundError e) {
-                if (this.checkException(e)) {
-                    this.logger.error("NoClassDefFoundError:", e);
                 }
             } catch (InstantiationException ex) {
                 this.logger.error("Error when instance ModuleConfig. Cause:", ex);
@@ -265,27 +264,29 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
      * @throws ClassNotFoundException
      */
     private void parseClass(final ClassLoader classloader, final String className) throws ClassNotFoundException {
-        Class<?> clazz = classloader.loadClass(className);
-        Class<K> clazzk;
-        Class<Local> clazzl;
-        if (Service.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(ServiceConfig.class)) {
-            //是外部服务
-            clazzk = (Class<K>) clazz;
-            if (this.serviceClassList.contains(clazzk) == false) {
-                this.serviceClassList.add(clazzk);
-                this.logger.debug("find service class ".concat(className));
-            }
-        } else if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
-            //是内部服务
-            clazzl = (Class<Local>) clazz;
-            if (this.localServiceClassList.contains(clazzl) == false) {
-                this.localServiceClassList.add(clazzl);
-                this.logger.debug("find local service class ".concat(className));
-            }
-        } else {
-            //其他注解类型
-            for (DaoConfigBuilder daoConfigBuilder : this.daoConfigBuilderList) {
-                daoConfigBuilder.putClazz(clazz);
+        Class<?> clazz = this.loadClass(classloader, className);
+        if (clazz != null) {
+            Class<K> clazzk;
+            Class<Local> clazzl;
+            if (Service.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(ServiceConfig.class)) {
+                //是外部服务
+                clazzk = (Class<K>) clazz;
+                if (this.serviceClassList.contains(clazzk) == false) {
+                    this.serviceClassList.add(clazzk);
+                    this.logger.debug("find service class ".concat(className));
+                }
+            } else if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
+                //是内部服务
+                clazzl = (Class<Local>) clazz;
+                if (this.localServiceClassList.contains(clazzl) == false) {
+                    this.localServiceClassList.add(clazzl);
+                    this.logger.debug("find local service class ".concat(className));
+                }
+            } else {
+                //其他注解类型
+                for (DaoConfigBuilder daoConfigBuilder : this.daoConfigBuilderList) {
+                    daoConfigBuilder.putClazz(clazz);
+                }
             }
         }
     }

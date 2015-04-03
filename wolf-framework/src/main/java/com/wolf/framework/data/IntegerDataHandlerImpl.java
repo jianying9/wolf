@@ -31,14 +31,4 @@ public final class IntegerDataHandlerImpl implements DataHandler {
     public DataType getDataType() {
         return DataType.INTEGER;
     }
-    
-    @Override
-    public String convertToInput(String value) {
-        return value;
-    }
-
-    @Override
-    public String convertToOutput(String value) {
-        return value;
-    }
 }

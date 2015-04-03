@@ -42,7 +42,6 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
                 parameterHandler = this.parameterHandlerMap.get(parameter);
                 errorMsg = parameterHandler.validate(paraValue);
                 if (errorMsg.isEmpty()) {
-                    paraValue = parameterHandler.convertToInput(paraValue);
                     frameworkMessageContext.putParameter(parameter, paraValue);
                 } else {
                     errorParaName = parameter;

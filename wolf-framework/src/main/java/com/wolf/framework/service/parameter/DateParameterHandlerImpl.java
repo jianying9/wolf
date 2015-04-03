@@ -21,7 +21,6 @@ public final class DateParameterHandlerImpl extends AbstractParameterHandler imp
 
     @Override
     public String getJson(String value) {
-        value = this.convertToOutput(value);
         StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 5);
         jsonBuilder.append('"').append(this.name).append("\":\"").append(value).append('"');
         return jsonBuilder.toString();
