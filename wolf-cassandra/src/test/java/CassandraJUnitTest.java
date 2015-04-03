@@ -1,9 +1,9 @@
 
-import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
@@ -54,10 +54,13 @@ public class CassandraJUnitTest {
     //
     @Test
     public void hello() throws ExecutionException, InterruptedException {
-        cluster = Cluster.builder()
+        this.cluster = Cluster.builder()
                 .addContactPoint("192.168.181.41")
                 .withCredentials("test", "test")
                 .build();
+        this.cluster.getConfiguration()
+                .getProtocolOptions()
+                .setCompression(ProtocolOptions.Compression.LZ4);
         Metadata metadata = cluster.getMetadata();
         System.out.printf("Connected to cluster: %s\n",
                 metadata.getClusterName());
