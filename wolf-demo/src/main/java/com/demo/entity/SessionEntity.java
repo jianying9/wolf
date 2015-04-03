@@ -13,26 +13,26 @@ import java.util.Map;
  */
 @CDaoConfig(
         keyspace = "test",
-        table = "user",
+        table = "session",
         counter = false
 )
-public class UserEntity extends Entity {
+public class SessionEntity extends Entity {
 
-    @ColumnConfig(columnType = ColumnType.KEY, desc = "用户名称")
-    private String userName;
+    @ColumnConfig(columnType = ColumnType.KEY, desc = "id")
+    private String id;
     //
-    @ColumnConfig(desc = "密码")
-    private String password;
+    @ColumnConfig(desc = "帐号")
+    private String userName;
     //
     @ColumnConfig(desc = "创建时间")
     private long createTime;
 
+    public String getId() {
+        return id;
+    }
+    
     public String getUserName() {
         return userName;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public long getCreateTime() {
@@ -41,14 +41,14 @@ public class UserEntity extends Entity {
 
     @Override
     public String getKeyValue() {
-        return this.userName;
+        return this.id;
     }
 
     @Override
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(4, 1);
         map.put("userName", this.userName);
-        map.put("password", this.password);
+        map.put("id", this.id);
         map.put("createTime", Long.toString(this.createTime));
         return map;
     }
