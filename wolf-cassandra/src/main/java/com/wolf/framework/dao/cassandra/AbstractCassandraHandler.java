@@ -54,7 +54,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
             cqlBuilder.append(columnHandler.getDataMap()).append(", ");
         }
         cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(" FROM  ").append(this.keyspace)
+        cqlBuilder.append(" FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(" WHERE ");
         for (ColumnHandler columnHandler : this.keyHandlerList) {
             cqlBuilder.append(columnHandler.getDataMap()).append(" = ? AND ");
@@ -77,7 +77,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
         cqlBuilder.setLength(0);
         //count
         cqlBuilder.append("SELECT COUNT(*) FROM ").append(this.keyspace)
-                .append('.').append(this.table);
+                .append('.').append(this.table).append(';');
         this.countCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
         this.logger.debug("{} countCql:{}", this.table, this.countCql);

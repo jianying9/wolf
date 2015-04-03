@@ -1,7 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.Session;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
@@ -31,8 +30,8 @@ public class CassandraAdminContextImpl implements CassandraAdminContext {
                 .withCredentials(userName, password)
                 .build();
         this.cluster.getConfiguration()
-                .getProtocolOptions()
-                .setCompression(ProtocolOptions.Compression.LZ4);
+                .getProtocolOptions();
+//                .setCompression(ProtocolOptions.Compression.LZ4);
         this.session = cluster.connect();
         Resource resource = new CassandraResourceImpl(this.session, this.cluster);
         applicationContext.addResource(resource);
