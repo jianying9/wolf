@@ -64,8 +64,18 @@ public class DemoJUnitTest extends AbstractDemoTest{
     @Test
     public void test0101UserRegister() {
         Map<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("userName", "");
+        parameterMap.put("userName", "test01");
+        parameterMap.put("password", "11111111111111");
         Response response = testHandler.execute("/user/register", parameterMap);
+        System.out.println(response.getResponseMessage());
+    }
+    
+    @Test
+    public void test0103UserLogin() {
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        parameterMap.put("userName", "test01");
+        parameterMap.put("password", "11111111111111");
+        Response response = testHandler.execute("/user/login", parameterMap);
         System.out.println(response.getResponseMessage());
     }
 }

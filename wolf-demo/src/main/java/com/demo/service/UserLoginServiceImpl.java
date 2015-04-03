@@ -13,9 +13,9 @@ import com.wolf.framework.worker.context.MessageContext;
  * @author jianying9
  */
 @ServiceConfig(
-        desc = "新用户注册",
+        desc = "用户登录",
         group = "用户",
-        route = "/user/register",
+        route = "/user/login",
         validateSession = false,
         validateSecurity = false,
         requestConfigs = {
@@ -26,11 +26,11 @@ import com.wolf.framework.worker.context.MessageContext;
             @ResponseConfig(name = "userName", dataType = DataType.CHAR, desc = "帐号")
         },
         responseStates = {
-            @ResponseState(state = "SUCCESS", desc = "注册成功"),
-            @ResponseState(state = "FAILURE", desc = "注册失败，帐号已经被使用")
+            @ResponseState(state = "SUCCESS", desc = "登录成功"),
+            @ResponseState(state = "FAILURE", desc = "登录失败，帐号或者密码错误")
         }
 )
-public class UserRegisterServiceImpl implements Service{
+public class UserLoginServiceImpl implements Service{
 
     @Override
     public void execute(MessageContext messageContext) {
