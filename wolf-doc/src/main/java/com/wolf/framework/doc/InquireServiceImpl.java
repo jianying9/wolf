@@ -25,7 +25,7 @@ import java.util.Set;
     @RequestConfig(name = "groupName", dataType = DataType.CHAR, max = 200, desc = "")
 },
         responseConfigs = {
-    @ResponseConfig(name = "route", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "routeNmae", dataType = DataType.CHAR, desc = ""),
     @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = "")
 },
         responseStates = {},
@@ -47,7 +47,7 @@ public class InquireServiceImpl implements Service {
             serviceWorker = entryService.getValue();
             if (serviceWorker.getGroup().equals(groupName)) {
                 resultMap = new HashMap<String, String>(2, 1);
-                resultMap.put("route", entryService.getKey());
+                resultMap.put("routeNmae", entryService.getKey());
                 resultMap.put("desc", serviceWorker.getDescription());
                 resultMapList.add(resultMap);
             }

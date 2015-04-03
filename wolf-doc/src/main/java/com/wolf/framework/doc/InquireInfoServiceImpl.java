@@ -4,7 +4,6 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
-import com.wolf.framework.service.SessionHandleTypeEnum;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
@@ -18,14 +17,13 @@ import java.util.UUID;
 @ServiceConfig(
         route = "/wolf/service/info",
         requestConfigs = {
-    @RequestConfig(name = "route", dataType = DataType.CHAR, max = 200, desc = "")
+    @RequestConfig(name = "routeName", dataType = DataType.CHAR, max = 200, desc = "")
 },
         responseConfigs = {
-    @ResponseConfig(name = "route", dataType = DataType.CHAR, desc = ""),
+    @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
     @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
     @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
     @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
-    @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
     @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
     @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
     @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
@@ -39,7 +37,7 @@ public class InquireInfoServiceImpl implements Service {
 
     @Override
     public void execute(MessageContext messageContext) {
-        String route = messageContext.getParameter("route");
+        String route = messageContext.getParameter("routeName");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker != null) {
             messageContext.setNewSessionId(UUID.randomUUID().toString());
