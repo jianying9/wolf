@@ -562,6 +562,18 @@
                 <artifactId>cassandra-driver-core</artifactId>
                 <version>2.1.4</version>
             </dependency>
+            <dependency>
+                <groupId>net.jpountz.lz4</groupId>
+                <artifactId>lz4</artifactId>
+                <version>1.3.0</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>1.1.1.6</version>
+                <type>jar</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -625,6 +637,6 @@
         <module>wolf-reids</module>
         <module>wolf-cassandra</module>
         <module>wolf-websocket</module>
-    <module>wolf-demo</module>
-  </modules>
+        <module>wolf-demo</module>
+    </modules>
 </project>
