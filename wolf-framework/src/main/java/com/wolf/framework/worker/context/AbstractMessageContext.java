@@ -114,7 +114,7 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"state\":\"").append(this.state)
-                .append("\",\"act\":\"").append(this.workerContext.getRoute())
+                .append("\",\"route\":\"").append(this.workerContext.getRoute())
                 .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
         return this.responseMessage;

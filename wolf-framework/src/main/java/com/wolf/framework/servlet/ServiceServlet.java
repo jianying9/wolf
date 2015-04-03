@@ -75,7 +75,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         }
         this.logger.debug("http: {}", parameterMap);
         //
-        String route = request.getServletPath();
+        String route = request.getPathInfo();
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             String wolf = parameterMap.get("wolf");
@@ -117,7 +117,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //无效的act
-                result = "{\"state\":\"INVALID\",\"error\":\"route not exist\"}";
+                result = "{\"state\":\"INVALID\",\"error\":\"route[" + route + "] not exist\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
