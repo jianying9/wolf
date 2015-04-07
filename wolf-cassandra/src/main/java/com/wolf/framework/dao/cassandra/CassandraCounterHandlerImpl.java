@@ -63,7 +63,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
                 canUpdate = true;
                 valueList.add(value);
                 cqlBuilder.append(ch.getDataMap()).append(" = ")
-                        .append(ch.getDataMap()).append(" + ?,");
+                        .append(ch.getDataMap()).append(" + ?, ");
             }
         }
         cqlBuilder.setLength(cqlBuilder.length() - 2);

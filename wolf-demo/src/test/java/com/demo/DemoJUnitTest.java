@@ -7,13 +7,16 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 /**
  *
  *
  * @author jianying9
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DemoJUnitTest extends AbstractDemoTest{
 
     public DemoJUnitTest() {
@@ -59,13 +62,15 @@ public class DemoJUnitTest extends AbstractDemoTest{
     @After
     public void tearDown() {
     }
+    
+    private static String sid;
 
     //
     @Test
     public void test0101UserRegister() {
         Map<String, String> parameterMap = new HashMap<String, String>();
         parameterMap.put("userName", "test01");
-        parameterMap.put("password", "11111111111111");
+        parameterMap.put("password", "111111");
         Response response = testHandler.execute("/user/register", parameterMap);
         System.out.println(response.getResponseMessage());
     }
@@ -74,8 +79,17 @@ public class DemoJUnitTest extends AbstractDemoTest{
     public void test0103UserLogin() {
         Map<String, String> parameterMap = new HashMap<String, String>();
         parameterMap.put("userName", "test01");
-        parameterMap.put("password", "11111111111111");
+        parameterMap.put("password", "111111");
         Response response = testHandler.execute("/user/login", parameterMap);
+        sid = response.getSessionId();
+        System.out.println(response.getResponseMessage());
+    }
+    
+    @Test
+    public void test0105UserLogout() {
+        testHandler.setSessionId(sid);
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        Response response = testHandler.execute("/user/logout", parameterMap);
         System.out.println(response.getResponseMessage());
     }
 }

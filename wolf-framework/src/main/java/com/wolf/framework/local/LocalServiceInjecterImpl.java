@@ -2,8 +2,6 @@ package com.wolf.framework.local;
 
 import com.wolf.framework.injecter.AbstractInjecter;
 import com.wolf.framework.injecter.Injecter;
-import com.wolf.framework.local.InjectLocalService;
-import com.wolf.framework.local.LocalServiceContext;
 import java.lang.reflect.Field;
 
 /**

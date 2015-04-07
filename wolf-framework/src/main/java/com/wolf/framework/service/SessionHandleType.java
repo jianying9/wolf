@@ -4,7 +4,7 @@ package com.wolf.framework.service;
  *
  * @author aladdin
  */
-public enum SessionHandleTypeEnum {
+public enum SessionHandleType {
 
     NONE,
     SAVE,

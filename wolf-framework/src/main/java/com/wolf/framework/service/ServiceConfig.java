@@ -62,7 +62,7 @@ public @interface ServiceConfig {
      *
      * @return
      */
-    public SessionHandleTypeEnum sessionHandleTypeEnum() default SessionHandleTypeEnum.NONE;
+    public SessionHandleType sessionHandleType() default SessionHandleType.NONE;
 
     /**
      * 是否分页

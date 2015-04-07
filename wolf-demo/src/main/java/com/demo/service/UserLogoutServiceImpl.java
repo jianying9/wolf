@@ -1,9 +1,12 @@
 package com.demo.service;
 
+import com.demo.localservice.UserLocalService;
 import com.wolf.framework.data.DataType;
+import com.wolf.framework.local.InjectLocalService;
 import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
+import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.context.MessageContext;
 
@@ -17,6 +20,7 @@ import com.wolf.framework.worker.context.MessageContext;
         route = "/user/logout",
         validateSession = true,
         validateSecurity = false,
+        sessionHandleType = SessionHandleType.REMOVE,
         responseConfigs = {
             @ResponseConfig(name = "userName", dataType = DataType.CHAR, desc = "帐号")
         },
@@ -26,9 +30,14 @@ import com.wolf.framework.worker.context.MessageContext;
         }
 )
 public class UserLogoutServiceImpl implements Service{
+    
+    @InjectLocalService()
+    private UserLocalService userLocalService;
 
     @Override
     public void execute(MessageContext messageContext) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sid = messageContext.getSessionId();
+        this.userLocalService.deleteSession(sid);
+        messageContext.success();
     }
 }

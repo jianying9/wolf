@@ -1,6 +1,8 @@
 package com.demo.service;
 
+import com.demo.localservice.UserLocalService;
 import com.wolf.framework.data.DataType;
+import com.wolf.framework.local.InjectLocalService;
 import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
@@ -20,7 +22,7 @@ import com.wolf.framework.worker.context.MessageContext;
         validateSecurity = false,
         requestConfigs = {
             @RequestConfig(name = "userName", must = true, dataType = DataType.CHAR, max = 64, min = 6, desc = "帐号"),
-            @RequestConfig(name = "password", must = true, dataType = DataType.CHAR, max = 36,desc = "md5加密后密码")
+            @RequestConfig(name = "password", must = true, dataType = DataType.CHAR, max = 36, desc = "md5加密后密码")
         },
         responseConfigs = {
             @ResponseConfig(name = "userName", dataType = DataType.CHAR, desc = "帐号")
@@ -30,10 +32,19 @@ import com.wolf.framework.worker.context.MessageContext;
             @ResponseState(state = "FAILURE", desc = "注册失败，帐号已经被使用")
         }
 )
-public class UserRegisterServiceImpl implements Service{
+public class UserRegisterServiceImpl implements Service {
+
+    @InjectLocalService()
+    private UserLocalService userLocalService;
 
     @Override
     public void execute(MessageContext messageContext) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String userName = messageContext.getParameter("userName");
+        boolean isExist = this.userLocalService.existUser(userName);
+        if (isExist == false) {
+            String password = messageContext.getParameter("password");
+            this.userLocalService.insertUser(userName, password);
+            messageContext.success();
+        }
     }
 }

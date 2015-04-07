@@ -83,7 +83,7 @@ public class ServiceConfigParser<K extends Service> {
             final ResponseConfig[] reponseConfigs = serviceConfig.responseConfigs();
             final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
-            final SessionHandleTypeEnum sessionHandleTypeEnum = serviceConfig.sessionHandleTypeEnum();
+            final SessionHandleType sessionHandleTypeEnum = serviceConfig.sessionHandleType();
             final boolean validateSession = serviceConfig.validateSession();
             final boolean validateSecurity = serviceConfig.validateSecurity();
             final String desc = serviceConfig.desc();

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 /**
  *
  * @author aladdin
+ * @param <A>
  */
 public abstract class AbstractInjecter<A extends Annotation> {
 
