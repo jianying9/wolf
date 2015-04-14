@@ -30,6 +30,7 @@ import java.util.Set;
 },
         responseStates = {},
         validateSession = false,
+        validateSecurity = false,
         page = true,
         group = "WOLF_FRAMEWORK",
         desc = "")

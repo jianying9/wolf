@@ -92,4 +92,12 @@ public class DemoJUnitTest extends AbstractDemoTest{
         Response response = testHandler.execute("/user/logout", parameterMap);
         System.out.println(response.getResponseMessage());
     }
+    
+    @Test
+    public void test0201Group() {
+        testHandler.setSessionId(sid);
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        Response response = testHandler.execute("/wolf/group", parameterMap);
+        System.out.println(response.getResponseMessage());
+    }
 }

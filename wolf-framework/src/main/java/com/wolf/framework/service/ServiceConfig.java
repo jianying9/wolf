@@ -55,7 +55,7 @@ public @interface ServiceConfig {
      *
      * @return
      */
-    public boolean validateSecurity() default true;
+    public boolean validateSecurity() default false;
 
     /**
      * 是否设置session(用于保持连接)
