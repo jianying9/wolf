@@ -16,7 +16,7 @@ public interface ServiceWorker {
 
     public void doWork(WorkerContext workerContext);
 
-    public void createInfo(String act,
+    public void createInfo(String route,
             boolean page,
             boolean validateSession,
             String group,
@@ -26,6 +26,8 @@ public interface ServiceWorker {
             ResponseState[] responseStates);
 
     public Map<String, String> getInfoMap();
+    
+    public String getRoute();
 
     public String getGroup();
 

@@ -135,6 +135,11 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
         responseStateBuilder.append(']');
         this.responseStates = responseStateBuilder.toString();
     }
+    
+    @Override
+    public final String getRoute() {
+        return this.route;
+    }
 
     @Override
     public final String getGroup() {
