@@ -61,6 +61,9 @@ public class InquireServiceImpl implements Service {
             resultMap.put("desc", sw.getDescription());
             resultMapList.add(resultMap);
         }
+        messageContext.setPageIndex(1);
+        messageContext.setPageSize(resultMapList.size());
+        messageContext.setPageTotal(resultMapList.size());
         messageContext.setMapListData(resultMapList);
         messageContext.success();
     }

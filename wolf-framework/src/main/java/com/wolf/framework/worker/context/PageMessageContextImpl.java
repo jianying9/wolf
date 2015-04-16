@@ -131,9 +131,4 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     public void setPageSize(long pageSize) {
         this.pageSize = pageSize;
     }
-
-    @Override
-    public void setPageNum(long pageNum) {
-        this.pageNum = pageNum;
-    }
 }

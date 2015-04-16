@@ -21,8 +21,6 @@ public interface MessageContext extends Response {
     
     public void setPageTotal(long pageTotal);
     
-    public void setPageNum(long pageNum);
-    
     public void setNewSessionId(String sid);
 
     public void setMapData(Map<String, String> parameterMap);
