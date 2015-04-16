@@ -14,8 +14,14 @@ public interface MessageContext extends Response {
     public String getParameter(String name);
 
     public Map<String, String> getParameterMap();
-
+    
+    public void setPageIndex(long pageIndex);
+    
+    public void setPageSize(long pageSize);
+    
     public void setPageTotal(long pageTotal);
+    
+    public void setPageNum(long pageNum);
     
     public void setNewSessionId(String sid);
 

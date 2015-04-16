@@ -121,4 +121,19 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     public Map<String, String> getMapData() {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be false");
     }
+
+    @Override
+    public void setPageIndex(long pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    @Override
+    public void setPageSize(long pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public void setPageNum(long pageNum) {
+        this.pageNum = pageNum;
+    }
 }
