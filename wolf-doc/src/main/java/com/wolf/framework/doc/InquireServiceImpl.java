@@ -24,7 +24,7 @@ import java.util.Set;
         route = "/wolf/service",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "routeNmae", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
             @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
             @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = "")
         },
@@ -56,8 +56,8 @@ public class InquireServiceImpl implements Service {
         List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(serviceWorkerList.size());
         for (ServiceWorker sw : serviceWorkerList) {
             resultMap = new HashMap<String, String>(4, 1);
-            resultMap.put("routeNmae", sw.getRoute());
-            resultMap.put("groupNmae", sw.getGroup());
+            resultMap.put("routeName", sw.getRoute());
+            resultMap.put("groupName", sw.getGroup());
             resultMap.put("desc", sw.getDescription());
             resultMapList.add(resultMap);
         }
