@@ -161,11 +161,11 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
         if (canUpdate) {
             cqlBuilder.append(" WHERE ");
             for (ColumnHandler ch : this.keyHandlerList) {
-                cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
                 value = entityMap.get(ch.getColumnName());
                 valueList.add(value);
             }
-            cqlBuilder.setLength(cqlBuilder.length() - 2);
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
             cqlBuilder.append(" IF EXISTS;");
             Object[] values = valueList.toArray();
             String updateCql = cqlBuilder.toString();
@@ -210,7 +210,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
                 cqlBuilder.setLength(cqlBuilder.length() - 2);
                 cqlBuilder.append(" WHERE ");
                 for (ColumnHandler ch : this.keyHandlerList) {
-                    cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+                    cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
                     value = entityMap.get(ch.getColumnName());
                     if (value == null) {
                         canUpdate = false;
@@ -218,7 +218,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
                     }
                     valueList.add(value);
                 }
-                cqlBuilder.setLength(cqlBuilder.length() - 2);
+                cqlBuilder.setLength(cqlBuilder.length() - 4);
                 cqlBuilder.append(" IF EXISTS;");
                 if (canUpdate) {
                     ps = this.session.prepare(cqlBuilder.toString());

@@ -43,6 +43,13 @@ public class ColumnHandlerImpl implements ColumnHandler {
             } else {
                 this.defaultValue = Boolean.parseBoolean(defaultValue);
             }
+        } else if (type.equals("double") || type.equals("java.lang.Double")){
+            this.columnDataType = ColumnDataType.DOUBLE;
+            if(defaultValue.isEmpty()) {
+                this.defaultValue = 0;
+            } else {
+                this.defaultValue = Double.parseDouble(defaultValue);
+            }
         } else {
             this.columnDataType = ColumnDataType.STRING;
             this.defaultValue = defaultValue;

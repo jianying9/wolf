@@ -27,7 +27,7 @@ public interface CEntityDao<T extends Entity> {
      * @param keyValue
      * @return
      */
-    public T inquireByKey(Object keyValue);
+    public T inquireByKey(Object... keyValue);
     
     /**
      * 插入,返回keyValue

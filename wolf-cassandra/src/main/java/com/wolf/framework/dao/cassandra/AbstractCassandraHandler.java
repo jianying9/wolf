@@ -95,6 +95,9 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
             case INT:
                 result = row.getInt(index);
                 break;
+            case DOUBLE:
+                result = row.getDouble(index);
+                break;
             default:
                 result = row.getBool(index);
         }

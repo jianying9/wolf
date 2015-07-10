@@ -129,7 +129,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
             BoundStatement update = updatePs.bind(values);
             //
             cqlBuilder.setLength(0);
-            valueList.clear();;
+            valueList.clear();
             cqlBuilder.append("SELECT ").append(columnDataMap).append(" FROM ")
                     .append(this.keyspace).append('.').append(this.table)
                     .append(" WHERE ");

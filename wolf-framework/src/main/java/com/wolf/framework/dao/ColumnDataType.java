@@ -12,6 +12,8 @@ public enum ColumnDataType {
     
     INT,
     
+    DOUBLE,
+    
     STRING,
     
     BOOLEAN;

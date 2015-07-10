@@ -60,7 +60,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     }
 
     @Override
-    public T inquireByKey(Object keyValue) {
+    public T inquireByKey(Object... keyValue) {
         Map<String, Object> entityMap = this.cassandraHandler.inquireByKey(keyValue);
         return this.readMap(entityMap);
     }

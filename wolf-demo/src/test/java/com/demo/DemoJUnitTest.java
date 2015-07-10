@@ -29,6 +29,30 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //    create_time bigint,
 //    user_name text
 //);
+//    CREATE TABLE test.stock (
+//            id text PRIMARY KEY,
+//            name text,
+//            create_time bigint
+//            
+//    );
+//    
+//    CREATE TABLE test.stock_money_flow (
+//            sample text,
+//            id text,
+//            name text,
+//            last_update_time bigint,
+//            super_in double,
+//            super_out double,
+//            big_in double,
+//            big_out double,
+//            middle_in double,
+//            middle_out double,
+//            small_in double,
+//            small_out double,
+//            price double,
+//            change_ratio double,
+//            PRIMARY KEY (sample, id)
+//    );
 //CREATE INDEX index_session_user_name ON test.session (user_name);
 //
 //CREATE TABLE test.user_count (

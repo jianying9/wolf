@@ -20,7 +20,7 @@ public abstract class AbstractDemoTest {
         parameterMap.put(FrameworkConfig.TASK_CORE_POOL_SIZE, "1");
         parameterMap.put(FrameworkConfig.TASK_MAX_POOL_SIZE, "2");
         //
-        parameterMap.put(FrameworkConfig.CASSANDRA_CONTACT_POINT, "192.168.181.41");
+        parameterMap.put(FrameworkConfig.CASSANDRA_CONTACT_POINT, "192.168.46.182");
         parameterMap.put(FrameworkConfig.CASSANDRA_USERNAME, "test");
         parameterMap.put(FrameworkConfig.CASSANDRA_PASSWORD, "test");
         parameterMap.put("compile.model", "DEVELOPMENT");
