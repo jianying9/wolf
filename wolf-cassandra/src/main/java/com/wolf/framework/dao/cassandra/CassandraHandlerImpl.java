@@ -51,7 +51,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
             num--;
         }
         cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(") IF NOT EXISTS;");
+        cqlBuilder.append(");");
         this.insertCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
         this.logger.debug("{} insertCql:{}", this.table, this.insertCql);
