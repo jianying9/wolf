@@ -44,16 +44,24 @@ public class StockJUnitTest extends AbstractDemoTest{
     @Test
     public void test0101stockInsert() {
         Map<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("id", "600649");
+        parameterMap.put("id", "601318");
         Response response = testHandler.execute("/stock/insert", parameterMap);
         System.out.println(response.getResponseMessage());
     }
     
-    @Test
+//    @Test
     public void test0201stockMoneyFlowUpdate() {
         Map<String, String> parameterMap = new HashMap<String, String>();
         parameterMap.put("id", "600649");
         Response response = testHandler.execute("/stock/moneyflow/update", parameterMap);
+        System.out.println(response.getResponseMessage());
+    }
+    
+    @Test
+    public void test0301stockMoneyFlowTimerUpdate() {
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        parameterMap.put("type", "minute");
+        Response response = testHandler.execute("/stock/moneyflow/timer/update", parameterMap);
         System.out.println(response.getResponseMessage());
     }
 }

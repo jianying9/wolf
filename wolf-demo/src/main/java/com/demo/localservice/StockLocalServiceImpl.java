@@ -1,11 +1,15 @@
 package com.demo.localservice;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.demo.entity.StockEntity;
 import com.demo.entity.StockMoneyFlowEntity;
 import com.wolf.framework.dao.cassandra.CEntityDao;
 import com.wolf.framework.dao.cassandra.annotation.InjectCDao;
 import com.wolf.framework.local.LocalServiceConfig;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +95,7 @@ public class StockLocalServiceImpl implements StockLocalService {
     }
 
     @Override
-    public String getSinaStockCodes(String[] idArray) {
+    public String getSinaStockCodes(String... idArray) {
         StringBuilder sb = new StringBuilder();
         if (idArray.length > 0) {
             for (String id : idArray) {
@@ -128,12 +132,28 @@ public class StockLocalServiceImpl implements StockLocalService {
 
     @Override
     public void updateStockMoneyFlow(Map<String, Object> updateMap) {
-        updateMap.put("lastUpdateTime", Long.toString(System.currentTimeMillis()));
+        updateMap.put("lastUpdateTime", System.currentTimeMillis());
         this.stockMoneyFlowEntityDao.update(updateMap);
     }
 
     @Override
     public void updateStockMoneyFlowList(List<Map<String, Object>> updateMapList) {
         this.stockMoneyFlowEntityDao.batchUpdate(updateMapList);
+    }
+
+    private final String CqlInquireStockIdAll = "select id from test.stock;";
+
+    @Override
+    public List<String> getStockIdAll() {
+        List<String> result = Collections.EMPTY_LIST;
+        ResultSet rs = this.stockEntityDao.execute(this.CqlInquireStockIdAll);
+        List<Row> rList = rs.all();
+        if (rList.isEmpty() == false) {
+            result = new ArrayList<String>(rList.size());
+            for (Row r : rList) {
+                result.add(r.getString(0));
+            }
+        }
+        return result;
     }
 }

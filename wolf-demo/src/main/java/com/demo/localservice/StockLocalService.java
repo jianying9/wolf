@@ -16,9 +16,11 @@ public interface StockLocalService extends Local{
     
     public String getSinaStockCode(String id);
     
-    public String getSinaStockCodes(String[] id);
+    public String getSinaStockCodes(String... id);
     
     public void insertStock(String id, String name);
+    
+    public List<String> getStockIdAll();
     
     public void updateStockMoneyFlow(Map<String, Object> updateMap);
     
