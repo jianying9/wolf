@@ -39,6 +39,8 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //    
 //    CREATE TABLE test.stock_money_flow (
 //            sample text,
+//            sort int,
+//            score double,
 //            id text,
 //            name text,
 //            last_update_time bigint,
@@ -52,7 +54,7 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //            small_out double,
 //            price double,
 //            change_ratio double,
-//            PRIMARY KEY (sample, id)
+//            PRIMARY KEY (sample, sort)
 //    );
 //    CREATE TABLE test.stock_money_flow_minute (
 //            id text,

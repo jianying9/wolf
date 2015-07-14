@@ -10,8 +10,10 @@ import com.wolf.framework.dao.cassandra.CEntityDao;
 import com.wolf.framework.dao.cassandra.annotation.InjectCDao;
 import com.wolf.framework.local.LocalServiceConfig;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +32,9 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  */
 @LocalServiceConfig(description = "stock内部接口")
 public class StockLocalServiceImpl implements StockLocalService {
-    
+
     private final String CqlInquireStockIdAll = "select id from test.stock;";
-    
+
     private final String CqlTruncateStockMoneyFlowMinute = "truncate test.stock_money_flow_minute;";
 
     public final String URL_SINA_STOCK = "http://hq.sinajs.cn/list=${list}";
@@ -126,34 +128,62 @@ public class StockLocalServiceImpl implements StockLocalService {
         insertMap.put("name", name);
         insertMap.put("createTime", System.currentTimeMillis());
         this.stockEntityDao.insert(insertMap);
-        //新增股票资金流向
-        insertMap.put("superIn", 0.0);
-        insertMap.put("superOut", 0.0);
-        insertMap.put("bigIn", 0.0);
-        insertMap.put("bigOut", 0.0);
-        insertMap.put("middleIn", 0.0);
-        insertMap.put("middleOut", 0.0);
-        insertMap.put("smallIn", 0.0);
-        insertMap.put("smallOut", 0.0);
-        insertMap.put("price", 0.0);
-        insertMap.put("changeRatio", 0.0);
-        insertMap.put("lastUpdateTime", System.currentTimeMillis());
-        insertMap.put("sample", "test");
-        this.stockMoneyFlowEntityDao.insert(insertMap);
     }
+
+    private class StockScoreComparator implements Comparator<Map<String, Object>> {
+
+        @Override
+        public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+            int result = 1;
+            double s1 = (Double) o1.get("score");
+            double s2 = (Double) o2.get("score");
+            if (s1 > s2) {
+                result = -1;
+            }
+            return result;
+        }
+    }
+
+    private final StockScoreComparator stockScoreComparator = new StockScoreComparator();
 
     @Override
-    public void updateStockMoneyFlow(Map<String, Object> updateMap) {
-        updateMap.put("lastUpdateTime", System.currentTimeMillis());
-        this.stockMoneyFlowEntityDao.update(updateMap);
+    public void insertStockMoneyFlowList(List<Map<String, Object>> updateMapList) {
+        DecimalFormat df = new DecimalFormat("#.000");
+        //计算得分
+        double score;
+        double superIn;
+        double superOut;
+        double changeRatio;
+        double s1;
+        double s2;
+        double s3;
+        for (Map<String, Object> updateMap : updateMapList) {
+            superIn = (Double) updateMap.get("superIn");
+            superOut = (Double) updateMap.get("superOut");
+            changeRatio = (Double) updateMap.get("changeRatio");
+            s1 = (superIn - superOut) / 10000000;
+            s2 = superOut / 10000000 * 2;
+            
+            if (superIn - superOut > 0) {
+                s3 = (0.1 - changeRatio) * 100;
+            } else {
+                s3 = 0;
+            }
+            score = s1 - s2 + s3;
+            score = Double.parseDouble(df.format(score));
+            if (score > 0) {
+                System.out.println(updateMap.get("id") + " " + updateMap.get("name") + " " + score + " " + s1 + " " + s2 + " " + s3);
+            }
+            updateMap.put("score", score);
+        }
+        //排序
+        Collections.sort(updateMapList, this.stockScoreComparator);
+        //设置排序号
+        for (int index = 0; index < updateMapList.size(); index++) {
+            updateMapList.get(index).put("sort", index);
+        }
+        this.stockMoneyFlowEntityDao.batchInsert(updateMapList);
     }
-
-    @Override
-    public void updateStockMoneyFlowList(List<Map<String, Object>> updateMapList) {
-        this.stockMoneyFlowEntityDao.batchUpdate(updateMapList);
-    }
-
-    
 
     @Override
     public List<String> getStockIdAll() {

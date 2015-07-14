@@ -22,9 +22,7 @@ public interface StockLocalService extends Local{
     
     public List<String> getStockIdAll();
     
-    public void updateStockMoneyFlow(Map<String, Object> updateMap);
-    
-    public void updateStockMoneyFlowList(List<Map<String, Object>> updateMapList);
+    public void insertStockMoneyFlowList(List<Map<String, Object>> updateMapList);
     
     public void insertStockMoneyFlowMinute(Map<String, Object> insertMap);
     

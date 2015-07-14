@@ -49,6 +49,7 @@ public class InsertStockServiceImpl implements Service{
             if(infoArray.length == 2) {
                 String stockInfo = infoArray[1];
                 stockInfo = stockInfo.replace("\"", "");
+                stockInfo = stockInfo.replace(";\n", "");
                 if(stockInfo.equals("") == false && stockInfo.equals("FAILED") == false) {
                     String[] stockInfoArray = stockInfo.split(",");
                     String name = stockInfoArray[0];

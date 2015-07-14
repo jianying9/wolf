@@ -145,7 +145,6 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
                 jsonNode = iterator.next();
                 moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
                 moneyFlowMap.put("id", this.idList.get(0));
-                stockLocalService.updateStockMoneyFlow(moneyFlowMap);
                 moneyFlowMap.put("minute", minute);
                 stockLocalService.insertStockMoneyFlowMinute(moneyFlowMap);
             } else {
@@ -155,13 +154,10 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
                     jsonNode = iterator.next();
                     moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
                     moneyFlowMap.put("minute", minute);
+                    stockLocalService.insertStockMoneyFlowMinute(moneyFlowMap);
                     moneyFlowMapList.add(moneyFlowMap);
                 }
-                stockLocalService.updateStockMoneyFlowList(moneyFlowMapList);
-                //
-                for (Map<String, Object> moneyFlowMinute : moneyFlowMapList) {
-                    stockLocalService.insertStockMoneyFlowMinute(moneyFlowMinute);
-                }
+                stockLocalService.insertStockMoneyFlowList(moneyFlowMapList);
             }
         }
     }

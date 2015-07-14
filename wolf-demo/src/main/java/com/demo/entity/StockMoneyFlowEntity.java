@@ -20,8 +20,14 @@ public class StockMoneyFlowEntity extends Entity {
     
     @ColumnConfig(columnType = ColumnType.KEY, desc = "取样类型")
     private String sample;
-
-    @ColumnConfig(columnType = ColumnType.KEY, desc = "股票id")
+    
+    @ColumnConfig(columnType = ColumnType.KEY, desc = "排序")
+    private int sort;
+    //
+    @ColumnConfig(desc = "评分")
+    private double score;
+    //
+    @ColumnConfig(desc = "股票id")
     private String id;
     //
     @ColumnConfig(desc = "名称")
@@ -57,11 +63,19 @@ public class StockMoneyFlowEntity extends Entity {
     @ColumnConfig(desc = "变化比率")
     private double changeRatio;
     //
-    @ColumnConfig(desc = "创建时间")
+    @ColumnConfig(desc = "最后更新时间")
     private long lastUpdateTime;
 
     public String getSample() {
         return sample;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public double getScore() {
+        return score;
     }
     
     public String getId() {
@@ -124,6 +138,9 @@ public class StockMoneyFlowEntity extends Entity {
     @Override
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(16, 1);
+        map.put("sample", this.sample);
+        map.put("sort", Integer.toString(this.sort));
+        map.put("score", Double.toString(this.score));
         map.put("sample", this.sample);
         map.put("name", this.name);
         map.put("id", this.id);
