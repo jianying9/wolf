@@ -30,10 +30,11 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //    user_name text
 //);
 //    CREATE TABLE test.stock (
-//            id text PRIMARY KEY,
+//            sample text,
+//            id text,
 //            name text,
-//            create_time bigint
-//            
+//            create_time bigint,
+//            PRIMARY KEY (sample, id)
 //    );
 //    
 //    CREATE TABLE test.stock_money_flow (
@@ -52,6 +53,39 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //            price double,
 //            change_ratio double,
 //            PRIMARY KEY (sample, id)
+//    );
+//    CREATE TABLE test.stock_money_flow_minute (
+//            id text,
+//            minute text,
+//            name text,
+//            super_in double,
+//            super_out double,
+//            big_in double,
+//            big_out double,
+//            middle_in double,
+//            middle_out double,
+//            small_in double,
+//            small_out double,
+//            price double,
+//            change_ratio double,
+//            PRIMARY KEY (id, minute)
+//    );
+    
+//    CREATE TABLE test.stock_money_flow_history (
+//            id text,
+//            day text,
+//            name text,
+//            super_in double,
+//            super_out double,
+//            big_in double,
+//            big_out double,
+//            middle_in double,
+//            middle_out double,
+//            small_in double,
+//            small_out double,
+//            price double,
+//            change_ratio double,
+//            PRIMARY KEY (id, day)
 //    );
 //CREATE INDEX index_session_user_name ON test.session (user_name);
 //

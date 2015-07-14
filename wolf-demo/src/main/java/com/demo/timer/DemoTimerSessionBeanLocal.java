@@ -9,9 +9,10 @@ import javax.ejb.Local;
 @Local
 public interface DemoTimerSessionBeanLocal {
     
-    public void updateStockFlowMoneyMinute();
+    public void updateStockMoneyFlowMinute();
     
-    public void updateStockFlowMoneyHour();
+    public void truncateStockMoneyFlowMinute();
     
-    public void updateStockFlowMoneyDay();
+    public void updateStockMoneyFlowDay();
+    
 }

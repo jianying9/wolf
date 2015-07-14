@@ -12,6 +12,7 @@ import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.task.InjectTaskExecutor;
 import com.wolf.framework.task.Task;
 import com.wolf.framework.task.TaskExecutor;
+import com.wolf.framework.utils.TimeUtils;
 import com.wolf.framework.worker.context.MessageContext;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import org.codehaus.jackson.node.ArrayNode;
         validateSession = false,
         validateSecurity = false,
         requestConfigs = {
-            @RequestConfig(name = "type", must = true, dataType = DataType.CHAR, max = 6, min = 3, desc = "类型:day,hour,minute")
+            @RequestConfig(name = "type", must = true, dataType = DataType.CHAR, max = 6, min = 3, desc = "类型:day,minute")
         },
         responseConfigs = {
             @ResponseConfig(name = "id", dataType = DataType.CHAR, desc = "id"),
@@ -56,62 +57,24 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
     @InjectTaskExecutor
     private TaskExecutor taskExecutor;
 
-    private class UpdateDayMoneyFlowTaskImpl extends Task {
+    private abstract class AbstractTask extends Task {
 
-        private final MessageContext messageContext;
-        private final List<String> idList;
+        protected final MessageContext messageContext;
+        protected final List<String> idList;
 
-        public UpdateDayMoneyFlowTaskImpl(MessageContext messageContext, List<String> idList) {
+        public AbstractTask(MessageContext messageContext, List<String> idList) {
             this.messageContext = messageContext;
             this.idList = idList;
         }
+        
+        protected abstract void save(ArrayNode arrayNode);
 
         @Override
         public void doWhenRejected() {
         }
 
         @Override
-        protected void execute() {
-
-        }
-    }
-
-    private class UpdateHourMoneyFlowTaskImpl extends Task {
-
-        private final MessageContext messageContext;
-        private final List<String> idList;
-
-        public UpdateHourMoneyFlowTaskImpl(MessageContext messageContext, List<String> idList) {
-            this.messageContext = messageContext;
-            this.idList = idList;
-        }
-
-        @Override
-        public void doWhenRejected() {
-        }
-
-        @Override
-        protected void execute() {
-
-        }
-    }
-
-    private class UpdateMinuteMoneyFlowTaskImpl extends Task {
-
-        private final MessageContext messageContext;
-        private final List<String> idList;
-
-        public UpdateMinuteMoneyFlowTaskImpl(MessageContext messageContext, List<String> idList) {
-            this.messageContext = messageContext;
-            this.idList = idList;
-        }
-
-        @Override
-        public void doWhenRejected() {
-        }
-
-        @Override
-        protected void execute() {
+        protected final void execute() {
             String code = stockLocalService.getSinaStockCodes(this.idList.toArray(new String[this.idList.size()]));
             String info = stockLocalService.getSinaMoneyFlowInfo(code);
             info = info.replace("(", "[");
@@ -125,29 +88,81 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
                 System.err.println(e);
             }
             if (rootNode != null) {
-                Iterator<JsonNode> iterator = rootNode.getElements();
-                JsonNode jsonNode;
-                Map<String, Object> moneyFlowMap;
-                if (this.idList.size() == 1) {
-                    //只有一个id
-                    jsonNode = iterator.next();
-                    moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
-                    moneyFlowMap.put("id", this.idList.get(0));
-                    stockLocalService.updateStockMoneyFlow(moneyFlowMap);
-
-                } else {
-                    //多个id
-                    List<Map<String, Object>> moneyFlowMapList = new ArrayList<Map<String, Object>>();
-                    while (iterator.hasNext()) {
-                        jsonNode = iterator.next();
-                        moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
-                        moneyFlowMapList.add(moneyFlowMap);
-                    }
-                    stockLocalService.updateStockMoneyFlowList(moneyFlowMapList);
-                }
+                this.save(rootNode);
             }
             //
             state = "stop";
+        }
+    }
+
+    private class UpdateMoneyFlowHistoryTaskImpl extends AbstractTask {
+
+        public UpdateMoneyFlowHistoryTaskImpl(MessageContext messageContext, List<String> idList) {
+            super(messageContext, idList);
+        }
+
+        @Override
+        protected void save(ArrayNode arrayNode) {
+            Iterator<JsonNode> iterator = arrayNode.getElements();
+            JsonNode jsonNode;
+            Map<String, Object> moneyFlowMap;
+            String day = TimeUtils.getDateFotmatYYMMDD();
+            if (this.idList.size() == 1) {
+                //只有一个id
+                jsonNode = iterator.next();
+                moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
+                moneyFlowMap.put("id", this.idList.get(0));
+                moneyFlowMap.put("day", day);
+                stockLocalService.insertStockMoneyFlowDay(moneyFlowMap);
+            } else {
+                //多个id
+                while (iterator.hasNext()) {
+                    jsonNode = iterator.next();
+                    moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
+                    moneyFlowMap.put("day", day);
+                    stockLocalService.insertStockMoneyFlowDay(moneyFlowMap);
+                }
+            }
+        }
+
+    }
+
+    private class UpdateMoneyFlowMinuteTaskImpl extends AbstractTask {
+
+
+        public UpdateMoneyFlowMinuteTaskImpl(MessageContext messageContext, List<String> idList) {
+            super(messageContext, idList);
+        }
+
+        @Override
+        protected void save(ArrayNode arrayNode) {
+            Iterator<JsonNode> iterator = arrayNode.getElements();
+            JsonNode jsonNode;
+            Map<String, Object> moneyFlowMap;
+            String minute = TimeUtils.getDateFotmatHHmm();
+            if (this.idList.size() == 1) {
+                //只有一个id
+                jsonNode = iterator.next();
+                moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
+                moneyFlowMap.put("id", this.idList.get(0));
+                stockLocalService.updateStockMoneyFlow(moneyFlowMap);
+                moneyFlowMap.put("minute", minute);
+                stockLocalService.insertStockMoneyFlowMinute(moneyFlowMap);
+            } else {
+                //多个id
+                List<Map<String, Object>> moneyFlowMapList = new ArrayList<Map<String, Object>>();
+                while (iterator.hasNext()) {
+                    jsonNode = iterator.next();
+                    moneyFlowMap = StockUtils.createMoneyFlowMap(jsonNode);
+                    moneyFlowMap.put("minute", minute);
+                    moneyFlowMapList.add(moneyFlowMap);
+                }
+                stockLocalService.updateStockMoneyFlowList(moneyFlowMapList);
+                //
+                for (Map<String, Object> moneyFlowMinute : moneyFlowMapList) {
+                    stockLocalService.insertStockMoneyFlowMinute(moneyFlowMinute);
+                }
+            }
         }
     }
 
@@ -157,13 +172,11 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
         List<String> idList = this.stockLocalService.getStockIdAll();
         Task task;
         if (type.equals("day")) {
-            task = new UpdateDayMoneyFlowTaskImpl(messageContext, idList);
-        } else if (type.equals("hour")) {
-            task = new UpdateHourMoneyFlowTaskImpl(messageContext, idList);
+            task = new UpdateMoneyFlowHistoryTaskImpl(messageContext, idList);
         } else if (type.equals("minute")) {
-            task = new UpdateMinuteMoneyFlowTaskImpl(messageContext, idList);
+            task = new UpdateMoneyFlowMinuteTaskImpl(messageContext, idList);
         } else {
-            task = new UpdateHourMoneyFlowTaskImpl(messageContext, idList);
+            task = new UpdateMoneyFlowHistoryTaskImpl(messageContext, idList);
         }
         synchronized (this) {
             if (this.state.equals("stop")) {
@@ -171,5 +184,6 @@ public class TimerUpdateStockMoneyFlowServiceImpl implements Service {
                 this.taskExecutor.submit(task);
             }
         }
+        messageContext.success();
     }
 }

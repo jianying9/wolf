@@ -36,7 +36,7 @@
         "describe": "redis连接池最小连接数"
     },
     "cassandra.contact.point": {
-        "value": "192.168.181.41",
+        "value": "192.168.46.182",
         "describe": "cassandra节点地址"
     },
     "cassandra.username": {

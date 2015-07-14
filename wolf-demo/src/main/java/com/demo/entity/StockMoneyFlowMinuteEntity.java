@@ -13,16 +13,16 @@ import java.util.Map;
  */
 @CDaoConfig(
         keyspace = "test",
-        table = "stock_money_flow",
+        table = "stock_money_flow_minute",
         counter = false
 )
-public class StockMoneyFlowEntity extends Entity {
+public class StockMoneyFlowMinuteEntity extends Entity {
     
-    @ColumnConfig(columnType = ColumnType.KEY, desc = "取样类型")
-    private String sample;
-
     @ColumnConfig(columnType = ColumnType.KEY, desc = "股票id")
     private String id;
+    //
+    @ColumnConfig(columnType = ColumnType.KEY, desc = "yyyy-mm-dd")
+    private String minute;
     //
     @ColumnConfig(desc = "名称")
     private String name;
@@ -56,16 +56,13 @@ public class StockMoneyFlowEntity extends Entity {
     //
     @ColumnConfig(desc = "变化比率")
     private double changeRatio;
-    //
-    @ColumnConfig(desc = "创建时间")
-    private long lastUpdateTime;
 
-    public String getSample() {
-        return sample;
-    }
-    
     public String getId() {
         return id;
+    }
+    
+    public String getMinute() {
+        return minute;
     }
     
     public String getName() {
@@ -111,20 +108,16 @@ public class StockMoneyFlowEntity extends Entity {
     public double getChangeRatio() {
         return changeRatio;
     }
-
-    public long getLastUpdateTime() {
-        return lastUpdateTime;
-    }
     
     @Override
     public String getKeyValue() {
-        return this.sample + "_" + this.id;
+        return this.id + "_" + this.minute;
     }
 
     @Override
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(16, 1);
-        map.put("sample", this.sample);
+        map.put("minute", this.minute);
         map.put("name", this.name);
         map.put("id", this.id);
         map.put("superIn", Double.toString(this.superIn));
@@ -137,7 +130,6 @@ public class StockMoneyFlowEntity extends Entity {
         map.put("smallOut", Double.toString(this.smallOut));
         map.put("price", Double.toString(this.price));
         map.put("changeRatio", Double.toString(this.changeRatio));
-        map.put("lastUpdateTime", Long.toString(this.lastUpdateTime));
         return map;
     }
 }

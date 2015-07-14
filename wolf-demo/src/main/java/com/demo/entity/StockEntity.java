@@ -17,6 +17,9 @@ import java.util.Map;
         counter = false
 )
 public class StockEntity extends Entity {
+    
+    @ColumnConfig(columnType = ColumnType.KEY, desc = "取样类型")
+    private String sample;
 
     @ColumnConfig(columnType = ColumnType.KEY, desc = "id")
     private String id;
@@ -41,12 +44,13 @@ public class StockEntity extends Entity {
 
     @Override
     public String getKeyValue() {
-        return this.id;
+        return this.sample + "_" + this.id;
     }
 
     @Override
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(4, 1);
+        map.put("sample", this.sample);
         map.put("name", this.name);
         map.put("id", this.id);
         map.put("createTime", Long.toString(this.createTime));

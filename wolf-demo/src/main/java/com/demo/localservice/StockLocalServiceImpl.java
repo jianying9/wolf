@@ -4,6 +4,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.demo.entity.StockEntity;
 import com.demo.entity.StockMoneyFlowEntity;
+import com.demo.entity.StockMoneyFlowDayEntity;
+import com.demo.entity.StockMoneyFlowMinuteEntity;
 import com.wolf.framework.dao.cassandra.CEntityDao;
 import com.wolf.framework.dao.cassandra.annotation.InjectCDao;
 import com.wolf.framework.local.LocalServiceConfig;
@@ -28,6 +30,10 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  */
 @LocalServiceConfig(description = "stock内部接口")
 public class StockLocalServiceImpl implements StockLocalService {
+    
+    private final String CqlInquireStockIdAll = "select id from test.stock;";
+    
+    private final String CqlTruncateStockMoneyFlowMinute = "truncate test.stock_money_flow_minute;";
 
     public final String URL_SINA_STOCK = "http://hq.sinajs.cn/list=${list}";
 
@@ -36,9 +42,14 @@ public class StockLocalServiceImpl implements StockLocalService {
     @InjectCDao(clazz = StockEntity.class)
     private CEntityDao<StockEntity> stockEntityDao;
     //
-
     @InjectCDao(clazz = StockMoneyFlowEntity.class)
     private CEntityDao<StockMoneyFlowEntity> stockMoneyFlowEntityDao;
+    //
+    @InjectCDao(clazz = StockMoneyFlowMinuteEntity.class)
+    private CEntityDao<StockMoneyFlowMinuteEntity> stockMoneyFlowMinuteEntityDao;
+    //
+    @InjectCDao(clazz = StockMoneyFlowDayEntity.class)
+    private CEntityDao<StockMoneyFlowDayEntity> stockMoneyFlowHistoryEntityDao;
     //
     private volatile HttpClient httpClient;
 
@@ -110,6 +121,7 @@ public class StockLocalServiceImpl implements StockLocalService {
     public void insertStock(String id, String name) {
         //新增股票
         Map<String, Object> insertMap = new HashMap<String, Object>(4, 1);
+        insertMap.put("sample", "test");
         insertMap.put("id", id);
         insertMap.put("name", name);
         insertMap.put("createTime", System.currentTimeMillis());
@@ -141,7 +153,7 @@ public class StockLocalServiceImpl implements StockLocalService {
         this.stockMoneyFlowEntityDao.batchUpdate(updateMapList);
     }
 
-    private final String CqlInquireStockIdAll = "select id from test.stock;";
+    
 
     @Override
     public List<String> getStockIdAll() {
@@ -155,5 +167,20 @@ public class StockLocalServiceImpl implements StockLocalService {
             }
         }
         return result;
+    }
+
+    @Override
+    public void insertStockMoneyFlowMinute(Map<String, Object> insertMap) {
+        this.stockMoneyFlowMinuteEntityDao.insert(insertMap);
+    }
+
+    @Override
+    public void truncateStockMoneyFlowMinute() {
+        this.stockMoneyFlowMinuteEntityDao.execute(this.CqlTruncateStockMoneyFlowMinute);
+    }
+
+    @Override
+    public void insertStockMoneyFlowDay(Map<String, Object> insertMap) {
+        this.stockMoneyFlowHistoryEntityDao.insert(insertMap);
     }
 }
