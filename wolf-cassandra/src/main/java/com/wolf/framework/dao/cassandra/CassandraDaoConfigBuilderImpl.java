@@ -137,7 +137,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                                 }
                                 columnType = columnConfig.columnType();
                                 if (columnType == ColumnType.KEY) {
-                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, field, columnType, columnConfig.desc(), null);
+                                    columnHandler = new ColumnHandlerImpl(fieldName, dataMap, field, columnType, columnConfig.desc(), "");
                                     keyHandlerList.add(columnHandler);
                                 } else {
                                     columnHandler = new ColumnHandlerImpl(fieldName, dataMap, field, columnType, columnConfig.desc(), columnConfig.defaultValue());
