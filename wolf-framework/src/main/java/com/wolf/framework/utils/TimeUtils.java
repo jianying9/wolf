@@ -20,6 +20,7 @@ public final class TimeUtils {
     private final static Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YYMMDD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat FM_HHMM = new SimpleDateFormat("HH:mm");
 
     private TimeUtils() {
     }
@@ -43,11 +44,16 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YYMMDD_HHMMSS.format(currentTime);
     }
+    
+    public static String getDateFotmatHHmm() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_HHMM.format(currentTime);
+    }
 
     /**
      * 根据出生日期计算年龄的近似值,最大为127岁,最小为1
      *
-     * @param birthDate
+     * @param dateOfBirth
      * @return byte
      */
     public static long getAgeByBirth(String dateOfBirth) {
