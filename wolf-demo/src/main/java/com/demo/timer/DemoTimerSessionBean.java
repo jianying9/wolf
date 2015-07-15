@@ -19,10 +19,40 @@ import org.slf4j.Logger;
 public class DemoTimerSessionBean extends AbstractTimer implements DemoTimerSessionBeanLocal{
     
     Logger logger = LogFactory.getLogger(LoggerType.TIMER);
-
-    @Schedule(minute = "*/2", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "9-11,13-14", dayOfWeek = "Mon,Tue,Wed,Thu,Fri", persistent = false)
+    
+    @Schedule(minute = "25-59", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "9", dayOfWeek = "Mon,Tue,Wed,Thu,Fri", persistent = false)
     @Override
-    public void updateStockMoneyFlowMinute() {
+    public void updateStockMoneyFlowMinuteOne() {
+        logger.debug("timer:{}", "/stock/moneyflow/timer/update:minute更新");
+        Map<String, String> parameterMap = new HashMap<String, String>(2, 1);
+        parameterMap.put("type", "minute");
+        String result = this.executeService("/stock/moneyflow/timer/update", parameterMap);
+        logger.debug("result:{}", result);
+    }
+    
+    @Schedule(minute = "*", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "10", dayOfWeek = "Mon,Tue,Wed,Thu,Fri", persistent = false)
+    @Override
+    public void updateStockMoneyFlowMinuteTwo() {
+        logger.debug("timer:{}", "/stock/moneyflow/timer/update:minute更新");
+        Map<String, String> parameterMap = new HashMap<String, String>(2, 1);
+        parameterMap.put("type", "minute");
+        String result = this.executeService("/stock/moneyflow/timer/update", parameterMap);
+        logger.debug("result:{}", result);
+    }
+    
+    @Schedule(minute = "0-30", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "11", dayOfWeek = "Mon,Tue,Wed,Thu,Fri", persistent = false)
+    @Override
+    public void updateStockMoneyFlowMinuteThree() {
+        logger.debug("timer:{}", "/stock/moneyflow/timer/update:minute更新");
+        Map<String, String> parameterMap = new HashMap<String, String>(2, 1);
+        parameterMap.put("type", "minute");
+        String result = this.executeService("/stock/moneyflow/timer/update", parameterMap);
+        logger.debug("result:{}", result);
+    }
+
+    @Schedule(minute = "*", second = "0", dayOfMonth = "*", month = "*", year = "*", hour = "13-14", dayOfWeek = "Mon,Tue,Wed,Thu,Fri", persistent = false)
+    @Override
+    public void updateStockMoneyFlowMinuteFour() {
         logger.debug("timer:{}", "/stock/moneyflow/timer/update:minute更新");
         Map<String, String> parameterMap = new HashMap<String, String>(2, 1);
         parameterMap.put("type", "minute");
