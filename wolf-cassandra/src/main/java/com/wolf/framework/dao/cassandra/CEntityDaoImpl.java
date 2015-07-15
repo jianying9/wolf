@@ -4,6 +4,7 @@ import com.datastax.driver.core.ResultSet;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,8 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
         return this.cassandraHandler.exist(keyValue);
     }
 
-    private T readMap(Map<String, Object> entityMap) {
+    @Override
+    public T parseMap(Map<String, Object> entityMap) {
         T t = null;
         if (entityMap != null) {
             Field field;
@@ -60,11 +62,24 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     }
 
     @Override
+    public List<T> parseMap(List<Map<String, Object>> entityMapList) {
+        List<T> resultList = new ArrayList<T>(entityMapList.size());
+        T t;
+        for (Map<String, Object> entityMap : entityMapList) {
+            t = this.parseMap(entityMap);
+            if (t != null) {
+                resultList.add(t);
+            }
+        }
+        return resultList;
+    }
+
+    @Override
     public T inquireByKey(Object... keyValue) {
         Map<String, Object> entityMap = this.cassandraHandler.inquireByKey(keyValue);
-        return this.readMap(entityMap);
+        return this.parseMap(entityMap);
     }
-    
+
     @Override
     public Object[] insert(Map<String, Object> entityMap) {
         return this.cassandraHandler.insert(entityMap);
@@ -111,12 +126,12 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     public long count() {
         return this.cassandraHandler.count();
     }
-    
+
     @Override
     public long increase(String columnName, long value, Object... keyValue) {
         return this.cassandraHandler.increase(columnName, value, keyValue);
     }
-    
+
     @Override
     public ResultSet execute(String cql, Object... values) {
         return this.cassandraHandler.execute(cql, values);

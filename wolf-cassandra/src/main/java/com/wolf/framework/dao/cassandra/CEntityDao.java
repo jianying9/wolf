@@ -12,6 +12,10 @@ import java.util.Map;
  * @param <T>
  */
 public interface CEntityDao<T extends Entity> {
+    
+    public T parseMap(Map<String, Object> entityMap);
+    
+    public List<T> parseMap(List<Map<String, Object>> entityMapList);
 
     /**
      * 判断主键是否存在
