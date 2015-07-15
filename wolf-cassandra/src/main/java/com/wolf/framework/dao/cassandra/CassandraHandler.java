@@ -24,7 +24,7 @@ public interface CassandraHandler {
      * @param keyValue
      * @return
      */
-    public Map<String, Object> inquireByKey(Object... keyValue);
+    public Map<String, Object> queryByKey(Object... keyValue);
 
     /**
      * 插入一行记录
@@ -86,6 +86,14 @@ public interface CassandraHandler {
      * @return
      */
     public long increase(String columnName, long value, Object... keyValue);
+    
+    /**
+     * 自定义cql查询
+     * @param cql
+     * @param values
+     * @return 
+     */
+    public List<Map<String, Object>> query(String cql, Object... values);
 
     /**
      * 自定义sql查询

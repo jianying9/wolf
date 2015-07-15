@@ -13,10 +13,6 @@ import java.util.Map;
  */
 public interface CEntityDao<T extends Entity> {
     
-    public T parseMap(Map<String, Object> entityMap);
-    
-    public List<T> parseMap(List<Map<String, Object>> entityMapList);
-
     /**
      * 判断主键是否存在
      *
@@ -111,7 +107,15 @@ public interface CEntityDao<T extends Entity> {
     public long increase(String columnName, long value, Object... keyValue);
     
     /**
-     * 自定义sql查询
+     * 自定义cql查询
+     * @param cql
+     * @param values
+     * @return 
+     */
+    public List<T> query(String cql, Object... values);
+    
+    /**
+     * 自定义cql执行
      * @param cql
      * @param values
      * @return 

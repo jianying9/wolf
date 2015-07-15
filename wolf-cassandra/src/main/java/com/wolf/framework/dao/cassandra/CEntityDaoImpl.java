@@ -5,6 +5,7 @@ import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +33,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
         return this.cassandraHandler.exist(keyValue);
     }
 
-    @Override
-    public T parseMap(Map<String, Object> entityMap) {
+    private T parseMap(Map<String, Object> entityMap) {
         T t = null;
         if (entityMap != null) {
             Field field;
@@ -60,23 +60,10 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
         }
         return t;
     }
-
-    @Override
-    public List<T> parseMap(List<Map<String, Object>> entityMapList) {
-        List<T> resultList = new ArrayList<T>(entityMapList.size());
-        T t;
-        for (Map<String, Object> entityMap : entityMapList) {
-            t = this.parseMap(entityMap);
-            if (t != null) {
-                resultList.add(t);
-            }
-        }
-        return resultList;
-    }
-
+    
     @Override
     public T inquireByKey(Object... keyValue) {
-        Map<String, Object> entityMap = this.cassandraHandler.inquireByKey(keyValue);
+        Map<String, Object> entityMap = this.cassandraHandler.queryByKey(keyValue);
         return this.parseMap(entityMap);
     }
 
@@ -135,5 +122,20 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public ResultSet execute(String cql, Object... values) {
         return this.cassandraHandler.execute(cql, values);
+    }
+
+    @Override
+    public List<T> query(String cql, Object... values) {
+        List<T> resultList = Collections.EMPTY_LIST;
+        List<Map<String, Object>> resultMapList = this.cassandraHandler.query(cql, values);
+        if(resultMapList.isEmpty() == false) {
+            resultList = new ArrayList<T>(resultMapList.size());
+            T t;
+            for (Map<String, Object> resultMap : resultMapList) {
+                t = this.parseMap(resultMap);
+                resultList.add(t);
+            }
+        }
+        return resultList;
     }
 }

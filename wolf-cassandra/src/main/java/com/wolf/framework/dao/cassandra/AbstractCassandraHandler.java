@@ -9,6 +9,8 @@ import com.datastax.driver.core.Session;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.logger.LogFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-public abstract class AbstractCassandraHandler implements CassandraHandler{
+public abstract class AbstractCassandraHandler implements CassandraHandler {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     protected final String keyspace;
@@ -46,15 +48,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
         this.columnHandlerList = columnHandlerList;
         StringBuilder cqlBuilder = new StringBuilder(128);
         //inquire by key
-        cqlBuilder.append("SELECT ");
-        for (ColumnHandler columnHandler : this.keyHandlerList) {
-            cqlBuilder.append(columnHandler.getDataMap()).append(", ");
-        }
-        for (ColumnHandler columnHandler : this.columnHandlerList) {
-            cqlBuilder.append(columnHandler.getDataMap()).append(", ");
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(" FROM ").append(this.keyspace)
+        cqlBuilder.append("SELECT * FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(" WHERE ");
         for (ColumnHandler columnHandler : this.keyHandlerList) {
             cqlBuilder.append(columnHandler.getDataMap()).append(" = ? AND ");
@@ -83,23 +77,24 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
         this.logger.debug("{} countCql:{}", this.table, this.countCql);
     }
 
-    protected final Object getValue(Row row, ColumnHandler columnHander, int index) {
+    protected final Object getValue(Row row, ColumnHandler columnHander) {
         Object result;
+        String name = columnHander.getDataMap();
         switch (columnHander.getColumnDataType()) {
             case STRING:
-                result = row.getString(index);
+                result = row.getString(name);
                 break;
             case LONG:
-                result = row.getLong(index);
+                result = row.getLong(name);
                 break;
             case INT:
-                result = row.getInt(index);
+                result = row.getInt(name);
                 break;
             case DOUBLE:
-                result = row.getDouble(index);
+                result = row.getDouble(name);
                 break;
             default:
-                result = row.getBool(index);
+                result = row.getBool(name);
         }
         return result;
     }
@@ -121,9 +116,31 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
         return r != null;
     }
 
-    @Override
-    public final Map<String, Object> inquireByKey(Object... keyValues) {
+    private Map<String, Object> parseRow(Row r) {
         Map<String, Object> result = null;
+        if (r != null) {
+            result = new HashMap<String, Object>(this.columnHandlerList.size() + this.keyHandlerList.size(), 1);
+            Object value;
+            for (ColumnHandler ch : this.keyHandlerList) {
+                value = this.getValue(r, ch);
+                if (value == null || value.equals("null")) {
+                    value = ch.getDefaultValue();
+                }
+                result.put(ch.getColumnName(), value);
+            }
+            for (ColumnHandler ch : this.columnHandlerList) {
+                value = this.getValue(r, ch);
+                if (value == null || value.equals("null")) {
+                    value = ch.getDefaultValue();
+                }
+                result.put(ch.getColumnName(), value);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public final Map<String, Object> queryByKey(Object... keyValues) {
         PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValues));
         ResultSet rs;
@@ -136,31 +153,10 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
         } catch (ExecutionException ex) {
             throw new RuntimeException(ex);
         }
-        if (r != null) {
-            Object value;
-            ColumnHandler ch;
-            result = new HashMap<String, Object>(this.columnHandlerList.size() + 1);
-            int keySize = this.keyHandlerList.size();
-            for (int index = 0; index < keySize; index++) {
-                ch = this.keyHandlerList.get(index);
-                value = this.getValue(r, ch, index);
-                if (value == null || value.equals("null")) {
-                    value = ch.getDefaultValue();
-                }
-                result.put(ch.getColumnName(), value);
-            }
-            for (int index = 0; index < this.columnHandlerList.size(); index++) {
-                ch = this.columnHandlerList.get(index);
-                value = this.getValue(r, ch, index + keySize);
-                if (value == null || value.equals("null")) {
-                    value = ch.getDefaultValue();
-                }
-                result.put(ch.getColumnName(), value);
-            }
-        }
+        Map<String, Object> result = this.parseRow(r);
         return result;
     }
-    
+
     @Override
     public final ResultSet execute(String cql, Object... values) {
         PreparedStatement ps = this.session.prepare(cql);
@@ -174,6 +170,31 @@ public abstract class AbstractCassandraHandler implements CassandraHandler{
             throw new RuntimeException(ex);
         }
         return rs;
+    }
+
+    @Override
+    public List<Map<String, Object>> query(String cql, Object... values) {
+        List<Map<String, Object>> resultList = Collections.EMPTY_LIST;
+        PreparedStatement ps = this.session.prepare(cql);
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+        ResultSet rs;
+        try {
+            rs = rsf.get();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        } catch (ExecutionException ex) {
+            throw new RuntimeException(ex);
+        }
+        List<Row> rList = rs.all();
+        if (rList.isEmpty() == false) {
+            resultList = new ArrayList<Map<String, Object>>(rList.size());
+            Map<String, Object> map;
+            for (Row r : rList) {
+                map = this.parseRow(r);
+                resultList.add(map);
+            }
+        }
+        return resultList;
     }
 
     @Override
