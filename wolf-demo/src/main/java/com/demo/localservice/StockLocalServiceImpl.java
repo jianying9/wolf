@@ -6,6 +6,7 @@ import com.demo.entity.StockEntity;
 import com.demo.entity.StockMoneyFlowEntity;
 import com.demo.entity.StockMoneyFlowDayEntity;
 import com.demo.entity.StockMoneyFlowMinuteEntity;
+import com.demo.utils.StockUtils;
 import com.wolf.framework.dao.cassandra.CEntityDao;
 import com.wolf.framework.dao.cassandra.annotation.InjectCDao;
 import com.wolf.framework.local.LocalServiceConfig;
@@ -36,6 +37,8 @@ public class StockLocalServiceImpl implements StockLocalService {
     private final String CqlInquireStockIdAll = "select id from test.stock;";
 
     private final String CqlTruncateStockMoneyFlowMinute = "truncate test.stock_money_flow_minute;";
+    
+    private final String CqlQueryTopStock = "select * from test.stock_money_flow where sample='test' and sort < ?;";
 
     public final String URL_SINA_STOCK = "http://hq.sinajs.cn/list=${list}";
 
@@ -130,6 +133,14 @@ public class StockLocalServiceImpl implements StockLocalService {
         this.stockEntityDao.insert(insertMap);
     }
 
+    @Override
+    public List<StockMoneyFlowEntity> queryTopStock(long topNum) {
+        if(topNum > 100) {
+            topNum = 100;
+        }
+        return this.stockMoneyFlowEntityDao.query(this.CqlQueryTopStock, topNum);
+    }
+
     private class StockScoreComparator implements Comparator<Map<String, Object>> {
 
         @Override
@@ -148,7 +159,6 @@ public class StockLocalServiceImpl implements StockLocalService {
 
     @Override
     public void insertStockMoneyFlowList(List<Map<String, Object>> updateMapList) {
-        DecimalFormat df = new DecimalFormat("#.000");
         //计算得分
         double score;
         double superIn;
@@ -170,7 +180,7 @@ public class StockLocalServiceImpl implements StockLocalService {
                 s3 = 0;
             }
             score = s1 - s2 + s3;
-            score = Double.parseDouble(df.format(score));
+            score = Double.parseDouble(StockUtils.formatDouble(score));
             if (score > 0) {
                 System.out.println(updateMap.get("id") + " " + updateMap.get("name") + " " + score + " " + s1 + " " + s2 + " " + s3);
             }
@@ -180,7 +190,7 @@ public class StockLocalServiceImpl implements StockLocalService {
         Collections.sort(updateMapList, this.stockScoreComparator);
         //设置排序号
         for (int index = 0; index < updateMapList.size(); index++) {
-            updateMapList.get(index).put("sort", index);
+            updateMapList.get(index).put("sort", (long) index);
         }
         this.stockMoneyFlowEntityDao.batchInsert(updateMapList);
     }

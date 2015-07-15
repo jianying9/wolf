@@ -1,5 +1,6 @@
 package com.demo.localservice;
 
+import com.demo.entity.StockMoneyFlowEntity;
 import com.wolf.framework.local.Local;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public interface StockLocalService extends Local{
     public List<String> getStockIdAll();
     
     public void insertStockMoneyFlowList(List<Map<String, Object>> updateMapList);
+    
+    public List<StockMoneyFlowEntity> queryTopStock(long topNum);
     
     public void insertStockMoneyFlowMinute(Map<String, Object> insertMap);
     

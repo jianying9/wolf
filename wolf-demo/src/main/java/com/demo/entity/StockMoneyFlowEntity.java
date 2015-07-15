@@ -1,5 +1,6 @@
 package com.demo.entity;
 
+import com.demo.utils.StockUtils;
 import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.cassandra.annotation.CDaoConfig;
@@ -22,7 +23,7 @@ public class StockMoneyFlowEntity extends Entity {
     private String sample;
     
     @ColumnConfig(columnType = ColumnType.KEY, desc = "排序")
-    private int sort;
+    private long sort;
     //
     @ColumnConfig(desc = "评分")
     private double score;
@@ -36,13 +37,13 @@ public class StockMoneyFlowEntity extends Entity {
     @ColumnConfig(desc = "超大资金流入")
     private double superIn;
     //
-    @ColumnConfig(desc = "大资金流出")
+    @ColumnConfig(desc = "超大资金流出")
     private double superOut;
     //
     @ColumnConfig(desc = "大资金流入")
     private double bigIn;
     //
-    @ColumnConfig(desc = "资金流出")
+    @ColumnConfig(desc = "大资金流出")
     private double bigOut;
     //
     @ColumnConfig(desc = "中资金流入")
@@ -70,7 +71,7 @@ public class StockMoneyFlowEntity extends Entity {
         return sample;
     }
 
-    public int getSort() {
+    public long getSort() {
         return sort;
     }
 
@@ -139,21 +140,21 @@ public class StockMoneyFlowEntity extends Entity {
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<String, String>(16, 1);
         map.put("sample", this.sample);
-        map.put("sort", Integer.toString(this.sort));
-        map.put("score", Double.toString(this.score));
+        map.put("sort", Long.toString(this.sort));
+        map.put("score", StockUtils.formatDouble(this.score));
         map.put("sample", this.sample);
         map.put("name", this.name);
         map.put("id", this.id);
-        map.put("superIn", Double.toString(this.superIn));
-        map.put("superOut", Double.toString(this.superOut));
-        map.put("bigIn", Double.toString(this.bigIn));
-        map.put("bigOut", Double.toString(this.bigOut));
-        map.put("middleIn", Double.toString(this.middleIn));
-        map.put("middleOut", Double.toString(this.middleOut));
-        map.put("smallIn", Double.toString(this.smallIn));
-        map.put("smallOut", Double.toString(this.smallOut));
-        map.put("price", Double.toString(this.price));
-        map.put("changeRatio", Double.toString(this.changeRatio));
+        map.put("superIn", StockUtils.formatDouble(this.superIn));
+        map.put("superOut", StockUtils.formatDouble(this.superOut));
+        map.put("bigIn", StockUtils.formatDouble(this.bigIn));
+        map.put("bigOut", StockUtils.formatDouble(this.bigOut));
+        map.put("middleIn", StockUtils.formatDouble(this.middleIn));
+        map.put("middleOut", StockUtils.formatDouble(this.middleOut));
+        map.put("smallIn", StockUtils.formatDouble(this.smallIn));
+        map.put("smallOut", StockUtils.formatDouble(this.smallOut));
+        map.put("price", StockUtils.formatDouble(this.price));
+        map.put("changeRatio", StockUtils.formatDouble(this.changeRatio));
         map.put("lastUpdateTime", Long.toString(this.lastUpdateTime));
         return map;
     }

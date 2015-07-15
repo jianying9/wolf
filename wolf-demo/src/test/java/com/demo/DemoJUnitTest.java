@@ -39,7 +39,7 @@ public class DemoJUnitTest extends AbstractDemoTest{
 //    
 //    CREATE TABLE test.stock_money_flow (
 //            sample text,
-//            sort int,
+//            sort bigint,
 //            score double,
 //            id text,
 //            name text,
