@@ -4,12 +4,11 @@
     <parent>
         <artifactId>wolf</artifactId>
         <groupId>com.wolf</groupId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wolf</groupId>
     <artifactId>wolf-demo</artifactId>
-    <version>5.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>wolf-demo</name>
@@ -35,12 +34,12 @@
             <artifactId>wolf-doc</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.3.5</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

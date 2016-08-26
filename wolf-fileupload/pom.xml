@@ -5,11 +5,10 @@
     <parent>
         <groupId>com.wolf</groupId>
         <artifactId>wolf</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.1-SNAPSHOT</version>
     </parent>
     <groupId>com.wolf</groupId>
     <artifactId>wolf-fileupload</artifactId>
-    <version>5.0-SNAPSHOT</version>
     <name>wolf-fileupload</name>
     <url>http://maven.apache.org</url>
     <properties>

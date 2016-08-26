@@ -5,11 +5,10 @@
     <parent>
         <groupId>com.wolf</groupId>
         <artifactId>wolf</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.1-SNAPSHOT</version>
     </parent>
     <groupId>com.wolf</groupId>
     <artifactId>wolf-framework</artifactId>
-    <version>5.0-SNAPSHOT</version>
     <name>wolf-framework</name>
     <url>http://maven.apache.org</url>
 
@@ -38,21 +37,21 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.glassfish.main.ejb</groupId>
             <artifactId>javax.ejb</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.glassfish.main.transaction</groupId>
             <artifactId>javax.transaction</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.glassfish.main.javaee-api</groupId>
             <artifactId>javax.annotation</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -68,7 +67,7 @@
         </dependency>-->
         <dependency>
             <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
+            <artifactId>javaee-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

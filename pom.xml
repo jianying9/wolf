@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolf</groupId>
     <artifactId>wolf</artifactId>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wolf</name>
   
@@ -516,6 +516,11 @@
                 <version>6.0</version>
             </dependency>
             <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>6.0</version>
+            </dependency>
+            <dependency>
                 <groupId>com.sun.grizzly</groupId>
                 <artifactId>grizzly-websockets</artifactId>
                 <version>1.9.50</version>
@@ -624,19 +629,19 @@
         </plugins>
     </build>
     <modules>
-        <module>wolf-remote-api</module>
-        <module>wolf-remote</module>
+        <!--<module>wolf-remote-api</module>-->
+        <!--<module>wolf-remote</module>-->
         <module>wolf-framework</module>
         <!--<module>wolf-dao-derby</module>-->
         <!--<module>wolf-dao-hbase</module>-->
         <!--<module>wolf-lucene</module>-->
-        <module>wolf-doc</module>
-        <module>wolf-fileupload</module>
-        <module>wolf-search</module>
+        <!--<module>wolf-doc</module>-->
+        <!--<module>wolf-fileupload</module>-->
+        <!--<module>wolf-search</module>-->
         <!--<module>wolf-management</module>-->
-        <module>wolf-reids</module>
-        <module>wolf-cassandra</module>
-        <module>wolf-websocket</module>
-        <module>wolf-demo</module>
+        <!--<module>wolf-reids</module>-->
+        <!--<module>wolf-cassandra</module>-->
+        <!--<module>wolf-websocket</module>-->
+        <!--<module>wolf-demo</module>-->
     </modules>
 </project>
