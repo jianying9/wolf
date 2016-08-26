@@ -645,5 +645,6 @@
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->
+        <!--<module>wolf-framework-dao</module>-->
     </modules>
 </project>
