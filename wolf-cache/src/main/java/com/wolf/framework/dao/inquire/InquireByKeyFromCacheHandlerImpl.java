@@ -1,6 +1,7 @@
 package com.wolf.framework.dao.inquire;
 
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.dao.inquire.InquireByKeyHandler;
 import java.util.ArrayList;
 import java.util.List;
 import net.sf.ehcache.Cache;

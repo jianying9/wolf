@@ -19,7 +19,7 @@ import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
 import com.wolf.framework.module.ModuleConfig;
-import com.wolf.framework.paser.ClassParser;
+import com.wolf.framework.parser.ClassParser;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;

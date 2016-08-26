@@ -1,4 +1,4 @@
-package com.wolf.framework.paser;
+package com.wolf.framework.parser;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;

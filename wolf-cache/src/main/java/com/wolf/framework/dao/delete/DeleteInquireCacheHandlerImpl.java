@@ -1,6 +1,7 @@
 package com.wolf.framework.dao.delete;
 
 import com.wolf.framework.dao.cache.InquireCache;
+import com.wolf.framework.dao.delete.DeleteHandler;
 import java.util.List;
 
 /**

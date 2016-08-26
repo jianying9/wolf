@@ -2,6 +2,7 @@ package com.wolf.framework.dao.inquire;
 
 import com.wolf.framework.dao.cache.InquireCache;
 import com.wolf.framework.dao.condition.InquireContext;
+import com.wolf.framework.dao.inquire.InquireKeyByConditionHandler;
 import java.util.List;
 
 /**

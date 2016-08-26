@@ -1,6 +1,7 @@
 package com.wolf.framework.dao.insert;
 
 import com.wolf.framework.dao.cache.InquireCache;
+import com.wolf.framework.dao.insert.InsertHandler;
 import java.util.List;
 import java.util.Map;
 

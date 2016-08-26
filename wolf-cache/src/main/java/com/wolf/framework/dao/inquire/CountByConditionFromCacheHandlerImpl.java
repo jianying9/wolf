@@ -2,6 +2,7 @@ package com.wolf.framework.dao.inquire;
 
 import com.wolf.framework.dao.cache.InquireCache;
 import com.wolf.framework.dao.condition.Condition;
+import com.wolf.framework.dao.inquire.CountByConditionHandler;
 import java.util.List;
 
 /**
