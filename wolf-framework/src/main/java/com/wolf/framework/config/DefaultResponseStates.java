@@ -7,17 +7,17 @@ package com.wolf.framework.config;
 public class DefaultResponseStates {
 
     //成功
-    public final static String SUCCESS = "SUCCESS";
+    public final static String SUCCESS = "success";
     //失败
-    public final static String FAILURE = "FAILURE";
+    public final static String FAILURE = "failure";
     //未登录
-    public final static String UNLOGIN = "UNLOGIN";
+    public final static String UNLOGIN = "unlogin";
     //非法数据
-    public final static String INVALID = "INVALID";
+    public final static String INVALID = "invalid";
     //无权限
-    public final static String DENIED = "DENIED";
+    public final static String DENIED = "denied";
     //未实现
-    public final static String UNSUPPORT = "UNSUPPORT";
+    public final static String UNSUPPORT = "unsupport";
     //异常
-    public final static String EXCEPTION = "EXCEPTION";
+    public final static String EXCEPTION = "exception";
 }
