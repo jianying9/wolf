@@ -99,19 +99,19 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
             compileModel = FrameworkConfig.SERVER;
         }
         //检测服务器hostname的ip不能为127.0.0.1,否则提供rmi远程调用类服务时会出现异常
-        if (compileModel.equals(FrameworkConfig.SERVER)) {
-            String ip = null;
-            try {
-                //获取本地ip
-                InetAddress address = InetAddress.getLocalHost();
-                ip = address.getHostAddress();
-            } catch (UnknownHostException ex) {
-                throw new RuntimeException(ex);
-            }
-            if (ip == null || ip.equals("127.0.0.1")) {
-                throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
-            }
-        }
+//        if (compileModel.equals(FrameworkConfig.SERVER)) {
+//            String ip = null;
+//            try {
+//                //获取本地ip
+//                InetAddress address = InetAddress.getLocalHost();
+//                ip = address.getHostAddress();
+//            } catch (UnknownHostException ex) {
+//                throw new RuntimeException(ex);
+//            }
+//            if (ip == null || ip.equals("127.0.0.1")) {
+//                throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
+//            }
+//        }
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList<String>();
         //动态查找需要搜索的dao注解创建对象
