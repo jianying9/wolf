@@ -78,49 +78,42 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         String route = request.getPathInfo();
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
+            //route不存在,判断是否为框架特殊接口
             String wolf = parameterMap.get("wolf");
-            if (wolf != null) {
-                if (wolf.equals("TIME")) {
-                    //获取系统时间
-                    long time = System.currentTimeMillis();
-                    StringBuilder resultBuilder = new StringBuilder(25);
-                    resultBuilder.append("{\"wolf\":\"TIME\",\"time\":").append(Long.toString(time)).append('}');
-                    result = resultBuilder.toString();
-                    HttpUtils.toWrite(request, response, result);
-                } else if (wolf.equals("PUSH")) {
-                    //该请求为一个长轮询推送请求
-                    String sid = parameterMap.get("sid");
-                    if (sid != null) {
-                        synchronized (this) {
-                            //同sid冲突检测
-                            AsyncContext ctx = this.asyncContextMap.get(sid);
-                            if (ctx != null) {
-                                String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
-                                HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
-                                ctx.complete();
-                                this.asyncContextMap.remove(sid);
-                            }
-                            ctx = request.startAsync(request, response);
-                            ctx.setTimeout(this.asyncTimeOut);
-                            ctx.addListener(this.asyncListener);
-                            this.asyncContextMap.put(sid, ctx);
+            if (wolf == null) {
+                //非特殊接口,放回提示route不存在
+                result = "{\"state\":\"INVALID\",\"error\":\"route[" + route + "] not exist\"}";
+                HttpUtils.toWrite(request, response, result);
+            } else if (wolf.equals("PUSH")) {
+                //该请求为一个长轮询推送请求
+                String sid = parameterMap.get("sid");
+                if (sid != null) {
+                    synchronized (this) {
+                        //同sid冲突检测
+                        AsyncContext ctx = this.asyncContextMap.get(sid);
+                        if (ctx != null) {
+                            String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
+                            HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
+                            ctx.complete();
+                            this.asyncContextMap.remove(sid);
                         }
-                    } else {
-                        //无效的wolf
-                        result = "{\"wolf\":\"INVALID\",\"error\":\"push sid not exist\"}";
-                        HttpUtils.toWrite(request, response, result);
+                        ctx = request.startAsync(request, response);
+                        ctx.setTimeout(this.asyncTimeOut);
+                        ctx.addListener(this.asyncListener);
+                        this.asyncContextMap.put(sid, ctx);
                     }
                 } else {
                     //无效的wolf
-                    result = "{\"wolf\":\"INVALID\",\"error\":\"wolf not exist\"}";
+                    result = "{\"wolf\":\"INVALID\",\"error\":\"push sid not exist\"}";
                     HttpUtils.toWrite(request, response, result);
                 }
             } else {
-                //无效的act
-                result = "{\"state\":\"INVALID\",\"error\":\"route[" + route + "] not exist\"}";
+                //无效的wolf
+                result = "{\"wolf\":\"INVALID\",\"error\":\"wolf not exist\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
+            //route存在
             String sid = parameterMap.get("sid");
             WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, route, parameterMap);
             serviceWorker.doWork(workerContext);
