@@ -27,7 +27,6 @@ import com.wolf.framework.worker.workhandler.MinorParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.TransactionWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.ValidateSecurityWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ValidateSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.ArrayList;
@@ -165,13 +164,7 @@ public class ServiceConfigParser<K extends Service> {
             }
             //是否验证访问来源是否安全
             if (validateSecurity) {
-                String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
-                long error = 180000;
-                String errorText = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_ERROR);
-                if (errorText != null) {
-                    error = Long.parseLong(errorText);
-                }
-                workHandler = new ValidateSecurityWorkHandlerImpl(key, error, workHandler);
+                //todo 验证访问来源是否安全
             }
             ResponseParameterHandler outputParameterHandler;
             ResponseParameterHandlerBuilder outputParameterHandlerBuilder;

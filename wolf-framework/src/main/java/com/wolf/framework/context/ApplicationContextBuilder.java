@@ -91,12 +91,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     }
 
     public final void build() {
-        //校验密钥
-        String key = this.parameterMap.get(FrameworkConfig.SEED_DES_KEY);
-        if (key == null || key.length() != 8) {
-            key = "wolf2014";
-            this.parameterMap.put(FrameworkConfig.SEED_DES_KEY, key);
-        }
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
         //获取运行模式

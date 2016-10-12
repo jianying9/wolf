@@ -51,11 +51,7 @@ public class FrameworkConfig {
     public final static String REDIS_MAX_POOL_SIZE = "redis.max.pool.size";
     //redis连接池最小连接数
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
-    //加密校验的key,8位字符
-    public final static String SEED_DES_KEY = "seed.des.key";
-    //seed允许时间的最大误差值,毫秒，默认为180000
-    public final static String SEED_ERROR = "seed.error";
-    //seed允许时间的最大误差值,毫秒，默认为180000
+    //http长轮询超时时间(毫秒)
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
     //cassandra 节点地址
     public final static String CASSANDRA_CONTACT_POINT = "cassandra.contact.point";
@@ -74,8 +70,6 @@ public class FrameworkConfig {
         wordSet.add("route");
         wordSet.add("filters");
         wordSet.add("sid");
-        wordSet.add("entry");
-        wordSet.add("seed");
         wordSet.add("pageIndex");
         wordSet.add("pageSize");
         wordSet.add("pageNum");

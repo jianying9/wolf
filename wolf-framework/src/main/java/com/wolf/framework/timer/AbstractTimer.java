@@ -1,10 +1,8 @@
 package com.wolf.framework.timer;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
 import java.util.Map;
@@ -24,11 +22,6 @@ public class AbstractTimer {
                 Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
                 logger.error("timer:Can not find route:".concat(route));
             } else {
-                String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
-                String seed = Long.toString(System.currentTimeMillis());
-                byte[] entrySeedByte = SecurityUtils.encryptByDes(seed, key);
-                String engrySeedHex = SecurityUtils.byteToHexString(entrySeedByte);
-                parameterMap.put("seed", engrySeedHex);
                 LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, route, parameterMap);
                 serviceWorker.doWork(localWorkerContextImpl);
                 result = serviceWorker.getResponse().getResponseMessage();
