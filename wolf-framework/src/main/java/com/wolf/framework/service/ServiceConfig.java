@@ -65,13 +65,6 @@ public @interface ServiceConfig {
     public SessionHandleType sessionHandleType() default SessionHandleType.NONE;
 
     /**
-     * 是否分页
-     *
-     * @return
-     */
-    public boolean page() default false;
-
-    /**
      * 描述
      *
      * @return

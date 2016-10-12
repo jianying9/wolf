@@ -2,7 +2,6 @@ package com.wolf.framework.worker.context;
 
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.JsonUtils;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,25 +41,5 @@ public final class MessageContextImpl extends AbstractMessageContext {
     @Override
     public Map<String, String> getMapData() {
         return this.mapData;
-    }
-
-    @Override
-    public final long getPageIndex() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public long getPageSize() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public void setMapListData(List<Map<String, String>> parameterMapList) {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public List<Map<String, String>> getMapListData() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
     }
 }

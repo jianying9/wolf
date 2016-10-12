@@ -3,20 +3,14 @@ package com.wolf.framework.service;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.DataHandler;
-import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
-import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandlerBuilder;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandlerBuilder;
-import com.wolf.framework.worker.PageServiceWorkerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerImpl;
@@ -45,17 +39,9 @@ public class ServiceConfigParser<K extends Service> {
 
     private final ServiceWorkerContext serviceWorkerContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    private final RequestParameterHandler pageIndexHandler;
-    private final RequestParameterHandler pageSizeHandler;
 
     public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
         this.serviceWorkerContext = serviceWorkerContext;
-        //初始化分页参数配置
-        ParameterContext parametersContext = this.serviceWorkerContext.getParameterContext();
-        DataHandlerFactory dataHandlerFactory = parametersContext.getDataHandlerFactory();
-        DataHandler longTypeHandler = dataHandlerFactory.getDataHandler(DataType.INTEGER);
-        this.pageIndexHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_INDEX, longTypeHandler, 999, 1);
-        this.pageSizeHandler = new NumberParameterHandlerImpl(WorkHandler.PAGE_SIZE, longTypeHandler, 999, 1);
     }
 
     /**
@@ -80,7 +66,6 @@ public class ServiceConfigParser<K extends Service> {
                 }
             }
             final ResponseConfig[] reponseConfigs = serviceConfig.responseConfigs();
-            final boolean page = serviceConfig.page();
             final boolean requireTransaction = serviceConfig.requireTransaction();
             final SessionHandleType sessionHandleTypeEnum = serviceConfig.sessionHandleType();
             final boolean validateSession = serviceConfig.validateSession();
@@ -188,15 +173,10 @@ public class ServiceConfigParser<K extends Service> {
                 returnNames = new String[0];
             }
             //创建对应的工作对象
-            final ServiceWorker serviceWorker;
-            if (page) {
-                serviceWorker = new PageServiceWorkerImpl(this.pageIndexHandler, this.pageSizeHandler, returnNames, returnParameterMap, workHandler);
-            } else {
-                serviceWorker = new ServiceWorkerImpl(returnNames, returnParameterMap, workHandler);
-            }
+            final ServiceWorker serviceWorker = new ServiceWorkerImpl(returnNames, returnParameterMap, workHandler);
             //INFO,开发模式才能会返回接口信息
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                serviceWorker.createInfo(route, page, validateSession, group, desc, requestConfigs, reponseConfigs, responseStates);
+                serviceWorker.createInfo(route, false, validateSession, group, desc, requestConfigs, reponseConfigs, responseStates);
             }
             this.serviceWorkerContext.putServiceWorker(route, serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());

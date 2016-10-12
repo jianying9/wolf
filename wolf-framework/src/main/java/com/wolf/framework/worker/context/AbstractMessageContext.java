@@ -5,9 +5,7 @@ import com.wolf.framework.config.DefaultResponseStates;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,15 +87,6 @@ public abstract class AbstractMessageContext implements FrameworkMessageContext 
     public final <T extends Entity> void setEntityData(T t) {
         Map<String, String> entityMap = t.toMap();
         this.setMapData(entityMap);
-    }
-
-    @Override
-    public final <T extends Entity> void setEntityListData(List<T> tList) {
-        List<Map<String, String>> entityMapList = new ArrayList<Map<String, String>>(tList.size());
-        for (T t : tList) {
-            entityMapList.add(t.toMap());
-        }
-        this.setMapListData(entityMapList);
     }
 
     @Override

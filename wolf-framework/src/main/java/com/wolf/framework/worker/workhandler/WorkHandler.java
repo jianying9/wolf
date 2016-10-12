@@ -9,8 +9,6 @@ import com.wolf.framework.worker.context.FrameworkMessageContext;
  */
 public interface WorkHandler {
 
-    public String PAGE_INDEX = "pageIndex";
-    public String PAGE_SIZE = "pageSize";
     public String INFO = "INFO";
     public String SERVICES = "SERVICES";
     public String NULL_MESSAGE = " is null";

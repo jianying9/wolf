@@ -70,8 +70,6 @@ public class FrameworkConfig {
         wordSet.add("route");
         wordSet.add("filters");
         wordSet.add("sid");
-        wordSet.add("pageIndex");
-        wordSet.add("pageSize");
         wordSet.add("comet");
         wordSet.add("callback");
         return Collections.unmodifiableSet(wordSet);
