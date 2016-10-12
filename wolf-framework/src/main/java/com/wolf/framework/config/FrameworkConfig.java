@@ -74,7 +74,7 @@ public class FrameworkConfig {
         wordSet.add("pageSize");
         wordSet.add("pageNum");
         wordSet.add("pageTotal");
-        wordSet.add("wolf");
+        wordSet.add("comet");
         return Collections.unmodifiableSet(wordSet);
     }
 }

@@ -78,13 +78,9 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         String route = request.getPathInfo();
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
-            //route不存在,判断是否为框架特殊接口
-            String wolf = parameterMap.get("wolf");
-            if (wolf == null) {
-                //非特殊接口,放回提示route不存在
-                result = "{\"state\":\"INVALID\",\"error\":\"route[" + route + "] not exist\"}";
-                HttpUtils.toWrite(request, response, result);
-            } else if (wolf.equals("PUSH")) {
+            //route不存在,判断是否为comet请求
+            String comet = parameterMap.get("comet");
+            if (comet != null && comet.equals("start")) {
                 //该请求为一个长轮询推送请求
                 String sid = parameterMap.get("sid");
                 if (sid != null) {
@@ -92,7 +88,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                         //同sid冲突检测
                         AsyncContext ctx = this.asyncContextMap.get(sid);
                         if (ctx != null) {
-                            String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
+                            String stopMessage = "{\"comet\":\"stop\"}";
                             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
                             ctx.complete();
                             this.asyncContextMap.remove(sid);
@@ -103,13 +99,13 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                         this.asyncContextMap.put(sid, ctx);
                     }
                 } else {
-                    //无效的wolf
-                    result = "{\"wolf\":\"INVALID\",\"error\":\"push sid not exist\"}";
+                    //无效的comet
+                    result = "{\"comet\":\"invalid\",\"error\":\"push sid not exist\"}";
                     HttpUtils.toWrite(request, response, result);
                 }
             } else {
-                //无效的wolf
-                result = "{\"wolf\":\"INVALID\",\"error\":\"wolf not exist\"}";
+                //非特殊接口,放回提示route不存在
+                result = "{\"state\":\"invalid\",\"error\":\"route[" + route + "] not exist\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
@@ -197,7 +193,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             AsyncContext ctx = event.getAsyncContext();
             String sid = ctx.getRequest().getParameter("sid");
             asyncContextMap.remove(sid);
-            String continueMessage = "{\"wolf\":\"PUSH_TIMEOUT\"}";
+            String continueMessage = "{\"comet\":\"timeout\"}";
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), continueMessage);
             ctx.complete();
         }
@@ -219,7 +215,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         this.logger.debug("async-servlet remove session:{}", sid);
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
-            String stopMessage = "{\"wolf\":\"PUSH_STOP\"}";
+            String stopMessage = "{\"comet\":\"stop\"}";
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
             ctx.complete();
             this.asyncContextMap.remove(sid);
