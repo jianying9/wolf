@@ -15,33 +15,34 @@
     
     <!--远程资源库地址-->
     <repositories>
-        <repository>
-            <!-- 内网maven正式版本发布地址 -->
+<!--        <repository>
+             内网maven正式版本发布地址 
             <id>local.maven.com-releases</id>
             <name>local internal maven repository</name>
             <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/releases</url>
         </repository>
         <repository>
-            <!-- 内网maven每日快照版本发布地址 -->
+             内网maven每日快照版本发布地址 
             <id>local.maven.com-snapshots</id>
             <name>local snapshots maven repository</name>
             <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/snapshots/</url>
         </repository>
+-->        
         <repository>
-            <!-- 外网maven中心库代理 -->
+             <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
-            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/central</url>
+            <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
         </repository>
     </repositories>
 
     <!--远程插件资源库地址-->
     <pluginRepositories>
         <pluginRepository>
-            <!-- 外网maven中心库代理 -->
+             <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
-            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/central</url>
+            <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
         </pluginRepository>
     </pluginRepositories>
     
@@ -50,7 +51,7 @@
         <repository>
             <id>local.maven.com-snapshots</id>
             <name>local snapshots maven repository</name>
-            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://139.224.54.3:8081/nexus/content/repositories/snapshots</url>
         </repository>
     </distributionManagement>
     
