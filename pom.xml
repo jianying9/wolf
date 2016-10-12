@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolf</groupId>
     <artifactId>wolf</artifactId>
-    <version>5.1-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wolf</name>
   
@@ -15,19 +15,6 @@
     
     <!--远程资源库地址-->
     <repositories>
-<!--        <repository>
-             内网maven正式版本发布地址 
-            <id>local.maven.com-releases</id>
-            <name>local internal maven repository</name>
-            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/releases</url>
-        </repository>
-        <repository>
-             内网maven每日快照版本发布地址 
-            <id>local.maven.com-snapshots</id>
-            <name>local snapshots maven repository</name>
-            <url>http://archives-pub.bigdata.99.com:8081/nexus/content/repositories/snapshots/</url>
-        </repository>
--->        
         <repository>
              <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
