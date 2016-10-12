@@ -13,10 +13,6 @@ public interface Response {
 
     public long getPageSize();
 
-    public long getPageTotal();
-
-    public long getPageNum();
-
     public String getState();
 
     public Map<String, String> getMapData();

@@ -15,12 +15,6 @@ public interface MessageContext extends Response {
 
     public Map<String, String> getParameterMap();
     
-    public void setPageIndex(long pageIndex);
-    
-    public void setPageSize(long pageSize);
-    
-    public void setPageTotal(long pageTotal);
-    
     public void setNewSessionId(String sid);
 
     public void setMapData(Map<String, String> parameterMap);

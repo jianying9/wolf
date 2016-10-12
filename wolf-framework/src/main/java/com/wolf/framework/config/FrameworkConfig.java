@@ -72,9 +72,8 @@ public class FrameworkConfig {
         wordSet.add("sid");
         wordSet.add("pageIndex");
         wordSet.add("pageSize");
-        wordSet.add("pageNum");
-        wordSet.add("pageTotal");
         wordSet.add("comet");
+        wordSet.add("callback");
         return Collections.unmodifiableSet(wordSet);
     }
 }

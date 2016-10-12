@@ -14,10 +14,8 @@ import java.util.Map;
 public final class PageMessageContextImpl extends AbstractMessageContext implements FrameworkMessageContext {
 
     //page
-    private long pageIndex = 1;
+    private long pageIndex = 0;
     private long pageSize = 6;
-    private long pageTotal = -1;
-    private long pageNum = -1;
     private List<Map<String, String>> mapListData;
 
     public PageMessageContextImpl(
@@ -67,30 +65,6 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     }
 
     @Override
-    public long getPageTotal() {
-        return pageTotal;
-    }
-
-    @Override
-    public void setPageTotal(long pageTotal) {
-        this.pageTotal = pageTotal;
-        if (this.pageTotal > 0) {
-            long total = this.pageTotal;
-            long num = 0;
-            while (total > 0) {
-                num++;
-                total = total - this.pageSize;
-            }
-            this.pageNum = num;
-        }
-    }
-
-    @Override
-    public long getPageNum() {
-        return pageNum;
-    }
-
-    @Override
     public final String createMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
         String data = "";
@@ -100,10 +74,8 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
         jsonBuilder.append("{\"state\":\"").append(this.state)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute())
                 .append("\",\"data\":{")
-                .append("\"pageTotal\":").append(this.pageTotal)
                 .append(",\"pageIndex\":").append(this.pageIndex)
                 .append(",\"pageSize\":").append(this.pageSize)
-                .append(",\"pageNum\":").append(this.pageNum)
                 .append(",\"list\":[").append(data).append("]}");
         if (this.newSid != null) {
             jsonBuilder.append(",\"sid\":\"").append(this.newSid).append('"');
@@ -120,15 +92,5 @@ public final class PageMessageContextImpl extends AbstractMessageContext impleme
     @Override
     public Map<String, String> getMapData() {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be false");
-    }
-
-    @Override
-    public void setPageIndex(long pageIndex) {
-        this.pageIndex = pageIndex;
-    }
-
-    @Override
-    public void setPageSize(long pageSize) {
-        this.pageSize = pageSize;
     }
 }

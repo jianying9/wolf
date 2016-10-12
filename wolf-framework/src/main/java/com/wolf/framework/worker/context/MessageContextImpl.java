@@ -55,37 +55,12 @@ public final class MessageContextImpl extends AbstractMessageContext {
     }
 
     @Override
-    public long getPageTotal() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public long getPageNum() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public void setPageTotal(long pageTotal) {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
     public void setMapListData(List<Map<String, String>> parameterMapList) {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
     }
 
     @Override
     public List<Map<String, String>> getMapListData() {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public void setPageIndex(long pageIndex) {
-        throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
-    }
-
-    @Override
-    public void setPageSize(long pageSize) {
         throw new UnsupportedOperationException("Not supported.Check ServiceConfig page must be true");
     }
 }
