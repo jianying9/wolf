@@ -5,7 +5,6 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
@@ -43,11 +42,6 @@ public final class TestHandler {
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
-            String key = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.SEED_DES_KEY);
-            String seed = Long.toString(System.currentTimeMillis());
-            byte[] entrySeedByte = SecurityUtils.encryptByDes(seed, key);
-            String engrySeedHex = SecurityUtils.byteToHexString(entrySeedByte);
-            parameterMap.put("seed", engrySeedHex);
             WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, route, parameterMap);
             serviceWorker.doWork(workerContext);
             result = serviceWorker.getResponse();
