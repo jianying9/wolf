@@ -1,7 +1,7 @@
 package com.wolf.framework.service.parameter;
 
 import com.wolf.framework.data.DataType;
-import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
+import com.wolf.framework.service.parameter.filter.FilterType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,5 +40,5 @@ public @interface ResponseConfig {
      *
      * @return
      */
-    public FilterTypeEnum[] filterTypes() default {FilterTypeEnum.ESCAPE, FilterTypeEnum.SECURITY};
+    public FilterType[] filterTypes() default {FilterType.ESCAPE, FilterType.SECURITY};
 }

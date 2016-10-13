@@ -6,7 +6,7 @@ import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.Filter;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
-import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
+import com.wolf.framework.service.parameter.filter.FilterType;
 import java.util.Set;
 
 /**
@@ -50,7 +50,7 @@ public class ResponseParameterHandlerBuilder {
             case CHAR:
                 Filter[] filters = null;
                 //获取过滤对象
-                FilterTypeEnum[] filterTypeEnums = this.outputConfig.filterTypes();
+                FilterType[] filterTypeEnums = this.outputConfig.filterTypes();
                 if (filterTypeEnums.length > 0) {
                     Filter filter;
                     filters = new Filter[filterTypeEnums.length];

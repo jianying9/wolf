@@ -5,7 +5,7 @@ package com.wolf.framework.service.parameter.filter;
  *
  * @author aladdin
  */
-public enum FilterTypeEnum {
+public enum FilterType {
 
     //转义过滤
     ESCAPE,

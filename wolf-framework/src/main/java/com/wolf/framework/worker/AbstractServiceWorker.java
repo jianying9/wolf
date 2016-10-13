@@ -7,7 +7,7 @@ import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.filter.EscapeFilterImpl;
 import com.wolf.framework.service.parameter.filter.Filter;
-import com.wolf.framework.service.parameter.filter.FilterTypeEnum;
+import com.wolf.framework.service.parameter.filter.FilterType;
 import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
@@ -88,8 +88,8 @@ public abstract class AbstractServiceWorker implements ServiceWorker {
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseConfig.desc()))
                     .append("\",\"filter\":\"");
             if (responseConfig.filterTypes().length > 0) {
-                for (FilterTypeEnum filterTypeEnum : responseConfig.filterTypes()) {
-                    jsonBuilder.append(filterTypeEnum.name()).append(',');
+                for (FilterType filterType : responseConfig.filterTypes()) {
+                    jsonBuilder.append(filterType.name()).append(',');
                 }
                 jsonBuilder.setLength(jsonBuilder.length() - 1);
             }

@@ -11,13 +11,13 @@ import java.util.Map;
 public final class FilterFactoryImpl implements FilterFactory {
 
     public FilterFactoryImpl() {
-        this.filterMap.put(FilterTypeEnum.ESCAPE, new EscapeFilterImpl());
-        this.filterMap.put(FilterTypeEnum.SECURITY, new SecurityFilterImpl());
+        this.filterMap.put(FilterType.ESCAPE, new EscapeFilterImpl());
+        this.filterMap.put(FilterType.SECURITY, new SecurityFilterImpl());
     }
-    private final Map<FilterTypeEnum, Filter> filterMap = new EnumMap<FilterTypeEnum, Filter>(FilterTypeEnum.class);
+    private final Map<FilterType, Filter> filterMap = new EnumMap<FilterType, Filter>(FilterType.class);
 
     @Override
-    public Filter getFilter(final FilterTypeEnum filterTypeEnum) {
-        return this.filterMap.get(filterTypeEnum);
+    public Filter getFilter(final FilterType filterType) {
+        return this.filterMap.get(filterType);
     }
 }
