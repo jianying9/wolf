@@ -4,7 +4,7 @@ package com.wolf.framework.config;
  *
  * @author aladdin
  */
-public class DefaultResponseStates {
+public class ResponseState {
 
     //成功
     public final static String SUCCESS = "success";

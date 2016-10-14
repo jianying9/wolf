@@ -1,7 +1,8 @@
 package com.wolf.framework.worker.workhandler;
 
+import com.wolf.framework.reponse.WorkerResponse;
+import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -27,14 +28,14 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
+    public void execute(WorkerContext workerContext) {
         String paraValue;
         String errorParaName = "";
         String errorMsg = "";
         RequestParameterHandler parameterHandler;
-        WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
         //验证必要参数是否合法
         final Map<String, String> parameterMap = workerContext.getParameterMap();
+        final WorkerRequest request = workerContext.getWorkerRequest();
         for (String parameter : this.minorParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue != null) {
@@ -42,7 +43,7 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
                 parameterHandler = this.parameterHandlerMap.get(parameter);
                 errorMsg = parameterHandler.validate(paraValue);
                 if (errorMsg.isEmpty()) {
-                    frameworkMessageContext.putParameter(parameter, paraValue);
+                    request.putParameter(parameter, paraValue);
                 } else {
                     errorParaName = parameter;
                     break;
@@ -54,11 +55,12 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
         }
         if (errorMsg.isEmpty()) {
             //验证通过
-            this.nextWorkHandler.execute(frameworkMessageContext);
+            this.nextWorkHandler.execute(workerContext);
         } else {
-            frameworkMessageContext.invalid();
-            frameworkMessageContext.setError(errorMsg);
-            frameworkMessageContext.createErrorMessage();
+            WorkerResponse response = workerContext.getWorkerResponse();
+            response.invalid();
+            response.setError(errorMsg);
+            response.createErrorMessage();
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.ResponseState;
-import com.wolf.framework.worker.context.Response;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -33,5 +33,5 @@ public interface ServiceWorker {
 
     public String getDescription();
     
-    public Response getResponse();
+    public String createResponseMessage(Response response);
 }

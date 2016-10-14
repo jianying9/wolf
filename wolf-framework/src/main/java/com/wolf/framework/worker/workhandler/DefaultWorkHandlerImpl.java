@@ -1,7 +1,7 @@
 package com.wolf.framework.worker.workhandler;
 
 import com.wolf.framework.service.Service;
-import com.wolf.framework.worker.context.FrameworkMessageContext;
+import com.wolf.framework.worker.context.WorkerContext;
 
 /**
  * 默认处理类
@@ -17,7 +17,7 @@ public class DefaultWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
-        this.service.execute(frameworkMessageContext);
+    public void execute(WorkerContext workerContext) {
+        this.service.execute(workerContext.getWorkerRequest(), workerContext.getWorkerResponse());
     }
 }

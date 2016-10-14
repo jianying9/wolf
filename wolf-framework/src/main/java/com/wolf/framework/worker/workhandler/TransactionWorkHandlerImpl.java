@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.worker.context.FrameworkMessageContext;
+import com.wolf.framework.worker.context.WorkerContext;
 import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 
@@ -18,13 +18,13 @@ public class TransactionWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
+    public void execute(WorkerContext workerContext) {
         UserTransaction userTransaction = null;
         try {
             InitialContext ic = new InitialContext();
             userTransaction = (UserTransaction) ic.lookup("java:comp/UserTransaction");
             userTransaction.begin();
-            this.nextWorkHandler.execute(frameworkMessageContext);
+            this.nextWorkHandler.execute(workerContext);
             userTransaction.commit();
         } catch (Throwable t) {
             if (userTransaction != null) {

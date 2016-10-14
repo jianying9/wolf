@@ -111,9 +111,9 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         } else {
             //route存在
             String sid = parameterMap.get("sid");
-            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, route, parameterMap);
+            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, route, parameterMap, serviceWorker);
             serviceWorker.doWork(workerContext);
-            result = serviceWorker.getResponse().getResponseMessage();
+            result = workerContext.getWorkerResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
         }
     }

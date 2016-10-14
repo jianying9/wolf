@@ -1,20 +1,22 @@
-package com.wolf.framework.worker.context;
-
-import java.util.Map;
+package com.wolf.framework.reponse;
 
 /**
  *
  * @author jianying9
  */
 public interface Response {
-
+    
     public String getState();
+    
+    public void setState(String state);
+    
+    public void denied();
 
-    public Map<String, String> getMapData();
+    public void invalid();
+
+    public void unlogin();
 
     public String getResponseMessage();
 
     public String getResponseMessage(boolean useCache);
-    
-    public String getSessionId();
 }

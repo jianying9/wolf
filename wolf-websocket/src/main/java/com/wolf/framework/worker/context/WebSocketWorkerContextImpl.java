@@ -2,6 +2,7 @@ package com.wolf.framework.worker.context;
 
 import com.wolf.framework.websocket.GlobalApplication;
 import com.wolf.framework.websocket.GlobalWebSocket;
+import com.wolf.framework.worker.ServiceWorker;
 
 /**
  *
@@ -12,8 +13,8 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
     private final GlobalApplication globalApplication;
     private final GlobalWebSocket globalWebSocket;
 
-    public WebSocketWorkerContextImpl(GlobalApplication globalApplication, GlobalWebSocket globalWebSocket, String act, String message) {
-        super(act, message);
+    public WebSocketWorkerContextImpl(GlobalApplication globalApplication, GlobalWebSocket globalWebSocket, String act, String message, ServiceWorker serviceWorker) {
+        super(act, message, serviceWorker);
         this.globalApplication = globalApplication;
         this.globalWebSocket = globalWebSocket;
     }

@@ -1,5 +1,6 @@
 package com.wolf.framework.worker.context;
 
+import com.wolf.framework.worker.ServiceWorker;
 import java.util.Map;
 
 /**
@@ -10,8 +11,8 @@ public class LocalWorkerContextImpl extends AbstractWorkContext {
 
     private String sid;
 
-    public LocalWorkerContextImpl(String sid, String act, Map<String, String> parameterMap) {
-        super(act, parameterMap);
+    public LocalWorkerContextImpl(String sid, String act, Map<String, String> parameterMap, ServiceWorker serviceWorker) {
+        super(act, parameterMap, serviceWorker);
         this.sid = sid;
     }
 

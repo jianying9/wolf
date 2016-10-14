@@ -1,6 +1,7 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.worker.context.MessageContext;
+import com.wolf.framework.reponse.Response;
+import com.wolf.framework.request.Request;
 
 /**
  *
@@ -8,5 +9,5 @@ import com.wolf.framework.worker.context.MessageContext;
  */
 public interface Service {
 
-    public void execute(MessageContext messageContext);
+    public void execute(Request request, Response response);
 }

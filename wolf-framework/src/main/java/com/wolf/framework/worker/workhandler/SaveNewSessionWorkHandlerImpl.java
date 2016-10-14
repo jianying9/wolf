@@ -1,6 +1,5 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
 
 /**
@@ -17,10 +16,9 @@ public class SaveNewSessionWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
-        this.nextWorkHandler.execute(frameworkMessageContext);
-        String newSid = frameworkMessageContext.getNewSessionId();
-        WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
+    public void execute(WorkerContext workerContext) {
+        this.nextWorkHandler.execute(workerContext);
+        String newSid = workerContext.getWorkerRequest().getNewSessionId();
         workerContext.saveNewSession(newSid);
     }
 }

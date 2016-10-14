@@ -1,10 +1,11 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.config.DefaultResponseStates;
+import com.wolf.framework.config.ResponseState;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.exception.ResponseStateException;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.worker.context.FrameworkMessageContext;
+import com.wolf.framework.reponse.Response;
+import com.wolf.framework.worker.context.WorkerContext;
 import org.slf4j.Logger;
 
 /**
@@ -21,9 +22,9 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
+    public void execute(WorkerContext workerContext) {
         try {
-            this.nextWorkHandler.execute(frameworkMessageContext);
+            this.nextWorkHandler.execute(workerContext);
         } catch (RuntimeException re) {
             Throwable t = re.getCause();
             if (t == null) {
@@ -31,13 +32,14 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             }
             Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.error("wolf-exception", t);
+            Response response = workerContext.getWorkerResponse();
             if (ResponseStateException.class.isInstance(t)) {
                 ResponseStateException te = (ResponseStateException) t;
-                frameworkMessageContext.setState(te.getState());
+                response.setState(te.getState());
             } else if(UnsupportedOperationException.class.isInstance(t)) {
-                frameworkMessageContext.setState(DefaultResponseStates.UNSUPPORT);
+                response.setState(ResponseState.UNSUPPORT);
             } else {
-                frameworkMessageContext.setState(DefaultResponseStates.EXCEPTION);
+                response.setState(ResponseState.EXCEPTION);
             }
         }
     }

@@ -70,6 +70,8 @@ public class FrameworkConfig {
         wordSet.add("route");
         wordSet.add("filters");
         wordSet.add("sid");
+        wordSet.add("nextIndex");
+        wordSet.add("nextSize");
         wordSet.add("comet");
         wordSet.add("callback");
         return Collections.unmodifiableSet(wordSet);

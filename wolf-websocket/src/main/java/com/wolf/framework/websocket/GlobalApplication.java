@@ -76,10 +76,10 @@ public final class GlobalApplication extends WebSocketApplication implements Com
                 socket.send("{\"state\":\"INVALID\",\"error\":\"route not exist\"}");
             } else {
                 //创建消息对象并执行服务
-                WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, route, text);
+                WorkerContext workerContext = new WebSocketWorkerContextImpl(this, globalWebSocket, route, text, serviceWorker);
                 serviceWorker.doWork(workerContext);
                 //返回消息
-                String result = serviceWorker.getResponse().getResponseMessage();
+                String result = workerContext.getWorkerResponse().getResponseMessage();
                 socket.send(result);
             }
         } else {

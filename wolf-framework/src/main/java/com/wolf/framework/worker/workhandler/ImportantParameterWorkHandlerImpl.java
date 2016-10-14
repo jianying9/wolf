@@ -1,7 +1,8 @@
 package com.wolf.framework.worker.workhandler;
 
+import com.wolf.framework.reponse.WorkerResponse;
+import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.worker.context.FrameworkMessageContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -26,13 +27,13 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
     }
 
     @Override
-    public void execute(FrameworkMessageContext frameworkMessageContext) {
+    public void execute(WorkerContext workerContext) {
         String paraValue;
         String errorParaName = "";
         String errorMsg = "";
         RequestParameterHandler parameterHandler;
-        WorkerContext workerContext = frameworkMessageContext.getWorkerContext();
         final Map<String, String> parameterMap = workerContext.getParameterMap();
+        final WorkerRequest request = workerContext.getWorkerRequest();
         //验证必要参数是否合法
         for (String parameter : this.importantParameter) {
             paraValue = parameterMap.get(parameter);
@@ -49,7 +50,7 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
             parameterHandler = this.parameterHandlerMap.get(parameter);
             errorMsg = parameterHandler.validate(paraValue);
             if (errorMsg.isEmpty()) {
-                frameworkMessageContext.putParameter(parameter, paraValue);
+                request.putParameter(parameter, paraValue);
             } else {
                 errorParaName = parameter;
                 break;
@@ -57,13 +58,14 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
         }
         if (errorMsg.isEmpty()) {
             //验证通过
-            this.nextWorkHandler.execute(frameworkMessageContext);
+            this.nextWorkHandler.execute(workerContext);
         } else {
             //返回错误消息
+            WorkerResponse response = workerContext.getWorkerResponse();
             errorMsg = errorParaName.concat(errorMsg);
-            frameworkMessageContext.invalid();
-            frameworkMessageContext.setError(errorMsg);
-            frameworkMessageContext.createErrorMessage();
+            response.invalid();
+            response.setError(errorMsg);
+            response.createErrorMessage();
         }
     }
 }

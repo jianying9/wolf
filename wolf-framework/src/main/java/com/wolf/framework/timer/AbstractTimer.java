@@ -5,6 +5,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 import org.slf4j.Logger;
 
@@ -22,9 +23,9 @@ public class AbstractTimer {
                 Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
                 logger.error("timer:Can not find route:".concat(route));
             } else {
-                LocalWorkerContextImpl localWorkerContextImpl = new LocalWorkerContextImpl(null, route, parameterMap);
-                serviceWorker.doWork(localWorkerContextImpl);
-                result = serviceWorker.getResponse().getResponseMessage();
+                WorkerContext workerContext = new LocalWorkerContextImpl(null, route, parameterMap, serviceWorker);
+                serviceWorker.doWork(workerContext);
+                result = workerContext.getWorkerResponse().getResponseMessage();
             }
         } else {
             Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);

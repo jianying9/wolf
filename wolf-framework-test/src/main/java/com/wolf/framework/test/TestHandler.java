@@ -5,7 +5,7 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.worker.context.Response;
+import com.wolf.framework.reponse.Response;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -42,9 +42,9 @@ public final class TestHandler {
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
-            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, route, parameterMap);
+            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, route, parameterMap, serviceWorker);
             serviceWorker.doWork(workerContext);
-            result = serviceWorker.getResponse();
+            result = workerContext.getWorkerResponse();
         }
         return result;
     }

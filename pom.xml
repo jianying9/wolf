@@ -629,7 +629,7 @@
         <!--<module>wolf-management</module>-->
         <!--<module>wolf-reids</module>-->
         <!--<module>wolf-cassandra</module>-->
-        <!--<module>wolf-websocket</module>-->
+        <module>wolf-websocket</module>
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->

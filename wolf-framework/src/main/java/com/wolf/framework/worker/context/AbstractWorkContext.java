@@ -3,7 +3,12 @@ package com.wolf.framework.worker.context;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.reponse.ResponseImpl;
+import com.wolf.framework.reponse.WorkerResponse;
+import com.wolf.framework.request.RequestImpl;
+import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.utils.StringUtils;
+import com.wolf.framework.worker.ServiceWorker;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,9 +27,15 @@ public abstract class AbstractWorkContext implements WorkerContext {
     //input
     private final Map<String, String> parameterMap;
     private final String route;
+    private final ServiceWorker serviceWorker;
+    private final WorkerRequest request;
+    private final WorkerResponse response;
 
-    public AbstractWorkContext(String route, String json) {
+    public AbstractWorkContext(String route, String json, ServiceWorker serviceWorker) {
         this.route = route;
+        this.serviceWorker = serviceWorker;
+        this.request = new RequestImpl(this);
+        this.response = new ResponseImpl(this);
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -57,13 +68,21 @@ public abstract class AbstractWorkContext implements WorkerContext {
         }
     }
 
-    public AbstractWorkContext(String act, Map<String, String> parameterMap) {
-        this.route = act;
+    public AbstractWorkContext(String route, Map<String, String> parameterMap, ServiceWorker serviceWorker) {
+        this.route = route;
+        this.serviceWorker = serviceWorker;
+        this.request = new RequestImpl(this);
+        this.response = new ResponseImpl(this);
         if (parameterMap != null) {
             this.parameterMap = parameterMap;
         } else {
             this.parameterMap = Collections.emptyMap();
         }
+    }
+    
+    @Override
+    public ServiceWorker getServiceWorker() {
+        return this.serviceWorker;
     }
 
     @Override
@@ -71,16 +90,23 @@ public abstract class AbstractWorkContext implements WorkerContext {
         return route;
     }
 
-    public final String getParameter(String name) {
-        return this.parameterMap.get(name);
-    }
-
     @Override
     public final Map<String, String> getParameterMap() {
         return this.parameterMap;
     }
 
+    @Override
     public final ApplicationContext getApplicationContext() {
         return ApplicationContext.CONTEXT;
+    }
+    
+    @Override
+    public WorkerRequest getWorkerRequest() {
+        return this.request;
+    }
+    
+    @Override
+    public WorkerResponse getWorkerResponse() {
+        return this.response;
     }
 }
