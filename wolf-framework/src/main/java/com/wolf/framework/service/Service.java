@@ -1,7 +1,7 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.reponse.Response;
-import com.wolf.framework.request.Request;
+import com.wolf.framework.service.request.ServiceRequest;
+import com.wolf.framework.service.response.ServiceResponse;
 
 /**
  *
@@ -9,5 +9,5 @@ import com.wolf.framework.request.Request;
  */
 public interface Service {
 
-    public void execute(Request request, Response response);
+    public void execute(ServiceRequest serviceRequest, ServiceResponse serviceResponse);
 }

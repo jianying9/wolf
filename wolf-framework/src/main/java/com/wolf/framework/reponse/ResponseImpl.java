@@ -2,23 +2,19 @@ package com.wolf.framework.reponse;
 
 import com.wolf.framework.config.ResponseState;
 import com.wolf.framework.worker.context.WorkerContext;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author jianying9
  */
-public class ResponseImpl  implements WorkerResponse {
+public class ResponseImpl implements WorkerResponse {
 
     private final WorkerContext workerContext;
-    private final Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
     //message
     private String error = "";
+    private String dataMessage = "{}";
     private String responseMessage = "";
     private String state = ResponseState.FAILURE;
-    //session
-    protected String newSid;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -48,8 +44,14 @@ public class ResponseImpl  implements WorkerResponse {
         this.state = ResponseState.UNLOGIN;
     }
 
+    @Override
     public final void success() {
         this.state = ResponseState.SUCCESS;
+    }
+    
+    @Override
+    public final void failure() {
+        this.state = ResponseState.FAILURE;
     }
 
     @Override
@@ -62,10 +64,6 @@ public class ResponseImpl  implements WorkerResponse {
         this.error = error;
     }
 
-    public void setNewSessionId(String sid) {
-        this.newSid = sid;
-    }
-
     @Override
     public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
@@ -76,18 +74,19 @@ public class ResponseImpl  implements WorkerResponse {
         return this.responseMessage;
     }
 
-    public final String getSessionId() {
-        return this.workerContext.getSessionId();
-    }
-
-    public final String getNewSessionId() {
-        return this.newSid;
+    private String createResponseMessage() {
+        StringBuilder jsonBuilder = new StringBuilder(128);
+        jsonBuilder.append("{\"state\":\"").append(this.state)
+                .append("\",\"route\":\"").append(this.workerContext.getRoute())
+                .append("\",\"data\":").append(this.dataMessage).append("}");
+        this.responseMessage = jsonBuilder.toString();
+        return this.responseMessage;
     }
 
     @Override
     public final String getResponseMessage() {
         if (this.responseMessage.isEmpty()) {
-            this.responseMessage = this.workerContext.getServiceWorker().createResponseMessage(this);
+            this.createResponseMessage();
         }
         return this.responseMessage;
     }
@@ -98,9 +97,18 @@ public class ResponseImpl  implements WorkerResponse {
         if (useCache) {
             result = this.getResponseMessage();
         } else {
-            this.responseMessage = this.workerContext.getServiceWorker().createResponseMessage(this);
-            result = this.responseMessage;
+            result = this.createResponseMessage();
         }
         return result;
+    }
+
+    @Override
+    public String getDataMessage() {
+        return this.dataMessage;
+    }
+
+    @Override
+    public void setDataMessage(String dataMessage) {
+        this.dataMessage = dataMessage;
     }
 }

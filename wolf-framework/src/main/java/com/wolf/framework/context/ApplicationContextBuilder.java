@@ -20,6 +20,7 @@ import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
 import com.wolf.framework.module.ModuleConfig;
 import com.wolf.framework.parser.ClassParser;
+import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.ServiceConfigParser;
@@ -30,8 +31,6 @@ import com.wolf.framework.task.TaskExecutorImpl;
 import com.wolf.framework.task.TaskExecutorUnitTestImpl;
 import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerContextImpl;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,15 +40,14 @@ import org.slf4j.Logger;
 /**
  * 全局上下文对象构造函数抽象类
  *
- * @author aladdin
+ * @author jianying9
  * @param <T>
- * @param <K>
  */
-public class ApplicationContextBuilder<T extends Entity, K extends Service> {
+public class ApplicationContextBuilder<T extends Entity> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
-    protected final List<Class<K>> serviceClassList = new ArrayList<Class<K>>();
+    protected final List<Class<?>> serviceClassList = new ArrayList<Class<?>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
     protected ServiceWorkerContext serviceWorkerContext;
@@ -98,20 +96,6 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
         if (compileModel == null) {
             compileModel = FrameworkConfig.SERVER;
         }
-        //检测服务器hostname的ip不能为127.0.0.1,否则提供rmi远程调用类服务时会出现异常
-//        if (compileModel.equals(FrameworkConfig.SERVER)) {
-//            String ip = null;
-//            try {
-//                //获取本地ip
-//                InetAddress address = InetAddress.getLocalHost();
-//                ip = address.getHostAddress();
-//            } catch (UnknownHostException ex) {
-//                throw new RuntimeException(ex);
-//            }
-//            if (ip == null || ip.equals("127.0.0.1")) {
-//                throw new RuntimeException("Error. 127.0.0.1 invalid hostname-ip...please change it.");
-//            }
-//        }
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList<String>();
         //动态查找需要搜索的dao注解创建对象
@@ -220,8 +204,8 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
                 injecterListImpl,
                 parametersContext,
                 ApplicationContext.CONTEXT);
-        final ServiceConfigParser<K> serviceConfigParser = new ServiceConfigParser<K>(this.serviceWorkerContext);
-        for (Class<K> clazzs : this.serviceClassList) {
+        final ServiceConfigParser serviceConfigParser = new ServiceConfigParser(this.serviceWorkerContext);
+        for (Class<?> clazzs : this.serviceClassList) {
             serviceConfigParser.parse(clazzs);
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.serviceWorkerContext.getServiceWorkerMap());
@@ -260,13 +244,13 @@ public class ApplicationContextBuilder<T extends Entity, K extends Service> {
     private void parseClass(final ClassLoader classloader, final String className) throws ClassNotFoundException {
         Class<?> clazz = this.loadClass(classloader, className);
         if (clazz != null) {
-            Class<K> clazzk;
+            Class<?> clazzs;
             Class<Local> clazzl;
-            if (Service.class.isAssignableFrom(clazz) && clazz.isAnnotationPresent(ServiceConfig.class)) {
+            if (clazz.isAnnotationPresent(ServiceConfig.class)) {
                 //是外部服务
-                clazzk = (Class<K>) clazz;
-                if (this.serviceClassList.contains(clazzk) == false) {
-                    this.serviceClassList.add(clazzk);
+                clazzs = clazz;
+                if (this.serviceClassList.contains(clazzs) == false) {
+                    this.serviceClassList.add(clazzs);
                     this.logger.debug("find service class ".concat(className));
                 }
             } else if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {

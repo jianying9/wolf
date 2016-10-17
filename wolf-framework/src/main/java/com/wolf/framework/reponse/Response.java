@@ -10,12 +10,14 @@ public interface Response {
     
     public void setState(String state);
     
-    public void denied();
-
-    public void invalid();
-
-    public void unlogin();
-
+    public String getDataMessage();
+    
+    public void setDataMessage(String dataMessage);
+    
+    public void success();
+    
+    public void failure();
+    
     public String getResponseMessage();
 
     public String getResponseMessage(boolean useCache);

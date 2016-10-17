@@ -1,10 +1,9 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.ResponseState;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
-import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.filter.EscapeFilterImpl;
 import com.wolf.framework.service.parameter.filter.Filter;
 import com.wolf.framework.service.parameter.filter.FilterType;
@@ -20,37 +19,30 @@ import java.util.Map;
  */
 public class ServiceWorkerImpl implements ServiceWorker {
 
-    protected final String[] returnParameter;
-    protected final Map<String, ResponseParameterHandler> fieldHandlerMap;
     private final WorkHandler nextWorkHandler;
-    private String route = "";
-    private String group = "";
-    private boolean page;
-    private boolean validateSession;
-    private String desc = "";
     private String requestConfigs = "[]";
     private String responseConfigs = "[]";
     private String responseStates = "[]";
+    private final ServiceContext serviceContext;
     
-    public ServiceWorkerImpl(String[] returnParameter, Map<String, ResponseParameterHandler> fieldHandlerMap, WorkHandler nextWorkHandler) {
-        this.returnParameter = returnParameter;
-        this.fieldHandlerMap = fieldHandlerMap;
+    public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
+        this.serviceContext = serviceContext;
         this.nextWorkHandler = nextWorkHandler;
     }
 
     @Override
     public void doWork(WorkerContext workerContext) {
-        this.nextWorkHandler.execute(null);
+        this.nextWorkHandler.execute(workerContext);
     }
 
     @Override
     public Map<String, String> getInfoMap() {
         Map<String, String> infoMap = new HashMap<String, String>(8, 1);
-        infoMap.put("route", this.route);
-        infoMap.put("group", this.group);
-        infoMap.put("page", Boolean.toString(this.page));
-        infoMap.put("validateSession", Boolean.toString(this.validateSession));
-        infoMap.put("desc", this.desc);
+        infoMap.put("route", this.serviceContext.route());
+        infoMap.put("group", this.serviceContext.group());
+        infoMap.put("page", Boolean.toString(this.serviceContext.page()));
+        infoMap.put("validateSession", Boolean.toString(this.serviceContext.validateSession()));
+        infoMap.put("desc", this.serviceContext.desc());
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
         infoMap.put("responseStates", this.responseStates);
@@ -98,28 +90,16 @@ public class ServiceWorkerImpl implements ServiceWorker {
     }
 
     @Override
-    public final void createInfo(String route,
-            boolean page,
-            boolean validateSession,
-            String group,
-            String description,
-            RequestConfig[] requestConfigs,
-            ResponseConfig[] responseConfigs,
-            ResponseState[] responseStates) {
+    public final void createInfo() {
         Filter escapeFilter = new EscapeFilterImpl();
-        this.group = group;
-        this.page = page;
-        this.validateSession = validateSession;
-        this.desc = escapeFilter.doFilter(description);
-        this.route = route;
         //构造请求参数信息
-        this.requestConfigs = this.getRequestParameterJson(requestConfigs, escapeFilter);
+        this.requestConfigs = this.getRequestParameterJson(this.serviceContext.requestConfigs(), escapeFilter);
         //构造返回参数信息
-        this.responseConfigs = this.getResponseParameterJson(responseConfigs, escapeFilter);
+        this.responseConfigs = this.getResponseParameterJson(this.serviceContext.responseConfigs(), escapeFilter);
         //返回状态提示
         StringBuilder responseStateBuilder = new StringBuilder(64);
         responseStateBuilder.append('[');
-        for (ResponseState responseState : responseStates) {
+        for (ResponseState responseState : this.serviceContext.responseStates()) {
             responseStateBuilder.append("{\"state\":\"").append(responseState.state())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseState.desc()))
                     .append("\"}").append(',');
@@ -129,25 +109,5 @@ public class ServiceWorkerImpl implements ServiceWorker {
         }
         responseStateBuilder.append(']');
         this.responseStates = responseStateBuilder.toString();
-    }
-    
-    @Override
-    public final String getRoute() {
-        return this.route;
-    }
-
-    @Override
-    public final String getGroup() {
-        return this.group;
-    }
-
-    @Override
-    public final String getDescription() {
-        return this.desc;
-    }
-
-    @Override
-    public String createResponseMessage(Response response) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

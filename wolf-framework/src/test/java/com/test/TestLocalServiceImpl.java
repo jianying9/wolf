@@ -1,9 +1,9 @@
 package com.test;
 
 import com.wolf.framework.local.LocalServiceConfig;
-import com.wolf.framework.reponse.Response;
-import com.wolf.framework.request.Request;
 import com.wolf.framework.service.Service;
+import com.wolf.framework.service.request.ServiceRequest;
+import com.wolf.framework.service.response.ServiceResponse;
 
 /**
  *
@@ -19,7 +19,7 @@ public class TestLocalServiceImpl implements Service, TestLocalService{
     }
 
     @Override
-    public void execute(Request request, Response response) {
+    public void execute(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

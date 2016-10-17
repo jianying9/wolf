@@ -2,6 +2,7 @@ package com.wolf.framework.worker.workhandler;
 
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
@@ -14,16 +15,11 @@ import java.util.Map;
 public class ImportantParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
-    private final String[] importantParameter;
-    private final Map<String, RequestParameterHandler> parameterHandlerMap;
+    private final ServiceContext serviceContext;
 
-    public ImportantParameterWorkHandlerImpl(
-            final String[] importantParameter,
-            final Map<String, RequestParameterHandler> parameterHandlerMap,
-            final WorkHandler workHandler) {
+    public ImportantParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
         this.nextWorkHandler = workHandler;
-        this.importantParameter = importantParameter;
-        this.parameterHandlerMap = parameterHandlerMap;
+        this.serviceContext = serviceContext;
     }
 
     @Override
@@ -35,7 +31,9 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
         final Map<String, String> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
         //验证必要参数是否合法
-        for (String parameter : this.importantParameter) {
+        final String[] importantParameter = this.serviceContext.importantParameter();
+        final Map<String, RequestParameterHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
+        for (String parameter : importantParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue == null) {
                 errorMsg = WorkHandler.NULL_MESSAGE;
@@ -47,7 +45,7 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
                 errorParaName = parameter;
                 break;
             }
-            parameterHandler = this.parameterHandlerMap.get(parameter);
+            parameterHandler = parameterHandlerMap.get(parameter);
             errorMsg = parameterHandler.validate(paraValue);
             if (errorMsg.isEmpty()) {
                 request.putParameter(parameter, paraValue);

@@ -22,7 +22,8 @@ public class ParameterContextImpl implements ParameterContext {
     /**
      * 构造函数
      *
-     * @param properties
+     * @param dataHandlerFactory
+     * @param applicationContext
      */
     public ParameterContextImpl(final DataHandlerFactory dataHandlerFactory, final ApplicationContext applicationContext) {
         this.filterFactory = new FilterFactoryImpl();
