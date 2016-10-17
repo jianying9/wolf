@@ -10,11 +10,11 @@ import com.wolf.framework.service.parameter.RequestParameterHandlerBuilder;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.ResponseParameterHandlerBuilder;
-import com.wolf.framework.worker.ServiceWorkerContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.wolf.framework.worker.build.WorkerBuildContext;
 
 /**
  *
@@ -39,7 +39,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final ResponseConfig[] responseConfigs;
     private final ResponseState[] responseStates;
 
-    public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, ServiceWorkerContext serviceWorkerContext) {
+    public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
         this.desc = serviceConfig.desc();
         this.group = serviceConfig.group();
@@ -62,7 +62,7 @@ public class ServiceContextImpl implements ServiceContext {
             }
         }
         //
-        ParameterContext parameterContext = serviceWorkerContext.getParameterContext();
+        ParameterContext parameterContext = workerBuildContext.getParameterContext();
         RequestParameterHandler requestParameterHandler;
         RequestParameterHandlerBuilder requestParameterHandlerBuilder;
         final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<String, RequestParameterHandler>(minorRequestConfigList.size(), 1);

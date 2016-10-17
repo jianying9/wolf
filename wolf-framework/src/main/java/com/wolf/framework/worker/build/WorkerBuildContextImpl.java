@@ -1,18 +1,20 @@
-package com.wolf.framework.worker;
+package com.wolf.framework.worker.build;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.service.parameter.ParameterContext;
+import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import com.wolf.framework.worker.build.WorkerBuildContext;
 
 /**
  * 全局信息构造类
  *
  * @author aladdin
  */
-public class ServiceWorkerContextImpl implements ServiceWorkerContext {
+public class WorkerBuildContextImpl implements WorkerBuildContext {
 
     private final Map<String, String> existClassMap = new HashMap<String, String>(1024);
     private final Injecter injecter;
@@ -41,7 +43,7 @@ public class ServiceWorkerContextImpl implements ServiceWorkerContext {
      *
      * @param properties
      */
-    public ServiceWorkerContextImpl(
+    public WorkerBuildContextImpl(
             final Injecter injecter,
             final ParameterContext parameterContext,
             final ApplicationContext applicationContext) {

@@ -20,22 +20,20 @@ import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
 import com.wolf.framework.module.ModuleConfig;
 import com.wolf.framework.parser.ClassParser;
-import com.wolf.framework.service.ListService;
-import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
-import com.wolf.framework.service.ServiceConfigParser;
+import com.wolf.framework.worker.build.WorkerBuilder;
 import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.ParameterContextImpl;
 import com.wolf.framework.task.TaskExecutor;
 import com.wolf.framework.task.TaskExecutorImpl;
 import com.wolf.framework.task.TaskExecutorUnitTestImpl;
-import com.wolf.framework.worker.ServiceWorkerContext;
-import com.wolf.framework.worker.ServiceWorkerContextImpl;
+import com.wolf.framework.worker.build.WorkerBuildContextImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
+import com.wolf.framework.worker.build.WorkerBuildContext;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -50,7 +48,7 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final List<Class<?>> serviceClassList = new ArrayList<Class<?>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
-    protected ServiceWorkerContext serviceWorkerContext;
+    protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
 
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
@@ -200,15 +198,15 @@ public class ApplicationContextBuilder<T extends Entity> {
         injecterListImpl.addInjecter(taskExecutorInjecter);
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
-        this.serviceWorkerContext = new ServiceWorkerContextImpl(
+        this.workerBuildContext = new WorkerBuildContextImpl(
                 injecterListImpl,
                 parametersContext,
                 ApplicationContext.CONTEXT);
-        final ServiceConfigParser serviceConfigParser = new ServiceConfigParser(this.serviceWorkerContext);
+        final WorkerBuilder serviceConfigParser = new WorkerBuilder(this.workerBuildContext);
         for (Class<?> clazzs : this.serviceClassList) {
-            serviceConfigParser.parse(clazzs);
+            serviceConfigParser.build(clazzs);
         }
-        ApplicationContext.CONTEXT.setServiceWorkerMap(this.serviceWorkerContext.getServiceWorkerMap());
+        ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");
         //load module
         packageNameList.clear();

@@ -1,16 +1,18 @@
-package com.wolf.framework.service;
+package com.wolf.framework.worker.build;
 
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.service.ListService;
+import com.wolf.framework.service.Service;
+import com.wolf.framework.service.ServiceConfig;
 import static com.wolf.framework.service.SessionHandleType.REMOVE;
 import static com.wolf.framework.service.SessionHandleType.SAVE;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.context.ServiceContextImpl;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.ServiceWorkerContext;
 import com.wolf.framework.worker.ServiceWorkerImpl;
 import com.wolf.framework.worker.workhandler.ObjectServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ExceptionWorkHandlerImpl;
@@ -29,13 +31,13 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-public class ServiceConfigParser {
+public class WorkerBuilder {
 
-    private final ServiceWorkerContext serviceWorkerContext;
+    private final WorkerBuildContext workerBuildContext;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
-    public ServiceConfigParser(ServiceWorkerContext serviceWorkerContext) {
-        this.serviceWorkerContext = serviceWorkerContext;
+    public WorkerBuilder(WorkerBuildContext workerBuildContext) {
+        this.workerBuildContext = workerBuildContext;
     }
 
     /**
@@ -43,7 +45,7 @@ public class ServiceConfigParser {
      *
      * @param clazz
      */
-    public void parse(final Class<?> clazz) {
+    public void build(final Class<?> clazz) {
         this.logger.debug("--parsing service {}--", clazz.getName());
         if (clazz.isAnnotationPresent(ServiceConfig.class)) {
             //1.获取注解ServiceConfig
@@ -57,10 +59,10 @@ public class ServiceConfigParser {
                 page = true;
             }
             //构造服务上下文信息
-            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, page, this.serviceWorkerContext);
+            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, page, this.workerBuildContext);
             //开始生成业务处理链
             //注入相关对象
-            Injecter injecter = this.serviceWorkerContext.getInjecter();
+            Injecter injecter = this.workerBuildContext.getInjecter();
             //根据接口类型实例化并注入相关对象
             //包装服务类
             WorkHandler workHandler = null;
@@ -80,7 +82,7 @@ public class ServiceConfigParser {
             } catch (IllegalAccessException ex) {
             }
             //判断是否需要事务，如果需要则加入事务处理环节
-            ApplicationContext applicationContext = this.serviceWorkerContext.getApplicationContext();
+            ApplicationContext applicationContext = this.workerBuildContext.getApplicationContext();
             String compileModel = applicationContext.getParameter(FrameworkConfig.COMPILE_MODEL);
             if (serviceContext.requireTransaction() && compileModel.equals(FrameworkConfig.SERVER)) {
                 workHandler = new TransactionWorkHandlerImpl(workHandler);
@@ -99,7 +101,7 @@ public class ServiceConfigParser {
             }
             //-----------------------业务执行前处理环节-----------------
             //判断取值验证类型,将对应处理对象加入到处理环节
-            
+
             //次要参数
             if (serviceContext.minorParameter().length > 0) {
                 //获取次要参数
@@ -123,7 +125,7 @@ public class ServiceConfigParser {
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
                 serviceWorker.createInfo();
             }
-            this.serviceWorkerContext.putServiceWorker(serviceContext.route(), serviceWorker, clazz.getName());
+            this.workerBuildContext.putServiceWorker(serviceContext.route(), serviceWorker, clazz.getName());
             this.logger.debug("--parse service {} finished--", clazz.getName());
         } else {
             this.logger.error("--parse service {} missing annotation ServiceConfig--", clazz.getName());
