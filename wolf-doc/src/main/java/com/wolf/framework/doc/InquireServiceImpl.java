@@ -2,11 +2,12 @@ package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataType;
-import com.wolf.framework.service.Service;
+import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.request.ListServiceRequest;
+import com.wolf.framework.service.response.ListServiceResponse;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.MessageContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,13 +32,12 @@ import java.util.Set;
         responseStates = {},
         validateSession = false,
         validateSecurity = false,
-        page = true,
         group = "WOLF_FRAMEWORK",
         desc = "")
-public class InquireServiceImpl implements Service {
+public class InquireServiceImpl implements ListService {
 
     @Override
-    public void execute(MessageContext messageContext) {
+    public void execute(ListServiceRequest listServiceRequest, ListServiceResponse listServiceResponse) {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         //过滤系统接口
@@ -58,14 +58,12 @@ public class InquireServiceImpl implements Service {
             resultMap = new HashMap<String, String>(4, 1);
             resultMap.put("routeName", sw.getRoute());
             resultMap.put("groupName", sw.getGroup());
-            resultMap.put("desc", sw.getDescription());
+            resultMap.put("desc", sw.getDesc());
             resultMapList.add(resultMap);
         }
-        messageContext.setPageIndex(1);
-        messageContext.setPageSize(resultMapList.size());
-        messageContext.setPageTotal(resultMapList.size());
-        messageContext.setMapListData(resultMapList);
-        messageContext.success();
+        listServiceResponse.setDataMapList(resultMapList);
+        listServiceResponse.setNextSize(resultMapList.size());
+        listServiceResponse.success();
     }
 
     private class ServiceWorkerSort implements Comparator<ServiceWorker> {

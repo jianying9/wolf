@@ -2,11 +2,12 @@ package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataType;
-import com.wolf.framework.service.Service;
+import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.request.ListServiceRequest;
+import com.wolf.framework.service.response.ListServiceResponse;
 import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.MessageContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,13 +27,12 @@ import java.util.Set;
         responseStates = {},
         validateSession = false,
         validateSecurity = false,
-        page = true,
         group = "WOLF_FRAMEWORK",
         desc = "")
-public class InquireGroupServiceImpl implements Service {
+public class InquireGroupServiceImpl implements ListService {
 
     @Override
-    public void execute(MessageContext messageContext) {
+    public void execute(ListServiceRequest listServiceRequest, ListServiceResponse listServiceResponse) {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         Map<String, String> resultMap;
@@ -49,7 +49,7 @@ public class InquireGroupServiceImpl implements Service {
             resultMap.put("groupName", groupName);
             resultMapList.add(resultMap);
         }
-        messageContext.setMapListData(resultMapList);
-        messageContext.success();
+        listServiceResponse.setDataMapList(resultMapList);
+        listServiceResponse.success();
     }
 }

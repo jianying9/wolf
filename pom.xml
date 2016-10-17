@@ -623,7 +623,7 @@
         <!--<module>wolf-dao-derby</module>-->
         <!--<module>wolf-dao-hbase</module>-->
         <!--<module>wolf-lucene</module>-->
-        <!--<module>wolf-doc</module>-->
+        <module>wolf-doc</module>
         <!--<module>wolf-fileupload</module>-->
         <!--<module>wolf-search</module>-->
         <!--<module>wolf-management</module>-->
