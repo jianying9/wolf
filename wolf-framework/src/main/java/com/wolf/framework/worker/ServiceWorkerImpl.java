@@ -110,4 +110,19 @@ public class ServiceWorkerImpl implements ServiceWorker {
         responseStateBuilder.append(']');
         this.responseStates = responseStateBuilder.toString();
     }
+
+    @Override
+    public String getGroup() {
+        return this.serviceContext.group();
+    }
+
+    @Override
+    public String getRoute() {
+        return this.serviceContext.route();
+    }
+
+    @Override
+    public String getDesc() {
+        return this.serviceContext.desc();
+    }
 }

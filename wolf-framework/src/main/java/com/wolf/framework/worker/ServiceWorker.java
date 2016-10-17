@@ -15,4 +15,10 @@ public interface ServiceWorker {
     public void createInfo();
 
     public Map<String, String> getInfoMap();
+    
+    public String getGroup();
+    
+    public String getRoute();
+    
+    public String getDesc();
 }
