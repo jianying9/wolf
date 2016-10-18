@@ -75,6 +75,13 @@ public class ServiceContextImpl implements ServiceContext {
             requestParameterMap.put(requestConfig.name(), requestParameterHandler);
             minorNameList.add(requestConfig.name());
         }
+        //
+        if(page) {
+            minorNameList.add("nextIndex");
+            minorNameList.add("nextSize");
+            requestParameterMap.put("nextIndex", workerBuildContext.getNextIndexHandler());
+            requestParameterMap.put("nextSize", workerBuildContext.getNextSizeHandler());
+        }
         final String[] minorNames = minorNameList.toArray(new String[minorNameList.size()]);
         this.minorParameter = minorNames;
         //

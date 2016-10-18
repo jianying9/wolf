@@ -17,7 +17,7 @@ public final class StringParameterHandlerImpl implements RequestParameterHandler
     private final String errorInfo = " must be char";
     
 
-    StringParameterHandlerImpl(final String name, final Filter[] filters, long max, long min) {
+    public StringParameterHandlerImpl(final String name, final Filter[] filters, long max, long min) {
         this.filters = filters;
         this.name = name;
         max = max < 0 ? 0 : max;
