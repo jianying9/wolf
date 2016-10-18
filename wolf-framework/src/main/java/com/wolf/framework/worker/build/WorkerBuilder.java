@@ -122,7 +122,7 @@ public class WorkerBuilder {
             //创建对应的工作对象
             final ServiceWorker serviceWorker = new ServiceWorkerImpl(workHandler, serviceContext);
             //INFO,开发模式才能会返回接口信息
-            if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
+            if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
                 serviceWorker.createInfo();
             }
             this.workerBuildContext.putServiceWorker(serviceContext.route(), serviceWorker, clazz.getName());
