@@ -121,22 +121,22 @@ public class ApplicationContextBuilder<T extends Entity> {
         //查找注解类
         this.logger.info("Finding annotation...");
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
+        packageNameList = new ArrayList<String>();
         if (packages != null) {
             String[] packageNames = packages.split(",");
-            packageNameList = new ArrayList<String>(packageNames.length);
             packageNameList.addAll(Arrays.asList(packageNames));
-            //如果是开发模式,则加入接口文档接口
-            if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
-                packageNameList.add("com.wolf.framework.doc");
+        }
+        //如果是开发模式,则加入接口文档接口
+        if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
+            packageNameList.add("com.wolf.framework.doc");
+        }
+        classNameList = new ClassParser().findClass(classloader, packageNameList);
+        try {
+            for (String className : classNameList) {
+                this.parseClass(classloader, className);
             }
-            classNameList = new ClassParser().findClass(classloader, packageNameList);
-            try {
-                for (String className : classNameList) {
-                    this.parseClass(classloader, className);
-                }
-            } catch (ClassNotFoundException e) {
-                this.logger.error("Error when find annotation. Cause:", e);
-            }
+        } catch (ClassNotFoundException e) {
+            this.logger.error("Error when find annotation. Cause:", e);
         }
         //初始化任务处理对象
         this.logger.info("Start task executer...");
@@ -202,9 +202,9 @@ public class ApplicationContextBuilder<T extends Entity> {
                 injecterListImpl,
                 parametersContext,
                 ApplicationContext.CONTEXT);
-        final WorkerBuilder serviceConfigParser = new WorkerBuilder(this.workerBuildContext);
+        final WorkerBuilder workerBuilder = new WorkerBuilder(this.workerBuildContext);
         for (Class<?> clazzs : this.serviceClassList) {
-            serviceConfigParser.build(clazzs);
+            workerBuilder.build(clazzs);
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");

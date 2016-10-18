@@ -54,7 +54,7 @@ public class WorkerBuilder {
             if (Service.class.isAssignableFrom(clazz)) {
                 //对象类型
                 page = false;
-            } else if (Service.class.isAssignableFrom(clazz)) {
+            } else if (ListService.class.isAssignableFrom(clazz)) {
                 //集合类型
                 page = true;
             }
@@ -72,7 +72,7 @@ public class WorkerBuilder {
                     Service service = (Service) clazz.newInstance();
                     injecter.parse(service);
                     workHandler = new ObjectServiceWorkHandlerImpl(service, serviceContext);
-                } else if (Service.class.isAssignableFrom(clazz)) {
+                } else if (ListService.class.isAssignableFrom(clazz)) {
                     //集合类型
                     ListService listService = (ListService) clazz.newInstance();
                     injecter.parse(listService);
