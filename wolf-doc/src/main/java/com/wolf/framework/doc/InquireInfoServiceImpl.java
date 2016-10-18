@@ -18,18 +18,18 @@ import java.util.UUID;
 @ServiceConfig(
         route = "/wolf/service/info",
         requestConfigs = {
-    @RequestConfig(name = "routeName", dataType = DataType.CHAR, max = 200, desc = "")
-},
+            @RequestConfig(name = "routeName", dataType = DataType.CHAR, max = 200, desc = "")
+        },
         responseConfigs = {
-    @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
-    @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
-    @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
-    @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
-    @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
-    @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
-    @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
-    @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = "")
-},
+            @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = "")
+        },
         responseStates = {},
         validateSession = false,
         validateSecurity = false,
