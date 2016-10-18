@@ -21,4 +21,6 @@ public interface ServiceResponse<T extends Entity> {
     public void success();
     
     public void failure();
+    
+    public String getDataMessage();
 }

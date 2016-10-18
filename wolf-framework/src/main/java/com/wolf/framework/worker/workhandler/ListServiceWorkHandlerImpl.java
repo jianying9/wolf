@@ -32,5 +32,7 @@ public class ListServiceWorkHandlerImpl implements WorkHandler {
         Map<String, ResponseParameterHandler> parameterHandlerMap = this.serviceContext.responseParameterHandlerMap();
         ListServiceResponse listServiceResponse = new ListServiceResponseImpl(workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap, listServiceRequest);
         this.listService.execute(listServiceRequest, listServiceResponse);
+        String dataMessage = listServiceResponse.getDataMessage();
+        workerContext.getWorkerResponse().setDataMessage(dataMessage);
     }
 }

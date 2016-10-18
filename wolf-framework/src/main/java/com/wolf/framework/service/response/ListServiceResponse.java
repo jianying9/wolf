@@ -26,4 +26,6 @@ public interface ListServiceResponse<T extends Entity> {
     public void setNextIndex(String nextIndex);
     
     public void setNextSize(int nextSize);
+    
+    public String getDataMessage();
 }

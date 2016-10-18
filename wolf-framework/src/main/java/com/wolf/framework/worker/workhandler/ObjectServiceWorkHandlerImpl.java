@@ -32,5 +32,7 @@ public class ObjectServiceWorkHandlerImpl implements WorkHandler {
         Map<String, ResponseParameterHandler> parameterHandlerMap = this.serviceContext.responseParameterHandlerMap();
         ServiceResponse serviceResponse = new ServiceResponseImpl(workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap);
         this.service.execute(serviceRequest, serviceResponse);
+        String dataMessage = serviceResponse.getDataMessage();
+        workerContext.getWorkerResponse().setDataMessage(dataMessage);
     }
 }

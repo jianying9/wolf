@@ -20,6 +20,7 @@ public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceR
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;
     private String nextIndex;
     private int nextSize;
+    private List<Map<String, String>> dataMapList = null;
 
     public ListServiceResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap, ListServiceRequest listServiceRequest) {
         super(response);
@@ -31,23 +32,16 @@ public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceR
 
     @Override
     public void setDataMapList(List<Map<String, String>> dataMapList) {
-        String listMessage = JsonUtils.mapListToJSON(dataMapList, this.returnParameter, this.parameterHandlerMap);
-        StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"nextIndex\":\"").append(this.nextIndex)
-                .append("\",\"nextSize\":").append(this.nextSize)
-                .append(",\"list\":[").append(listMessage)
-                .append("]}");
-        String dataMessage = jsonBuilder.toString();
-        this.response.setDataMessage(dataMessage);
+        this.dataMapList = dataMapList;
     }
 
     @Override
     public void setEntityList(List<T> tList) {
-        List<Map<String, String>> dataMapList = new ArrayList<Map<String, String>>(tList.size());
+        List<Map<String, String>> dataMapListTemp = new ArrayList<Map<String, String>>(tList.size());
         for(T t : tList) {
-            dataMapList.add(t.toMap());
+            dataMapListTemp.add(t.toMap());
         }
-        this.setDataMapList(dataMapList);
+        this.setDataMapList(dataMapListTemp);
     }
 
     @Override
@@ -58,5 +52,17 @@ public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceR
     @Override
     public void setNextSize(int nextSize) {
         this.nextSize = nextSize;
+    }
+
+    @Override
+    public String getDataMessage() {
+        String listMessage = JsonUtils.mapListToJSON(this.dataMapList, this.returnParameter, this.parameterHandlerMap);
+        StringBuilder jsonBuilder = new StringBuilder(128);
+        jsonBuilder.append("{\"nextIndex\":\"").append(this.nextIndex)
+                .append("\",\"nextSize\":").append(this.nextSize)
+                .append(",\"list\":[").append(listMessage)
+                .append("]}");
+        String dataMessage = jsonBuilder.toString();
+        return dataMessage;
     }
 }

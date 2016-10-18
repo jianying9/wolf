@@ -15,6 +15,7 @@ public class ServiceResponseImpl<T extends Entity> extends AbstractServiceRespon
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;
+    private Map<String, String> dataMap = null;
 
     public ServiceResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap) {
         super(response);
@@ -29,7 +30,12 @@ public class ServiceResponseImpl<T extends Entity> extends AbstractServiceRespon
 
     @Override
     public void setDataMap(Map<String, String> dataMap) {
-        String dataMessage = JsonUtils.mapToJSON(dataMap, this.returnParameter, this.parameterHandlerMap);
-        this.response.setDataMessage(dataMessage);
+        this.dataMap = dataMap;
+    }
+
+    @Override
+    public String getDataMessage() {
+        String dataMessage = JsonUtils.mapToJSON(this.dataMap, this.returnParameter, this.parameterHandlerMap);
+        return dataMessage;
     }
 }
