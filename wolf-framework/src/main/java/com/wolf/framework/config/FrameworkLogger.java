@@ -9,7 +9,8 @@ import com.wolf.framework.logger.LoggerType;
 public enum FrameworkLogger implements LoggerType{
     FRAMEWORK,
     DAO,
-    LUCENE;
+    LUCENE,
+    WEBSOCKET;
 
     @Override
     public String getLoggerName() {
