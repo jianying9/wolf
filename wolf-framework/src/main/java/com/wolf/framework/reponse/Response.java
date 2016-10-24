@@ -18,6 +18,10 @@ public interface Response {
     
     public void failure();
     
+    public void setNewSessionId(String sid);
+    
+    public String getNewSessionId();
+    
     public String getResponseMessage();
 
     public String getResponseMessage(boolean useCache);

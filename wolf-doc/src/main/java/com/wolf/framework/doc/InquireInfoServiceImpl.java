@@ -42,7 +42,7 @@ public class InquireInfoServiceImpl implements Service {
         String route = serviceRequest.getParameter("routeName");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker != null) {
-            serviceRequest.setNewSessionId(UUID.randomUUID().toString());
+            serviceResponse.setNewSessionId(UUID.randomUUID().toString());
             serviceResponse.setDataMap(serviceWorker.getInfoMap());
             serviceResponse.success();
         }

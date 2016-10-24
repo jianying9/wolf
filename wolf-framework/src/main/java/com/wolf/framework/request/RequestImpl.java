@@ -13,7 +13,6 @@ public class RequestImpl implements WorkerRequest {
 
     private final WorkerContext workerContext;
     private final Map<String, String> parameterMap;
-    private String newSessionId = null;
 
     public RequestImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -48,16 +47,6 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public void putParameter(String name, String value) {
         this.parameterMap.put(name, value);
-    }
-
-    @Override
-    public String getNewSessionId() {
-        return this.newSessionId;
-    }
-
-    @Override
-    public void setNewSessionId(String newSessionId) {
-        this.newSessionId = newSessionId;
     }
 
     @Override

@@ -28,4 +28,8 @@ public interface ListServiceResponse<T extends Entity> {
     public void setNextSize(int nextSize);
     
     public String getDataMessage();
+    
+    public void setNewSessionId(String sid);
+    
+    public String getNewSessionId();
 }

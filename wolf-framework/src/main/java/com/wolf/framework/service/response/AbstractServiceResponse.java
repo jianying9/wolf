@@ -29,4 +29,12 @@ public abstract class AbstractServiceResponse  {
     public final void failure() {
         this.response.failure();
     }
+    
+    public String getNewSessionId() {
+        return this.response.getNewSessionId();
+    }
+
+    public final void setNewSessionId(String newSessionId) {
+        this.response.setNewSessionId(newSessionId);
+    }
 }

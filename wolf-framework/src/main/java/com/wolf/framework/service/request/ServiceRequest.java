@@ -16,9 +16,5 @@ public interface ServiceRequest {
 
     public String getSessionId();
     
-    public void setNewSessionId(String sid);
-    
-    public String getNewSessionId();
-    
     public boolean push(String sid, String responseMessage);
 }

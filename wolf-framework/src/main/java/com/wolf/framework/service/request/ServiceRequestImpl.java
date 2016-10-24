@@ -36,16 +36,6 @@ public class ServiceRequestImpl implements ServiceRequest {
     }
 
     @Override
-    public String getNewSessionId() {
-        return this.request.getNewSessionId();
-    }
-
-    @Override
-    public final void setNewSessionId(String newSessionId) {
-        this.request.setNewSessionId(newSessionId);
-    }
-
-    @Override
     public final boolean push(String sid, String responseMessage) {
         return this.request.push(sid, responseMessage);
     }

@@ -23,4 +23,8 @@ public interface ServiceResponse<T extends Entity> {
     public void failure();
     
     public String getDataMessage();
+    
+    public void setNewSessionId(String sid);
+    
+    public String getNewSessionId();
 }

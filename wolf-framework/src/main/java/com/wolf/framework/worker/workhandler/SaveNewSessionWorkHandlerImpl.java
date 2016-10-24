@@ -18,7 +18,7 @@ public class SaveNewSessionWorkHandlerImpl implements WorkHandler {
     @Override
     public void execute(WorkerContext workerContext) {
         this.nextWorkHandler.execute(workerContext);
-        String newSid = workerContext.getWorkerRequest().getNewSessionId();
+        String newSid = workerContext.getWorkerResponse().getNewSessionId();
         workerContext.saveNewSession(newSid);
     }
 }

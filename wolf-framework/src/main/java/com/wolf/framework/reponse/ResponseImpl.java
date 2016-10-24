@@ -1,6 +1,8 @@
 package com.wolf.framework.reponse;
 
 import com.wolf.framework.config.ResponseCode;
+import com.wolf.framework.service.SessionHandleType;
+import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WorkerContext;
 
 /**
@@ -15,6 +17,7 @@ public class ResponseImpl implements WorkerResponse {
     private String dataMessage = "{}";
     private String responseMessage = "";
     private String code = ResponseCode.FAILURE;
+    private String newSessionId = null;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -48,7 +51,7 @@ public class ResponseImpl implements WorkerResponse {
     public final void success() {
         this.code = ResponseCode.SUCCESS;
     }
-    
+
     @Override
     public final void failure() {
         this.code = ResponseCode.FAILURE;
@@ -75,10 +78,14 @@ public class ResponseImpl implements WorkerResponse {
     }
 
     private String createResponseMessage() {
+        ServiceWorker serviceWorker = this.workerContext.getServiceWorker();
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
-                .append("\",\"route\":\"").append(this.workerContext.getRoute())
-                .append("\",\"data\":").append(this.dataMessage).append("}");
+                .append("\",\"route\":\"").append(this.workerContext.getRoute());
+        if(this.newSessionId != null && serviceWorker.getSessionHandleType() == SessionHandleType.SAVE) {
+            jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
+        }
+        jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
         this.responseMessage = jsonBuilder.toString();
         return this.responseMessage;
     }
@@ -110,5 +117,15 @@ public class ResponseImpl implements WorkerResponse {
     @Override
     public void setDataMessage(String dataMessage) {
         this.dataMessage = dataMessage;
+    }
+
+    @Override
+    public String getNewSessionId() {
+        return this.newSessionId;
+    }
+
+    @Override
+    public void setNewSessionId(String newSessionId) {
+        this.newSessionId = newSessionId;
     }
 }

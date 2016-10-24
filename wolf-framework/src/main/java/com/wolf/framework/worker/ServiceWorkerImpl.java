@@ -11,6 +11,7 @@ import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
+import com.wolf.framework.service.SessionHandleType;
 
 /**
  * 服务工作对象接口
@@ -124,5 +125,10 @@ public class ServiceWorkerImpl implements ServiceWorker {
     @Override
     public String getDesc() {
         return this.serviceContext.desc();
+    }
+
+    @Override
+    public SessionHandleType getSessionHandleType() {
+        return this.serviceContext.sessionHandleType();
     }
 }
