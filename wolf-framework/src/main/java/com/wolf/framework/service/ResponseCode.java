@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface ResponseState {
+public @interface ResponseCode {
 
-    public String state();
+    public String code();
 
     public String desc();
 }

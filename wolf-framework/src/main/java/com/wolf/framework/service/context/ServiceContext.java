@@ -1,12 +1,12 @@
 package com.wolf.framework.service.context;
 
-import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import java.util.Map;
+import com.wolf.framework.service.ResponseCode;
 
 /**
  *
@@ -44,5 +44,5 @@ public interface ServiceContext {
     
     public ResponseConfig[] responseConfigs();
     
-    public ResponseState[] responseStates();
+    public ResponseCode[] responseCodes();
 }

@@ -1,6 +1,5 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -11,6 +10,7 @@ import com.wolf.framework.worker.context.WorkerContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
+import com.wolf.framework.service.ResponseCode;
 
 /**
  * 服务工作对象接口
@@ -22,7 +22,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
     private final WorkHandler nextWorkHandler;
     private String requestConfigs = "[]";
     private String responseConfigs = "[]";
-    private String responseStates = "[]";
+    private String responseCodes = "[]";
     private final ServiceContext serviceContext;
     
     public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
@@ -45,7 +45,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         infoMap.put("desc", this.serviceContext.desc());
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
-        infoMap.put("responseStates", this.responseStates);
+        infoMap.put("responseCodes", this.responseCodes);
         return infoMap;
     }
 
@@ -99,16 +99,16 @@ public class ServiceWorkerImpl implements ServiceWorker {
         //返回状态提示
         StringBuilder responseStateBuilder = new StringBuilder(64);
         responseStateBuilder.append('[');
-        for (ResponseState responseState : this.serviceContext.responseStates()) {
-            responseStateBuilder.append("{\"state\":\"").append(responseState.state())
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseState.desc()))
+        for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
+            responseStateBuilder.append("{\"code\":\"").append(responseCode.code())
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseCode.desc()))
                     .append("\"}").append(',');
         }
         if (responseStateBuilder.length() > 1) {
             responseStateBuilder.setLength(responseStateBuilder.length() - 1);
         }
         responseStateBuilder.append(']');
-        this.responseStates = responseStateBuilder.toString();
+        this.responseCodes = responseStateBuilder.toString();
     }
 
     @Override

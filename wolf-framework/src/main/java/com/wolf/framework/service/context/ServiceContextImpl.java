@@ -1,6 +1,5 @@
 package com.wolf.framework.service.context;
 
-import com.wolf.framework.service.ResponseState;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.parameter.ParameterContext;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.wolf.framework.worker.build.WorkerBuildContext;
+import com.wolf.framework.service.ResponseCode;
 
 /**
  *
@@ -37,7 +37,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final Map<String, ResponseParameterHandler> responseParameterHandlerMap;
     private final RequestConfig[] requestConfigs;
     private final ResponseConfig[] responseConfigs;
-    private final ResponseState[] responseStates;
+    private final ResponseCode[] responseCodes;
 
     public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
@@ -50,7 +50,7 @@ public class ServiceContextImpl implements ServiceContext {
         this.validateSecurity = serviceConfig.validateSecurity();
         this.requestConfigs = serviceConfig.requestConfigs();
         this.responseConfigs = serviceConfig.responseConfigs();
-        this.responseStates = serviceConfig.responseStates();
+        this.responseCodes = serviceConfig.responseCodes();
         //
         final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(0);
         final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(0);
@@ -199,7 +199,7 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
-    public ResponseState[] responseStates() {
-        return this.responseStates;
+    public ResponseCode[] responseCodes() {
+        return this.responseCodes;
     }
 }

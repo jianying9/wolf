@@ -83,5 +83,5 @@ public @interface ServiceConfig {
      *
      * @return
      */
-    public ResponseState[] responseStates();
+    public ResponseCode[] responseCodes();
 }

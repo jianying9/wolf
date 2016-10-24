@@ -6,9 +6,9 @@ package com.wolf.framework.reponse;
  */
 public interface Response {
     
-    public String getState();
+    public String getCode();
     
-    public void setState(String state);
+    public void setCode(String code);
     
     public String getDataMessage();
     

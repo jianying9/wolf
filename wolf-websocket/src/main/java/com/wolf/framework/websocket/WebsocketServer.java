@@ -51,7 +51,7 @@ public class WebsocketServer {
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //无效的route
-                session.getAsyncRemote().sendText("{\"state\":\"INVALID\",\"error\":\"route not exist\"}");
+                session.getAsyncRemote().sendText("{\"code\":\"invalid\",\"error\":\"route not exist\"}");
             } else {
                 //创建消息对象并执行服务
                 WorkerContext workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, text, serviceWorker);

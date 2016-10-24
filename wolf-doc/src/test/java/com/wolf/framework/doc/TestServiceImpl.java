@@ -18,7 +18,7 @@ import com.wolf.framework.service.response.ServiceResponse;
         group = "Test",
         validateSession = false,
         desc = "service类型测试服务",
-        responseStates = {},
+        responseCodes = {},
         requestConfigs = {
             @RequestConfig(name = "name", dataType = DataType.CHAR, desc = "名称", max = 28, min = 2, must = true),
             @RequestConfig(name = "value", dataType = DataType.CHAR, desc = "值", max = 128, min = 0, must = false)

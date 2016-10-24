@@ -11,9 +11,9 @@ import java.util.Map;
  */
 public interface ListServiceResponse<T extends Entity> {
     
-    public String getState();
+    public String getCode();
     
-    public void setState(String state);
+    public void setCode(String code);
     
     public void setDataMapList(List<Map<String, String>> dataMapList);
     

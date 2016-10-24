@@ -1,8 +1,8 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.config.ResponseState;
+import com.wolf.framework.config.ResponseCode;
 import com.wolf.framework.config.FrameworkLogger;
-import com.wolf.framework.exception.ResponseStateException;
+import com.wolf.framework.exception.ResponseCodeException;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -33,13 +33,13 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
             Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.error("wolf-exception", t);
             Response response = workerContext.getWorkerResponse();
-            if (ResponseStateException.class.isInstance(t)) {
-                ResponseStateException te = (ResponseStateException) t;
-                response.setState(te.getState());
+            if (ResponseCodeException.class.isInstance(t)) {
+                ResponseCodeException te = (ResponseCodeException) t;
+                response.setCode(te.getCode());
             } else if(UnsupportedOperationException.class.isInstance(t)) {
-                response.setState(ResponseState.UNSUPPORT);
+                response.setCode(ResponseCode.UNSUPPORT);
             } else {
-                response.setState(ResponseState.EXCEPTION);
+                response.setCode(ResponseCode.EXCEPTION);
             }
         }
     }

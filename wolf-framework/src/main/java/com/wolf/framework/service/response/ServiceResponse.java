@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public interface ServiceResponse<T extends Entity> {
     
-    public String getState();
+    public String getCode();
     
-    public void setState(String state);
+    public void setCode(String code);
     
     public void setDataMap(Map<String, String> dataMap);
     

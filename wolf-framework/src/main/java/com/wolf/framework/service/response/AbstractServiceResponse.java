@@ -14,12 +14,12 @@ public abstract class AbstractServiceResponse  {
         this.response = response;
     }
 
-    public final String getState() {
-        return this.response.getState();
+    public final String getCode() {
+        return this.response.getCode();
     }
     
-    public final void setState(String state) {
-        this.response.setState(state);
+    public final void setCode(String code) {
+        this.response.setCode(code);
     }
 
     public final void success() {

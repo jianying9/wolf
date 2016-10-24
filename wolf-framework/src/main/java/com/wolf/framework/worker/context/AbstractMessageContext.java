@@ -1,7 +1,7 @@
 package com.wolf.framework.worker.context;
 
 import com.wolf.framework.comet.CometContext;
-import com.wolf.framework.config.ResponseState;
+import com.wolf.framework.config.ResponseCode;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public abstract class AbstractMessageContext  {
     //message
     private String error = "";
     private String responseMessage = "";
-    protected String state = ResponseState.FAILURE;
+    protected String state = ResponseCode.FAILURE;
     protected final String[] returnParameter;
     protected final Map<String, ResponseParameterHandler> parameterHandlerMap;
     //session
@@ -49,19 +49,19 @@ public abstract class AbstractMessageContext  {
     }
 
     public final void denied() {
-        this.state = ResponseState.DENIED;
+        this.state = ResponseCode.DENIED;
     }
 
     public final void invalid() {
-        this.state = ResponseState.INVALID;
+        this.state = ResponseCode.INVALID;
     }
 
     public final void unlogin() {
-        this.state = ResponseState.UNLOGIN;
+        this.state = ResponseCode.UNLOGIN;
     }
 
     public final void success() {
-        this.state = ResponseState.SUCCESS;
+        this.state = ResponseCode.SUCCESS;
     }
 
     public final void setState(String state) {

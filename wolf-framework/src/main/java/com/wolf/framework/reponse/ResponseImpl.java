@@ -1,6 +1,6 @@
 package com.wolf.framework.reponse;
 
-import com.wolf.framework.config.ResponseState;
+import com.wolf.framework.config.ResponseCode;
 import com.wolf.framework.worker.context.WorkerContext;
 
 /**
@@ -14,7 +14,7 @@ public class ResponseImpl implements WorkerResponse {
     private String error = "";
     private String dataMessage = "{}";
     private String responseMessage = "";
-    private String state = ResponseState.FAILURE;
+    private String code = ResponseCode.FAILURE;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -25,38 +25,38 @@ public class ResponseImpl implements WorkerResponse {
     }
 
     @Override
-    public final String getState() {
-        return this.state;
+    public final String getCode() {
+        return this.code;
     }
 
     @Override
     public final void denied() {
-        this.state = ResponseState.DENIED;
+        this.code = ResponseCode.DENIED;
     }
 
     @Override
     public final void invalid() {
-        this.state = ResponseState.INVALID;
+        this.code = ResponseCode.INVALID;
     }
 
     @Override
     public final void unlogin() {
-        this.state = ResponseState.UNLOGIN;
+        this.code = ResponseCode.UNLOGIN;
     }
 
     @Override
     public final void success() {
-        this.state = ResponseState.SUCCESS;
+        this.code = ResponseCode.SUCCESS;
     }
     
     @Override
     public final void failure() {
-        this.state = ResponseState.FAILURE;
+        this.code = ResponseCode.FAILURE;
     }
 
     @Override
-    public final void setState(String state) {
-        this.state = state;
+    public final void setCode(String code) {
+        this.code = code;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ResponseImpl implements WorkerResponse {
     @Override
     public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"state\":\"").append(this.state)
+        jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute())
                 .append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
@@ -76,7 +76,7 @@ public class ResponseImpl implements WorkerResponse {
 
     private String createResponseMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"state\":\"").append(this.state)
+        jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute())
                 .append("\",\"data\":").append(this.dataMessage).append("}");
         this.responseMessage = jsonBuilder.toString();

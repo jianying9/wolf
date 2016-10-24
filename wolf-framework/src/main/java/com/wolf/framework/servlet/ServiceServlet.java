@@ -105,7 +105,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //非特殊接口,放回提示route不存在
-                result = "{\"state\":\"invalid\",\"error\":\"route[" + route + "] not exist\"}";
+                result = "{\"code\":\"invalid\",\"error\":\"route[" + route + "] not exist\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
