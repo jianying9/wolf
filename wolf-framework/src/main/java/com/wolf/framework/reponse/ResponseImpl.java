@@ -18,9 +18,11 @@ public class ResponseImpl implements WorkerResponse {
     private String responseMessage = "";
     private String code = ResponseCode.FAILURE;
     private String newSessionId = null;
+    private String callback = null;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
+        this.callback = workerContext.getParameter("callback");
     }
 
     public final WorkerContext getWorkerContext() {
@@ -71,8 +73,11 @@ public class ResponseImpl implements WorkerResponse {
     public final String createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
-                .append("\",\"route\":\"").append(this.workerContext.getRoute())
-                .append("\",\"error\":\"").append(this.error).append("\"}");
+                .append("\",\"route\":\"").append(this.workerContext.getRoute());
+        if (this.callback != null) {
+            jsonBuilder.append("\",\"callback\":\"").append(this.callback);
+        }
+        jsonBuilder.append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
         return this.responseMessage;
     }
@@ -82,8 +87,11 @@ public class ResponseImpl implements WorkerResponse {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute());
-        if(this.newSessionId != null && serviceWorker.getSessionHandleType() == SessionHandleType.SAVE) {
+        if (this.newSessionId != null && serviceWorker.getSessionHandleType() == SessionHandleType.SAVE) {
             jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
+        }
+        if (this.callback != null) {
+            jsonBuilder.append("\",\"callback\":\"").append(this.callback);
         }
         jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
         this.responseMessage = jsonBuilder.toString();

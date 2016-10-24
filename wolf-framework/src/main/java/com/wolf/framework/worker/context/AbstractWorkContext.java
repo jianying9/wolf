@@ -34,8 +34,6 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public AbstractWorkContext(String route, String json, ServiceWorker serviceWorker) {
         this.route = route;
         this.serviceWorker = serviceWorker;
-        this.request = new RequestImpl(this);
-        this.response = new ResponseImpl(this);
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -66,18 +64,20 @@ public abstract class AbstractWorkContext implements WorkerContext {
         } else {
             this.parameterMap = Collections.emptyMap();
         }
+        this.request = new RequestImpl(this);
+        this.response = new ResponseImpl(this);
     }
 
     public AbstractWorkContext(String route, Map<String, String> parameterMap, ServiceWorker serviceWorker) {
         this.route = route;
         this.serviceWorker = serviceWorker;
-        this.request = new RequestImpl(this);
-        this.response = new ResponseImpl(this);
         if (parameterMap != null) {
             this.parameterMap = parameterMap;
         } else {
             this.parameterMap = Collections.emptyMap();
         }
+        this.request = new RequestImpl(this);
+        this.response = new ResponseImpl(this);
     }
     
     @Override
@@ -93,6 +93,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
     @Override
     public final Map<String, String> getParameterMap() {
         return this.parameterMap;
+    }
+    
+    @Override
+    public final String getParameter(String name) {
+        return this.parameterMap.get(name);
     }
 
     @Override

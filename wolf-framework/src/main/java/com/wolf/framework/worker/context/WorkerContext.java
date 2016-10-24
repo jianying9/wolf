@@ -14,6 +14,8 @@ public interface WorkerContext {
 
     public Map<String, String> getParameterMap();
     
+    public String getParameter(String name);
+    
     public String getRoute();
 
     public String getSessionId();
