@@ -92,7 +92,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
 
     @Override
     public final Map<String, String> getParameterMap() {
-        return this.parameterMap;
+        return Collections.unmodifiableMap(this.parameterMap);
     }
     
     @Override
