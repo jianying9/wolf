@@ -29,7 +29,7 @@ import java.util.Set;
             @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
             @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = "")
         },
-        responseStates = {},
+        responseCodes = {},
         validateSession = false,
         validateSecurity = false,
         group = "WOLF_FRAMEWORK",

@@ -24,7 +24,7 @@ import java.util.Set;
         responseConfigs = {
             @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = "")
         },
-        responseStates = {},
+        responseCodes = {},
         validateSession = false,
         validateSecurity = false,
         group = "WOLF_FRAMEWORK",

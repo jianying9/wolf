@@ -30,7 +30,7 @@ import java.util.UUID;
             @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
             @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = "")
         },
-        responseStates = {},
+        responseCodes = {},
         validateSession = false,
         validateSecurity = false,
         group = "WOLF_FRAMEWORK",
