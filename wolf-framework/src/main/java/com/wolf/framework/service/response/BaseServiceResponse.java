@@ -1,30 +1,32 @@
-package com.wolf.framework.reponse;
+package com.wolf.framework.service.response;
+
+import com.wolf.framework.dao.Entity;
+import java.util.Map;
 
 /**
  *
  * @author jianying9
+ * @param <T>
  */
-public interface Response {
+public interface BaseServiceResponse<T extends Entity> {
     
     public String getCode();
     
     public void setCode(String code);
     
-    public String getDataMessage();
-    
-    public void setDataMessage(String dataMessage);
-    
     public void success();
     
     public void failure();
+    
+    public String getDataMessage();
     
     public void setNewSessionId(String sid);
     
     public String getNewSessionId();
     
     public String getResponseMessage();
-    
-    public String getResponseMessage(boolean useCache);
+
+    public boolean push(String sid);
     
     public boolean push(String sid, String responseMessage);
 }

@@ -9,7 +9,7 @@ import com.wolf.framework.reponse.Response;
 public abstract class AbstractServiceResponse  {
 
     protected final Response response;
-
+    
     public AbstractServiceResponse(Response response) {
         this.response = response;
     }
@@ -36,5 +36,22 @@ public abstract class AbstractServiceResponse  {
 
     public final void setNewSessionId(String newSessionId) {
         this.response.setNewSessionId(newSessionId);
+    }
+    
+    public abstract String getDataMessage();
+    
+    public String getResponseMessage() {
+        String dataMessage = this.getDataMessage();
+        this.response.setDataMessage(dataMessage);
+        return this.response.getResponseMessage(false);
+    }
+    
+    public boolean push(String sid) {
+        String responseMessage = this.getResponseMessage();
+        return this.push(sid, responseMessage);
+    }
+    
+    public boolean push(String sid, String responseMessage) {
+        return this.response.push(sid, responseMessage);
     }
 }

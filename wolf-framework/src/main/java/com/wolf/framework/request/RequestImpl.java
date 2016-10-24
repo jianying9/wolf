@@ -48,10 +48,4 @@ public class RequestImpl implements WorkerRequest {
     public void putParameter(String name, String value) {
         this.parameterMap.put(name, value);
     }
-
-    @Override
-    public boolean push(String sid, String responseMessage) {
-        CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
-        return cometContext.push(sid, responseMessage);
-    }
 }

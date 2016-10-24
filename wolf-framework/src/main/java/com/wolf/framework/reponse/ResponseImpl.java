@@ -1,5 +1,6 @@
 package com.wolf.framework.reponse;
 
+import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.worker.ServiceWorker;
@@ -70,7 +71,7 @@ public class ResponseImpl implements WorkerResponse {
     }
 
     @Override
-    public final String createErrorMessage() {
+    public final void createErrorMessage() {
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute());
@@ -79,10 +80,9 @@ public class ResponseImpl implements WorkerResponse {
         }
         jsonBuilder.append("\",\"error\":\"").append(this.error).append("\"}");
         this.responseMessage = jsonBuilder.toString();
-        return this.responseMessage;
     }
 
-    private String createResponseMessage() {
+    private void createResponseMessage() {
         ServiceWorker serviceWorker = this.workerContext.getServiceWorker();
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
@@ -95,26 +95,19 @@ public class ResponseImpl implements WorkerResponse {
         }
         jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
         this.responseMessage = jsonBuilder.toString();
-        return this.responseMessage;
-    }
-
-    @Override
-    public final String getResponseMessage() {
-        if (this.responseMessage.isEmpty()) {
-            this.createResponseMessage();
-        }
-        return this.responseMessage;
     }
 
     @Override
     public final String getResponseMessage(boolean useCache) {
-        String result;
-        if (useCache) {
-            result = this.getResponseMessage();
-        } else {
-            result = this.createResponseMessage();
+        if (this.responseMessage.isEmpty() || useCache == false) {
+            this.createResponseMessage();
         }
-        return result;
+        return this.responseMessage;
+    }
+    
+    @Override
+    public final String getResponseMessage() {
+        return this.getResponseMessage(true);
     }
 
     @Override
@@ -135,5 +128,11 @@ public class ResponseImpl implements WorkerResponse {
     @Override
     public void setNewSessionId(String newSessionId) {
         this.newSessionId = newSessionId;
+    }
+
+    @Override
+    public boolean push(String sid, String responseMessage) {
+        CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
+        return cometContext.push(sid, responseMessage);
     }
 }

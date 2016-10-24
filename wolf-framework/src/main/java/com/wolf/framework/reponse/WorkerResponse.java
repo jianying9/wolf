@@ -14,5 +14,5 @@ public interface WorkerResponse extends Response {
     
     public void setError(String error);
 
-    public String createErrorMessage();
+    public void createErrorMessage();
 }

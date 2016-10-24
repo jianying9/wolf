@@ -15,6 +15,4 @@ public interface ServiceRequest {
     public String getRoute();
 
     public String getSessionId();
-    
-    public boolean push(String sid, String responseMessage);
 }

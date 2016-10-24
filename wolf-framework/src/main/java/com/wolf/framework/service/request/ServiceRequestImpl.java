@@ -34,9 +34,4 @@ public class ServiceRequestImpl implements ServiceRequest {
     public final String getParameter(String name) {
         return this.request.getParameter(name);
     }
-
-    @Override
-    public final boolean push(String sid, String responseMessage) {
-        return this.request.push(sid, responseMessage);
-    }
 }
