@@ -4,6 +4,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.request.ListServiceRequest;
 import com.wolf.framework.service.response.ListServiceResponse;
@@ -42,11 +43,11 @@ public class InquireServiceImpl implements ListService {
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         //过滤系统接口
         List<ServiceWorker> serviceWorkerList = new ArrayList<ServiceWorker>(serviceWorkerMap.size());
-        ServiceWorker serviceWorker;
+        ServiceContext serviceContext;
         for (Entry<String, ServiceWorker> entryService : entrySet) {
-            serviceWorker = entryService.getValue();
-            if (serviceWorker.getGroup().equals("WOLF_FRAMEWORK") == false) {
-                serviceWorkerList.add(serviceWorker);
+            serviceContext = entryService.getValue().getServiceContext();
+            if (serviceContext.group().equals("WOLF_FRAMEWORK") == false) {
+                serviceWorkerList.add(entryService.getValue());
             }
         }
         //排序
@@ -54,11 +55,12 @@ public class InquireServiceImpl implements ListService {
         //输出
         Map<String, String> resultMap;
         List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(serviceWorkerList.size());
-        for (ServiceWorker sw : serviceWorkerList) {
+        for (ServiceWorker serviceWorker : serviceWorkerList) {
+            serviceContext = serviceWorker.getServiceContext();
             resultMap = new HashMap<String, String>(4, 1);
-            resultMap.put("routeName", sw.getRoute());
-            resultMap.put("groupName", sw.getGroup());
-            resultMap.put("desc", sw.getDesc());
+            resultMap.put("routeName", serviceContext.route());
+            resultMap.put("groupName", serviceContext.group());
+            resultMap.put("desc", serviceContext.desc());
             resultMapList.add(resultMap);
         }
         listServiceResponse.setDataMapList(resultMapList);
@@ -70,9 +72,11 @@ public class InquireServiceImpl implements ListService {
 
         @Override
         public int compare(ServiceWorker o1, ServiceWorker o2) {
-            int result = o1.getGroup().compareTo(o2.getGroup());
+            ServiceContext s1 = o1.getServiceContext();
+            ServiceContext s2 = o2.getServiceContext();
+            int result = s1.group().compareTo(s2.group());
             if (result == 0) {
-                result = o1.getRoute().compareTo(o2.getRoute());
+                result = s1.route().compareTo(s2.route());
             }
             return result;
         }

@@ -16,6 +16,10 @@ public interface Response {
     
     public void success();
     
+    public void exception();
+    
+    public void unsupport();
+    
     public void setNewSessionId(String sid);
     
     public String getNewSessionId();

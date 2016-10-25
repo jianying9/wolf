@@ -7,19 +7,21 @@ package com.wolf.framework.config;
 public class ResponseCodeConfig {
 
     //成功
-    public final static String SUCCESS = "200";
+    public final static String SUCCESS = "success";
     //未登录
-    public final static String UNLOGIN = "301";
+    public final static String UNLOGIN = "unlogin";
     //没有变化
-    public final static String UNMODIFYED = "304";
+    public final static String UNMODIFYED = "unmodifyed";
     //非法数据
-    public final static String INVALID = "400";
+    public final static String INVALID = "invalid";
     //无权限
-    public final static String DENIED = "403";
+    public final static String DENIED = "denied";
     //不存在
-    public final static String NOTFOUND = "404";
+    public final static String NOTFOUND = "notfound";
     //未实现
-    public final static String UNSUPPORT = "501";
+    public final static String UNSUPPORT = "unsupport";
     //异常
-    public final static String EXCEPTION = "503";
+    public final static String EXCEPTION = "exception";
+    //未知
+    public final static String UNKNOWN = "unknown";
 }

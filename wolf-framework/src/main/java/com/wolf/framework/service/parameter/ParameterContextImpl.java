@@ -17,7 +17,6 @@ public class ParameterContextImpl implements ParameterContext {
     //extended entity处理集合
     private final FilterFactory filterFactory;
     private final DataHandlerFactory dataHandlerFactory;
-    private final Set<String> reservedWordSet;
 
     /**
      * 构造函数
@@ -28,7 +27,6 @@ public class ParameterContextImpl implements ParameterContext {
     public ParameterContextImpl(final DataHandlerFactory dataHandlerFactory, final ApplicationContext applicationContext) {
         this.filterFactory = new FilterFactoryImpl();
         this.dataHandlerFactory = dataHandlerFactory;
-        this.reservedWordSet = FrameworkConfig.getReservedWordSet();
     }
 
     @Override
@@ -39,10 +37,5 @@ public class ParameterContextImpl implements ParameterContext {
     @Override
     public final DataHandlerFactory getDataHandlerFactory() {
         return this.dataHandlerFactory;
-    }
-
-    @Override
-    public Set<String> getReservedWordSet() {
-        return this.reservedWordSet;
     }
 }

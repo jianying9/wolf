@@ -4,6 +4,7 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.request.ListServiceRequest;
 import com.wolf.framework.service.response.ListServiceResponse;
@@ -37,11 +38,11 @@ public class InquireGroupServiceImpl implements ListService {
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         Map<String, String> resultMap;
         List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(10);
-        ServiceWorker serviceWorker;
+        ServiceContext serviceContext;
         Set<String> groupNameSet = new HashSet<String>(serviceWorkerMap.size(), 1);
         for (Map.Entry<String, ServiceWorker> entryService : entrySet) {
-            serviceWorker = entryService.getValue();
-            groupNameSet.add(serviceWorker.getGroup());
+            serviceContext = entryService.getValue().getServiceContext();
+            groupNameSet.add(serviceContext.group());
         }
         groupNameSet.remove("WOLF_FRAMEWORK");
         for (String groupName : groupNameSet) {

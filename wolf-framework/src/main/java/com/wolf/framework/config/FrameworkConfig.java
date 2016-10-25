@@ -57,21 +57,4 @@ public class FrameworkConfig {
     public final static String CASSANDRA_USERNAME = "cassandra.username";
     //cassandra 帐号密码
     public final static String CASSANDRA_PASSWORD = "cassandra.password";
-    /**
-     * 保留字段集合
-     *
-     * @return
-     */
-    public static Set<String> getReservedWordSet() {
-        Set<String> wordSet = new HashSet<String>(4, 1);
-        //保留接口参数
-        wordSet.add("route");
-        wordSet.add("filters");
-        wordSet.add("sid");
-        wordSet.add("nextIndex");
-        wordSet.add("nextSize");
-        wordSet.add("comet");
-        wordSet.add("callback");
-        return Collections.unmodifiableSet(wordSet);
-    }
 }

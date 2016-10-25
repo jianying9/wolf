@@ -75,7 +75,7 @@ public final class ClassParser {
     private void findClass(final List<String> classNameList, final ClassLoader classloader, final URL url, final String packageName) throws IOException, ClassNotFoundException {
         //判断是否是jar包
         String urlName = url.getFile();
-        if (urlName.indexOf("/src/test/") == -1 && urlName.indexOf("/src/main/") == -1) {
+        if (!urlName.contains("/src/test/") && !urlName.contains("/src/main/")) {
             int index = urlName.lastIndexOf(".jar");
             if (index > -1) {
                 String jarUrlName = urlName.substring(0, index + 4);

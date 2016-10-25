@@ -2,9 +2,12 @@ package com.wolf.framework.reponse;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.ResponseCodeConfig;
+import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
-import com.wolf.framework.worker.ServiceWorker;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.worker.context.WorkerContext;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -20,10 +23,17 @@ public class ResponseImpl implements WorkerResponse {
     private String code = ResponseCodeConfig.SUCCESS;
     private String newSessionId = null;
     private String callback = null;
+    private final Set<String> customCodeSet;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
         this.callback = workerContext.getParameter("callback");
+        ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
+        ResponseCode[] responseCodes = serviceContext.responseCodes();
+        this.customCodeSet = new HashSet<String>(responseCodes.length);
+        for (ResponseCode responseCode : responseCodes) {
+            this.customCodeSet.add(responseCode.code());
+        }
     }
 
     public final WorkerContext getWorkerContext() {
@@ -54,10 +64,24 @@ public class ResponseImpl implements WorkerResponse {
     public final void success() {
         this.code = ResponseCodeConfig.SUCCESS;
     }
+    
+    @Override
+    public final void exception() {
+        this.code = ResponseCodeConfig.EXCEPTION;
+    }
+    
+    @Override
+    public final void unsupport() {
+        this.code = ResponseCodeConfig.UNKNOWN;
+    }
 
     @Override
     public final void setCode(String code) {
-        this.code = code;
+        if(this.customCodeSet.contains(code)) {
+            this.code = code;
+        } else {
+            this.code = ResponseCodeConfig.UNKNOWN;
+        }
     }
 
     @Override
@@ -78,11 +102,11 @@ public class ResponseImpl implements WorkerResponse {
     }
 
     private void createResponseMessage() {
-        ServiceWorker serviceWorker = this.workerContext.getServiceWorker();
+        ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute());
-        if (this.newSessionId != null && serviceWorker.getSessionHandleType() == SessionHandleType.SAVE) {
+        if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
             jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
         }
         if (this.callback != null) {
@@ -99,7 +123,7 @@ public class ResponseImpl implements WorkerResponse {
         }
         return this.responseMessage;
     }
-    
+
     @Override
     public final String getResponseMessage() {
         return this.getResponseMessage(true);

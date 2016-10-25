@@ -1,13 +1,11 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.Filter;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterType;
-import java.util.Set;
 
 /**
  *
@@ -17,7 +15,6 @@ public class ResponseParameterHandlerBuilder {
 
     private final ResponseConfig outputConfig;
     private final ParameterContext parameterContext;
-    private final Set<String> reservedWordSet = FrameworkConfig.getReservedWordSet();
 
     public ResponseParameterHandlerBuilder(
             final ResponseConfig outputConfig,
@@ -29,10 +26,6 @@ public class ResponseParameterHandlerBuilder {
     public ResponseParameterHandler build() {
         ResponseParameterHandler parameterHandler = null;
         final String fieldName = this.outputConfig.name();
-        //保留字验证
-        if (reservedWordSet.contains(fieldName)) {
-            throw new RuntimeException("Error when build OutputParameterHandler. Cause: reserved word : ".concat(fieldName));
-        }
         //
         final FilterFactory filterFactory = this.parameterContext.getFilterFactory();
         //

@@ -1,10 +1,8 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
-import java.util.Set;
 
 /**
  *
@@ -14,22 +12,18 @@ public class RequestParameterHandlerBuilder {
 
     private final RequestConfig inputConfig;
     private final ParameterContext parameterContext;
-    private final Set<String> reservedWordSet = FrameworkConfig.getReservedWordSet();
 
     public RequestParameterHandlerBuilder(
             final RequestConfig inputConfig,
             final ParameterContext parameterContext) {
         this.inputConfig = inputConfig;
         this.parameterContext = parameterContext;
+        
     }
 
     public RequestParameterHandler build() {
         RequestParameterHandler parameterHandler = null;
         final String fieldName = this.inputConfig.name();
-        //保留字验证
-        if (reservedWordSet.contains(fieldName)) {
-            throw new RuntimeException("Error when build InputParameterHandler. Cause: reserved word : ".concat(fieldName));
-        }
         //
         final DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         //基本数据类型

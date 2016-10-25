@@ -1,6 +1,6 @@
 package com.wolf.framework.worker;
 
-import com.wolf.framework.service.SessionHandleType;
+import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -17,11 +17,5 @@ public interface ServiceWorker {
 
     public Map<String, String> getInfoMap();
     
-    public String getGroup();
-    
-    public String getRoute();
-    
-    public String getDesc();
-    
-    public SessionHandleType getSessionHandleType();
+    public ServiceContext getServiceContext();
 }

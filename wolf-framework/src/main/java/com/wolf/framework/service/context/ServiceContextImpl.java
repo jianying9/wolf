@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import com.wolf.framework.service.ResponseCode;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -38,6 +41,43 @@ public class ServiceContextImpl implements ServiceContext {
     private final RequestConfig[] requestConfigs;
     private final ResponseConfig[] responseConfigs;
     private final ResponseCode[] responseCodes;
+    
+    /**
+     * 保留字段集合
+     *
+     * @return
+     */
+    public static Set<String> getReservedParamSet() {
+        Set<String> wordSet = new HashSet<String>(4, 1);
+        //保留接口参数
+        wordSet.add("route");
+        wordSet.add("filters");
+        wordSet.add("sid");
+        wordSet.add("nextIndex");
+        wordSet.add("nextSize");
+        wordSet.add("comet");
+        wordSet.add("callback");
+        return Collections.unmodifiableSet(wordSet);
+    }
+    
+    /**
+     * 保留code集合
+     * @return 
+     */
+    public static Set<String> getReservedCodeSet() {
+        Set<String> codeSet = new HashSet<String>(4, 1);
+        //保留接口参数
+        codeSet.add("success");
+        codeSet.add("unlogin");
+        codeSet.add("unmodifyed");
+        codeSet.add("invalid");
+        codeSet.add("denied");
+        codeSet.add("notfound");
+        codeSet.add("unsupport");
+        codeSet.add("exception");
+        codeSet.add("unknown");
+        return Collections.unmodifiableSet(codeSet);
+    }
 
     public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
@@ -52,9 +92,22 @@ public class ServiceContextImpl implements ServiceContext {
         this.responseConfigs = serviceConfig.responseConfigs();
         this.responseCodes = serviceConfig.responseCodes();
         //
+        Set<String> reservedParamSet = ServiceContextImpl.getReservedParamSet();
+        Set<String> reservedCodeSet = ServiceContextImpl.getReservedCodeSet();
+        //
+        for (ResponseCode responseCode : this.responseCodes) {
+            if(reservedCodeSet.contains(responseCode.code())) {
+                //配置中存在保留code,抛出异常提示
+                throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved code[".concat(responseCode.code()) + "]");
+            }
+        }
         final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(0);
         final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(0);
         for (RequestConfig requestConfig : requestConfigs) {
+            if(reservedParamSet.contains(requestConfig.name())) {
+                //配置中存在保留参数名,抛出异常提示
+                throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved param[".concat(requestConfig.name()) + "]");
+            }
             if (requestConfig.must()) {
                 importantRequestConfigList.add(requestConfig);
             } else {
