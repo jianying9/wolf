@@ -26,10 +26,6 @@ public abstract class AbstractServiceResponse  {
         this.response.success();
     }
     
-    public final void failure() {
-        this.response.failure();
-    }
-    
     public String getNewSessionId() {
         return this.response.getNewSessionId();
     }

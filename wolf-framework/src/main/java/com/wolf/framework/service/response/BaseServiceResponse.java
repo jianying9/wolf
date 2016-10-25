@@ -1,7 +1,6 @@
 package com.wolf.framework.service.response;
 
 import com.wolf.framework.dao.Entity;
-import java.util.Map;
 
 /**
  *
@@ -15,8 +14,6 @@ public interface BaseServiceResponse<T extends Entity> {
     public void setCode(String code);
     
     public void success();
-    
-    public void failure();
     
     public String getDataMessage();
     

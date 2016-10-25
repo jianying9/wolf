@@ -1,6 +1,7 @@
 package com.wolf.framework.websocket;
 
 import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
@@ -21,12 +22,12 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-@ServerEndpoint(value = "/")
+@ServerEndpoint(value = "/api")
 public class WebsocketServer {
 
     private final SessionManager sessionManager;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
-    private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([A-Z_]+)(?:\")");
+    private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/]+)(?:\")");
 
     public WebsocketServer() {
         this.sessionManager = new SessionManager();
@@ -51,7 +52,7 @@ public class WebsocketServer {
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //无效的route
-                session.getAsyncRemote().sendText("{\"code\":\"invalid\",\"error\":\"route not exist\"}");
+                session.getAsyncRemote().sendText("{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}");
             } else {
                 //创建消息对象并执行服务
                 WorkerContext workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, text, serviceWorker);
@@ -60,6 +61,8 @@ public class WebsocketServer {
                 String result = workerContext.getWorkerResponse().getResponseMessage();
                 session.getAsyncRemote().sendText(result);
             }
+        } else {
+            session.getAsyncRemote().sendText("{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}");
         }
     }
 
@@ -75,7 +78,8 @@ public class WebsocketServer {
     }
 
     @OnError
-    public void onError(Session session) throws IOException {
+    public void onError(Throwable t, Session session) throws IOException {
         session.close();
+        this.logger.error("wobsocket-on onerror:{}", t.getMessage());
     }
 }

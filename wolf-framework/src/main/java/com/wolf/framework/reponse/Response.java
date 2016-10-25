@@ -16,8 +16,6 @@ public interface Response {
     
     public void success();
     
-    public void failure();
-    
     public void setNewSessionId(String sid);
     
     public String getNewSessionId();

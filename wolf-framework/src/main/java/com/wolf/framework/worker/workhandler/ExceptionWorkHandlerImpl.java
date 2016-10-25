@@ -1,6 +1,6 @@
 package com.wolf.framework.worker.workhandler;
 
-import com.wolf.framework.config.ResponseCode;
+import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.exception.ResponseCodeException;
 import com.wolf.framework.logger.LogFactory;
@@ -37,9 +37,9 @@ public class ExceptionWorkHandlerImpl implements WorkHandler {
                 ResponseCodeException te = (ResponseCodeException) t;
                 response.setCode(te.getCode());
             } else if(UnsupportedOperationException.class.isInstance(t)) {
-                response.setCode(ResponseCode.UNSUPPORT);
+                response.setCode(ResponseCodeConfig.UNSUPPORT);
             } else {
-                response.setCode(ResponseCode.EXCEPTION);
+                response.setCode(ResponseCodeConfig.EXCEPTION);
             }
         }
     }

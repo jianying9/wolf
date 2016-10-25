@@ -3,6 +3,7 @@ package com.wolf.framework.servlet;
 import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.HttpUtils;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
  *
  * @author aladdin
  */
-@WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/*"}, asyncSupported = true)
+@WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/api/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
@@ -105,7 +106,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //非特殊接口,放回提示route不存在
-                result = "{\"code\":\"invalid\",\"error\":\"route[" + route + "] not exist\"}";
+                result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\""+ route + "\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {

@@ -1,7 +1,7 @@
 package com.wolf.framework.reponse;
 
 import com.wolf.framework.comet.CometContext;
-import com.wolf.framework.config.ResponseCode;
+import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -17,7 +17,7 @@ public class ResponseImpl implements WorkerResponse {
     private String error = "";
     private String dataMessage = "{}";
     private String responseMessage = "";
-    private String code = ResponseCode.FAILURE;
+    private String code = ResponseCodeConfig.SUCCESS;
     private String newSessionId = null;
     private String callback = null;
 
@@ -37,27 +37,22 @@ public class ResponseImpl implements WorkerResponse {
 
     @Override
     public final void denied() {
-        this.code = ResponseCode.DENIED;
+        this.code = ResponseCodeConfig.DENIED;
     }
 
     @Override
     public final void invalid() {
-        this.code = ResponseCode.INVALID;
+        this.code = ResponseCodeConfig.INVALID;
     }
 
     @Override
     public final void unlogin() {
-        this.code = ResponseCode.UNLOGIN;
+        this.code = ResponseCodeConfig.UNLOGIN;
     }
 
     @Override
     public final void success() {
-        this.code = ResponseCode.SUCCESS;
-    }
-
-    @Override
-    public final void failure() {
-        this.code = ResponseCode.FAILURE;
+        this.code = ResponseCodeConfig.SUCCESS;
     }
 
     @Override
