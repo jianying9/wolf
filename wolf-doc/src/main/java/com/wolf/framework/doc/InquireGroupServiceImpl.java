@@ -18,7 +18,7 @@ import java.util.Set;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 @ServiceConfig(
         route = "/wolf/group",
@@ -28,7 +28,6 @@ import java.util.Set;
         responseCodes = {},
         validateSession = false,
         validateSecurity = false,
-        group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireGroupServiceImpl implements ListService {
 
@@ -44,7 +43,7 @@ public class InquireGroupServiceImpl implements ListService {
             serviceContext = entryService.getValue().getServiceContext();
             groupNameSet.add(serviceContext.group());
         }
-        groupNameSet.remove("WOLF_FRAMEWORK");
+        groupNameSet.remove("wolf");
         for (String groupName : groupNameSet) {
             resultMap = new HashMap<String, String>(2, 1);
             resultMap.put("groupName", groupName);

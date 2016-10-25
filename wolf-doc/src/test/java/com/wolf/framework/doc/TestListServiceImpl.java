@@ -15,7 +15,6 @@ import com.wolf.framework.service.response.ListServiceResponse;
  */
 @ServiceConfig(
         route = "/doc/test/list",
-        group = "Test",
         validateSession = false,
         desc = "list service类型测试服务",
         responseCodes = {},

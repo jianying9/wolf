@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 @ServiceConfig(
         route = "/wolf/service/info",
@@ -33,7 +33,6 @@ import java.util.UUID;
         responseCodes = {},
         validateSession = false,
         validateSecurity = false,
-        group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireInfoServiceImpl implements Service {
 

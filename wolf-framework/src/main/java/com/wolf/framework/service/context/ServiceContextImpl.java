@@ -18,6 +18,8 @@ import com.wolf.framework.service.ResponseCode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -82,7 +84,13 @@ public class ServiceContextImpl implements ServiceContext {
     public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
         this.desc = serviceConfig.desc();
-        this.group = serviceConfig.group();
+        Pattern groupPattern = Pattern.compile("(?:/)([a-zA-Z]+)(?:/)");
+        Matcher matcher = groupPattern.matcher(this.route);
+        if(matcher.find()) {
+            this.group = matcher.group(1);
+        } else {
+            this.group = "default";
+        }
         this.sessionHandleType = serviceConfig.sessionHandleType();
         this.page = page;
         this.requireTransaction = serviceConfig.requireTransaction();

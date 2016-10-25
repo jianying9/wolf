@@ -72,16 +72,9 @@ public @interface ServiceConfig {
     public String desc();
 
     /**
-     * 接口分组
-     *
-     * @return
-     */
-    public String group() default "default";
-
-    /**
      * 返回标志描述
      *
      * @return
      */
-    public ResponseCode[] responseCodes();
+    public ResponseCode[] responseCodes() default {};
 }

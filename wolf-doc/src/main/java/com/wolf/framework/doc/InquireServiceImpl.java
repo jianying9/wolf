@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 @ServiceConfig(
         route = "/wolf/service",
@@ -33,7 +33,6 @@ import java.util.Set;
         responseCodes = {},
         validateSession = false,
         validateSecurity = false,
-        group = "WOLF_FRAMEWORK",
         desc = "")
 public class InquireServiceImpl implements ListService {
 
@@ -46,7 +45,7 @@ public class InquireServiceImpl implements ListService {
         ServiceContext serviceContext;
         for (Entry<String, ServiceWorker> entryService : entrySet) {
             serviceContext = entryService.getValue().getServiceContext();
-            if (serviceContext.group().equals("WOLF_FRAMEWORK") == false) {
+            if (serviceContext.group().equals("wolf") == false) {
                 serviceWorkerList.add(entryService.getValue());
             }
         }
