@@ -46,17 +46,22 @@ public abstract class AbstractWorkContext implements WorkerContext {
             }
             if (rootNode != null) {
                 //读数据
-                this.parameterMap = new HashMap<String, String>(8, 1);
-                Map.Entry<String, JsonNode> entry;
-                String name;
-                String value;
-                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
-                while (iterator.hasNext()) {
-                    entry = iterator.next();
-                    name = entry.getKey();
-                    value = entry.getValue().getTextValue();
-                    value = StringUtils.trim(value);
-                    this.parameterMap.put(name, value);
+                JsonNode paramNode = rootNode.get("param");
+                if (paramNode != null) {
+                    this.parameterMap = new HashMap<String, String>(8, 1);
+                    Map.Entry<String, JsonNode> entry;
+                    String name;
+                    String value;
+                    Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+                    while (iterator.hasNext()) {
+                        entry = iterator.next();
+                        name = entry.getKey();
+                        value = entry.getValue().getTextValue();
+                        value = StringUtils.trim(value);
+                        this.parameterMap.put(name, value);
+                    }
+                } else {
+                    this.parameterMap = Collections.emptyMap();
                 }
             } else {
                 this.parameterMap = Collections.emptyMap();
@@ -79,7 +84,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
         this.request = new RequestImpl(this);
         this.response = new ResponseImpl(this);
     }
-    
+
     @Override
     public ServiceWorker getServiceWorker() {
         return this.serviceWorker;
@@ -94,7 +99,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public final Map<String, String> getParameterMap() {
         return Collections.unmodifiableMap(this.parameterMap);
     }
-    
+
     @Override
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
@@ -104,12 +109,12 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public final ApplicationContext getApplicationContext() {
         return ApplicationContext.CONTEXT;
     }
-    
+
     @Override
     public WorkerRequest getWorkerRequest() {
         return this.request;
     }
-    
+
     @Override
     public WorkerResponse getWorkerResponse() {
         return this.response;
