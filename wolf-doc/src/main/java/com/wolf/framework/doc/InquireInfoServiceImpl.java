@@ -27,7 +27,7 @@ import java.util.UUID;
             @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
             @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "responseStates", dataType = DataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "responseCodes", dataType = DataType.ARRAY, desc = ""),
             @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = "")
         },
         responseCodes = {},

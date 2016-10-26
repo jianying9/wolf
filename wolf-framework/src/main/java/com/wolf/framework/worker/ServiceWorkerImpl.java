@@ -1,5 +1,6 @@
 package com.wolf.framework.worker;
 
+import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -11,6 +12,7 @@ import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
+import java.util.Set;
 
 /**
  * 服务工作对象接口
@@ -24,7 +26,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
     private String responseConfigs = "[]";
     private String responseCodes = "[]";
     private final ServiceContext serviceContext;
-    
+
     public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
         this.serviceContext = serviceContext;
         this.nextWorkHandler = nextWorkHandler;
@@ -51,11 +53,16 @@ public class ServiceWorkerImpl implements ServiceWorker {
 
     private String getRequestParameterJson(RequestConfig[] requestConfigs, Filter escapeFilter) {
         StringBuilder jsonBuilder = new StringBuilder(64);
+        String type;
         jsonBuilder.append('[');
         for (RequestConfig requestConfig : requestConfigs) {
+            type = requestConfig.dataType().name();
+            if (type.equals("INTEGER") || type.equals("DOUBLE") || type.equals("CHAR")) {
+                type = type + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+            }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
                     .append("\",\"must\":\"").append(requestConfig.must())
-                    .append("\",\"type\":\"").append(requestConfig.dataType().name())
+                    .append("\",\"type\":\"").append(type)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
         }
@@ -92,23 +99,37 @@ public class ServiceWorkerImpl implements ServiceWorker {
     @Override
     public final void createInfo() {
         Filter escapeFilter = new EscapeFilterImpl();
+        Map<String, String> responseCodeMap = new HashMap<String, String>();
+        responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
+        responseCodeMap.put(ResponseCodeConfig.INVALID, "非法参数");
+        responseCodeMap.put(ResponseCodeConfig.UNLOGIN, "未登陆");
+        responseCodeMap.put(ResponseCodeConfig.TIMEOUT, "session超期");
+        responseCodeMap.put(ResponseCodeConfig.DENIED, "无权限访问");
+        responseCodeMap.put(ResponseCodeConfig.NOTFOUND, "服务部存在");
+        responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
         //构造请求参数信息
         this.requestConfigs = this.getRequestParameterJson(this.serviceContext.requestConfigs(), escapeFilter);
         //构造返回参数信息
         this.responseConfigs = this.getResponseParameterJson(this.serviceContext.responseConfigs(), escapeFilter);
         //返回状态提示
-        StringBuilder responseStateBuilder = new StringBuilder(64);
-        responseStateBuilder.append('[');
+        StringBuilder responseCodeBuilder = new StringBuilder(64);
+        responseCodeBuilder.append('[');
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
-            responseStateBuilder.append("{\"code\":\"").append(responseCode.code())
+            responseCodeBuilder.append("{\"code\":\"").append(responseCode.code())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseCode.desc()))
-                    .append("\"}").append(',');
+                    .append("\",\"type\":\"custom\"}").append(',');
         }
-        if (responseStateBuilder.length() > 1) {
-            responseStateBuilder.setLength(responseStateBuilder.length() - 1);
+        Set<Map.Entry<String, String>> codeSet = responseCodeMap.entrySet();
+        for (Map.Entry<String, String> entry : codeSet) {
+            responseCodeBuilder.append("{\"code\":\"").append(entry.getKey())
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(entry.getValue()))
+                    .append("\",\"type\":\"global\"}").append(',');
         }
-        responseStateBuilder.append(']');
-        this.responseCodes = responseStateBuilder.toString();
+        if (responseCodeBuilder.length() > 1) {
+            responseCodeBuilder.setLength(responseCodeBuilder.length() - 1);
+        }
+        responseCodeBuilder.append(']');
+        this.responseCodes = responseCodeBuilder.toString();
     }
 
     @Override
