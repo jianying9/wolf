@@ -10,6 +10,8 @@ public class ResponseCodeConfig {
     public final static String SUCCESS = "success";
     //未登录
     public final static String UNLOGIN = "unlogin";
+    //超时
+    public final static String TIMEOUT = "timeout";
     //没有变化
     public final static String UNMODIFYED = "unmodifyed";
     //非法数据

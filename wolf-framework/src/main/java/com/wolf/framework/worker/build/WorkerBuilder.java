@@ -17,6 +17,7 @@ import com.wolf.framework.worker.ServiceWorkerImpl;
 import com.wolf.framework.worker.workhandler.ObjectServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ExceptionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ImportantParameterWorkHandlerImpl;
+import com.wolf.framework.worker.workhandler.InterceptorWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ListServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.MinorParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
@@ -79,7 +80,13 @@ public class WorkerBuilder {
                     workHandler = new ListServiceWorkHandlerImpl(listService, serviceContext);
                 }
             } catch (InstantiationException ex) {
+                this.logger.error("instance class:" + clazz.getName(), ex);
             } catch (IllegalAccessException ex) {
+                this.logger.error("instance class:" + clazz.getName(), ex);
+            }
+            //判断是否加入拦截环节
+            if(this.workerBuildContext.getInterceptorList().isEmpty() == false) {
+                workHandler = new InterceptorWorkHandlerImpl(workHandler, this.workerBuildContext.getInterceptorList());
             }
             //判断是否需要事务，如果需要则加入事务处理环节
             ApplicationContext applicationContext = this.workerBuildContext.getApplicationContext();

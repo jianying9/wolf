@@ -12,6 +12,8 @@ public interface WorkerResponse extends Response {
 
     public void unlogin();
     
+    public void timeout();
+    
     public void setError(String error);
 
     public void createErrorMessage();

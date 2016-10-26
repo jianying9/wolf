@@ -5,6 +5,8 @@ import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.injecter.Injecter;
+import com.wolf.framework.interceptor.Interceptor;
+import com.wolf.framework.interceptor.InterceptorContext;
 import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
 import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
@@ -12,6 +14,7 @@ import com.wolf.framework.service.parameter.StringParameterHandlerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +30,7 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     private final ParameterContext parameterContext;
     private final RequestParameterHandler nextIndexHandler;
     private final RequestParameterHandler nextSizeHandler;
+    private final List<Interceptor> interceptorList;
     //服务集合
     private final Map<String, ServiceWorker> serviceWorkerMap;
 
@@ -50,16 +54,19 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
      *
      * @param injecter
      * @param parameterContext
+     * @param interceptorContext
      * @param applicationContext
      */
     public WorkerBuildContextImpl(
             final Injecter injecter,
             final ParameterContext parameterContext,
+            final InterceptorContext interceptorContext,
             final ApplicationContext applicationContext) {
         this.serviceWorkerMap = new HashMap<String, ServiceWorker>(256, 1);
         this.injecter = injecter;
         this.parameterContext = parameterContext;
         this.applicationContext = applicationContext;
+        this.interceptorList = interceptorContext.getInterceptorList();
         this.nextIndexHandler = new StringParameterHandlerImpl("nextIndex", null, 64, 0);
         DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(DataType.INTEGER);
@@ -99,5 +106,10 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     @Override
     public RequestParameterHandler getNextSizeHandler() {
         return this.nextSizeHandler;
+    }
+
+    @Override
+    public List<Interceptor> getInterceptorList() {
+        return this.interceptorList;
     }
 }

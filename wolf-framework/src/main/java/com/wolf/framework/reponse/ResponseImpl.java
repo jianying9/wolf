@@ -59,6 +59,11 @@ public class ResponseImpl implements WorkerResponse {
     public final void unlogin() {
         this.code = ResponseCodeConfig.UNLOGIN;
     }
+    
+    @Override
+    public final void timeout() {
+        this.code = ResponseCodeConfig.TIMEOUT;
+    }
 
     @Override
     public final void success() {

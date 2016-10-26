@@ -20,7 +20,6 @@ public final class ApplicationContext {
     private boolean ready = false;
     private Map<String, String> parameterMap;
     private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
-    private final Map<Class<? extends Local>, Local> localServiceMap = new HashMap<Class<? extends Local>, Local>(2, 1);
     private final List<Resource> resourceList = new ArrayList<Resource>(2);
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
@@ -35,14 +34,6 @@ public final class ApplicationContext {
 
     void setServiceWorkerMap(Map<String, ServiceWorker> serviceWorkerMap) {
         this.serviceWorkerMap.putAll(serviceWorkerMap);
-    }
-
-    public <L extends Local> L getLocalService(Class<? extends Local> clazz) {
-        return (L)this.localServiceMap.get(clazz);
-    }
-
-    void setLocalServiceMap(Map<Class<? extends Local>, Local> localServiceMap) {
-        this.localServiceMap.putAll(localServiceMap);
     }
 
     public String getParameter(String name) {

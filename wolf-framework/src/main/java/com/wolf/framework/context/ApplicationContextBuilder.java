@@ -9,17 +9,22 @@ import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataHandlerFactoryImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
+import com.wolf.framework.interceptor.Interceptor;
+import com.wolf.framework.interceptor.InterceptorBuilder;
 import com.wolf.framework.local.LocalServiceInjecterImpl;
 import com.wolf.framework.service.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
-import com.wolf.framework.local.LocalServiceConfigParser;
+import com.wolf.framework.local.LocalServiceBuilder;
 import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
 import com.wolf.framework.module.ModuleConfig;
 import com.wolf.framework.parser.ClassParser;
+import com.wolf.framework.interceptor.InterceptorConfig;
+import com.wolf.framework.interceptor.InterceptorContext;
+import com.wolf.framework.interceptor.InterceptorContextImpl;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.worker.build.WorkerBuilder;
 import com.wolf.framework.service.parameter.ParameterContext;
@@ -46,6 +51,7 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
     protected final List<Class<?>> serviceClassList = new ArrayList<Class<?>>();
+    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<Class<Interceptor>>();
     protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
     protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
     protected WorkerBuildContext workerBuildContext;
@@ -88,7 +94,7 @@ public class ApplicationContextBuilder<T extends Entity> {
             this.logger.error(className);
             this.logger.error("ClassFormatError:", ex.getMessage());
         }
-                
+
         return clazz;
     }
 
@@ -172,16 +178,14 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         //解析LocalService
         this.logger.info("parsing annotation LocalServiceConfig...");
-        final LocalServiceContext localServiceContextBuilder = new LocalServiceContextImpl();
-        final LocalServiceConfigParser localServiceConfigParser = new LocalServiceConfigParser(localServiceContextBuilder);
+        final LocalServiceContext localServiceContext = new LocalServiceContextImpl();
+        final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContext);
         for (Class<Local> clazzl : this.localServiceClassList) {
-            localServiceConfigParser.parse(clazzl);
+            localServiceBuilder.build(clazzl);
         }
-        //将LocalService放入ApplicationContext
-        ApplicationContext.CONTEXT.setLocalServiceMap(localServiceContextBuilder.getLocalServiceMap());
         this.logger.info("parse annotation LocalServiceConfig finished.");
         //LocalService注入管理对象
-        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextBuilder);
+        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContext);
         //TaskExecutor注入管理对象
         final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
@@ -194,19 +198,27 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
-        localServiceContextBuilder.inject(injecterList);
+        localServiceContext.inject(injecterList);
+        //
+        //解析InterceptorConfig
+        this.logger.info("parsing annotation InterceptorConfig...");
+        final InterceptorContext interceptorContext = new InterceptorContextImpl();
+        InterceptorBuilder interceptorBuilder = new InterceptorBuilder(interceptorContext);
+        for (Class<Interceptor> clazzi : this.interceptorClassList) {
+            interceptorBuilder.build(clazzi);
+        }
+        this.logger.info("parse annotation InterceptorConfig finished.");
+        //对Interceptor进行注入
+        interceptorContext.inject(injecterList);
         //初始化data类型工厂对象
         final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
         ParameterContext parametersContext = new ParameterContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
-        //服务注入对象
-        injecterListImpl = new InjecterListImpl();
-        injecterListImpl.addInjecter(localServiceInjecter);
-        injecterListImpl.addInjecter(taskExecutorInjecter);
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
         this.workerBuildContext = new WorkerBuildContextImpl(
-                injecterListImpl,
+                injecterList,
                 parametersContext,
+                interceptorContext,
                 ApplicationContext.CONTEXT);
         final WorkerBuilder workerBuilder = new WorkerBuilder(this.workerBuildContext);
         for (Class<?> clazzs : this.serviceClassList) {
@@ -250,12 +262,20 @@ public class ApplicationContextBuilder<T extends Entity> {
         if (clazz != null) {
             Class<?> clazzs;
             Class<Local> clazzl;
+            Class<Interceptor> clazzi;
             if (clazz.isAnnotationPresent(ServiceConfig.class)) {
                 //是外部服务
                 clazzs = clazz;
                 if (this.serviceClassList.contains(clazzs) == false) {
                     this.serviceClassList.add(clazzs);
                     this.logger.debug("find service class ".concat(className));
+                }
+            } else if (clazz.isAnnotationPresent(InterceptorConfig.class) && Interceptor.class.isAssignableFrom(clazz)) {
+                //是拦截服务
+                clazzi = (Class<Interceptor>) clazz;
+                if (this.interceptorClassList.contains(clazzi) == false) {
+                    this.interceptorClassList.add(clazzi);
+                    this.logger.debug("find interceptor class ".concat(className));
                 }
             } else if (clazz.isAnnotationPresent(LocalServiceConfig.class) && Local.class.isAssignableFrom(clazz)) {
                 //是内部服务

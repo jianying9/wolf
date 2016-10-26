@@ -9,8 +9,7 @@ import com.wolf.framework.service.response.ServiceResponse;
  *
  * @author jianying9
  */
-@LocalServiceConfig(
-        description = "redis table主键值管理")
+@LocalServiceConfig
 public class TestLocalServiceImpl implements Service, TestLocalService{
 
     @Override

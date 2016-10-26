@@ -2,14 +2,16 @@ package com.wolf.framework.worker.build;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
+import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.ServiceWorker;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 public interface WorkerBuildContext {
 
@@ -24,6 +26,8 @@ public interface WorkerBuildContext {
     public ParameterContext getParameterContext();
     
     public ApplicationContext getApplicationContext();
+    
+    public List<Interceptor> getInterceptorList();
     
     public RequestParameterHandler getNextIndexHandler();
     
