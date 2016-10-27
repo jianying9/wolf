@@ -23,7 +23,7 @@ public final class ClassParser {
     final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     public List<String> findClass(final ClassLoader classloader, final List<String> packageNameList) {
-        final List<String> classNameList = new ArrayList<String>(200);
+        final List<String> classNameList = new ArrayList<>(200);
         Enumeration<URL> eUrl;
         try {
             for (String packageName : packageNameList) {
@@ -38,10 +38,8 @@ public final class ClassParser {
                     this.logger.error("can not find package:".concat(packageName));
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException cfe) {
-            throw new RuntimeException(cfe);
         }
         return classNameList;
     }

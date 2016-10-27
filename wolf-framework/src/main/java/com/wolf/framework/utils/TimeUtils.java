@@ -1,11 +1,8 @@
 package com.wolf.framework.utils;
 
-import com.wolf.framework.config.FrameworkLogger;
-import com.wolf.framework.logger.LogFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.slf4j.Logger;
 
 /**
  * 时间处理辅助类,用于Date类型和String类型时间转换
@@ -17,7 +14,6 @@ public final class TimeUtils {
     /**
      * 日志对象
      */
-    private final static Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YYMMDD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat FM_HHMM = new SimpleDateFormat("HH:mm");
@@ -63,10 +59,7 @@ public final class TimeUtils {
         try {
             Date birthDate = TimeUtils.FM_YYMMDD.parse(dateOfBirth);
             birthTime = birthDate.getTime();
-        } catch (ParseException e) {
-            logger.error(dateOfBirth, e);
-        } catch (NumberFormatException ne) {
-            logger.error(dateOfBirth, ne);
+        } catch (ParseException | NumberFormatException e) {
         }
         if (currentTime > birthTime) {
             long diffetenceDay = (currentTime - birthTime) / 86400000;
@@ -93,10 +86,7 @@ public final class TimeUtils {
         try {
             Date date = TimeUtils.FM_YYMMDD.parse(dateStr);
             result = date.getTime();
-        } catch (ParseException e) {
-            logger.error(dateStr, e);
-        } catch (NumberFormatException ne) {
-            logger.error(dateStr, ne);
+        } catch (ParseException | NumberFormatException e) {
         }
         return result;
     }
@@ -106,10 +96,7 @@ public final class TimeUtils {
         try {
             Date date = TimeUtils.FM_YYMMDD_HHMMSS.parse(dateStr);
             result = date.getTime();
-        } catch (ParseException e) {
-            logger.error(dateStr, e);
-        } catch (NumberFormatException ne) {
-            logger.error(dateStr, ne);
+        } catch (ParseException | NumberFormatException e) {
         }
         return result;
     }

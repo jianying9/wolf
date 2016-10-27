@@ -108,9 +108,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         try {
             rs = rsf.get();
             r = rs.one();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         return r != null;
@@ -119,7 +117,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
     private Map<String, Object> parseRow(Row r) {
         Map<String, Object> result = null;
         if (r != null) {
-            result = new HashMap<String, Object>(this.columnHandlerList.size() + this.keyHandlerList.size(), 1);
+            result = new HashMap<>(this.columnHandlerList.size() + this.keyHandlerList.size(), 1);
             Object value;
             for (ColumnHandler ch : this.keyHandlerList) {
                 value = this.getValue(r, ch);
@@ -148,9 +146,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         try {
             rs = rsf.get();
             r = rs.one();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         Map<String, Object> result = this.parseRow(r);
@@ -164,9 +160,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         ResultSet rs;
         try {
             rs = rsf.get();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         return rs;
@@ -180,14 +174,12 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         ResultSet rs;
         try {
             rs = rsf.get();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         List<Row> rList = rs.all();
         if (rList.isEmpty() == false) {
-            resultList = new ArrayList<Map<String, Object>>(rList.size());
+            resultList = new ArrayList<>(rList.size());
             Map<String, Object> map;
             for (Row r : rList) {
                 map = this.parseRow(r);
@@ -203,9 +195,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
         try {
             rsf.get();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -221,9 +211,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
             ResultSetFuture rsf = this.session.executeAsync(batch);
             try {
                 rsf.get();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } catch (ExecutionException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -239,9 +227,7 @@ public abstract class AbstractCassandraHandler implements CassandraHandler {
         try {
             rs = rsf.get();
             r = rs.one();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         if (r != null) {

@@ -79,9 +79,7 @@ public class WorkerBuilder {
                     injecter.parse(listService);
                     workHandler = new ListServiceWorkHandlerImpl(listService, serviceContext);
                 }
-            } catch (InstantiationException ex) {
-                this.logger.error("instance class:" + clazz.getName(), ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 this.logger.error("instance class:" + clazz.getName(), ex);
             }
             //判断是否加入拦截环节

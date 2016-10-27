@@ -14,7 +14,7 @@ public final class LocalServiceContextImpl implements LocalServiceContext {
     private final Map<Class<? extends Local>, Local> localServiceMap;
 
     public LocalServiceContextImpl() {
-        this.localServiceMap = new HashMap<Class<? extends Local>, Local>(8, 1);
+        this.localServiceMap = new HashMap<>(8, 1);
     }
 
     @Override

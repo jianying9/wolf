@@ -50,7 +50,7 @@ public class ServiceContextImpl implements ServiceContext {
      * @return
      */
     public static Set<String> getReservedParamSet() {
-        Set<String> wordSet = new HashSet<String>(4, 1);
+        Set<String> wordSet = new HashSet<>(4, 1);
         //保留接口参数
         wordSet.add("route");
         wordSet.add("filters");
@@ -67,7 +67,7 @@ public class ServiceContextImpl implements ServiceContext {
      * @return 
      */
     public static Set<String> getReservedCodeSet() {
-        Set<String> codeSet = new HashSet<String>(4, 1);
+        Set<String> codeSet = new HashSet<>(4, 1);
         //保留接口参数
         codeSet.add("success");
         codeSet.add("unlogin");
@@ -109,8 +109,8 @@ public class ServiceContextImpl implements ServiceContext {
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved code[".concat(responseCode.code()) + "]");
             }
         }
-        final List<RequestConfig> importantRequestConfigList = new ArrayList<RequestConfig>(0);
-        final List<RequestConfig> minorRequestConfigList = new ArrayList<RequestConfig>(0);
+        final List<RequestConfig> importantRequestConfigList = new ArrayList<>(0);
+        final List<RequestConfig> minorRequestConfigList = new ArrayList<>(0);
         for (RequestConfig requestConfig : requestConfigs) {
             if(reservedParamSet.contains(requestConfig.name())) {
                 //配置中存在保留参数名,抛出异常提示
@@ -126,8 +126,8 @@ public class ServiceContextImpl implements ServiceContext {
         ParameterContext parameterContext = workerBuildContext.getParameterContext();
         RequestParameterHandler requestParameterHandler;
         RequestParameterHandlerBuilder requestParameterHandlerBuilder;
-        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<String, RequestParameterHandler>(minorRequestConfigList.size(), 1);
-        List<String> minorNameList = new ArrayList<String>(minorRequestConfigList.size());
+        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(minorRequestConfigList.size(), 1);
+        List<String> minorNameList = new ArrayList<>(minorRequestConfigList.size());
         for (RequestConfig requestConfig : minorRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                     requestConfig,
@@ -146,7 +146,7 @@ public class ServiceContextImpl implements ServiceContext {
         final String[] minorNames = minorNameList.toArray(new String[minorNameList.size()]);
         this.minorParameter = minorNames;
         //
-        List<String> importantNameList = new ArrayList<String>(importantRequestConfigList.size());
+        List<String> importantNameList = new ArrayList<>(importantRequestConfigList.size());
         for (RequestConfig requestConfig : importantRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                     requestConfig,
@@ -165,8 +165,8 @@ public class ServiceContextImpl implements ServiceContext {
         final Map<String, ResponseParameterHandler> returnParameterMap;
         final String[] returnNames;
         if (this.responseConfigs.length > 0) {
-            List<String> returnNameList = new ArrayList<String>(this.responseConfigs.length);
-            returnParameterMap = new HashMap<String, ResponseParameterHandler>(this.responseConfigs.length, 1);
+            List<String> returnNameList = new ArrayList<>(this.responseConfigs.length);
+            returnParameterMap = new HashMap<>(this.responseConfigs.length, 1);
             for (ResponseConfig parameterConfig : this.responseConfigs) {
                 outputParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
                         parameterConfig,
@@ -177,7 +177,7 @@ public class ServiceContextImpl implements ServiceContext {
             }
             returnNames = returnNameList.toArray(new String[returnNameList.size()]);
         } else {
-            returnParameterMap = new HashMap<String, ResponseParameterHandler>(0, 1);
+            returnParameterMap = new HashMap<>(0, 1);
             returnNames = new String[0];
         }
         this.returnParameter = returnNames;

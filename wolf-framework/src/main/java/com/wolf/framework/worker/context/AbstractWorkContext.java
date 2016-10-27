@@ -48,7 +48,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
                 if (paramNode != null) {
-                    this.parameterMap = new HashMap<String, String>(8, 1);
+                    this.parameterMap = new HashMap<>(8, 1);
                     Map.Entry<String, JsonNode> entry;
                     String name;
                     String value;

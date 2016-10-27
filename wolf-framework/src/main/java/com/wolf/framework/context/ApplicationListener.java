@@ -37,7 +37,7 @@ public class ApplicationListener implements ServletContextListener {
         String filePath = fileBuilder.toString();
         logger.info("Finding config file:".concat(filePath));
         File file = new File(filePath);
-        final Map<String, String> parameterMap = new HashMap<String, String>(2, 1);
+        final Map<String, String> parameterMap = new HashMap<>(2, 1);
         if (file.exists()) {
             //读取配置文件
             logger.info("Reading config file:".concat(filePath));

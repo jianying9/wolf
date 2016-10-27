@@ -40,9 +40,7 @@ public abstract class AbstractInjecter<A extends Annotation> {
                     field.setAccessible(true);
                     try {
                         field.set(object, value);
-                    } catch (IllegalArgumentException ex) {
-                        this.logger.error("Error when instancing field:".concat(field.getName()), ex);
-                    } catch (IllegalAccessException ex) {
+                    } catch (IllegalArgumentException | IllegalAccessException ex) {
                         this.logger.error("Error when instancing field:".concat(field.getName()), ex);
                     }
                 }

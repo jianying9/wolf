@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class CassandraAdminContextImpl implements CassandraAdminContext {
 
-    private final Map<Class, CassandraHandler> cassandraHandlerMap = new HashMap<Class, CassandraHandler>(2, 1);
+    private final Map<Class, CassandraHandler> cassandraHandlerMap = new HashMap<>(2, 1);
 
     private final Session session;
 

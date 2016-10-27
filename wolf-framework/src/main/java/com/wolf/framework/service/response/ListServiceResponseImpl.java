@@ -37,7 +37,7 @@ public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceR
 
     @Override
     public void setEntityList(List<T> tList) {
-        List<Map<String, String>> dataMapListTemp = new ArrayList<Map<String, String>>(tList.size());
+        List<Map<String, String>> dataMapListTemp = new ArrayList<>(tList.size());
         for(T t : tList) {
             dataMapListTemp.add(t.toMap());
         }

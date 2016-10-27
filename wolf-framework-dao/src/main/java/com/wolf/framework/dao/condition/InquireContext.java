@@ -10,8 +10,8 @@ import java.util.List;
  */
 public final class InquireContext extends InquirePageContext {
 
-    private final List<Condition> conditionList = new ArrayList<Condition>(4);
-    private final List<Order> orderList = new ArrayList<Order>(2);
+    private final List<Condition> conditionList = new ArrayList<>(4);
+    private final List<Order> orderList = new ArrayList<>(2);
 
     public void clearCondition() {
         this.conditionList.clear();

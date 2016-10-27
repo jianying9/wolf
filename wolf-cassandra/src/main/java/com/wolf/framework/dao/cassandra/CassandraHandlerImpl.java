@@ -59,7 +59,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
 
     @Override
     public Object[] insert(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -81,9 +81,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
         ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
         try {
             rsf.get();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
         return keyValue;
@@ -93,7 +91,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
     public void batchInsert(List<Map<String, Object>> entityMapList) {
         if (entityMapList.isEmpty() == false) {
             Object value;
-            List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+            List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
             PreparedStatement ps = this.session.prepare(this.insertCql);
             BatchStatement batch = new BatchStatement();
             boolean canInsert;
@@ -124,9 +122,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
             ResultSetFuture rsf = this.session.executeAsync(batch);
             try {
                 rsf.get();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } catch (ExecutionException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -134,7 +130,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
 
     @Override
     public Object[] update(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -174,9 +170,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
             ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
             try {
                 rsf.get();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } catch (ExecutionException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -188,7 +182,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
         if (entityMapList.isEmpty() == false) {
             Object value;
             Object[] values;
-            List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + 1);
             StringBuilder cqlBuilder = new StringBuilder(128);
             BatchStatement batch = new BatchStatement();
             boolean canUpdate;
@@ -229,9 +223,7 @@ public class CassandraHandlerImpl extends AbstractCassandraHandler {
             ResultSetFuture rsf = this.session.executeAsync(batch);
             try {
                 rsf.get();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } catch (ExecutionException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }

@@ -54,8 +54,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
                     field.set(t, value);
                     field.setAccessible(false);
                 }
-            } catch (InstantiationException ex) {
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
             }
         }
         return t;
@@ -129,7 +128,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
         List<T> resultList = Collections.EMPTY_LIST;
         List<Map<String, Object>> resultMapList = this.cassandraHandler.query(cql, values);
         if(resultMapList.isEmpty() == false) {
-            resultList = new ArrayList<T>(resultMapList.size());
+            resultList = new ArrayList<>(resultMapList.size());
             T t;
             for (Map<String, Object> resultMap : resultMapList) {
                 t = this.parseMap(resultMap);

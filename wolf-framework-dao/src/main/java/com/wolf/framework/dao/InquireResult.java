@@ -5,6 +5,7 @@ import java.util.List;
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public interface InquireResult<T extends Entity> {
 

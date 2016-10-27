@@ -2,7 +2,6 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
-import com.wolf.framework.local.Local;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,8 +18,8 @@ public final class ApplicationContext {
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
-    private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<String, ServiceWorker>(2, 1);
-    private final List<Resource> resourceList = new ArrayList<Resource>(2);
+    private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<>(2, 1);
+    private final List<Resource> resourceList = new ArrayList<>(2);
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
 

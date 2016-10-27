@@ -48,7 +48,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         this.counter = counter;
         this.keyHandlerList = keyHandlerList;
         if (columnHandlerList == null) {
-            this.columnHandlerList = new ArrayList<ColumnHandler>(0);
+            this.columnHandlerList = new ArrayList<>(0);
         } else {
             this.columnHandlerList = columnHandlerList;
         }

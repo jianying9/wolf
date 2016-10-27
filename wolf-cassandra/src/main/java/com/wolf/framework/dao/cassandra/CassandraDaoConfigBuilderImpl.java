@@ -27,13 +27,13 @@ import org.slf4j.Logger;
 public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
-    private final List<Class<T>> cEntityClassList = new ArrayList<Class<T>>();
+    private final List<Class<T>> cEntityClassList = new ArrayList<>();
     private CEntityDaoContext<T> cEntityDaoContext;
     private CassandraAdminContext cassandraAdminContext;
 
     @Override
     public void init(ApplicationContext context) {
-        this.cEntityDaoContext = new CEntityDaoContextImpl<T>();
+        this.cEntityDaoContext = new CEntityDaoContextImpl<>();
         this.cassandraAdminContext = new CassandraAdminContextImpl(context);
     }
 
@@ -114,9 +114,9 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
-                    List<ColumnHandler> keyHandlerList = new ArrayList<ColumnHandler>(1);
+                    List<ColumnHandler> keyHandlerList = new ArrayList<>(1);
                     //column
-                    List<ColumnHandler> columnHandlerList = new ArrayList<ColumnHandler>(0);
+                    List<ColumnHandler> columnHandlerList = new ArrayList<>(0);
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
@@ -149,7 +149,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                     if (keyHandlerList.isEmpty()) {
                         throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:can not find key");
                     }
-                    CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<T>(
+                    CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<>(
                             keyspace,
                             table,
                             counter,

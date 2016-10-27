@@ -47,7 +47,7 @@ public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> impleme
         List<T> tList;
         List<Map<String, String>> entityMapList = this.databaseHandler.inquireBykeys(keyValues);
         if (entityMapList.isEmpty() == false) {
-            tList = new ArrayList<T>(entityMapList.size());
+            tList = new ArrayList<>(entityMapList.size());
             T t;
             for (Map<String, String> entityMap : entityMapList) {
                 this.checkRedisData(entityMap);
@@ -55,7 +55,7 @@ public final class InquireByKeyFromDatabaseHandlerImpl<T extends Entity> impleme
 //                tList.add(t);
             }
         } else {
-            tList = new ArrayList<T>(0);
+            tList = new ArrayList<>(0);
         }
         return tList;
     }

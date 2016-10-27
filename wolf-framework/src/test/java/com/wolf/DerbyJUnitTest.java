@@ -47,34 +47,34 @@ public class DerbyJUnitTest {
     
     public void testOne(DataSource dataSource) {
         Connection conn = null;
-        List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(0);
+        List<Map<String, String>> resultMapList;
         String sql = "SELECT * FROM \"t_Employee\" WHERE \"tag\" LIKE ? ";
         System.out.println(sql);
         try {
             conn = dataSource.getConnection();
-            PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            stat.setString(1, "%java%");
-            ResultSet rs = stat.executeQuery();
-            int rowCount = 0;
-            while (rs.next()) {
-                rowCount++;
-            }
-            if (rowCount > 0) {
-                Map<String, String> resultMap;
-                resultMapList = new ArrayList<Map<String, String>>(rowCount);
-                ResultSetMetaData rsmd = rs.getMetaData();
-                int columnCount = rsmd.getColumnCount();
-                rs.beforeFirst();
-                while (rs.next()) {
-                    resultMap = new HashMap<String, String>(columnCount, 1);
-                    for (int index = 1; index <= columnCount; index++) {
-                        resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
+            try (PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                stat.setString(1, "%java%");
+                try (ResultSet rs = stat.executeQuery()) {
+                    int rowCount = 0;
+                    while (rs.next()) {
+                        rowCount++;
                     }
-                    resultMapList.add(resultMap);
+                    if (rowCount > 0) {
+                        Map<String, String> resultMap;
+                        resultMapList = new ArrayList<>(rowCount);
+                        ResultSetMetaData rsmd = rs.getMetaData();
+                        int columnCount = rsmd.getColumnCount();
+                        rs.beforeFirst();
+                        while (rs.next()) {
+                            resultMap = new HashMap<>(columnCount, 1);
+                            for (int index = 1; index <= columnCount; index++) {
+                                resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
+                            }
+                            resultMapList.add(resultMap);
+                        }
+                    }
                 }
             }
-            rs.close();
-            stat.close();
         } catch (SQLException e) {
             Throwable throwable = null;
             for (Throwable t : e) {
@@ -94,33 +94,31 @@ public class DerbyJUnitTest {
     
     public void testTwo(DataSource dataSource) {
         Connection conn = null;
-        List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(0);
+        List<Map<String, String>> resultMapList;
         String sql = "SELECT * FROM \"t_Employee\" WHERE \"tag\" LIKE '%java%'";
         System.out.println(sql);
         try {
             conn = dataSource.getConnection();
-            PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            ResultSet rs = stat.executeQuery();
-            int rowCount = 0;
-            while (rs.next()) {
-                rowCount++;
-            }
-            if (rowCount > 0) {
-                Map<String, String> resultMap;
-                resultMapList = new ArrayList<Map<String, String>>(rowCount);
-                ResultSetMetaData rsmd = rs.getMetaData();
-                int columnCount = rsmd.getColumnCount();
-                rs.beforeFirst();
+            try (PreparedStatement stat = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stat.executeQuery()) {
+                int rowCount = 0;
                 while (rs.next()) {
-                    resultMap = new HashMap<String, String>(columnCount, 1);
-                    for (int index = 1; index <= columnCount; index++) {
-                        resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
+                    rowCount++;
+                }
+                if (rowCount > 0) {
+                    Map<String, String> resultMap;
+                    resultMapList = new ArrayList<>(rowCount);
+                    ResultSetMetaData rsmd = rs.getMetaData();
+                    int columnCount = rsmd.getColumnCount();
+                    rs.beforeFirst();
+                    while (rs.next()) {
+                        resultMap = new HashMap<>(columnCount, 1);
+                        for (int index = 1; index <= columnCount; index++) {
+                            resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
+                        }
+                        resultMapList.add(resultMap);
                     }
-                    resultMapList.add(resultMap);
                 }
             }
-            rs.close();
-            stat.close();
         } catch (SQLException e) {
             Throwable throwable = null;
             for (Throwable t : e) {

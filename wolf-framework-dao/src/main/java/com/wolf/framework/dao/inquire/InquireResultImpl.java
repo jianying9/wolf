@@ -7,6 +7,7 @@ import java.util.List;
 /**
  *
  * @author aladdin
+ * @param <T>
  */
 public class InquireResultImpl<T extends Entity> implements InquireResult {
 

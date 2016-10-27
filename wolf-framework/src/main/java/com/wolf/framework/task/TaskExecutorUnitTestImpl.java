@@ -21,7 +21,7 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
 
     public TaskExecutorUnitTestImpl() {
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
-        this.linkedBlockingQueue = new LinkedBlockingQueue<Runnable>(1000);
+        this.linkedBlockingQueue = new LinkedBlockingQueue<>(1000);
         this.threadPoolExecutor = new ThreadPoolExecutor(
                 2,
                 10,
@@ -48,8 +48,7 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
         Future<String> futureTask = this.threadPoolExecutor.submit(task, result);
         try {
             futureTask.get();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
         }
     }
 
@@ -57,7 +56,7 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
     public void syncSubmit(List<Task> taskList) {
         String result = "";
         Future<String> futureTask;
-        List<Future<String>> futureTaskList = new ArrayList<Future<String>>(taskList.size());
+        List<Future<String>> futureTaskList = new ArrayList<>(taskList.size());
         for (Task task : taskList) {
             futureTask = this.threadPoolExecutor.submit(task, result);
             futureTaskList.add(futureTask);
@@ -66,8 +65,7 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
             for (Future<String> future : futureTaskList) {
                 future.get();
             }
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
         }
     }
 }

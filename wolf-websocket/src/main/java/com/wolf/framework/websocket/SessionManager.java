@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 public class SessionManager implements CometHandler {
     
     //保存session列表
-    private final ConcurrentHashMap<String, Session> savedSessionMap = new ConcurrentHashMap<String, Session>(4096, 1);
+    private final ConcurrentHashMap<String, Session> savedSessionMap = new ConcurrentHashMap<>(4096, 1);
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
     
     public Session remove(String sid) {

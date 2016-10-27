@@ -1,8 +1,14 @@
 package com.wolf.framework.utils;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -93,7 +99,7 @@ public final class SecurityUtils {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
             byte[] textByte = text.getBytes();
             resultByte = cipher.doFinal(textByte);
-        } catch (Exception e) {
+        } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
         }
         return resultByte;
     }
@@ -117,7 +123,7 @@ public final class SecurityUtils {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
             byte[] resultByte = cipher.doFinal(entryByte);
             result = new String(resultByte);
-        } catch (Exception e) {
+        } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
         }
         return result;
     }

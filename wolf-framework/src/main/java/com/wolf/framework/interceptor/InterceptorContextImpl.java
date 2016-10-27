@@ -13,7 +13,7 @@ public class InterceptorContextImpl implements InterceptorContext {
     private final List<Interceptor> interceptorList;
 
     public InterceptorContextImpl() {
-        this.interceptorList = new ArrayList<Interceptor>(0);
+        this.interceptorList = new ArrayList<>(0);
     }
 
     @Override

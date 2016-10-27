@@ -34,7 +34,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    Map<String, AsyncContext> asyncContextMap = new HashMap<String, AsyncContext>(32, 1);
+    Map<String, AsyncContext> asyncContextMap = new HashMap<>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
 
@@ -65,7 +65,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         String result;
         //读取参数
         Enumeration<String> names = request.getParameterNames();
-        Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
+        Map<String, String> parameterMap = new HashMap<>(8, 1);
         String name;
         String value;
         while (names.hasMoreElements()) {

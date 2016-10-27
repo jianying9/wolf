@@ -39,7 +39,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
 
     @Override
     public Map<String, String> getInfoMap() {
-        Map<String, String> infoMap = new HashMap<String, String>(8, 1);
+        Map<String, String> infoMap = new HashMap<>(8, 1);
         infoMap.put("route", this.serviceContext.route());
         infoMap.put("group", this.serviceContext.group());
         infoMap.put("page", Boolean.toString(this.serviceContext.page()));
@@ -99,7 +99,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
     @Override
     public final void createInfo() {
         Filter escapeFilter = new EscapeFilterImpl();
-        Map<String, String> responseCodeMap = new HashMap<String, String>();
+        Map<String, String> responseCodeMap = new HashMap<>();
         responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
         responseCodeMap.put(ResponseCodeConfig.INVALID, "非法参数");
         responseCodeMap.put(ResponseCodeConfig.UNLOGIN, "未登陆");

@@ -49,11 +49,11 @@ import com.wolf.framework.worker.build.WorkerBuildContext;
 public class ApplicationContextBuilder<T extends Entity> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    protected final List<Class<T>> rEntityClassList = new ArrayList<Class<T>>();
-    protected final List<Class<?>> serviceClassList = new ArrayList<Class<?>>();
-    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<Class<Interceptor>>();
-    protected final List<Class<Local>> localServiceClassList = new ArrayList<Class<Local>>();
-    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<DaoConfigBuilder>();
+    protected final List<Class<T>> rEntityClassList = new ArrayList<>();
+    protected final List<Class<?>> serviceClassList = new ArrayList<>();
+    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<>();
+    protected final List<Class<Local>> localServiceClassList = new ArrayList<>();
+    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<>();
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
 
@@ -107,7 +107,7 @@ public class ApplicationContextBuilder<T extends Entity> {
             compileModel = FrameworkConfig.SERVER;
         }
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        List<String> packageNameList = new ArrayList<String>();
+        List<String> packageNameList = new ArrayList<>();
         //动态查找需要搜索的dao注解创建对象
         this.logger.info("Finding dao annotation...");
         packageNameList.add("com.wolf.framework.dao");
@@ -125,15 +125,13 @@ public class ApplicationContextBuilder<T extends Entity> {
                     this.daoConfigBuilderList.add(daoConfigBuilder);
                 }
             }
-        } catch (InstantiationException ex) {
-            this.logger.error("Error when instance DaoConfig. Cause:", ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             this.logger.error("Error when instance DaoConfig. Cause:", ex);
         }
         //查找注解类
         this.logger.info("Finding annotation...");
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
-        packageNameList = new ArrayList<String>();
+        packageNameList = new ArrayList<>();
         if (packages != null) {
             String[] packageNames = packages.split(",");
             packageNameList.addAll(Arrays.asList(packageNames));
@@ -240,9 +238,7 @@ public class ApplicationContextBuilder<T extends Entity> {
                     //初始化
                     module.init(ApplicationContext.CONTEXT);
                 }
-            } catch (InstantiationException ex) {
-                this.logger.error("Error when instance ModuleConfig. Cause:", ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 this.logger.error("Error when instance ModuleConfig. Cause:", ex);
             }
         }

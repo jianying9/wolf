@@ -42,7 +42,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
 
     @Override
     public Object[] update(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<Object>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -83,9 +83,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
             ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
             try {
                 rsf.get();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } catch (ExecutionException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -110,7 +108,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
         if (columnHandler != null) {
             final String columnDataMap = columnHandler.getDataMap();
             StringBuilder cqlBuilder = new StringBuilder(128);
-            List<Object> valueList = new ArrayList<Object>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(columnDataMap)
                     .append(" = ").append(columnDataMap).append(" + ? WHERE ");
@@ -151,9 +149,7 @@ public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
                     rsf = this.session.executeAsync(select);
                     ResultSet rs = rsf.get();
                     r = rs.one();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                } catch (ExecutionException ex) {
+                } catch (InterruptedException | ExecutionException ex) {
                     throw new RuntimeException(ex);
                 }
             }

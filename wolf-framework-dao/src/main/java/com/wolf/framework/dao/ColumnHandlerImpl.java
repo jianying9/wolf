@@ -22,37 +22,43 @@ public class ColumnHandlerImpl implements ColumnHandler {
         this.columnType = columnType;
         this.field = field;
         String type = this.field.getType().getName();
-        if(type.equals("long") || type.equals("java.lang.Long")) {
-            this.columnDataType = ColumnDataType.LONG;
-            if(defaultValue.isEmpty()) {
-                this.defaultValue = 0;
-            } else {
-                this.defaultValue = Long.parseLong(defaultValue);
-            }
-        } else if (type.equals("int") || type.equals("java.lang.Integer")){
-            this.columnDataType = ColumnDataType.INT;
-            if(defaultValue.isEmpty()) {
-                this.defaultValue = 0;
-            } else {
-                this.defaultValue = Integer.parseInt(defaultValue);
-            }
-        } else if (type.equals("boolean") || type.equals("java.lang.Boolean")){
-            this.columnDataType = ColumnDataType.BOOLEAN;
-            if(defaultValue.isEmpty()) {
-                this.defaultValue = false;
-            } else {
-                this.defaultValue = Boolean.parseBoolean(defaultValue);
-            }
-        } else if (type.equals("double") || type.equals("java.lang.Double")){
-            this.columnDataType = ColumnDataType.DOUBLE;
-            if(defaultValue.isEmpty()) {
-                this.defaultValue = 0;
-            } else {
-                this.defaultValue = Double.parseDouble(defaultValue);
-            }
-        } else {
-            this.columnDataType = ColumnDataType.STRING;
-            this.defaultValue = defaultValue;
+        switch (type) {
+            case "long":
+            case "java.lang.Long":
+                this.columnDataType = ColumnDataType.LONG;
+                if(defaultValue.isEmpty()) {
+                    this.defaultValue = 0;
+                } else {
+                    this.defaultValue = Long.parseLong(defaultValue);
+                }   break;
+            case "int":
+            case "java.lang.Integer":
+                this.columnDataType = ColumnDataType.INT;
+                if(defaultValue.isEmpty()) {
+                    this.defaultValue = 0;
+                } else {
+                    this.defaultValue = Integer.parseInt(defaultValue);
+                }   break;
+            case "boolean":
+            case "java.lang.Boolean":
+                this.columnDataType = ColumnDataType.BOOLEAN;
+                if(defaultValue.isEmpty()) {
+                    this.defaultValue = false;
+                } else {
+                    this.defaultValue = Boolean.parseBoolean(defaultValue);
+                }   break;
+            case "double":
+            case "java.lang.Double":
+                this.columnDataType = ColumnDataType.DOUBLE;
+                if(defaultValue.isEmpty()) {
+                    this.defaultValue = 0;
+                } else {
+                    this.defaultValue = Double.parseDouble(defaultValue);
+                }   break;
+            default:
+                this.columnDataType = ColumnDataType.STRING;
+                this.defaultValue = defaultValue;
+                break;
         }
         this.desc = desc;
     }

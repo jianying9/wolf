@@ -42,9 +42,7 @@ public final class LocalServiceBuilder {
         Local local = null;
         try {
             local = clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
         }
         //创建对应的工作对象

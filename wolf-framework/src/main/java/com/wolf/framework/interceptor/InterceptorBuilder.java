@@ -29,9 +29,7 @@ public final class InterceptorBuilder {
         Interceptor interceptor = null;
         try {
             interceptor = clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error when instancing class ".concat(clazz.getName()));
         }
         //创建对应的工作对象

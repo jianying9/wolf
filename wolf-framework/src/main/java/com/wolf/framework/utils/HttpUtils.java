@@ -46,16 +46,10 @@ public class HttpUtils {
     private static void toWrite(ServletResponse response, String jsonStr) {
         response.setContentType("application/x-javascript");
         response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = null;
-        try {
-            printWriter = response.getWriter();
+        try (PrintWriter printWriter = response.getWriter()) {
             printWriter.write(jsonStr);
             printWriter.flush();
         } catch (IOException e) {
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
-            }
         }
     }
 
@@ -70,16 +64,10 @@ public class HttpUtils {
     public static void toWirteCss(HttpServletRequest request, HttpServletResponse response, String cssString) {
         response.setContentType("text/css");
         response.setCharacterEncoding("utf-8");
-        PrintWriter printWriter = null;
-        try {
-            printWriter = response.getWriter();
+        try (PrintWriter printWriter = response.getWriter()) {
             printWriter.write(cssString);
             printWriter.flush();
         } catch (IOException e) {
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
-            }
         }
     }
 }

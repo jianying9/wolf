@@ -30,7 +30,7 @@ public class ResponseImpl implements WorkerResponse {
         this.callback = workerContext.getParameter("callback");
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         ResponseCode[] responseCodes = serviceContext.responseCodes();
-        this.customCodeSet = new HashSet<String>(responseCodes.length);
+        this.customCodeSet = new HashSet<>(responseCodes.length);
         for (ResponseCode responseCode : responseCodes) {
             this.customCodeSet.add(responseCode.code());
         }

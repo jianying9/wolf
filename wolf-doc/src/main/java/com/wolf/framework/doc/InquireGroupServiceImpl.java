@@ -36,16 +36,16 @@ public class InquireGroupServiceImpl implements ListService {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         Map<String, String> resultMap;
-        List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(10);
+        List<Map<String, String>> resultMapList = new ArrayList<>(10);
         ServiceContext serviceContext;
-        Set<String> groupNameSet = new HashSet<String>(serviceWorkerMap.size(), 1);
+        Set<String> groupNameSet = new HashSet<>(serviceWorkerMap.size(), 1);
         for (Map.Entry<String, ServiceWorker> entryService : entrySet) {
             serviceContext = entryService.getValue().getServiceContext();
             groupNameSet.add(serviceContext.group());
         }
         groupNameSet.remove("wolf");
         for (String groupName : groupNameSet) {
-            resultMap = new HashMap<String, String>(2, 1);
+            resultMap = new HashMap<>(2, 1);
             resultMap.put("groupName", groupName);
             resultMapList.add(resultMap);
         }

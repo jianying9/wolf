@@ -23,7 +23,7 @@ public class DocServiceTest {
     
     @BeforeClass
     public static void setUpClass() {
-        Map<String, String> parameterMap = new HashMap<String, String>();
+        Map<String, String> parameterMap = new HashMap<>();
         testHander = new TestHandler(parameterMap);
     }
     
@@ -53,7 +53,7 @@ public class DocServiceTest {
      
      @Test
      public void testRoute() {
-         Map<String, String> parameterMap = new HashMap<String, String>();
+         Map<String, String> parameterMap = new HashMap<>();
          parameterMap.put("routeName", "/doc/test/list");
          Response response = testHander.execute("/wolf/service/info", parameterMap);
          System.out.println(response.getResponseMessage());

@@ -12,12 +12,12 @@ import java.util.Map;
  */
 public class CEntityDaoContextImpl<T extends Entity> implements CEntityDaoContext<T> {
 
-    private final Map<String, String> existClassMap = new HashMap<String, String>(8, 1);
+    private final Map<String, String> existClassMap = new HashMap<>(8, 1);
     //entity处理类集合
     private final Map<Class<T>, CEntityDao<T>> entityDaoMap;
 
     public CEntityDaoContextImpl() {
-        this.entityDaoMap = new HashMap<Class<T>, CEntityDao<T>>(8, 1);
+        this.entityDaoMap = new HashMap<>(8, 1);
     }
 
     @Override

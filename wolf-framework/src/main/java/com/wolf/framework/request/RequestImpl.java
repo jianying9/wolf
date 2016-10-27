@@ -1,6 +1,5 @@
 package com.wolf.framework.request;
 
-import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,7 @@ public class RequestImpl implements WorkerRequest {
 
     public RequestImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
-        this.parameterMap = new HashMap<String, String>(8, 1);
+        this.parameterMap = new HashMap<>(8, 1);
     }
 
     @Override

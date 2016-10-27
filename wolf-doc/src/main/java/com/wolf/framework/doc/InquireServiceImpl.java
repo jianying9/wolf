@@ -41,7 +41,7 @@ public class InquireServiceImpl implements ListService {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         //过滤系统接口
-        List<ServiceWorker> serviceWorkerList = new ArrayList<ServiceWorker>(serviceWorkerMap.size());
+        List<ServiceWorker> serviceWorkerList = new ArrayList<>(serviceWorkerMap.size());
         ServiceContext serviceContext;
         for (Entry<String, ServiceWorker> entryService : entrySet) {
             serviceContext = entryService.getValue().getServiceContext();
@@ -53,10 +53,10 @@ public class InquireServiceImpl implements ListService {
         Collections.sort(serviceWorkerList, new ServiceWorkerSort());
         //输出
         Map<String, String> resultMap;
-        List<Map<String, String>> resultMapList = new ArrayList<Map<String, String>>(serviceWorkerList.size());
+        List<Map<String, String>> resultMapList = new ArrayList<>(serviceWorkerList.size());
         for (ServiceWorker serviceWorker : serviceWorkerList) {
             serviceContext = serviceWorker.getServiceContext();
-            resultMap = new HashMap<String, String>(4, 1);
+            resultMap = new HashMap<>(4, 1);
             resultMap.put("routeName", serviceContext.route());
             resultMap.put("groupName", serviceContext.group());
             resultMap.put("desc", serviceContext.desc());

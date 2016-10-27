@@ -2,7 +2,6 @@ package com.wolf;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

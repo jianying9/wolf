@@ -1,11 +1,9 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterFactoryImpl;
-import java.util.Set;
 
 /**
  * 全局信息构造类

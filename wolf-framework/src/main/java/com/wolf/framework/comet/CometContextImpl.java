@@ -14,7 +14,7 @@ public final class CometContextImpl implements CometContext {
     
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
-    private final List<CometHandler> cometHanlderList = new ArrayList<CometHandler>(2);
+    private final List<CometHandler> cometHanlderList = new ArrayList<>(2);
 
     @Override
     public boolean push(String sid, String message) {

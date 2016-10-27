@@ -1,7 +1,6 @@
 package com.wolf;
 
 import com.wolf.framework.config.FrameworkConfig;
-import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.utils.StringUtils;
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class FrameworkJUnitTest {
 
     @Test
     public void hello() {
-        Map<String, String> parameterMap = new HashMap<String, String>(8, 1);
+        Map<String, String> parameterMap = new HashMap<>(8, 1);
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.DEVELOPMENT);
         parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.test");
         parameterMap.put(FrameworkConfig.TASK_CORE_POOL_SIZE, "10");
@@ -64,12 +63,11 @@ public class FrameworkJUnitTest {
                 + "欢迎大家使用智能客服momi！\"}";
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-        JsonNode rootNode = null;
         Map<String, String> parameterMap;
-        rootNode = mapper.readValue(json, JsonNode.class);
+        JsonNode rootNode = mapper.readValue(json, JsonNode.class);
         if (rootNode != null) {
             //读数据
-            parameterMap = new HashMap<String, String>(8, 1);
+            parameterMap = new HashMap<>(8, 1);
             Map.Entry<String, JsonNode> entry;
             String name;
             String value;
