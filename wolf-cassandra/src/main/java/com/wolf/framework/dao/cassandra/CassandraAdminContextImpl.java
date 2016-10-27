@@ -3,7 +3,6 @@ package com.wolf.framework.dao.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.Session;
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.Resource;
 import com.wolf.framework.dao.Entity;
@@ -23,9 +22,9 @@ public class CassandraAdminContextImpl implements CassandraAdminContext {
     private final Cluster cluster;
 
     public CassandraAdminContextImpl(ApplicationContext applicationContext) {
-        final String point = applicationContext.getParameter(FrameworkConfig.CASSANDRA_CONTACT_POINT);
-        final String userName = applicationContext.getParameter(FrameworkConfig.CASSANDRA_USERNAME);
-        final String password = applicationContext.getParameter(FrameworkConfig.CASSANDRA_PASSWORD);
+        final String point = applicationContext.getParameter(CassandraConfig.CASSANDRA_CONTACT_POINT);
+        final String userName = applicationContext.getParameter(CassandraConfig.CASSANDRA_USERNAME);
+        final String password = applicationContext.getParameter(CassandraConfig.CASSANDRA_PASSWORD);
         this.cluster = Cluster.builder()
                 .addContactPoint(point)
                 .withCredentials(userName, password)

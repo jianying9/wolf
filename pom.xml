@@ -553,7 +553,7 @@
             <dependency>
                 <groupId>com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
-                <version>2.1.4</version>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>net.jpountz.lz4</groupId>
@@ -627,11 +627,11 @@
         <!--<module>wolf-fileupload</module>-->
         <!--<module>wolf-search</module>-->
         <!--<module>wolf-reids</module>-->
-        <!--<module>wolf-cassandra</module>-->
+        <module>wolf-cassandra</module>
         <module>wolf-websocket</module>
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->
-        <!--<module>wolf-framework-dao</module>-->
+        <module>wolf-framework-dao</module>
     </modules>
 </project>

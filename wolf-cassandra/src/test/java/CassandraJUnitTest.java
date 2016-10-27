@@ -55,8 +55,8 @@ public class CassandraJUnitTest {
     @Test
     public void hello() throws ExecutionException, InterruptedException {
         this.cluster = Cluster.builder()
-                .addContactPoint("192.168.181.41")
-                .withCredentials("test", "test")
+                .addContactPoint("139.224.54.3")
+                .withCredentials("microproject", "microproject")
                 .build();
         this.cluster.getConfiguration()
                 .getProtocolOptions()

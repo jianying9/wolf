@@ -82,7 +82,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
             cassandraHandler = new CassandraCounterHandlerImpl(session, this.keyspace, this.table, this.keyHandlerList, this.columnHandlerList);
         } else {
             //普通表
-
             cassandraHandler = new CassandraHandlerImpl(
                     session,
                     this.keyspace,

@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @DaoConfig()
 public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     private final List<Class<T>> cEntityClassList = new ArrayList<Class<T>>();
     private CEntityDaoContext<T> cEntityDaoContext;
     private CassandraAdminContext cassandraAdminContext;

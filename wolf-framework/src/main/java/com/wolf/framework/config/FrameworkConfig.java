@@ -51,10 +51,4 @@ public class FrameworkConfig {
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
     //http长轮询超时时间(毫秒)
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
-    //cassandra 节点地址
-    public final static String CASSANDRA_CONTACT_POINT = "cassandra.contact.point";
-    //cassandra 帐号密码
-    public final static String CASSANDRA_USERNAME = "cassandra.username";
-    //cassandra 帐号密码
-    public final static String CASSANDRA_PASSWORD = "cassandra.password";
 }
