@@ -121,17 +121,11 @@ public class ResponseImpl implements WorkerResponse {
         this.responseMessage = jsonBuilder.toString();
     }
 
-    @Override
-    public final String getResponseMessage(boolean useCache) {
-        if (this.responseMessage.isEmpty() || useCache == false) {
-            this.createResponseMessage();
-        }
-        return this.responseMessage;
-    }
 
     @Override
     public final String getResponseMessage() {
-        return this.getResponseMessage(true);
+        this.createResponseMessage();
+        return this.responseMessage;
     }
 
     @Override

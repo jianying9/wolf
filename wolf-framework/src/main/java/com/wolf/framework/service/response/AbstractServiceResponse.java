@@ -39,7 +39,7 @@ public abstract class AbstractServiceResponse  {
     public String getResponseMessage() {
         String dataMessage = this.getDataMessage();
         this.response.setDataMessage(dataMessage);
-        return this.response.getResponseMessage(false);
+        return this.response.getResponseMessage();
     }
     
     public boolean push(String sid) {

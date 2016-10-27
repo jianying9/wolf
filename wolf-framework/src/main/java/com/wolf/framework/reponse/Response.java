@@ -26,7 +26,5 @@ public interface Response {
     
     public String getResponseMessage();
     
-    public String getResponseMessage(boolean useCache);
-    
     public boolean push(String sid, String responseMessage);
 }

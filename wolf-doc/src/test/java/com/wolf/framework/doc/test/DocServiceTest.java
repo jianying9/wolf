@@ -42,7 +42,7 @@ public class DocServiceTest {
      @Test
      public void testGroup() {
          Response response = testHander.execute("/wolf/group", new HashMap<String, String>());
-         System.out.println(response.getResponseMessage(true));
+         System.out.println(response.getResponseMessage());
      }
      
      @Test
