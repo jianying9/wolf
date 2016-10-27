@@ -29,7 +29,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     }
 
     @Override
-    public boolean exist(Object keyValue) {
+    public boolean exist(Object... keyValue) {
         return this.cassandraHandler.exist(keyValue);
     }
 
@@ -99,7 +99,7 @@ public class CEntityDaoImpl<T extends Entity> implements CEntityDao<T> {
     }
 
     @Override
-    public void delete(Object keyValue) {
+    public void delete(Object... keyValue) {
         this.cassandraHandler.delete(keyValue);
     }
 

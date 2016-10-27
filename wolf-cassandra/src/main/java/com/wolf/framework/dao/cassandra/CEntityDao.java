@@ -19,7 +19,7 @@ public interface CEntityDao<T extends Entity> {
      * @param keyValue
      * @return
      */
-    public boolean exist(Object keyValue);
+    public boolean exist(Object... keyValue);
 
     /**
      * 根据主键查询
@@ -80,7 +80,7 @@ public interface CEntityDao<T extends Entity> {
      *
      * @param keyValue
      */
-    public void delete(Object keyValue);
+    public void delete(Object... keyValue);
 
     /**
      * 批量删除

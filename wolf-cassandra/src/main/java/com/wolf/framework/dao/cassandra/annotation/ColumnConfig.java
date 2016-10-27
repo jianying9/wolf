@@ -29,7 +29,7 @@ public @interface ColumnConfig {
     public String dataMap() default "";
     
     /**
-     * redis数据为空时，取默认值
+     * 数据为空时，取默认值
      * @return 
      */
     public String defaultValue() default "";
