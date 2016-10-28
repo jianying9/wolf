@@ -34,6 +34,11 @@ public class ServletWorkerContextImpl extends AbstractWorkContext {
     @Override
     public void removeSession() {
         this.sid = null;
+        this.serviceServlet.removeSession(this.sid);
+    }
+
+    @Override
+    public void closeSession(String sid) {
         this.serviceServlet.removeSession(sid);
     }
 }

@@ -26,4 +26,10 @@ public interface BaseServiceResponse<T extends Entity> {
     public boolean push(String sid);
     
     public boolean push(String sid, String responseMessage);
+    
+    public boolean asyncPush(String sid);
+    
+    public boolean asyncPush(String sid, String responseMessage);
+    
+    public void closeOtherSession(String otherSid);
 }

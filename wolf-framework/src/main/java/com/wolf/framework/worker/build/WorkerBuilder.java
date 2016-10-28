@@ -47,7 +47,7 @@ public class WorkerBuilder {
      * @param clazz
      */
     public void build(final Class<?> clazz) {
-        this.logger.debug("--parsing service {}--", clazz.getName());
+        this.logger.info("--parsing service {}--", clazz.getName());
         if (clazz.isAnnotationPresent(ServiceConfig.class)) {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);

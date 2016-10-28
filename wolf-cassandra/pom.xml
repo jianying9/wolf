@@ -22,7 +22,7 @@
             <groupId>net.jpountz.lz4</groupId>
             <artifactId>lz4</artifactId>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
         </dependency>-->

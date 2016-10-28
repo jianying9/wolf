@@ -34,4 +34,17 @@ public final class CometContextImpl implements CometContext {
         this.logger.debug("CometContext add cometHandler:{}", cometHandler);
         this.cometHanlderList.add(cometHandler);
     }
+
+    @Override
+    public boolean asyncPush(String sid, String message) {
+        boolean result = false;
+        boolean isPush;
+        for (CometHandler cometHandler : this.cometHanlderList) {
+            isPush = cometHandler.asyncPush(sid, message);
+            if(isPush) {
+                result = true;
+            }
+        }
+        return result;
+    }
 }

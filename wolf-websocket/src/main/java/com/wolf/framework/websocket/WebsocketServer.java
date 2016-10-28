@@ -15,6 +15,7 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 
@@ -22,7 +23,7 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-@ServerEndpoint(value = "/api")
+@ServerEndpoint(value = "/api/{text}")
 public class WebsocketServer {
 
     private final SessionManager sessionManager;
@@ -34,36 +35,56 @@ public class WebsocketServer {
         //注册推送服务
         ApplicationContext.CONTEXT.getCometContext().addCometHandler(this.sessionManager);
     }
-    
+
     public SessionManager getSessionManager() {
         return this.sessionManager;
     }
 
-    @OnOpen
-    public void onOpen(Session session) {
-    }
-
-    @OnMessage
-    public void onMessage(String text, Session session) {
+    private void exec(String text, Session session, boolean isAsync) {
         this.logger.debug("wobsocket-on message:{}", text);
         Matcher matcher = this.routePattern.matcher(text);
+        String responseMesssage;
         if (matcher.find()) {
             String route = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //无效的route
-                session.getAsyncRemote().sendText("{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}");
+                responseMesssage = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
             } else {
                 //创建消息对象并执行服务
                 WorkerContext workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, text, serviceWorker);
                 serviceWorker.doWork(workerContext);
                 //返回消息
-                String result = workerContext.getWorkerResponse().getResponseMessage();
-                session.getAsyncRemote().sendText(result);
+                responseMesssage = workerContext.getWorkerResponse().getResponseMessage();
             }
         } else {
-            session.getAsyncRemote().sendText("{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}");
+            responseMesssage = "{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}";
         }
+        if(isAsync) {
+            session.getAsyncRemote().sendText(responseMesssage);
+        } else {
+            try {
+                session.getBasicRemote().sendText(responseMesssage);
+            } catch (IOException ex) {
+            }
+        }
+        Object o = session.getUserProperties().get("sid");
+        if (o == null) {
+            try {
+                session.close();
+            } catch (IOException ex) {
+            }
+        }
+    }
+
+    @OnOpen
+    public void onOpen(@PathParam("text") String text, Session session) {
+        this.exec(text, session, false);
+    }
+
+    @OnMessage
+    public void onMessage(String text, Session session) {
+        this.exec(text, session, true);
     }
 
     @OnClose

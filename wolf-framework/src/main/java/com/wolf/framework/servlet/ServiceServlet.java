@@ -157,6 +157,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     public String getServletInfo() {
         return "server";
     }
+    
+    @Override
+    public boolean asyncPush(String sid, String message) {
+        return this.push(sid, message);
+    }
 
     @Override
     public boolean push(String sid, String message) {

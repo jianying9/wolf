@@ -80,19 +80,10 @@ public class ApplicationContextBuilder<T extends Entity> {
         Class<?> clazz = null;
         try {
             clazz = classloader.loadClass(className);
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException | ClassFormatError | NoClassDefFoundError ex) {
             if (this.checkException(ex)) {
-                this.logger.error(className);
-                this.logger.error("ClassNotFoundException:", ex.getMessage());
+                this.logger.error(className, ex);
             }
-        } catch (ClassFormatError ex) {
-            if (this.checkException(ex)) {
-                this.logger.error(className);
-                this.logger.error("ClassFormatError:", ex.getMessage());
-            }
-        } catch (NoClassDefFoundError ex) {
-            this.logger.error(className);
-            this.logger.error("ClassFormatError:", ex.getMessage());
         }
 
         return clazz;

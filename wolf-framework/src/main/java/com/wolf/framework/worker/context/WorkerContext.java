@@ -24,6 +24,8 @@ public interface WorkerContext {
     
     public void removeSession();
     
+    public void closeSession(String sid);
+    
     public WorkerRequest getWorkerRequest();
     
     public WorkerResponse getWorkerResponse();

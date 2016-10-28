@@ -50,4 +50,17 @@ public abstract class AbstractServiceResponse  {
     public boolean push(String sid, String responseMessage) {
         return this.response.push(sid, responseMessage);
     }
+    
+    public boolean asyncPush(String sid) {
+        String responseMessage = this.getResponseMessage();
+        return this.asyncPush(sid, responseMessage);
+    }
+    
+    public boolean asyncPush(String sid, String responseMessage) {
+        return this.response.asyncPush(sid, responseMessage);
+    }
+    
+    public void closeOtherSession(String otherSid) {
+        this.response.closeOtherSession(otherSid);
+    }
 }

@@ -30,4 +30,8 @@ public class LocalWorkerContextImpl extends AbstractWorkContext {
     public void removeSession() {
         this.sid = null;
     }
+
+    @Override
+    public void closeSession(String sid) {
+    }
 }

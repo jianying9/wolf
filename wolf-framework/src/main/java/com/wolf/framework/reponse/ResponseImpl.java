@@ -153,4 +153,15 @@ public class ResponseImpl implements WorkerResponse {
         CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
         return cometContext.push(sid, responseMessage);
     }
+
+    @Override
+    public boolean asyncPush(String sid, String responseMessage) {
+        CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
+        return cometContext.asyncPush(sid, responseMessage);
+    }
+
+    @Override
+    public void closeOtherSession(String otherSid) {
+        this.workerContext.closeSession(otherSid);
+    }
 }

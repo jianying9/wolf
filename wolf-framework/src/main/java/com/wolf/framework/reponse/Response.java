@@ -27,4 +27,8 @@ public interface Response {
     public String getResponseMessage();
     
     public boolean push(String sid, String responseMessage);
+    
+    public boolean asyncPush(String sid, String responseMessage);
+    
+    public void closeOtherSession(String otherSid);
 }

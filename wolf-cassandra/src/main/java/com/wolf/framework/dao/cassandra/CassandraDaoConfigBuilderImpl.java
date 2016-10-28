@@ -82,7 +82,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
         if (this.cEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation CDaoConfig...");
             for (Class<T> clazz : this.cEntityClassList) {
-                this.logger.debug("--parsing cassandra entity DAO {}--", clazz.getName());
+                this.logger.info("--parsing cassandra entity DAO {}--", clazz.getName());
                 if (clazz.isAnnotationPresent(CDaoConfig.class)) {
                     //获取注解RDaoConfig
                     final CDaoConfig cDaoConfig = clazz.getAnnotation(CDaoConfig.class);
