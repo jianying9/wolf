@@ -32,7 +32,7 @@ public class SecurytiJUnitTest {
     public void tearDown() {
     }
     
-    @Test
+//    @Test
     public void desTest() {
         String key = "4102gnab";
         byte[] keyByte = key.getBytes();

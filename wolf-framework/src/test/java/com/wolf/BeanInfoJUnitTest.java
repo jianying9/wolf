@@ -47,7 +47,7 @@ public class BeanInfoJUnitTest {
     }
 
     //
-     @Test
+//     @Test
      public void hello() throws IntrospectionException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
          TestEntity te = new TestEntity();
          Field[] fields = TestEntity.class.getDeclaredFields();

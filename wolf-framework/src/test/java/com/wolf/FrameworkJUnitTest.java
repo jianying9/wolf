@@ -41,7 +41,7 @@ public class FrameworkJUnitTest {
     public void tearDown() {
     }
 
-    @Test
+//    @Test
     public void hello() {
         Map<String, String> parameterMap = new HashMap<>(8, 1);
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.DEVELOPMENT);

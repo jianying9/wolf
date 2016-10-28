@@ -52,7 +52,7 @@ public class CassandraJUnitTest {
     private Cluster cluster;
 
     //
-    @Test
+//    @Test
     public void hello() throws ExecutionException, InterruptedException {
         this.cluster = Cluster.builder()
                 .addContactPoint("139.224.54.3")

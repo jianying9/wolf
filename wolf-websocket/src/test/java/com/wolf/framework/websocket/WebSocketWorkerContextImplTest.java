@@ -36,7 +36,7 @@ public class WebSocketWorkerContextImplTest {
     public void tearDown() {
     }
 
-     @Test
+//     @Test
      public void test() {
          SessionManager sessionManager = null;
          Session session = null;
