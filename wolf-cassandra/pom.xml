@@ -11,16 +11,18 @@
     <dependencies>
         <dependency>
             <groupId>com.wolf</groupId>
-            <artifactId>wolf-framework-dao</artifactId>
+            <artifactId>wolf-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.jpountz.lz4</groupId>
             <artifactId>lz4</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!--        <dependency>
             <groupId>org.xerial.snappy</groupId>
