@@ -68,9 +68,8 @@ public class SessionManager implements CometHandler {
 
     public synchronized void putNewSession(String sid, Session session) {
         Session other = this.savedSessionMap.get(sid);
-        if (other != null) {
+        if (other != null && other.isOpen()) {
             try {
-                other.getBasicRemote().sendText("close");
                 other.close();
             } catch (IOException ex) {
                 this.logger.error("websocket-close sid:{} error:{}", sid, ex.getMessage());

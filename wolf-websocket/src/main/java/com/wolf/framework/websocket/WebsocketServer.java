@@ -29,6 +29,7 @@ public class WebsocketServer {
     private final SessionManager sessionManager;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
     private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/\\d]+)(?:\")");
+    private final long expireTime = 1000 * 60;
 
     public WebsocketServer() {
         this.sessionManager = new SessionManager();
@@ -69,9 +70,19 @@ public class WebsocketServer {
             }
         }
         this.logger.debug("wobsocket-send message:{}", responseMesssage);
-        Object o = session.getUserProperties().get("sid");
-        if (o == null) {
+        Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
+        Object l = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
+        if (s == null || l == null) {
             try {
+                session.close();
+            } catch (IOException ex) {
+            }
+        }
+        long lastTime = (Long) l;
+        if(System.currentTimeMillis() - lastTime > this.expireTime) {
+            //心跳超时，关闭接口
+            try {
+                session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
                 session.close();
             } catch (IOException ex) {
             }
@@ -80,18 +91,41 @@ public class WebsocketServer {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
+        //记录首次时间
+        session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);
     }
 
     @OnMessage
     public void onMessage(String text, Session session) {
-        this.exec(text, session, true);
+        switch (text) {
+            case WebsocketConfig.PING_TEXT:
+                this.onPing(session);
+                break;
+            case WebsocketConfig.PONG_TEXT:
+                this.onPong(session);
+                break;
+            default:
+                this.exec(text, session, true);
+                break;
+        }
     }
-
+    
+    private void onPing(Session session) {
+        //记录最后的心跳时间
+        session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
+        session.getAsyncRemote().sendText(WebsocketConfig.PONG_TEXT);
+    }
+    
+    private void onPong(Session session) {
+        //记录最后的心跳时间
+        session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
+    }
+    
     @OnClose
     public void onClose(Session session) {
-        String sid = "no sid:";
-        Object o = session.getUserProperties().get("sid");
+        String sid = "no sid";
+        Object o = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
         if (o != null) {
             sid = (String) o;
             this.sessionManager.remove(sid);

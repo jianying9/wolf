@@ -1,6 +1,7 @@
 package com.wolf.framework.worker.context;
 
 import com.wolf.framework.websocket.SessionManager;
+import com.wolf.framework.websocket.WebsocketConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import java.io.IOException;
 import javax.websocket.Session;
@@ -23,7 +24,7 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
     @Override
     public String getSessionId() {
         String sid = null;
-        Object o = this.session.getUserProperties().get("sid");
+        Object o = this.session.getUserProperties().get(WebsocketConfig.SID_NAME);
         if (o != null) {
             sid = (String) o;
         }
@@ -38,7 +39,7 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
             String sid = this.getSessionId();
             if (sid == null) {
                 //当前socket session不存在，为首次链接,保存新的session
-                this.session.getUserProperties().put("sid", newSid);
+                this.session.getUserProperties().put(WebsocketConfig.SID_NAME, newSid);
                 //保存socket
                 this.sessionManager.putNewSession(newSid, this.session);
             } else //当前socket session存在，判断是和新session属于同一个session
@@ -46,7 +47,7 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
                 if (sid.equals(newSid) == false) {
                     //切换用户,改变socket session,改变socket的集合id
                     this.sessionManager.removSession(sid);
-                    this.session.getUserProperties().put("sid", newSid);
+                    this.session.getUserProperties().put(WebsocketConfig.SID_NAME, newSid);
                     this.sessionManager.putNewSession(newSid, this.session);
                 }
             }
@@ -58,7 +59,7 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
         String sid = this.getSessionId();
         if (sid != null) {
             this.sessionManager.removSession(sid);
-            this.session.getUserProperties().remove("sid");
+            this.session.getUserProperties().clear();
         }
     }
 
@@ -67,7 +68,7 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
         String sid = this.getSessionId();
         if (sid == null || sid.equals(otherSid) == false) {
             Session otherSession = this.sessionManager.get(sid);
-            otherSession.getUserProperties().remove("sid");
+            otherSession.getUserProperties().clear();
             this.sessionManager.removSession(sid);
             try {
                 otherSession.close();
