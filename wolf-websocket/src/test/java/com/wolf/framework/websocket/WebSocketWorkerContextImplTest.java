@@ -1,15 +1,13 @@
 package com.wolf.framework.websocket;
 
-import com.wolf.framework.worker.ServiceWorker;
-import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
-import com.wolf.framework.worker.context.WorkerContext;
-import javax.websocket.Session;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -36,13 +34,11 @@ public class WebSocketWorkerContextImplTest {
     public void tearDown() {
     }
 
-//     @Test
+     @Test
      public void test() {
-         SessionManager sessionManager = null;
-         Session session = null;
-         String route = "/test";
-         String text = "{\"route\":\"/test\",\"param\":{\"name\":\"test\",\"value\":\"text\"}}";
-         ServiceWorker serviceWorker = null;
-         WorkerContext workerContext = new WebSocketWorkerContextImpl(sessionManager, session, route, text, serviceWorker);
+         String text = "{\"route\":\"/test/service/login/v1\",\"param\":{\"name\":\"test\",\"value\":\"text\"}}";
+         Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/]+\\d)(?:\")");
+         Matcher matcher = routePattern.matcher(text);
+         Assert.assertTrue(matcher.find());
      }
 }

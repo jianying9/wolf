@@ -28,7 +28,7 @@ public class WebsocketServer {
 
     private final SessionManager sessionManager;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
-    private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/]+)(?:\")");
+    private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/\\d]+)(?:\")");
 
     public WebsocketServer() {
         this.sessionManager = new SessionManager();
@@ -68,6 +68,7 @@ public class WebsocketServer {
             } catch (IOException ex) {
             }
         }
+        this.logger.debug("wobsocket-send message:{}", responseMesssage);
         Object o = session.getUserProperties().get("sid");
         if (o == null) {
             try {
