@@ -48,6 +48,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
         infoMap.put("responseCodes", this.responseCodes);
+        infoMap.put("hasAsyncResponse", Boolean.toString(this.serviceContext.hasAsyncResponse()));
         return infoMap;
     }
 
@@ -61,8 +62,8 @@ public class ServiceWorkerImpl implements ServiceWorker {
                 type = type + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
-                    .append("\",\"must\":\"").append(requestConfig.must())
-                    .append("\",\"type\":\"").append(type)
+                    .append("\",\"must\":").append(requestConfig.must())
+                    .append(",\"type\":\"").append(type)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
         }
@@ -117,13 +118,15 @@ public class ServiceWorkerImpl implements ServiceWorker {
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
             responseCodeBuilder.append("{\"code\":\"").append(responseCode.code())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseCode.desc()))
-                    .append("\",\"type\":\"custom\"}").append(',');
+                    .append("\",\"asycn\":").append(Boolean.toString(responseCode.async()))
+                    .append(",\"type\":\"custom\"}").append(',');
         }
         Set<Map.Entry<String, String>> codeSet = responseCodeMap.entrySet();
         for (Map.Entry<String, String> entry : codeSet) {
             responseCodeBuilder.append("{\"code\":\"").append(entry.getKey())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(entry.getValue()))
-                    .append("\",\"type\":\"global\"}").append(',');
+                    .append("\",\"asycn\":").append("false")
+                    .append(",\"type\":\"global\"}").append(',');
         }
         if (responseCodeBuilder.length() > 1) {
             responseCodeBuilder.setLength(responseCodeBuilder.length() - 1);

@@ -7,13 +7,15 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface ResponseCode {
 
     public String code();
+    
+    public boolean async() default false;
 
     public String desc();
 }

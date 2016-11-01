@@ -45,4 +45,6 @@ public interface ServiceContext {
     public ResponseConfig[] responseConfigs();
     
     public ResponseCode[] responseCodes();
+    
+    public boolean hasAsyncResponse();
 }

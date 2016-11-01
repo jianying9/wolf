@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * 服务信息配置
  *
- * @author aladdin
+ * @author jianying9
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -77,4 +77,10 @@ public @interface ServiceConfig {
      * @return
      */
     public ResponseCode[] responseCodes() default {};
+    
+    /**
+     * 是否有异步的响应业务
+     * @return 
+     */
+    public boolean hasAsyncResponse() default false;
 }

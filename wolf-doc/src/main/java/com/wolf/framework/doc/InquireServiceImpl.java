@@ -28,6 +28,9 @@ import java.util.Set;
         responseConfigs = {
             @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
             @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "hasAsyncResponse", dataType = DataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = "")
         },
         responseCodes = {},
@@ -60,6 +63,9 @@ public class InquireServiceImpl implements ListService {
             resultMap.put("routeName", serviceContext.route());
             resultMap.put("groupName", serviceContext.group());
             resultMap.put("desc", serviceContext.desc());
+            resultMap.put("validateSession", Boolean.toString(serviceContext.validateSession()));
+            resultMap.put("hasAsyncResponse", Boolean.toString(serviceContext.hasAsyncResponse()));
+            resultMap.put("page", Boolean.toString(serviceContext.page()));
             resultMapList.add(resultMap);
         }
         listServiceResponse.setDataMapList(resultMapList);

@@ -43,6 +43,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final RequestConfig[] requestConfigs;
     private final ResponseConfig[] responseConfigs;
     private final ResponseCode[] responseCodes;
+    private final boolean hasAsyncResponse;
     
     /**
      * 保留字段集合
@@ -99,6 +100,7 @@ public class ServiceContextImpl implements ServiceContext {
         this.requestConfigs = serviceConfig.requestConfigs();
         this.responseConfigs = serviceConfig.responseConfigs();
         this.responseCodes = serviceConfig.responseCodes();
+        this.hasAsyncResponse = serviceConfig.hasAsyncResponse();
         //
         Set<String> reservedParamSet = ServiceContextImpl.getReservedParamSet();
         Set<String> reservedCodeSet = ServiceContextImpl.getReservedCodeSet();
@@ -262,5 +264,10 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public ResponseCode[] responseCodes() {
         return this.responseCodes;
+    }
+
+    @Override
+    public boolean hasAsyncResponse() {
+        return this.hasAsyncResponse;
     }
 }
