@@ -31,7 +31,7 @@ public class RequestParameterHandlerBuilder {
         long max = this.inputConfig.max();
         long min = this.inputConfig.min();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
-        if (dataHandler == null && dataType.equals(DataType.CHAR) == false) {
+        if (dataHandler == null && dataType.equals(DataType.STRING) == false) {
             throw new RuntimeException("Error building InputParameterHandler. Cause: could not find DataHandler:" + dataType.name());
         }
         switch (dataType) {
@@ -39,7 +39,7 @@ public class RequestParameterHandlerBuilder {
                 throw new RuntimeException("Error building InputParameterHandler. Cause: input not support JSON OBJECT");
             case ARRAY:
                 throw new RuntimeException("Error building InputParameterHandler. Cause: input not support JSON ARRAY");
-            case CHAR:
+            case STRING:
                 parameterHandler = new StringParameterHandlerImpl(fieldName, null, max, min);
                 break;
             case DATE:
@@ -48,7 +48,7 @@ public class RequestParameterHandlerBuilder {
             case DATE_TIME:
                 parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
                 break;
-            case INTEGER:
+            case LONG:
                 parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, max, min);
                 break;
             case DOUBLE:

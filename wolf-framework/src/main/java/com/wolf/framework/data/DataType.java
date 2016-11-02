@@ -8,7 +8,7 @@ package com.wolf.framework.data;
 public enum DataType {
 
     //BigIntSigned [-9223372036854775808,9223372036854775807]
-    INTEGER,
+    LONG,
     //Double [-1.7976931348623157×10+308, -4.94065645841246544×10-324]
     DOUBLE,
     //DateTime {YYYY-MM-DD HH:MM,YYYY-MM-DD HH:MM:SS}
@@ -16,7 +16,7 @@ public enum DataType {
     //Date {YYYY-MM-DD,YYYY-m-d}
     DATE,
     //Char可以包含特殊符号
-    CHAR,
+    STRING,
     //布尔
     BOOLEAN ,
     //json对象

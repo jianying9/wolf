@@ -23,7 +23,7 @@ import java.util.Set;
 @ServiceConfig(
         route = "/wolf/group",
         responseConfigs = {
-            @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = "")
+            @ResponseConfig(name = "groupName", dataType = DataType.STRING, desc = "")
         },
         responseCodes = {},
         validateSession = false,

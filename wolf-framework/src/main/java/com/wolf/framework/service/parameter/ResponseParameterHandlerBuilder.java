@@ -40,7 +40,7 @@ public class ResponseParameterHandlerBuilder {
             case ARRAY:
                 parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType.name(), "[]");
                 break;
-            case CHAR:
+            case STRING:
                 Filter[] filters = null;
                 //获取过滤对象
                 FilterType[] filterTypeEnums = this.outputConfig.filterTypes();
@@ -63,7 +63,7 @@ public class ResponseParameterHandlerBuilder {
             case DATE_TIME:
                 parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
                 break;
-            case INTEGER:
+            case LONG:
                 parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, 1, 0);
                 break;
             case DOUBLE:

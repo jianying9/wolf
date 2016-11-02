@@ -26,12 +26,12 @@ import java.util.Set;
         route = "/wolf/service",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = DataType.CHAR, desc = ""),
-            @ResponseConfig(name = "groupName", dataType = DataType.CHAR, desc = ""),
+            @ResponseConfig(name = "routeName", dataType = DataType.STRING, desc = ""),
+            @ResponseConfig(name = "groupName", dataType = DataType.STRING, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "hasAsyncResponse", dataType = DataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "desc", dataType = DataType.CHAR, desc = "")
+            @ResponseConfig(name = "desc", dataType = DataType.STRING, desc = "")
         },
         responseCodes = {},
         validateSession = false,

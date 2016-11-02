@@ -1,6 +1,7 @@
 package com.wolf.framework.worker;
 
 import com.wolf.framework.config.ResponseCodeConfig;
+import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -54,16 +55,18 @@ public class ServiceWorkerImpl implements ServiceWorker {
 
     private String getRequestParameterJson(RequestConfig[] requestConfigs, Filter escapeFilter) {
         StringBuilder jsonBuilder = new StringBuilder(64);
-        String type;
+        DataType type;
+        String typeStr;
         jsonBuilder.append('[');
         for (RequestConfig requestConfig : requestConfigs) {
-            type = requestConfig.dataType().name();
-            if (type.equals("INTEGER") || type.equals("DOUBLE") || type.equals("CHAR")) {
-                type = type + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+            type = requestConfig.dataType();
+            typeStr = type.name();
+            if (type == DataType.LONG || type == DataType.DOUBLE|| type == DataType.STRING) {
+                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
                     .append("\",\"must\":").append(requestConfig.must())
-                    .append(",\"type\":\"").append(type)
+                    .append(",\"type\":\"").append(typeStr)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
         }

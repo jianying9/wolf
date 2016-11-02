@@ -64,6 +64,6 @@ public final class StringParameterHandlerImpl implements RequestParameterHandler
 
     @Override
     public String getDataType() {
-        return DataType.CHAR.name();
+        return DataType.STRING.name();
     }
 }

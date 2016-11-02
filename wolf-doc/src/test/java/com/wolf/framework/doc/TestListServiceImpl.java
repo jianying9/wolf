@@ -19,12 +19,12 @@ import com.wolf.framework.service.response.ListServiceResponse;
         desc = "list service类型测试服务",
         responseCodes = {},
         requestConfigs = {
-            @RequestConfig(name = "name", dataType = DataType.CHAR, desc = "名称", max = 28, min = 2, must = true),
-            @RequestConfig(name = "value", dataType = DataType.CHAR, desc = "值", max = 128, min = 0, must = false)
+            @RequestConfig(name = "name", dataType = DataType.STRING, desc = "名称", max = 28, min = 2, must = true),
+            @RequestConfig(name = "value", dataType = DataType.STRING, desc = "值", max = 128, min = 0, must = false)
         },
         responseConfigs = {
-            @ResponseConfig(name = "name", dataType = DataType.CHAR, desc = ""),
-            @ResponseConfig(name = "value", dataType = DataType.CHAR, desc = "", filterTypes = {FilterType.ESCAPE})
+            @ResponseConfig(name = "name", dataType = DataType.STRING, desc = ""),
+            @ResponseConfig(name = "value", dataType = DataType.STRING, desc = "", filterTypes = {FilterType.ESCAPE})
         }
 )
 public class TestListServiceImpl implements ListService {

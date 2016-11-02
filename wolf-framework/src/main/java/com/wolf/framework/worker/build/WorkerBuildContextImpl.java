@@ -69,7 +69,7 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
         this.interceptorList = interceptorContext.getInterceptorList();
         this.nextIndexHandler = new StringParameterHandlerImpl("nextIndex", null, 64, 0);
         DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
-        DataHandler dataHandler = dataHandlerFactory.getDataHandler(DataType.INTEGER);
+        DataHandler dataHandler = dataHandlerFactory.getDataHandler(DataType.LONG);
         this.nextSizeHandler = new NumberParameterHandlerImpl("nextSize", dataHandler, 100, 1);
     }
 

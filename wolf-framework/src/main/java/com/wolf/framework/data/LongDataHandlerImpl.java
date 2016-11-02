@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
  *
  * @author aladdin
  */
-public final class IntegerDataHandlerImpl implements DataHandler {
+public final class LongDataHandlerImpl implements DataHandler {
 
-    private final String errorInfo = " must be integer";
+    private final String errorInfo = " must be long";
     private final Pattern pattern = Pattern.compile("^\\d|[1-9]\\d{1,17}|-[1-9]\\d{0,17}$");
 
-    IntegerDataHandlerImpl() {
+    LongDataHandlerImpl() {
     }
 
     @Override
@@ -29,6 +29,6 @@ public final class IntegerDataHandlerImpl implements DataHandler {
 
     @Override
     public DataType getDataType() {
-        return DataType.INTEGER;
+        return DataType.LONG;
     }
 }

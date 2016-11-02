@@ -11,7 +11,7 @@ import java.util.Map;
 public final class DataHandlerFactoryImpl implements DataHandlerFactory {
 
     public DataHandlerFactoryImpl() {
-        this.dataHandlerMap.put(DataType.INTEGER, new IntegerDataHandlerImpl());
+        this.dataHandlerMap.put(DataType.LONG, new LongDataHandlerImpl());
         this.dataHandlerMap.put(DataType.DOUBLE, new DoubleDataHandlerImpl());
         this.dataHandlerMap.put(DataType.DATE_TIME, new DateTimeDataHandlerImpl());
         this.dataHandlerMap.put(DataType.BOOLEAN, new BooleanDataHandlerImpl());
