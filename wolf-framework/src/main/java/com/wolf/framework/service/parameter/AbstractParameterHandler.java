@@ -1,6 +1,7 @@
 package com.wolf.framework.service.parameter;
 
 import com.wolf.framework.data.DataHandler;
+import com.wolf.framework.data.DataType;
 
 /**
  * parameter处理抽象类
@@ -21,8 +22,8 @@ public abstract class AbstractParameterHandler {
         return this.name;
     }
 
-    public final String getDataType() {
-        return this.dataHandler.getDataType().name();
+    public final DataType getDataType() {
+        return this.dataHandler.getDataType();
     }
 
     public final DataHandler getDataHandler() {

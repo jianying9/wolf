@@ -35,10 +35,10 @@ public class ResponseParameterHandlerBuilder {
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
         switch (dataType) {
             case OBJECT:
-                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType.name(), "{}");
+                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType, "{}");
                 break;
             case ARRAY:
-                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType.name(), "[]");
+                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType, "[]");
                 break;
             case STRING:
                 Filter[] filters = null;

@@ -25,7 +25,7 @@ public @interface RequestConfig {
      * 是否必填,默认ture
      * @return 
      */
-    public boolean must() default true;
+    public boolean required() default true;
 
     /**
      * 数据类型
@@ -45,6 +45,12 @@ public @interface RequestConfig {
      * @return 
      */
     public long min() default 0;
+    
+    /**
+     * 自定义文本
+     * @return 
+     */
+    public String text() default "0|1";
 
     /**
      * 描述

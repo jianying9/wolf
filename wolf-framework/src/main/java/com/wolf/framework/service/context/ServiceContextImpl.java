@@ -35,8 +35,8 @@ public class ServiceContextImpl implements ServiceContext {
     private final boolean validateSecurity;
     private final boolean page;
     private final SessionHandleType sessionHandleType;
-    private final String[] importantParameter;
-    private final String[] minorParameter;
+    private final String[] requiredParameter;
+    private final String[] unrequiredParameter;
     private final String[] returnParameter;
     private final Map<String, RequestParameterHandler> requestParameterHandlerMap;
     private final Map<String, ResponseParameterHandler> responseParameterHandlerMap;
@@ -111,54 +111,54 @@ public class ServiceContextImpl implements ServiceContext {
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved code[".concat(responseCode.code()) + "]");
             }
         }
-        final List<RequestConfig> importantRequestConfigList = new ArrayList<>(0);
-        final List<RequestConfig> minorRequestConfigList = new ArrayList<>(0);
+        final List<RequestConfig> requiredRequestConfigList = new ArrayList<>(0);
+        final List<RequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
         for (RequestConfig requestConfig : requestConfigs) {
             if(reservedParamSet.contains(requestConfig.name())) {
                 //配置中存在保留参数名,抛出异常提示
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved param[".concat(requestConfig.name()) + "]");
             }
-            if (requestConfig.must()) {
-                importantRequestConfigList.add(requestConfig);
+            if (requestConfig.required()) {
+                requiredRequestConfigList.add(requestConfig);
             } else {
-                minorRequestConfigList.add(requestConfig);
+                unrequiredRequestConfigList.add(requestConfig);
             }
         }
         //
         ParameterContext parameterContext = workerBuildContext.getParameterContext();
         RequestParameterHandler requestParameterHandler;
         RequestParameterHandlerBuilder requestParameterHandlerBuilder;
-        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(minorRequestConfigList.size(), 1);
-        List<String> minorNameList = new ArrayList<>(minorRequestConfigList.size());
-        for (RequestConfig requestConfig : minorRequestConfigList) {
+        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(unrequiredRequestConfigList.size(), 1);
+        List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
+        for (RequestConfig requestConfig : unrequiredRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                     requestConfig,
                     parameterContext);
             requestParameterHandler = requestParameterHandlerBuilder.build();
             requestParameterMap.put(requestConfig.name(), requestParameterHandler);
-            minorNameList.add(requestConfig.name());
+            unrequiredNameList.add(requestConfig.name());
         }
         //
         if(page) {
-            minorNameList.add("nextIndex");
-            minorNameList.add("nextSize");
+            unrequiredNameList.add("nextIndex");
+            unrequiredNameList.add("nextSize");
             requestParameterMap.put("nextIndex", workerBuildContext.getNextIndexHandler());
             requestParameterMap.put("nextSize", workerBuildContext.getNextSizeHandler());
         }
-        final String[] minorNames = minorNameList.toArray(new String[minorNameList.size()]);
-        this.minorParameter = minorNames;
+        final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
+        this.unrequiredParameter = unrequiredNames;
         //
-        List<String> importantNameList = new ArrayList<>(importantRequestConfigList.size());
-        for (RequestConfig requestConfig : importantRequestConfigList) {
+        List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
+        for (RequestConfig requestConfig : requiredRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
                     requestConfig,
                     parameterContext);
             requestParameterHandler = requestParameterHandlerBuilder.build();
             requestParameterMap.put(requestConfig.name(), requestParameterHandler);
-            importantNameList.add(requestConfig.name());
+            requiredNameList.add(requestConfig.name());
         }
-        final String[] importantNames = importantNameList.toArray(new String[importantNameList.size()]);
-        this.importantParameter = importantNames;
+        final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
+        this.requiredParameter = requiredNames;
         this.requestParameterHandlerMap = requestParameterMap;
         //
         ResponseParameterHandler outputParameterHandler;
@@ -227,13 +227,13 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
-    public String[] importantParameter() {
-        return this.importantParameter;
+    public String[] requiredParameter() {
+        return this.requiredParameter;
     }
 
     @Override
-    public String[] minorParameter() {
-        return this.minorParameter;
+    public String[] unrequiredParameter() {
+        return this.unrequiredParameter;
     }
 
     @Override

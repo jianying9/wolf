@@ -12,12 +12,12 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class ImportantParameterWorkHandlerImpl implements WorkHandler {
+public class RequiredParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final ServiceContext serviceContext;
 
-    public ImportantParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
+    public RequiredParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
         this.nextWorkHandler = workHandler;
         this.serviceContext = serviceContext;
     }
@@ -31,9 +31,9 @@ public class ImportantParameterWorkHandlerImpl implements WorkHandler {
         final Map<String, String> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
         //验证必要参数是否合法
-        final String[] importantParameter = this.serviceContext.importantParameter();
+        final String[] requiredParameter = this.serviceContext.requiredParameter();
         final Map<String, RequestParameterHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
-        for (String parameter : importantParameter) {
+        for (String parameter : requiredParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue == null) {
                 errorMsg = WorkHandler.NULL_MESSAGE;

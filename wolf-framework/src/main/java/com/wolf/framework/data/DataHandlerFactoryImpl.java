@@ -20,7 +20,7 @@ public final class DataHandlerFactoryImpl implements DataHandlerFactory {
     private final Map<DataType, DataHandler> dataHandlerMap = new EnumMap<>(DataType.class);
 
     @Override
-    public DataHandler getDataHandler(DataType dataTypeEnum) {
-        return this.dataHandlerMap.get(dataTypeEnum);
+    public DataHandler getDataHandler(DataType dataType) {
+        return this.dataHandlerMap.get(dataType);
     }
 }

@@ -1,5 +1,7 @@
 package com.wolf.framework.service.parameter;
 
+import com.wolf.framework.data.DataType;
+
 /**
  * json类型处理类
  *
@@ -8,10 +10,10 @@ package com.wolf.framework.service.parameter;
 public final class JsonParameterHandlerImpl implements ResponseParameterHandler {
 
     private final String name;
-    private final String dataType;
+    private final DataType dataType;
     private final String defaultValue;
 
-    public JsonParameterHandlerImpl(String name, String dataType, String defaultValue) {
+    public JsonParameterHandlerImpl(String name, DataType dataType, String defaultValue) {
         this.name = name;
         this.dataType = dataType;
         this.defaultValue = defaultValue;
@@ -33,7 +35,7 @@ public final class JsonParameterHandlerImpl implements ResponseParameterHandler 
     }
 
     @Override
-    public String getDataType() {
+    public DataType getDataType() {
         return this.dataType;
     }
 }

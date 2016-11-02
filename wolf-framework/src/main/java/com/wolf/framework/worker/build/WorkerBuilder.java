@@ -16,10 +16,10 @@ import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerImpl;
 import com.wolf.framework.worker.workhandler.ObjectServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ExceptionWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.ImportantParameterWorkHandlerImpl;
+import com.wolf.framework.worker.workhandler.RequiredParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.InterceptorWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ListServiceWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.MinorParameterWorkHandlerImpl;
+import com.wolf.framework.worker.workhandler.UnrequiredParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.TransactionWorkHandlerImpl;
@@ -108,13 +108,13 @@ public class WorkerBuilder {
             //判断取值验证类型,将对应处理对象加入到处理环节
 
             //次要参数
-            if (serviceContext.minorParameter().length > 0) {
+            if (serviceContext.unrequiredParameter().length > 0) {
                 //获取次要参数
-                workHandler = new MinorParameterWorkHandlerImpl(workHandler, serviceContext);
+                workHandler = new UnrequiredParameterWorkHandlerImpl(workHandler, serviceContext);
             }
             //重要参数
-            if (serviceContext.importantParameter().length > 0) {
-                workHandler = new ImportantParameterWorkHandlerImpl(workHandler, serviceContext);
+            if (serviceContext.requiredParameter().length > 0) {
+                workHandler = new RequiredParameterWorkHandlerImpl(workHandler, serviceContext);
             }
             //是否验证session
             if (serviceContext.validateSession()) {

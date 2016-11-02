@@ -65,7 +65,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
                 typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
-                    .append("\",\"must\":").append(requestConfig.must())
+                    .append("\",\"required\":").append(requestConfig.required())
                     .append(",\"type\":\"").append(typeStr)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');

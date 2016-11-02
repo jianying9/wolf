@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public final class BooleanDataHandlerImpl implements DataHandler {
 
     private final Pattern pattern = Pattern.compile("^true|false$");
-    private final String errorInfo = " must be boolean[true,false]";
+    private final String errorInfo = " must be boolean";
 
     BooleanDataHandlerImpl() {
     }

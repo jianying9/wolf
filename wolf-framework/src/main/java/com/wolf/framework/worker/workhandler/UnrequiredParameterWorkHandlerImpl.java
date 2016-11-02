@@ -12,13 +12,13 @@ import java.util.Map;
  *
  * @author aladdin
  */
-public class MinorParameterWorkHandlerImpl implements WorkHandler {
+public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final ServiceContext serviceContext;
     
 
-    public MinorParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
+    public UnrequiredParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
         this.serviceContext = serviceContext;
         this.nextWorkHandler = workHandler;
 
@@ -33,9 +33,9 @@ public class MinorParameterWorkHandlerImpl implements WorkHandler {
         //验证必要参数是否合法
         final Map<String, String> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
-        final String[] minorParameter = this.serviceContext.minorParameter();
+        final String[] unrequiredParameter = this.serviceContext.unrequiredParameter();
         final Map<String, RequestParameterHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
-        for (String parameter : minorParameter) {
+        for (String parameter : unrequiredParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue != null) {
                 //非空验证

@@ -30,9 +30,9 @@ public interface ServiceContext {
     
     public String group();
     
-    public String[] importantParameter();
+    public String[] requiredParameter();
     
-    public String[] minorParameter();
+    public String[] unrequiredParameter();
     
     public Map<String, RequestParameterHandler> requestParameterHandlerMap();
     

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class DateTimeDataHandlerImpl implements DataHandler {
 
-    private final String errorInfo = " must be datetime";
+    private final String errorInfo = " must be datetime[yyyy-mm-dd hh:mi:ss]";
     private final Pattern pattern = Pattern.compile("[1-9]\\d{3}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\\d|3[0-1]) (?:[0-1]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d)?");
 
     DateTimeDataHandlerImpl() {

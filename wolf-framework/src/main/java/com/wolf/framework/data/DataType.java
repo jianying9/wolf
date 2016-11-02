@@ -11,12 +11,14 @@ public enum DataType {
     LONG,
     //Double [-1.7976931348623157×10+308, -4.94065645841246544×10-324]
     DOUBLE,
-    //DateTime {YYYY-MM-DD HH:MM,YYYY-MM-DD HH:MM:SS}
+    //DateTime {YYYY-MM-DD HH:MI,YYYY-MM-DD HH:MI:SS}
     DATE_TIME,
     //Date {YYYY-MM-DD,YYYY-m-d}
     DATE,
-    //Char可以包含特殊符号
+    //STRING可以包含特殊符号
     STRING,
+    //枚举
+    ENUM,
     //布尔
     BOOLEAN ,
     //json对象
