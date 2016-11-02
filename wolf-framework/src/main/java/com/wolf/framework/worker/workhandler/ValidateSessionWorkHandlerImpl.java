@@ -23,7 +23,6 @@ public class ValidateSessionWorkHandlerImpl implements WorkHandler {
             //返回未登录提示，关闭连接
             WorkerResponse response = workerContext.getWorkerResponse();
             response.unlogin();
-            response.createErrorMessage();
         } else {
             this.nextWorkHandler.execute(workerContext);
         }

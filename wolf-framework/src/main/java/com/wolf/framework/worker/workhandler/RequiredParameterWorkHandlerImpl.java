@@ -63,7 +63,6 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
             errorMsg = errorParaName.concat(errorMsg);
             response.invalid();
             response.setError(errorMsg);
-            response.createErrorMessage();
         }
     }
 }

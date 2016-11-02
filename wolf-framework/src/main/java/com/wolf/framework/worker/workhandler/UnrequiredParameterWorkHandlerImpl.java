@@ -59,7 +59,6 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
             WorkerResponse response = workerContext.getWorkerResponse();
             response.invalid();
             response.setError(errorMsg);
-            response.createErrorMessage();
         }
     }
 }

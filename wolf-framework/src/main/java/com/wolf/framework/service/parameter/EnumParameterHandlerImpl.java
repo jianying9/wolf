@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * json类型处理类
+ * 枚举类型处理类
  *
  * @author aladdin
  */

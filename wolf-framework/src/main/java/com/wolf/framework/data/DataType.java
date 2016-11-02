@@ -3,7 +3,7 @@ package com.wolf.framework.data;
 /**
  * data type
  *
- * @author aladdin
+ * @author jianying9
  */
 public enum DataType {
 
@@ -19,6 +19,10 @@ public enum DataType {
     STRING,
     //枚举
     ENUM,
+    //中国地区手机号
+    CHINA_MOBILE,
+    //邮箱
+    EMAIL,
     //布尔
     BOOLEAN ,
     //json对象

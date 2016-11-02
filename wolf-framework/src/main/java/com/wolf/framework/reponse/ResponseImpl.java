@@ -94,18 +94,6 @@ public class ResponseImpl implements WorkerResponse {
         this.error = error;
     }
 
-    @Override
-    public final void createErrorMessage() {
-        StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"code\":\"").append(this.code)
-                .append("\",\"route\":\"").append(this.workerContext.getRoute());
-        if (this.callback != null) {
-            jsonBuilder.append("\",\"callback\":\"").append(this.callback);
-        }
-        jsonBuilder.append("\",\"error\":\"").append(this.error).append("\"}");
-        this.responseMessage = jsonBuilder.toString();
-    }
-
     private void createResponseMessage() {
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         StringBuilder jsonBuilder = new StringBuilder(128);
@@ -113,6 +101,9 @@ public class ResponseImpl implements WorkerResponse {
                 .append("\",\"route\":\"").append(this.workerContext.getRoute());
         if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
             jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
+        }
+        if (this.error.isEmpty() == false) {
+            jsonBuilder.append("\",\"error\":\"").append(this.error);
         }
         if (this.callback != null) {
             jsonBuilder.append("\",\"callback\":\"").append(this.callback);

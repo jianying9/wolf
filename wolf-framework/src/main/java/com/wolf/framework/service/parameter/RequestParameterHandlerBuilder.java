@@ -31,14 +31,11 @@ public class RequestParameterHandlerBuilder {
         long max = this.requestConfig.max();
         long min = this.requestConfig.min();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
-        if (dataHandler == null && dataType.equals(DataType.STRING) == false) {
-            throw new RuntimeException("Error building InputParameterHandler. Cause: could not find DataHandler:" + dataType.name());
-        }
         switch (dataType) {
             case OBJECT:
-                throw new RuntimeException("Error building InputParameterHandler. Cause: input not support JSON OBJECT");
+                throw new RuntimeException("Cause: Request parameter cannot support JSON OBJECT");
             case ARRAY:
-                throw new RuntimeException("Error building InputParameterHandler. Cause: input not support JSON ARRAY");
+                throw new RuntimeException("Cause: Request parameter cannot support JSON ARRAY");
             case STRING:
                 parameterHandler = new StringParameterHandlerImpl(fieldName, null, max, min);
                 break;
@@ -61,6 +58,12 @@ public class RequestParameterHandlerBuilder {
                 String text = this.requestConfig.text();
                 String[] enumValues = text.split("|");
                 parameterHandler = new EnumParameterHandlerImpl(fieldName, enumValues);
+                break;
+            case CHINA_MOBILE:
+                parameterHandler = new ChinaMobileParameterHandlerImpl(fieldName, dataHandler);
+                break;
+            case EMAIL:
+                parameterHandler = new EmailParameterHandlerImpl(fieldName, dataHandler);
                 break;
         }
         return parameterHandler;

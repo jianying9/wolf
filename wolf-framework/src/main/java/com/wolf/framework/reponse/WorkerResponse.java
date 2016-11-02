@@ -15,8 +15,4 @@ public interface WorkerResponse extends Response {
     public void timeout();
     
     public void setError(String error);
-
-    public void createErrorMessage();
-    
-    
 }

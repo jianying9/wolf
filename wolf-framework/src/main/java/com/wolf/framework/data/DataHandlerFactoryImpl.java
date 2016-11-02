@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 验证类对象工厂
  *
- * @author aladdin
+ * @author jianying9
  */
 public final class DataHandlerFactoryImpl implements DataHandlerFactory {
 
@@ -16,6 +16,7 @@ public final class DataHandlerFactoryImpl implements DataHandlerFactory {
         this.dataHandlerMap.put(DataType.DATE_TIME, new DateTimeDataHandlerImpl());
         this.dataHandlerMap.put(DataType.BOOLEAN, new BooleanDataHandlerImpl());
         this.dataHandlerMap.put(DataType.DATE, new DateDataHandlerImpl());
+        this.dataHandlerMap.put(DataType.CHINA_MOBILE, new ChinaMobileDataHandlerImpl());
     }
     private final Map<DataType, DataHandler> dataHandlerMap = new EnumMap<>(DataType.class);
 
