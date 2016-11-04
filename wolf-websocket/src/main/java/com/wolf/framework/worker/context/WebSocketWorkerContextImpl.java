@@ -67,12 +67,14 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
     public void closeSession(String otherSid) {
         String sid = this.getSessionId();
         if (sid == null || sid.equals(otherSid) == false) {
-            Session otherSession = this.sessionManager.get(sid);
-            otherSession.getUserProperties().clear();
-            this.sessionManager.removSession(sid);
-            try {
-                otherSession.close();
-            } catch (IOException ex) {
+            Session otherSession = this.sessionManager.get(otherSid);
+            this.sessionManager.removSession(otherSid);
+            if (otherSession != null) {
+                otherSession.getUserProperties().clear();
+                try {
+                    otherSession.close();
+                } catch (IOException ex) {
+                }
             }
         }
     }

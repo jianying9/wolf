@@ -27,7 +27,6 @@ import java.util.Set;
         },
         responseCodes = {},
         validateSession = false,
-        validateSecurity = false,
         desc = "")
 public class InquireGroupServiceImpl implements ListService {
 

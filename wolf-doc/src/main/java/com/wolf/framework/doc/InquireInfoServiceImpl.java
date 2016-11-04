@@ -33,7 +33,6 @@ import java.util.UUID;
         },
         responseCodes = {},
         validateSession = false,
-        validateSecurity = false,
         desc = "")
 public class InquireInfoServiceImpl implements Service {
 

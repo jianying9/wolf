@@ -72,6 +72,16 @@ public class ResponseParameterHandlerBuilder {
             case BOOLEAN:
                 parameterHandler = new BooleanParameterHandlerImpl(fieldName, dataHandler);
                 break;
+            case ENUM:
+                String[] enumValues = {};
+                parameterHandler = new EnumParameterHandlerImpl(fieldName, enumValues);
+                break;
+            case CHINA_MOBILE:
+                parameterHandler = new ChinaMobileParameterHandlerImpl(fieldName, dataHandler);
+                break;
+            case EMAIL:
+                parameterHandler = new EmailParameterHandlerImpl(fieldName, dataHandler);
+                break;
         }
         return parameterHandler;
     }

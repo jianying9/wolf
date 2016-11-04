@@ -27,9 +27,9 @@ import org.slf4j.Logger;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
-@WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/api/*"}, asyncSupported = true)
+@WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/http/api/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
@@ -40,6 +40,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     @Override
     public void init() throws ServletException {
+        this.logger.info("ServerServlet start.....");
         String asyncPushTimeout = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.ASYNC_PUSH_TIMEOUT);
         if (asyncPushTimeout != null) {
             try {
