@@ -20,12 +20,10 @@ public abstract class AbstractInjecter<A extends Annotation> {
     protected abstract Class<?> getObjectKey(Field field);
 
     protected abstract Object getObject(Class<?> key);
-
-    public final void parse(Object object) {
-        Class<?> clazz = object.getClass();
+    
+    public final void parseSuper(Object object, Class<?> superClass) {
         Class<A> annotation = this.getAnnotation();
-        this.logger.debug("----injecting instance {}{}--", annotation.getName(), clazz.getName());
-        Field[] fileds = clazz.getDeclaredFields();
+        Field[] fileds = superClass.getDeclaredFields();
         Class<?> key;
         Object value;
         for (Field field : fileds) {
@@ -34,18 +32,29 @@ public abstract class AbstractInjecter<A extends Annotation> {
                 key = this.getObjectKey(field);
                 value = this.getObject(key);
                 if (value == null) {
-                    this.logger.error("Error when instancing field. Cause: can not find  by class {}", key.getName());
-                    throw new RuntimeException("Error when instancing field in class: ".concat(clazz.getName()));
+                    this.logger.error("Error. Cause: can not find  by class {}", key.getName());
+                    throw new RuntimeException("Error when inject field in class: ".concat(superClass.getName()));
                 } else {
                     field.setAccessible(true);
                     try {
                         field.set(object, value);
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        this.logger.error("Error when instancing field:".concat(field.getName()), ex);
+                        this.logger.error("Error when inject field:".concat(field.getName()), ex);
                     }
                 }
             }
         }
+        if(superClass.getSuperclass().equals(Object.class) == false) {
+            //父类存在,为父类注入
+            this.parseSuper(object, superClass.getSuperclass());
+        }
+    }
+
+    public final void parse(Object object) {
+        Class<?> clazz = object.getClass();
+        Class<A> annotation = this.getAnnotation();
+        this.logger.debug("----injecting instance {}{}--", annotation.getName(), clazz.getName());
+        this.parseSuper(object, clazz);
         this.logger.debug("----injecting instance {} {} finished--", annotation.getName(), clazz.getName());
     }
 }

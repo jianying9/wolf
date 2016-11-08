@@ -79,7 +79,7 @@ public class ApplicationContextBuilder<T extends Entity> {
     private Class<?> loadClass(ClassLoader classloader, String className) {
         Class<?> clazz = null;
         try {
-            this.logger.info("locadClass:{}", className);
+            this.logger.debug("locadClass:{}", className);
             clazz = classloader.loadClass(className);
         } catch (ClassNotFoundException | ClassFormatError | NoClassDefFoundError ex) {
             if (this.checkException(ex)) {
