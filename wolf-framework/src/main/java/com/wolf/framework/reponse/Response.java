@@ -20,6 +20,8 @@ public interface Response {
     
     public void unsupport();
     
+    public void unlogin();
+    
     public void setNewSessionId(String sid);
     
     public String getNewSessionId();
