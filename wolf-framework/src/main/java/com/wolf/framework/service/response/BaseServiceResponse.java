@@ -1,19 +1,18 @@
 package com.wolf.framework.service.response;
 
-import com.wolf.framework.dao.Entity;
-
 /**
  *
  * @author jianying9
- * @param <T>
  */
-public interface BaseServiceResponse<T extends Entity> {
+public interface BaseServiceResponse {
     
     public String getCode();
     
     public void setCode(String code);
     
     public void success();
+    
+    public void unlogin();
     
     public String getDataMessage();
     
