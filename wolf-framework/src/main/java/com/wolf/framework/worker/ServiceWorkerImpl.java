@@ -119,6 +119,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         StringBuilder responseCodeBuilder = new StringBuilder(64);
         responseCodeBuilder.append('[');
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
+            responseCodeMap.remove(responseCode.code());
             responseCodeBuilder.append("{\"code\":\"").append(responseCode.code())
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseCode.desc()))
                     .append("\",\"asycn\":").append(Boolean.toString(responseCode.async()))

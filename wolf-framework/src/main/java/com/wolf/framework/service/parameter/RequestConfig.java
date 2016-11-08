@@ -38,7 +38,7 @@ public @interface RequestConfig {
      * 最大
      * @return 
      */
-    public long max() default 16;
+    public long max() default Long.MAX_VALUE;
     
     /**
      * 最小

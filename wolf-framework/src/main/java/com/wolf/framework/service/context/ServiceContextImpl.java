@@ -70,7 +70,6 @@ public class ServiceContextImpl implements ServiceContext {
     public static Set<String> getReservedCodeSet() {
         Set<String> codeSet = new HashSet<>(4, 1);
         //保留接口参数
-        codeSet.add("success");
         codeSet.add("unlogin");
         codeSet.add("unmodifyed");
         codeSet.add("invalid");
