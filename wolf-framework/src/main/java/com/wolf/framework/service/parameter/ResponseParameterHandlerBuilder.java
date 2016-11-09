@@ -6,6 +6,14 @@ import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.Filter;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterType;
+import com.wolf.framework.service.parameter.response.BooleanResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.ChinaMobileResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.DateResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.EmailResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.EnumResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.JsonResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.NumberResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.StringResponseParameterHandlerImpl;
 
 /**
  *
@@ -35,10 +43,10 @@ public class ResponseParameterHandlerBuilder {
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
         switch (dataType) {
             case OBJECT:
-                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType, "{}");
+                parameterHandler = new JsonResponseParameterHandlerImpl(fieldName, dataType, "{}");
                 break;
             case ARRAY:
-                parameterHandler = new JsonParameterHandlerImpl(fieldName, dataType, "[]");
+                parameterHandler = new JsonResponseParameterHandlerImpl(fieldName, dataType, "[]");
                 break;
             case STRING:
                 Filter[] filters = null;
@@ -55,32 +63,32 @@ public class ResponseParameterHandlerBuilder {
                         filters[index] = filter;
                     }
                 }
-                parameterHandler = new StringParameterHandlerImpl(fieldName, filters, 1, 0);
+                parameterHandler = new StringResponseParameterHandlerImpl(fieldName, filters);
                 break;
             case DATE:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateResponseParameterHandlerImpl(fieldName, DataType.DATE);
                 break;
             case DATE_TIME:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateResponseParameterHandlerImpl(fieldName, DataType.DATE_TIME);
                 break;
             case LONG:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, 1, 0);
+                parameterHandler = new NumberResponseParameterHandlerImpl(fieldName, DataType.LONG);
                 break;
             case DOUBLE:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, 1, 0);
+                parameterHandler = new NumberResponseParameterHandlerImpl(fieldName, DataType.DOUBLE);
                 break;
             case BOOLEAN:
-                parameterHandler = new BooleanParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new BooleanResponseParameterHandlerImpl(fieldName);
                 break;
             case ENUM:
                 String[] enumValues = {};
-                parameterHandler = new EnumParameterHandlerImpl(fieldName, enumValues);
+                parameterHandler = new EnumResponseParameterHandlerImpl(fieldName);
                 break;
             case CHINA_MOBILE:
-                parameterHandler = new ChinaMobileParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new ChinaMobileResponseParameterHandlerImpl(fieldName);
                 break;
             case EMAIL:
-                parameterHandler = new EmailParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new EmailResponseParameterHandlerImpl(fieldName);
                 break;
         }
         return parameterHandler;

@@ -1,21 +1,19 @@
-package com.wolf.framework.service.parameter;
+package com.wolf.framework.service.parameter.response;
 
 import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
 
 /**
  * json类型处理类
  *
  * @author aladdin
  */
-public final class JsonParameterHandlerImpl implements ResponseParameterHandler {
+public final class JsonResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
 
-    private final String name;
-    private final DataType dataType;
     private final String defaultValue;
 
-    public JsonParameterHandlerImpl(String name, DataType dataType, String defaultValue) {
-        this.name = name;
-        this.dataType = dataType;
+    public JsonResponseParameterHandlerImpl(String name, DataType dataType, String defaultValue) {
+        super(name, dataType);
         this.defaultValue = defaultValue;
     }
 
@@ -27,15 +25,5 @@ public final class JsonParameterHandlerImpl implements ResponseParameterHandler 
         jsonBuilder.append('"').append(name).append("\":").append(value);
         result = jsonBuilder.toString();
         return result;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public DataType getDataType() {
-        return this.dataType;
     }
 }

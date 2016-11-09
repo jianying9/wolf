@@ -1,6 +1,7 @@
-package com.wolf.framework.service.parameter;
+package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,13 +10,13 @@ import java.util.regex.Pattern;
  *
  * @author aladdin
  */
-public final class EnumParameterHandlerImpl implements RequestParameterHandler, ResponseParameterHandler {
+public final class EnumRequestParameterHandlerImpl implements RequestParameterHandler {
 
     private final String name;
     private final Pattern pattern;
     private final String errorInfo;
 
-    public EnumParameterHandlerImpl(String name, String[] enumValues) {
+    public EnumRequestParameterHandlerImpl(String name, String[] enumValues) {
         this.name = name;
         StringBuilder stringBuilder = new StringBuilder();
         for (String value : enumValues) {
@@ -25,15 +26,6 @@ public final class EnumParameterHandlerImpl implements RequestParameterHandler, 
         String enumStr = stringBuilder.toString();
         this.errorInfo = " must be enum[" + enumStr + "]";
         this.pattern = Pattern.compile("^" + enumStr + "$");
-    }
-
-    @Override
-    public String getJson(String value) {
-        String result;
-        StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 5);
-        jsonBuilder.append('"').append(name).append("\":\"").append(value).append("\"");
-        result = jsonBuilder.toString();
-        return result;
     }
 
     @Override

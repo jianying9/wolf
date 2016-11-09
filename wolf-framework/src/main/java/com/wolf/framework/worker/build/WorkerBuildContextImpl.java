@@ -7,10 +7,10 @@ import com.wolf.framework.data.DataType;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorContext;
-import com.wolf.framework.service.parameter.NumberParameterHandlerImpl;
 import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.service.parameter.StringParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.NumberRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,10 +67,10 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
         this.parameterContext = parameterContext;
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
-        this.nextIndexHandler = new StringParameterHandlerImpl("nextIndex", null, 64, 0);
+        this.nextIndexHandler = new StringRequestParameterHandlerImpl("nextIndex", 64, 0);
         DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(DataType.LONG);
-        this.nextSizeHandler = new NumberParameterHandlerImpl("nextSize", dataHandler, 100, 1);
+        this.nextSizeHandler = new NumberRequestParameterHandlerImpl("nextSize", dataHandler, 100, 1);
     }
 
     @Override

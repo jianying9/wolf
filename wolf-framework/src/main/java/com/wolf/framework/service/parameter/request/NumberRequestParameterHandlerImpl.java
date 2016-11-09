@@ -1,18 +1,19 @@
-package com.wolf.framework.service.parameter;
+package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.data.DataHandler;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
  * 数字类型处理类
  *
  * @author aladdin
  */
-public final class NumberParameterHandlerImpl extends AbstractParameterHandler implements RequestParameterHandler, ResponseParameterHandler {
+public final class NumberRequestParameterHandlerImpl extends AbstractRequestParamperHandler implements RequestParameterHandler {
 
     private final long max;
     private final long min;
 
-    public NumberParameterHandlerImpl(final String name, final DataHandler dataHandler, final long max, final long min) {
+    public NumberRequestParameterHandlerImpl(final String name, final DataHandler dataHandler, final long max, final long min) {
         super(name, dataHandler);
         this.max = max > min ? max : min;
         this.min = max > min ? min : max;
@@ -38,14 +39,5 @@ public final class NumberParameterHandlerImpl extends AbstractParameterHandler i
             msg = this.gerErrorInfo();
         }
         return msg;
-    }
-
-    @Override
-    public String getJson(final String value) {
-        String result;
-        StringBuilder jsonBuilder = new StringBuilder(this.getName().length() + value.length() + 3);
-        jsonBuilder.append('"').append(this.getName()).append("\":").append(value);
-        result = jsonBuilder.toString();
-        return result;
     }
 }

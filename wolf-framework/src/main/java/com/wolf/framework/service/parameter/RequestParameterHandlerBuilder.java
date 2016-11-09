@@ -3,6 +3,13 @@ package com.wolf.framework.service.parameter;
 import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.request.BooleanRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.ChinaMobileRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.DateRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.EmailRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.EnumRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.NumberRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 
 /**
  *
@@ -37,33 +44,33 @@ public class RequestParameterHandlerBuilder {
             case ARRAY:
                 throw new RuntimeException("Cause: Request parameter cannot support JSON ARRAY");
             case STRING:
-                parameterHandler = new StringParameterHandlerImpl(fieldName, null, max, min);
+                parameterHandler = new StringRequestParameterHandlerImpl(fieldName, max, min);
                 break;
             case DATE:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case DATE_TIME:
-                parameterHandler = new DateParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case LONG:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, max, min);
+                parameterHandler = new NumberRequestParameterHandlerImpl(fieldName, dataHandler, max, min);
                 break;
             case DOUBLE:
-                parameterHandler = new NumberParameterHandlerImpl(fieldName, dataHandler, max, min);
+                parameterHandler = new NumberRequestParameterHandlerImpl(fieldName, dataHandler, max, min);
                 break;
             case BOOLEAN:
-                parameterHandler = new BooleanParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case ENUM:
                 String text = this.requestConfig.text();
                 String[] enumValues = text.split("|");
-                parameterHandler = new EnumParameterHandlerImpl(fieldName, enumValues);
+                parameterHandler = new EnumRequestParameterHandlerImpl(fieldName, enumValues);
                 break;
             case CHINA_MOBILE:
-                parameterHandler = new ChinaMobileParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case EMAIL:
-                parameterHandler = new EmailParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new EmailRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
         }
         return parameterHandler;

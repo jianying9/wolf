@@ -1,24 +1,22 @@
-package com.wolf.framework.service.parameter;
+package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.data.DataType;
-import com.wolf.framework.service.parameter.filter.Filter;
+import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
  * 字符类型处理类
  *
  * @author aladdin
  */
-public final class StringParameterHandlerImpl implements RequestParameterHandler, ResponseParameterHandler {
+public final class StringRequestParameterHandlerImpl implements RequestParameterHandler {
 
-    private final Filter[] filters;
     private final long max;
     private final long min;
     private final String name;
     private final String errorInfo = " must be char";
     
 
-    public StringParameterHandlerImpl(final String name, final Filter[] filters, long max, long min) {
-        this.filters = filters;
+    public StringRequestParameterHandlerImpl(final String name, long max, long min) {
         this.name = name;
         max = max < 0 ? 0 : max;
         min = min < 0 ? 0 : min;
@@ -40,21 +38,6 @@ public final class StringParameterHandlerImpl implements RequestParameterHandler
             msg = this.gerErrorInfo();
         }
         return msg;
-    }
-
-    @Override
-    public String getJson(final String value) {
-        String result;
-        String filterValue = value;
-        if (this.filters != null) {
-            for (Filter filter : filters) {
-                filterValue = filter.doFilter(filterValue);
-            }
-        }
-        StringBuilder jsonBuilder = new StringBuilder(this.name.length() + filterValue.length() + 5);
-        jsonBuilder.append('"').append(this.name).append("\":\"").append(filterValue).append('"');
-        result = jsonBuilder.toString();
-        return result;
     }
 
     @Override
