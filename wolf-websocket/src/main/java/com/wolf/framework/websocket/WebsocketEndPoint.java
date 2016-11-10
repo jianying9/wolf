@@ -17,23 +17,28 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 import org.slf4j.Logger;
 
 /**
  *
  * @author jianying9
  */
-@ServerEndpoint(value = "/ws/api/{text}")
-public class WebsocketServer {
+@ServerEndpoint(
+        value = "/ws/api/{text}",
+        configurator = WebsocketEndPoint.WebsocketServerConfigurator.class
+)
+public class WebsocketEndPoint {
 
     private final SessionManager sessionManager;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
     private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/\\d]+)(?:\")");
-    private final long expireTime = 1000 * 60;
+    private final long expireTime;
 
-    public WebsocketServer() {
-        this.logger.info("WebsocketServer start.....");
+    public WebsocketEndPoint() {
+        this.logger.info("WebsocketServer:WebsocketEndPoint start.....");
         this.sessionManager = new SessionManager();
+        this.expireTime = 1000 * 60;
         //注册推送服务
         ApplicationContext.CONTEXT.getCometContext().addCometHandler(this.sessionManager);
     }
@@ -138,5 +143,19 @@ public class WebsocketServer {
     public void onError(Throwable t, Session session) throws IOException {
         session.close();
         this.logger.error("wobsocket-on onerror", t);
+    }
+
+    public static class WebsocketServerConfigurator extends ServerEndpointConfig.Configurator {
+
+        public static final WebsocketEndPoint END_POINT = new WebsocketEndPoint();
+
+        @Override
+        public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+            if (endpointClass.equals(WebsocketEndPoint.class)) {
+                return (T) END_POINT;
+            } else {
+                return super.getEndpointInstance(endpointClass);
+            }
+        }
     }
 }
