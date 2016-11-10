@@ -58,7 +58,7 @@ public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implement
             //
             Object[] values = valueList.toArray();
             this.logger.debug("{} increase-updateCql:{}", this.table, updateCql);
-            PreparedStatement updatePs = this.session.prepare(updateCql);
+            PreparedStatement updatePs = this.cachePrepare(updateCql);
             BoundStatement update = updatePs.bind(values);
             //
             cqlBuilder.setLength(0);
@@ -73,15 +73,15 @@ public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implement
             cqlBuilder.append(';');
             String selectCql = cqlBuilder.toString();
             this.logger.debug("{} increase-selectCql:{}", this.table, selectCql);
-            PreparedStatement selectPs = this.session.prepare(selectCql);
+            PreparedStatement selectPs = this.cachePrepare(selectCql);
             BoundStatement select = selectPs.bind(keyValue);
             //同步
             Row r = null;
             synchronized (this) {
-                ResultSetFuture rsf = this.session.executeAsync(update);
+                ResultSetFuture rsf = this.executeAsync(update);
                 try {
                     rsf.get();
-                    rsf = this.session.executeAsync(select);
+                    rsf = this.executeAsync(select);
                     ResultSet rs = rsf.get();
                     r = rs.one();
                 } catch (InterruptedException | ExecutionException ex) {

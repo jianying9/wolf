@@ -5,6 +5,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
@@ -29,9 +30,10 @@ public abstract class AbstractCDao<T extends Entity> {
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     protected final String keyspace;
     protected final String table;
-    protected final Session session;
-    private final String inquireByKeyCql;
-    protected final String deleteCql;
+    private final Session session;
+    private final PreparedStatement inquireByKeyPs;
+    protected final PreparedStatement deletePs;
+    private final Map<String, PreparedStatement> psCacheMap = new HashMap<>(2, 1);
 
     public AbstractCDao(
             Session session,
@@ -56,9 +58,10 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         cqlBuilder.setLength(cqlBuilder.length() - 4);
         cqlBuilder.append(';');
-        this.inquireByKeyCql = cqlBuilder.toString();
+        String inquireByKeyCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.logger.debug("{} inquireByKeyCql:{}", this.table, this.inquireByKeyCql);
+        this.inquireByKeyPs = this.session.prepare(inquireByKeyCql);
+        this.logger.debug("{} inquireByKeyCql:{}", this.table, inquireByKeyCql);
         //delete
         cqlBuilder.append("DELETE FROM ").append(this.keyspace).append('.')
                 .append(this.table).append(" WHERE ");
@@ -67,14 +70,14 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         cqlBuilder.setLength(cqlBuilder.length() - 4);
         cqlBuilder.append(';');
-        this.deleteCql = cqlBuilder.toString();
+        String deleteCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.logger.debug("{} deleteCql:{}", this.table, this.deleteCql);
+        this.deletePs = this.session.prepare(deleteCql);
+        this.logger.debug("{} deleteCql:{}", this.table, deleteCql);
     }
 
     public final boolean exist(Object... keyValue) {
-        PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSetFuture rsf = this.session.executeAsync(this.inquireByKeyPs.bind(keyValue));
         ResultSet rs;
         Row r = null;
         try {
@@ -84,6 +87,23 @@ public abstract class AbstractCDao<T extends Entity> {
             throw new RuntimeException(ex);
         }
         return r != null;
+    }
+    
+    protected final PreparedStatement cachePrepare(String cql) {
+        PreparedStatement ps = this.psCacheMap.get(cql);
+        if(ps == null) {
+            ps = this.session.prepare(cql);
+            this.psCacheMap.put(cql, ps);
+        }
+        return ps;
+    }
+    
+    protected final PreparedStatement prepare(String cql) {
+        return this.session.prepare(cql);
+    }
+    
+    protected final ResultSetFuture executeAsync(Statement stmnt) {
+        return this.session.executeAsync(stmnt);
     }
 
     protected final T parseMap(Map<String, Object> entityMap) {
@@ -159,8 +179,7 @@ public abstract class AbstractCDao<T extends Entity> {
     }
 
     public final T inquireByKey(Object... keyValue) {
-        PreparedStatement ps = this.session.prepare(this.inquireByKeyCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSetFuture rsf = this.session.executeAsync(this.inquireByKeyPs.bind(keyValue));
         ResultSet rs;
         Row r = null;
         try {
@@ -174,8 +193,7 @@ public abstract class AbstractCDao<T extends Entity> {
     }
 
     public final void delete(Object... keyValue) {
-        PreparedStatement ps = this.session.prepare(this.deleteCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
+        ResultSetFuture rsf = this.session.executeAsync(this.deletePs.bind(keyValue));
         try {
             rsf.get();
         } catch (InterruptedException | ExecutionException ex) {

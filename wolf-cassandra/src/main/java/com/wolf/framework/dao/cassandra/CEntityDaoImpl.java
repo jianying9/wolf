@@ -21,8 +21,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements CEntityDao<T> {
 
-    private final String insertCql;
-    private final String countCql;
+    private final PreparedStatement insertPs;
+    private final PreparedStatement countPs;
 
     public CEntityDaoImpl(
             Session session,
@@ -51,15 +51,17 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         }
         cqlBuilder.setLength(cqlBuilder.length() - 2);
         cqlBuilder.append(");");
-        this.insertCql = cqlBuilder.toString();
+        String insertCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.logger.debug("{} insertCql:{}", this.table, this.insertCql);
+        this.insertPs = this.prepare(insertCql);
+        this.logger.debug("{} insertCql:{}", this.table, insertCql);
         //count
         cqlBuilder.append("SELECT COUNT(*) FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(';');
-        this.countCql = cqlBuilder.toString();
+        String countCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.logger.debug("{} countCql:{}", this.table, this.countCql);
+        this.countPs = this.prepare(countCql);
+        this.logger.debug("{} countCql:{}", this.table, countCql);
     }
 
     @Override
@@ -81,9 +83,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
             valueList.add(value);
         }
-        PreparedStatement ps = this.session.prepare(this.insertCql);
         Object[] values = valueList.toArray();
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+        ResultSetFuture rsf = this.executeAsync(this.insertPs.bind(values));
         try {
             rsf.get();
         } catch (InterruptedException | ExecutionException ex) {
@@ -103,7 +104,6 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         if (entityMapList.isEmpty() == false) {
             Object value;
             List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
-            PreparedStatement ps = this.session.prepare(this.insertCql);
             BatchStatement batch = new BatchStatement();
             boolean canInsert;
             Object[] values;
@@ -127,10 +127,10 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                         valueList.add(value);
                     }
                     values = valueList.toArray();
-                    batch.add(ps.bind(values));
+                    batch.add(this.insertPs.bind(values));
                 }
             }
-            ResultSetFuture rsf = this.session.executeAsync(batch);
+            ResultSetFuture rsf = this.executeAsync(batch);
             try {
                 rsf.get();
             } catch (InterruptedException | ExecutionException ex) {
@@ -177,8 +177,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             Object[] values = valueList.toArray();
             String updateCql = cqlBuilder.toString();
             this.logger.debug("{} updateCql:{}", this.table, updateCql);
-            PreparedStatement ps = this.session.prepare(updateCql);
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+            PreparedStatement ps = this.cachePrepare(updateCql);
+            ResultSetFuture rsf = this.executeAsync(ps.bind(values));
             try {
                 rsf.get();
             } catch (InterruptedException | ExecutionException ex) {
@@ -226,12 +226,12 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                 cqlBuilder.setLength(cqlBuilder.length() - 4);
                 cqlBuilder.append(" IF EXISTS;");
                 if (canUpdate) {
-                    ps = this.session.prepare(cqlBuilder.toString());
+                    ps = this.cachePrepare(cqlBuilder.toString());
                     values = valueList.toArray();
                     batch.add(ps.bind(values));
                 }
             }
-            ResultSetFuture rsf = this.session.executeAsync(batch);
+            ResultSetFuture rsf = this.executeAsync(batch);
             try {
                 rsf.get();
             } catch (InterruptedException | ExecutionException ex) {
@@ -250,11 +250,10 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     public void batchDelete(List<Object[]> keyValues) {
         if (keyValues.isEmpty() == false) {
             BatchStatement batch = new BatchStatement();
-            PreparedStatement ps = this.session.prepare(this.deleteCql);
             for (Object[] keyValue : keyValues) {
-                batch.add(ps.bind(keyValue));
+                batch.add(this.deletePs.bind(keyValue));
             }
-            ResultSetFuture rsf = this.session.executeAsync(batch);
+            ResultSetFuture rsf = this.executeAsync(batch);
             try {
                 rsf.get();
             } catch (InterruptedException | ExecutionException ex) {
@@ -266,8 +265,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public long count() {
         long result = 0;
-        PreparedStatement ps = this.session.prepare(this.countCql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind());
+        ResultSetFuture rsf = this.executeAsync(this.countPs.bind());
         ResultSet rs;
         Row r = null;
         try {
@@ -284,8 +282,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public ResultSet execute(String cql, Object... values) {
-        PreparedStatement ps = this.session.prepare(cql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+        PreparedStatement ps = this.cachePrepare(cql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
         ResultSet rs;
         try {
             rs = rsf.get();
@@ -298,8 +296,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public List<T> query(String cql, Object... values) {
         List<T> resultList = Collections.EMPTY_LIST;
-        PreparedStatement ps = this.session.prepare(cql);
-        ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
+        PreparedStatement ps = this.cachePrepare(cql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
         ResultSet rs;
         try {
             rs = rsf.get();
