@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface CDaoConfig{
+public @interface CEntityConfig{
     
     /**
      * 表空间
@@ -26,12 +26,6 @@ public @interface CDaoConfig{
      * @return
      */
     public String table();
-    
-    /**
-     * 是否是计数表
-     * @return 
-     */
-    public boolean counter() default false;
     
     /**
      * set类型列定义

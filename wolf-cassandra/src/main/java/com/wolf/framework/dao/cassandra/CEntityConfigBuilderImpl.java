@@ -9,7 +9,6 @@ import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.cassandra.annotation.ColumnConfig;
-import com.wolf.framework.dao.cassandra.annotation.CDaoConfig;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
@@ -17,6 +16,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
+import com.wolf.framework.dao.cassandra.annotation.CEntityConfig;
 
 /**
  *
@@ -24,22 +24,20 @@ import org.slf4j.Logger;
  * @param <T>
  */
 @DaoConfig()
-public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
+public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     private final List<Class<T>> cEntityClassList = new ArrayList<>();
-    private CEntityDaoContext<T> cEntityDaoContext;
     private CassandraAdminContext cassandraAdminContext;
 
     @Override
     public void init(ApplicationContext context) {
-        this.cEntityDaoContext = new CEntityDaoContextImpl<>();
-        this.cassandraAdminContext = new CassandraAdminContextImpl(context);
+        this.cassandraAdminContext = CassandraAdminContextImpl.getInstance(context);
     }
 
     @Override
     public Class<?> getAnnotation() {
-        return CDaoConfig.class;
+        return CEntityConfig.class;
     }
 
     @Override
@@ -47,7 +45,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
         //是否是实体
         if (Entity.class.isAssignableFrom(clazz)) {
             Class<T> clazzt = (Class<T>) clazz;
-            if (clazzt.isAnnotationPresent(CDaoConfig.class)) {
+            if (clazzt.isAnnotationPresent(CEntityConfig.class)) {
                 if (this.cEntityClassList.contains(clazzt) == false) {
                     this.cEntityClassList.add(clazzt);
                     this.logger.debug("find cassandra entity class ".concat(clazz.getName()));
@@ -58,7 +56,7 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
 
     @Override
     public Injecter getInjecter() {
-        return new CDaoInjecterImpl(this.cEntityDaoContext);
+        return new CEntityDaoInjecterImpl(this.cassandraAdminContext);
     }
 
     private String getDefaultDataMap(String columnName) {
@@ -80,18 +78,16 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
     public void build() {
         //解析cassandra EntityDao
         if (this.cEntityClassList.isEmpty() == false) {
-            this.logger.info("parsing annotation CDaoConfig...");
+            this.logger.info("parsing annotation CEntityDaoConfig...");
             for (Class<T> clazz : this.cEntityClassList) {
-                this.logger.info("--parsing cassandra entity DAO {}--", clazz.getName());
-                if (clazz.isAnnotationPresent(CDaoConfig.class)) {
+                this.logger.info("--parsing cassandra CEntityDao {}--", clazz.getName());
+                if (clazz.isAnnotationPresent(CEntityConfig.class)) {
                     //获取注解RDaoConfig
-                    final CDaoConfig cDaoConfig = clazz.getAnnotation(CDaoConfig.class);
+                    final CEntityConfig cDaoConfig = clazz.getAnnotation(CEntityConfig.class);
                     //表空间
                     final String keyspace = cDaoConfig.keyspace();
                     //表
                     final String table = cDaoConfig.table();
-                    //是否计数表
-                    final boolean counter = cDaoConfig.counter();
                     String dataMap;
                     //set类型集合
 //                    Map<String, String> sets = new HashMap<String, String>(4, 1);
@@ -146,24 +142,19 @@ public class CassandraDaoConfigBuilderImpl<T extends Entity> implements DaoConfi
                             }
                         }
                     }
-                    if (keyHandlerList.isEmpty()) {
-                        throw new RuntimeException("Error building CEntityDao:" + clazz.getName() + ". Cause:can not find key");
-                    }
                     CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<>(
                             keyspace,
                             table,
-                            counter,
                             keyHandlerList,
                             columnHandlerList,
                             clazz,
-                            this.cEntityDaoContext,
                             this.cassandraAdminContext
                     );
                     CEntityDao<T> entityDao = entityDaoBuilder.build();
-                    this.cEntityDaoContext.putCEntityDao(clazz, entityDao, table);
-                    this.logger.debug("--parse CEntity DAO {} finished--", clazz.getName());
+                    this.cassandraAdminContext.putCEntityDao(clazz, entityDao, keyspace, table);
+                    this.logger.debug("--parse CEntityDao {} finished--", clazz.getName());
                 } else {
-                    this.logger.error("--parse CEntity DAO {} missing annotation CDaoConfig--", clazz.getName());
+                    this.logger.error("--parse CEntityDao {} missing annotation CEntityDaoConfig--", clazz.getName());
                 }
             }
         }

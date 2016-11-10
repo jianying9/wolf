@@ -6,12 +6,17 @@ import com.wolf.framework.dao.Entity;
 /**
  *
  * @author jianying9
+ * @param <T>
  */
-public interface CassandraAdminContext {
+public interface CassandraAdminContext<T extends Entity> {
     
-    public <T extends Entity> void putCassandraHandler(final Class<T> clazz, final CassandraHandler cassandraHandler, final String keyspace, String table);
+    public void putCEntityDao(final Class<T> clazz, final CEntityDao<T> cEntityDao, String keyspace, String table);
     
-    public <T extends Entity> CassandraHandler getCassandraHandler(final Class<T> clazz);
+    public CEntityDao<T> getCEntityDao(final Class<T> clazz);
+    
+    public void putCCounterDao(final Class<T> clazz, final CCounterDao<T> cCounterDao, String keyspace, String table);
+    
+    public CCounterDao<T> getCCounterDao(final Class<T> clazz);
     
     public Session getSession();
 }

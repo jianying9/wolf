@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * cassandra entity dao
  *
- * @author jianying
+ * @author jianying9
  * @param <T>
  */
 public interface CEntityDao<T extends Entity> {
@@ -95,16 +95,6 @@ public interface CEntityDao<T extends Entity> {
      * @return
      */
     public long count();
-    
-    /**
-     * 自增
-     *
-     * @param columnName
-     * @param value
-     * @param keyValue
-     * @return
-     */
-    public long increase(String columnName, long value, Object... keyValue);
     
     /**
      * 自定义cql查询

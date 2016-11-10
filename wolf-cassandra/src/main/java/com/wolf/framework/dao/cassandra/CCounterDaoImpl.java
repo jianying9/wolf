@@ -7,92 +7,27 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * counter表
  *
  * @author jianying9
+ * @param <T>
  */
-public class CassandraCounterHandlerImpl extends AbstractCassandraHandler {
+public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implements CCounterDao<T> {
 
-    public CassandraCounterHandlerImpl(
+    public CCounterDaoImpl(
             Session session,
             String keyspace,
             String table,
             List<ColumnHandler> keyHandlerList,
-            List<ColumnHandler> columnHandlerList
-    ) {
-        super(session, keyspace, table, keyHandlerList, columnHandlerList);
-    }
-
-    @Override
-    public Object[] insert(Map<String, Object> entityMap) {
-        throw new RuntimeException("Not supported,counter table can not insert.");
-    }
-
-    @Override
-    public void batchInsert(List<Map<String, Object>> entityMapList) {
-        throw new RuntimeException("Not supported,counter table can not batch insert.");
-    }
-
-    @Override
-    public Object[] update(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
-        Object value;
-        for (ColumnHandler ch : this.keyHandlerList) {
-            value = entityMap.get(ch.getColumnName());
-            if (value == null) {
-                throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
-            }
-            valueList.add(value);
-        }
-        Object[] keyValue = valueList.toArray();
-        valueList.clear();
-        StringBuilder cqlBuilder = new StringBuilder(128);
-        boolean canUpdate = false;
-        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
-                .append(this.table).append(" SET ");
-        for (ColumnHandler ch : this.columnHandlerList) {
-            value = entityMap.get(ch.getColumnName());
-            if (value != null) {
-                canUpdate = true;
-                valueList.add(value);
-                cqlBuilder.append(ch.getDataMap()).append(" = ")
-                        .append(ch.getDataMap()).append(" + ?, ");
-            }
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        if (canUpdate) {
-            cqlBuilder.append(" WHERE ");
-            for (ColumnHandler ch : this.keyHandlerList) {
-                cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
-                value = entityMap.get(ch.getColumnName());
-                valueList.add(value);
-            }
-            cqlBuilder.setLength(cqlBuilder.length() - 2);
-            cqlBuilder.append(';');
-            Object[] values = valueList.toArray();
-            String updateCql = cqlBuilder.toString();
-            this.logger.debug("{} updateCql:{}", this.table, updateCql);
-            PreparedStatement ps = this.session.prepare(updateCql);
-            ResultSetFuture rsf = this.session.executeAsync(ps.bind(values));
-            try {
-                rsf.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        return keyValue;
-    }
-
-    @Override
-    public void batchUpdate(List<Map<String, Object>> entityMapList) {
-        throw new RuntimeException("Not supported,counter table can not batch update.");
+            List<ColumnHandler> columnHandlerList,
+            Class<T> clazz) {
+        super(session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
     }
 
     @Override

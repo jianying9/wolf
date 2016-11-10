@@ -12,15 +12,12 @@ import java.util.List;
  * @author jianying9
  * @param <T>
  */
-public final class CEntityDaoBuilder<T extends Entity> {
+public final class CCounterDaoBuilder<T extends Entity> {
 
     //表空间
     private final String keyspace;
     //table name
     private final String table;
-//    private final Map<String, String> sets;
-//    private final Map<String, String> lists;
-//    private final Map<String, String> maps;
     //key
     private final List<ColumnHandler> keyHandlerList;
     //column
@@ -31,7 +28,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final CassandraAdminContext<T> cassandraAdminContext;
 
     //
-    public CEntityDaoBuilder(
+    public CCounterDaoBuilder(
             String keyspace,
             String tableName,
             List<ColumnHandler> keyHandlerList,
@@ -50,26 +47,26 @@ public final class CEntityDaoBuilder<T extends Entity> {
         this.cassandraAdminContext = cassandraAdminContext;
     }
 
-    public CEntityDao<T> build() {
+    public CCounterDao<T> build() {
         if (this.keyspace.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: keyspace is empty");
+            throw new RuntimeException("Error when building CCounterDao. Cause: keyspace is empty");
         }
         if (this.table.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: tableName is empty");
+            throw new RuntimeException("Error when building CCounterDao. Cause: tableName is empty");
         }
         if (this.clazz == null) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: clazz is null");
+            throw new RuntimeException("Error when building CCounterDao. Cause: clazz is null");
         }
         if (this.keyHandlerList.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: key is empty");
+            throw new RuntimeException("Error when building CCounterDao. Cause: key is empty");
         }
         if (this.columnHandlerList.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: column is empty");
+            throw new RuntimeException("Error when building CCounterDao. Cause: column is empty");
         }
         //session
         final Session session = this.cassandraAdminContext.getSession();
         //
-        CEntityDao<T> entityDao = new CEntityDaoImpl(
+        CCounterDao<T> entityDao = new CCounterDaoImpl(
                 session,
                 keyspace,
                 table,
