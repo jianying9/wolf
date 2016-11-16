@@ -6,8 +6,8 @@ import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.filter.FilterType;
-import com.wolf.framework.service.request.ServiceRequest;
-import com.wolf.framework.service.response.ServiceResponse;
+import com.wolf.framework.service.response.ObjectResponse;
+import com.wolf.framework.service.request.ObjectRequest;
 
 /**
  *
@@ -30,7 +30,7 @@ import com.wolf.framework.service.response.ServiceResponse;
 public class TestServiceImpl implements Service {
 
     @Override
-    public void execute(ServiceRequest serviceRequest, ServiceResponse serviceResponse) {
+    public void execute(ObjectRequest objectRequest, ObjectResponse objectResponse) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

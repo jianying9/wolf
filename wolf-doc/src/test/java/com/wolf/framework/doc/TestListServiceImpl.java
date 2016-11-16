@@ -6,8 +6,8 @@ import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.filter.FilterType;
-import com.wolf.framework.service.request.ListServiceRequest;
-import com.wolf.framework.service.response.ListServiceResponse;
+import com.wolf.framework.service.response.ListResponse;
+import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
@@ -30,7 +30,7 @@ import com.wolf.framework.service.response.ListServiceResponse;
 public class TestListServiceImpl implements ListService {
 
     @Override
-    public void execute(ListServiceRequest listServiceRequest, ListServiceResponse listServiceResponse) {
+    public void execute(ListRequest listRequest, ListResponse listResponse) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

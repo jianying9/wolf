@@ -6,8 +6,6 @@ import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
-import com.wolf.framework.service.request.ListServiceRequest;
-import com.wolf.framework.service.response.ListServiceResponse;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.wolf.framework.service.response.ListResponse;
+import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
@@ -31,7 +31,7 @@ import java.util.Set;
 public class InquireGroupServiceImpl implements ListService {
 
     @Override
-    public void execute(ListServiceRequest listServiceRequest, ListServiceResponse listServiceResponse) {
+    public void execute(ListRequest listRequest, ListResponse listResponse) {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         Map<String, String> resultMap;
@@ -48,8 +48,8 @@ public class InquireGroupServiceImpl implements ListService {
             resultMap.put("groupName", groupName);
             resultMapList.add(resultMap);
         }
-        listServiceResponse.setDataMapList(resultMapList);
-        listServiceResponse.setNextSize(resultMapList.size());
-        listServiceResponse.success();
+        listResponse.setDataMapList(resultMapList);
+        listResponse.setNextSize(resultMapList.size());
+        listResponse.success();
     }
 }

@@ -6,8 +6,6 @@ import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
-import com.wolf.framework.service.request.ListServiceRequest;
-import com.wolf.framework.service.response.ListServiceResponse;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import com.wolf.framework.service.response.ListResponse;
+import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
@@ -39,7 +39,7 @@ import java.util.Set;
 public class InquireServiceImpl implements ListService {
 
     @Override
-    public void execute(ListServiceRequest listServiceRequest, ListServiceResponse listServiceResponse) {
+    public void execute(ListRequest listRequest, ListResponse listResponse) {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         //过滤系统接口
@@ -67,9 +67,9 @@ public class InquireServiceImpl implements ListService {
             resultMap.put("page", Boolean.toString(serviceContext.page()));
             resultMapList.add(resultMap);
         }
-        listServiceResponse.setDataMapList(resultMapList);
-        listServiceResponse.setNextSize(resultMapList.size());
-        listServiceResponse.success();
+        listResponse.setDataMapList(resultMapList);
+        listResponse.setNextSize(resultMapList.size());
+        listResponse.success();
     }
 
     private class ServiceWorkerSort implements Comparator<ServiceWorker> {
