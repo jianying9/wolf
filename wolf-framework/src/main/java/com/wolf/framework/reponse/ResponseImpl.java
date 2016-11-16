@@ -94,7 +94,7 @@ public class ResponseImpl implements WorkerResponse {
         this.error = error;
     }
 
-    private void createResponseMessage() {
+    private void createResponseMessage(boolean isPush) {
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"code\":\"").append(this.code)
@@ -105,7 +105,7 @@ public class ResponseImpl implements WorkerResponse {
         if (this.error.isEmpty() == false) {
             jsonBuilder.append("\",\"error\":\"").append(this.error);
         }
-        if (this.callback != null) {
+        if (this.callback != null && isPush == false) {
             jsonBuilder.append("\",\"callback\":\"").append(this.callback);
         }
         jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
@@ -115,7 +115,13 @@ public class ResponseImpl implements WorkerResponse {
 
     @Override
     public final String getResponseMessage() {
-        this.createResponseMessage();
+        this.createResponseMessage(false);
+        return this.responseMessage;
+    }
+    
+    @Override
+    public String getPushMessage() {
+        this.createResponseMessage(true);
         return this.responseMessage;
     }
 

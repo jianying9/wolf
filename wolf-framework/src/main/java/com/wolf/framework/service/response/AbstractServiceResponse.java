@@ -48,15 +48,15 @@ public abstract class AbstractServiceResponse  implements BaseServiceResponse {
     public abstract String getDataMessage();
     
     @Override
-    public String getResponseMessage() {
+    public String getPushMessage() {
         String dataMessage = this.getDataMessage();
         this.response.setDataMessage(dataMessage);
-        return this.response.getResponseMessage();
+        return this.response.getPushMessage();
     }
     
     @Override
     public boolean push(String sid) {
-        String responseMessage = this.getResponseMessage();
+        String responseMessage = this.getPushMessage();
         return this.push(sid, responseMessage);
     }
     
@@ -67,7 +67,7 @@ public abstract class AbstractServiceResponse  implements BaseServiceResponse {
     
     @Override
     public boolean asyncPush(String sid) {
-        String responseMessage = this.getResponseMessage();
+        String responseMessage = this.getPushMessage();
         return this.asyncPush(sid, responseMessage);
     }
     

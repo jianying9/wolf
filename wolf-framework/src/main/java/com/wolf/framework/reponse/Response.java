@@ -28,6 +28,8 @@ public interface Response {
     
     public String getResponseMessage();
     
+    public String getPushMessage();
+    
     public boolean push(String sid, String responseMessage);
     
     public boolean asyncPush(String sid, String responseMessage);

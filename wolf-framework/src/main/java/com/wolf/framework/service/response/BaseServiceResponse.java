@@ -20,8 +20,8 @@ public interface BaseServiceResponse {
     
     public String getNewSessionId();
     
-    public String getResponseMessage();
-
+    public String getPushMessage();
+    
     public boolean push(String sid);
     
     public boolean push(String sid, String responseMessage);
