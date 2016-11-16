@@ -3,12 +3,12 @@ package com.wolf.framework.worker.workhandler;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
-import com.wolf.framework.service.request.ServiceRequest;
-import com.wolf.framework.service.request.ServiceRequestImpl;
-import com.wolf.framework.service.response.ServiceResponse;
-import com.wolf.framework.service.response.ServiceResponseImpl;
+import com.wolf.framework.service.request.ObjectRequestImpl;
+import com.wolf.framework.service.response.ObjectResponseImpl;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
+import com.wolf.framework.service.response.ObjectResponse;
+import com.wolf.framework.service.request.ObjectRequest;
 
 /**
  * 默认处理类
@@ -27,12 +27,12 @@ public class ObjectServiceWorkHandlerImpl implements WorkHandler {
 
     @Override
     public void execute(WorkerContext workerContext) {
-        ServiceRequest serviceRequest = new ServiceRequestImpl(workerContext.getWorkerRequest());
+        ObjectRequest objectRequest = new ObjectRequestImpl(workerContext.getWorkerRequest());
         String[] returnParameter = this.serviceContext.returnParameter();
         Map<String, ResponseParameterHandler> parameterHandlerMap = this.serviceContext.responseParameterHandlerMap();
-        ServiceResponse serviceResponse = new ServiceResponseImpl(workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap);
-        this.service.execute(serviceRequest, serviceResponse);
-        String dataMessage = serviceResponse.getDataMessage();
+        ObjectResponse objectResponse = new ObjectResponseImpl(workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap);
+        this.service.execute(objectRequest, objectResponse);
+        String dataMessage = objectResponse.getDataMessage();
         workerContext.getWorkerResponse().setDataMessage(dataMessage);
     }
 }

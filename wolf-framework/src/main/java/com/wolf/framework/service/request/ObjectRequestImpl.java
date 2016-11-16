@@ -7,11 +7,11 @@ import java.util.Map;
  *
  * @author jianying9
  */
-public class ServiceRequestImpl implements ServiceRequest {
+public class ObjectRequestImpl implements ObjectRequest {
 
     private final Request request;
 
-    public ServiceRequestImpl(Request request) {
+    public ObjectRequestImpl(Request request) {
         this.request = request;
     }
 

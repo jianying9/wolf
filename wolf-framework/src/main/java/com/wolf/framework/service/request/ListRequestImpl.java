@@ -6,12 +6,12 @@ import com.wolf.framework.request.Request;
  *
  * @author jianying9
  */
-public class ListServiceRequestImpl extends ServiceRequestImpl implements ListServiceRequest {
+public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
     
     private final String nextIndex;
     private final int nextSize;
 
-    public ListServiceRequestImpl(Request request) {
+    public ListRequestImpl(Request request) {
         super(request);
         String nextIndexTemp = this.getParameter("nextIndex");
         if(nextIndexTemp == null) {

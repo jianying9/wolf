@@ -3,18 +3,18 @@ package com.wolf.framework.service.response;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
-import com.wolf.framework.service.request.ListServiceRequest;
 import com.wolf.framework.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
  * @author jianying9
  * @param <T>
  */
-public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceResponse implements ListServiceResponse<T> {
+public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse implements ListResponse<T> {
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;
@@ -22,7 +22,7 @@ public class ListServiceResponseImpl<T extends Entity>  extends AbstractServiceR
     private int nextSize;
     private List<Map<String, String>> dataMapList = null;
 
-    public ListServiceResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap, ListServiceRequest listServiceRequest) {
+    public ListResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap, ListRequest listServiceRequest) {
         super(response);
         this.returnParameter = returnParameter;
         this.parameterHandlerMap = parameterHandlerMap;
