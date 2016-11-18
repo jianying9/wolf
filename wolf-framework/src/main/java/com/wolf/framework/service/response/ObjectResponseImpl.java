@@ -36,18 +36,16 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractServiceRespons
 
     @Override
     public String getDataMessage() {
-        String dataMessage = JsonUtils.mapToJSON(this.dataMap, this.returnParameter, this.parameterHandlerMap);
+        String objectMessage;
+        if(this.dataMap == null) {
+            objectMessage = "null";
+        } else {
+            objectMessage = JsonUtils.mapToJSON(this.dataMap, this.returnParameter, this.parameterHandlerMap);
+        }
+        StringBuilder jsonBuilder = new StringBuilder(objectMessage.length() + 11);
+        jsonBuilder.append("{\"object\":").append(objectMessage).append("}");
+        String dataMessage = jsonBuilder.toString();
         return dataMessage;
-//        String objectMessage;
-//        if(this.dataMap == null) {
-//            objectMessage = "null";
-//        } else {
-//            objectMessage = JsonUtils.mapToJSON(this.dataMap, this.returnParameter, this.parameterHandlerMap);
-//        }
-//        StringBuilder jsonBuilder = new StringBuilder(objectMessage.length() + 11);
-//        jsonBuilder.append("{\"object\":").append(objectMessage).append("}");
-//        String dataMessage = jsonBuilder.toString();
-//        return dataMessage;
     }
 
     @Override
