@@ -17,6 +17,7 @@ public final class DataHandlerFactoryImpl implements DataHandlerFactory {
         this.dataHandlerMap.put(DataType.BOOLEAN, new BooleanDataHandlerImpl());
         this.dataHandlerMap.put(DataType.DATE, new DateDataHandlerImpl());
         this.dataHandlerMap.put(DataType.CHINA_MOBILE, new ChinaMobileDataHandlerImpl());
+        this.dataHandlerMap.put(DataType.EMAIL, new EmailDataHandlerImpl());
     }
     private final Map<DataType, DataHandler> dataHandlerMap = new EnumMap<>(DataType.class);
 
