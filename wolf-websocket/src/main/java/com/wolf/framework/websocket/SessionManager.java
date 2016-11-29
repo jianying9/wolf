@@ -4,6 +4,7 @@ import com.wolf.framework.comet.CometHandler;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.Session;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public class SessionManager implements CometHandler {
 
     public Session put(String sid, Session session) {
         return this.savedSessionMap.put(sid, session);
+    }
+    
+    public Collection<Session> getSessions() {
+        return savedSessionMap.values();
     }
 
     @Override

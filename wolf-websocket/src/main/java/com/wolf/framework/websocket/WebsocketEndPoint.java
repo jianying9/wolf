@@ -3,11 +3,13 @@ package com.wolf.framework.websocket;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.context.Resource;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.websocket.OnClose;
@@ -28,7 +30,7 @@ import org.slf4j.Logger;
         value = "/ws/api/{text}",
         configurator = WebsocketEndPoint.WebsocketServerConfigurator.class
 )
-public class WebsocketEndPoint {
+public class WebsocketEndPoint implements Resource {
 
     private final SessionManager sessionManager;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
@@ -145,9 +147,25 @@ public class WebsocketEndPoint {
         this.logger.error("wobsocket-on onerror", t);
     }
 
+    @Override
+    public void destory() {
+        this.logger.info("wobsocket-shutdown.....");
+        Collection<Session> sessions = this.sessionManager.getSessions();
+        try {
+            for (Session session : sessions) {
+                session.close();
+            }
+        } catch (IOException ex) {
+        }
+    }
+
     public static class WebsocketServerConfigurator extends ServerEndpointConfig.Configurator {
 
         public static final WebsocketEndPoint END_POINT = new WebsocketEndPoint();
+        
+        static {
+            ApplicationContext.CONTEXT.addResource(END_POINT);
+        }
 
         @Override
         public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
