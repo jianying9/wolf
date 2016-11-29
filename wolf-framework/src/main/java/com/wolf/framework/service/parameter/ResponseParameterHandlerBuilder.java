@@ -1,6 +1,5 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.DataHandler;
 import com.wolf.framework.data.DataHandlerFactory;
 import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.Filter;
@@ -13,6 +12,7 @@ import com.wolf.framework.service.parameter.response.EmailResponseParameterHandl
 import com.wolf.framework.service.parameter.response.EnumResponseParameterHandlerImpl;
 import com.wolf.framework.service.parameter.response.JsonResponseParameterHandlerImpl;
 import com.wolf.framework.service.parameter.response.NumberResponseParameterHandlerImpl;
+import com.wolf.framework.service.parameter.response.RegexResponseParameterHandlerImpl;
 import com.wolf.framework.service.parameter.response.StringResponseParameterHandlerImpl;
 
 /**
@@ -40,7 +40,6 @@ public class ResponseParameterHandlerBuilder {
         final DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         //基本数据类型
         DataType dataType = this.outputConfig.dataType();
-        DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
         switch (dataType) {
             case OBJECT:
                 parameterHandler = new JsonResponseParameterHandlerImpl(fieldName, dataType, "{}");
@@ -81,8 +80,10 @@ public class ResponseParameterHandlerBuilder {
                 parameterHandler = new BooleanResponseParameterHandlerImpl(fieldName);
                 break;
             case ENUM:
-                String[] enumValues = {};
                 parameterHandler = new EnumResponseParameterHandlerImpl(fieldName);
+                break;
+            case REGEX:
+                parameterHandler = new RegexResponseParameterHandlerImpl(fieldName);
                 break;
             case CHINA_MOBILE:
                 parameterHandler = new ChinaMobileResponseParameterHandlerImpl(fieldName);

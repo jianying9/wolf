@@ -9,6 +9,7 @@ import com.wolf.framework.service.parameter.request.DateRequestParameterHandlerI
 import com.wolf.framework.service.parameter.request.EmailRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.EnumRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.NumberRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.RegexRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 
 /**
@@ -37,6 +38,7 @@ public class RequestParameterHandlerBuilder {
         DataType dataType = this.requestConfig.dataType();
         long max = this.requestConfig.max();
         long min = this.requestConfig.min();
+        String text = this.requestConfig.text();
         DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
         switch (dataType) {
             case OBJECT:
@@ -62,9 +64,11 @@ public class RequestParameterHandlerBuilder {
                 parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName, dataHandler);
                 break;
             case ENUM:
-                String text = this.requestConfig.text();
                 String[] enumValues = text.split("|");
                 parameterHandler = new EnumRequestParameterHandlerImpl(fieldName, enumValues);
+                break;
+            case REGEX:
+                parameterHandler = new RegexRequestParameterHandlerImpl(fieldName, text);
                 break;
             case CHINA_MOBILE:
                 parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName, dataHandler);

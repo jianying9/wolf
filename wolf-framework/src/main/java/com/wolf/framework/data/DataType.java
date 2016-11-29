@@ -19,6 +19,8 @@ public enum DataType {
     STRING,
     //枚举
     ENUM,
+    //枚举
+    REGEX,
     //中国地区手机号
     CHINA_MOBILE,
     //邮箱
