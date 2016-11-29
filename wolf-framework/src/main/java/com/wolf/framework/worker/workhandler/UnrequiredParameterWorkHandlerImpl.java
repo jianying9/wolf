@@ -4,6 +4,7 @@ import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
+import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
             paraValue = parameterMap.get(parameter);
             if (paraValue != null) {
                 //非空验证
+                paraValue = StringUtils.trim(paraValue);
                 parameterHandler = parameterHandlerMap.get(parameter);
                 errorMsg = parameterHandler.validate(paraValue);
                 if (errorMsg.isEmpty()) {

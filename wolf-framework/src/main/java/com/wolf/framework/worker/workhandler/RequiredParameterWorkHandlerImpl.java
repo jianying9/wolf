@@ -4,6 +4,7 @@ import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
+import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
                 errorParaName = parameter;
                 break;
             }
+            paraValue = StringUtils.trim(paraValue);
             if (paraValue.isEmpty()) {
                 errorMsg = WorkHandler.EMPTY_MESSAGE;
                 errorParaName = parameter;
