@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.response;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.service.parameter.filter.Filter;
 
@@ -14,7 +14,7 @@ public final class StringResponseParameterHandlerImpl extends AbstractResponsePa
     private final Filter[] filters;
 
     public StringResponseParameterHandlerImpl(final String name, final Filter[] filters) {
-        super(name, DataType.STRING);
+        super(name, ResponseDataType.STRING);
         this.filters = filters;
     }
     

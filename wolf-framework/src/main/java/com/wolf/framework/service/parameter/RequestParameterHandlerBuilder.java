@@ -1,14 +1,13 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.DataHandler;
-import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.request.BooleanRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.ChinaMobileRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.DateRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.DateTimeRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.DoubleRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.EmailRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.EnumRequestParameterHandlerImpl;
-import com.wolf.framework.service.parameter.request.NumberRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.RegexRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 
@@ -19,49 +18,38 @@ import com.wolf.framework.service.parameter.request.StringRequestParameterHandle
 public class RequestParameterHandlerBuilder {
 
     private final RequestConfig requestConfig;
-    private final ParameterContext parameterContext;
 
-    public RequestParameterHandlerBuilder(
-            final RequestConfig inputConfig,
-            final ParameterContext parameterContext) {
+    public RequestParameterHandlerBuilder(final RequestConfig inputConfig) {
         this.requestConfig = inputConfig;
-        this.parameterContext = parameterContext;
-        
     }
 
     public RequestParameterHandler build() {
         RequestParameterHandler parameterHandler = null;
         final String fieldName = this.requestConfig.name();
         //
-        final DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
         //基本数据类型
-        DataType dataType = this.requestConfig.dataType();
+        RequestDataType dataType = this.requestConfig.dataType();
         long max = this.requestConfig.max();
         long min = this.requestConfig.min();
         String text = this.requestConfig.text();
-        DataHandler dataHandler = dataHandlerFactory.getDataHandler(dataType);
         switch (dataType) {
-            case OBJECT:
-                throw new RuntimeException("Cause: Request parameter cannot support JSON OBJECT");
-            case ARRAY:
-                throw new RuntimeException("Cause: Request parameter cannot support JSON ARRAY");
             case STRING:
                 parameterHandler = new StringRequestParameterHandlerImpl(fieldName, max, min);
                 break;
             case DATE:
-                parameterHandler = new DateRequestParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateRequestParameterHandlerImpl(fieldName);
                 break;
             case DATE_TIME:
-                parameterHandler = new DateRequestParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new DateTimeRequestParameterHandlerImpl(fieldName);
                 break;
             case LONG:
-                parameterHandler = new NumberRequestParameterHandlerImpl(fieldName, dataHandler, max, min);
+                parameterHandler = new LongRequestParameterHandlerImpl(fieldName, max, min);
                 break;
             case DOUBLE:
-                parameterHandler = new NumberRequestParameterHandlerImpl(fieldName, dataHandler, max, min);
+                parameterHandler = new DoubleRequestParameterHandlerImpl(fieldName, max, min);
                 break;
             case BOOLEAN:
-                parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName);
                 break;
             case ENUM:
                 String[] enumValues = text.split("|");
@@ -71,10 +59,10 @@ public class RequestParameterHandlerBuilder {
                 parameterHandler = new RegexRequestParameterHandlerImpl(fieldName, text);
                 break;
             case CHINA_MOBILE:
-                parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName);
                 break;
             case EMAIL:
-                parameterHandler = new EmailRequestParameterHandlerImpl(fieldName, dataHandler);
+                parameterHandler = new EmailRequestParameterHandlerImpl(fieldName);
                 break;
         }
         return parameterHandler;

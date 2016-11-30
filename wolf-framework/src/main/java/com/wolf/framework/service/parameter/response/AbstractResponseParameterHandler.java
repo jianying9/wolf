@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.response;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 
 /**
@@ -11,9 +11,9 @@ import com.wolf.framework.service.parameter.ResponseParameterHandler;
 public abstract class AbstractResponseParameterHandler implements ResponseParameterHandler {
 
     protected final String name;
-    protected final DataType dataType;
+    protected final ResponseDataType dataType;
 
-    protected AbstractResponseParameterHandler(final String name, final DataType dataType) {
+    protected AbstractResponseParameterHandler(final String name, final ResponseDataType dataType) {
         this.name = name;
         this.dataType = dataType;
     }
@@ -24,7 +24,7 @@ public abstract class AbstractResponseParameterHandler implements ResponseParame
     }
 
     @Override
-    public final DataType getDataType() {
+    public final ResponseDataType getDataType() {
         return this.dataType;
     }
 }

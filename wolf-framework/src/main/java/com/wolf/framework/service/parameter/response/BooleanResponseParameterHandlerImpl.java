@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.response;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 
 /**
@@ -11,7 +11,7 @@ import com.wolf.framework.service.parameter.ResponseParameterHandler;
 public final class BooleanResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
 
     public BooleanResponseParameterHandlerImpl(final String name) {
-        super(name, DataType.BOOLEAN);
+        super(name, ResponseDataType.BOOLEAN);
     }
 
     @Override

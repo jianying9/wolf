@@ -1,6 +1,5 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.DataType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +31,7 @@ public @interface RequestConfig {
      *
      * @return
      */
-    public DataType dataType();
+    public RequestDataType dataType();
     
     /**
      * 最大

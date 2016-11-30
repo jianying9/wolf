@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
-import com.wolf.framework.data.DataHandler;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
@@ -8,15 +8,9 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  *
  * @author aladdin
  */
-public final class BooleanRequestParameterHandlerImpl extends AbstractRequestParamperHandler implements RequestParameterHandler {
-
-    public BooleanRequestParameterHandlerImpl(final String name, final DataHandler dataHandler) {
-        super(name, dataHandler);
-    }
-
-    @Override
-    public String validate(final String value) {
-        boolean result = this.dataHandler.validate(value);
-        return result ? "" : this.dataHandler.getErrorInfo();
+public final class BooleanRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
+    
+    public BooleanRequestParameterHandlerImpl(final String name) {
+        super(name, RequestDataType.BOOLEAN, "^true|false$", " must be boolean");
     }
 }

@@ -1,7 +1,6 @@
 package com.wolf.framework.service.parameter.response;
 
 import com.wolf.framework.service.parameter.*;
-import com.wolf.framework.data.DataType;
 
 /**
  * 数字类型处理类
@@ -10,7 +9,7 @@ import com.wolf.framework.data.DataType;
  */
 public final class NumberResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
 
-    public NumberResponseParameterHandlerImpl(final String name, DataType dataType) {
+    public NumberResponseParameterHandlerImpl(final String name, ResponseDataType dataType) {
         super(name, dataType);
     }
 

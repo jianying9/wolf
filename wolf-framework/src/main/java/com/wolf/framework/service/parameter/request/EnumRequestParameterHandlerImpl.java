@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,18 +34,13 @@ public final class EnumRequestParameterHandlerImpl implements RequestParameterHa
     }
 
     @Override
-    public DataType getDataType() {
-        return DataType.ENUM;
+    public RequestDataType getDataType() {
+        return RequestDataType.ENUM;
     }
 
     @Override
     public String validate(String value) {
-        String msg = "";
         Matcher matcher = this.pattern.matcher(value);
-        if(matcher.matches() == false) {
-            //不匹配
-            msg = this.errorInfo;
-        }
-        return msg;
+        return matcher.matches() ? "" : this.errorInfo;
     }
 }

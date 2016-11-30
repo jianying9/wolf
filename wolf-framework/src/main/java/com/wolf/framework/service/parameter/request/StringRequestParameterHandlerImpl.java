@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
@@ -46,7 +46,7 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     }
 
     @Override
-    public DataType getDataType() {
-        return DataType.STRING;
+    public RequestDataType getDataType() {
+        return RequestDataType.STRING;
     }
 }

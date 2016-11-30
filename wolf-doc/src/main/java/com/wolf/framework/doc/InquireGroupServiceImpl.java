@@ -1,11 +1,11 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import com.wolf.framework.service.request.ListRequest;
 @ServiceConfig(
         route = "/wolf/group",
         responseConfigs = {
-            @ResponseConfig(name = "groupName", dataType = DataType.STRING, desc = "")
+            @ResponseConfig(name = "groupName", dataType = ResponseDataType.STRING, desc = "")
         },
         responseCodes = {},
         validateSession = false,

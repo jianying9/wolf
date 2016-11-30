@@ -1,16 +1,16 @@
 package com.wolf.framework.service.parameter.response;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 
 /**
- * 时间类型处理类
+ * 简单字符类型处理类
  *
  * @author aladdin
  */
-public final class DateResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
+public final class SimpleStringResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
 
-    public DateResponseParameterHandlerImpl(final String name, final DataType dataType) {
+    public SimpleStringResponseParameterHandlerImpl(final String name, final ResponseDataType dataType) {
         super(name, dataType);
     }
 

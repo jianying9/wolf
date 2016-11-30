@@ -1,6 +1,5 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.parameter.filter.FilterType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,7 +25,7 @@ public @interface ResponseConfig {
      *
      * @return
      */
-    public DataType dataType();
+    public ResponseDataType dataType();
 
     /**
      * 描述

@@ -1,15 +1,12 @@
 package com.wolf.framework.worker.build;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.DataHandler;
-import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorContext;
 import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.service.parameter.request.NumberRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
@@ -68,9 +65,7 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
         this.nextIndexHandler = new StringRequestParameterHandlerImpl("nextIndex", 64, 0);
-        DataHandlerFactory dataHandlerFactory = this.parameterContext.getDataHandlerFactory();
-        DataHandler dataHandler = dataHandlerFactory.getDataHandler(DataType.LONG);
-        this.nextSizeHandler = new NumberRequestParameterHandlerImpl("nextSize", dataHandler, 100, 1);
+        this.nextSizeHandler = new LongRequestParameterHandlerImpl("nextSize", 100, 1);
     }
 
     @Override

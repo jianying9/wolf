@@ -1,7 +1,6 @@
 package com.wolf.framework.worker;
 
 import com.wolf.framework.config.ResponseCodeConfig;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
@@ -13,6 +12,7 @@ import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
+import com.wolf.framework.service.parameter.RequestDataType;
 import java.util.Set;
 
 /**
@@ -55,13 +55,13 @@ public class ServiceWorkerImpl implements ServiceWorker {
 
     private String getRequestParameterJson(RequestConfig[] requestConfigs, Filter escapeFilter) {
         StringBuilder jsonBuilder = new StringBuilder(64);
-        DataType type;
+        RequestDataType type;
         String typeStr;
         jsonBuilder.append('[');
         for (RequestConfig requestConfig : requestConfigs) {
             type = requestConfig.dataType();
             typeStr = type.name();
-            if (type == DataType.LONG || type == DataType.DOUBLE|| type == DataType.STRING) {
+            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE|| type == RequestDataType.STRING) {
                 typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())

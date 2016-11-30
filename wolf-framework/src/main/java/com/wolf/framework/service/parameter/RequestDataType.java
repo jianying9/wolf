@@ -1,11 +1,11 @@
-package com.wolf.framework.data;
+package com.wolf.framework.service.parameter;
 
 /**
  * data type
  *
  * @author jianying9
  */
-public enum DataType {
+public enum RequestDataType {
 
     //BigIntSigned [-9223372036854775808,9223372036854775807]
     LONG,
@@ -26,10 +26,6 @@ public enum DataType {
     //邮箱
     EMAIL,
     //布尔
-    BOOLEAN ,
-    //json对象
-    OBJECT ,
-    //json数组
-    ARRAY ;
+    BOOLEAN;
 
 }

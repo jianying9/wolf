@@ -130,9 +130,7 @@ public class ServiceContextImpl implements ServiceContext {
         final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(unrequiredRequestConfigList.size(), 1);
         List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
         for (RequestConfig requestConfig : unrequiredRequestConfigList) {
-            requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
-                    requestConfig,
-                    parameterContext);
+            requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(requestConfig);
             requestParameterHandler = requestParameterHandlerBuilder.build();
             requestParameterMap.put(requestConfig.name(), requestParameterHandler);
             unrequiredNameList.add(requestConfig.name());
@@ -149,9 +147,7 @@ public class ServiceContextImpl implements ServiceContext {
         //
         List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
         for (RequestConfig requestConfig : requiredRequestConfigList) {
-            requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(
-                    requestConfig,
-                    parameterContext);
+            requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(requestConfig);
             requestParameterHandler = requestParameterHandlerBuilder.build();
             requestParameterMap.put(requestConfig.name(), requestParameterHandler);
             requiredNameList.add(requestConfig.name());

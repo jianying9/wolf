@@ -1,11 +1,12 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.UUID;
 import com.wolf.framework.service.response.ObjectResponse;
@@ -18,18 +19,18 @@ import com.wolf.framework.service.request.ObjectRequest;
 @ServiceConfig(
         route = "/wolf/service/info",
         requestConfigs = {
-            @RequestConfig(name = "routeName", dataType = DataType.STRING, max = 200, desc = "")
+            @RequestConfig(name = "routeName", dataType = RequestDataType.STRING, max = 200, desc = "")
         },
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = DataType.STRING, desc = ""),
-            @ResponseConfig(name = "desc", dataType = DataType.STRING, desc = ""),
-            @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "groupName", dataType = DataType.STRING, desc = ""),
-            @ResponseConfig(name = "requestConfigs", dataType = DataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "responseCodes", dataType = DataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "responseConfigs", dataType = DataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "hasAsyncResponse", dataType = DataType.BOOLEAN, desc = "")
+            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "groupName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "requestConfigs", dataType = ResponseDataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "responseCodes", dataType = ResponseDataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "responseConfigs", dataType = ResponseDataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = "")
         },
         responseCodes = {},
         validateSession = false,

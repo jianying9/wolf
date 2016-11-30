@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
-import com.wolf.framework.data.DataHandler;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
@@ -8,15 +8,9 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  *
  * @author aladdin
  */
-public final class ChinaMobileRequestParameterHandlerImpl extends AbstractRequestParamperHandler implements RequestParameterHandler {
-
-    public ChinaMobileRequestParameterHandlerImpl(final String name, final DataHandler dataHandler) {
-        super(name, dataHandler);
-    }
-
-    @Override
-    public String validate(String value) {
-        boolean result = this.dataHandler.validate(value);
-        return result ? "" : this.dataHandler.getErrorInfo();
+public final class ChinaMobileRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
+    
+    public ChinaMobileRequestParameterHandlerImpl(final String name) {
+        super(name, RequestDataType.CHINA_MOBILE, "^1[3578]{1}\\d{9}\\d?$", " must be china mobile");
     }
 }

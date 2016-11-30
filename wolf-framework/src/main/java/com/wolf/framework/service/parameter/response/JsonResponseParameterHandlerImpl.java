@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.response;
 
-import com.wolf.framework.data.DataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 
 /**
@@ -12,7 +12,7 @@ public final class JsonResponseParameterHandlerImpl extends AbstractResponsePara
 
     private final String defaultValue;
 
-    public JsonResponseParameterHandlerImpl(String name, DataType dataType, String defaultValue) {
+    public JsonResponseParameterHandlerImpl(String name, ResponseDataType dataType, String defaultValue) {
         super(name, dataType);
         this.defaultValue = defaultValue;
     }

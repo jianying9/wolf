@@ -1,6 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
-import com.wolf.framework.data.DataHandler;
+import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 
 /**
@@ -8,15 +8,9 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  *
  * @author aladdin
  */
-public final class DateRequestParameterHandlerImpl extends AbstractRequestParamperHandler implements RequestParameterHandler {
-
-    public DateRequestParameterHandlerImpl(final String name, final DataHandler dataHandler) {
-        super(name, dataHandler);
-    }
-
-    @Override
-    public String validate(final String value) {
-        boolean result = this.dataHandler.validate(value);
-        return result ? "" : this.dataHandler.getErrorInfo();
+public final class DateRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
+    
+    public DateRequestParameterHandlerImpl(final String name) {
+        super(name, RequestDataType.DATE, "[1-9]\\d{3}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\\d|3[0-1])", " must be date[yyyy-mm-dd]");
     }
 }

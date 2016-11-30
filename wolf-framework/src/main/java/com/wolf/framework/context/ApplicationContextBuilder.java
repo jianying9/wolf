@@ -5,8 +5,6 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
-import com.wolf.framework.data.DataHandlerFactory;
-import com.wolf.framework.data.DataHandlerFactoryImpl;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.interceptor.Interceptor;
@@ -200,9 +198,8 @@ public class ApplicationContextBuilder<T extends Entity> {
         this.logger.info("parse annotation InterceptorConfig finished.");
         //对Interceptor进行注入
         interceptorContext.inject(injecterList);
-        //初始化data类型工厂对象
-        final DataHandlerFactory dataHanlderFactory = new DataHandlerFactoryImpl();
-        ParameterContext parametersContext = new ParameterContextImpl(dataHanlderFactory, ApplicationContext.CONTEXT);
+        //初始化参数上下文对象
+        ParameterContext parametersContext = new ParameterContextImpl(ApplicationContext.CONTEXT);
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
         this.workerBuildContext = new WorkerBuildContextImpl(

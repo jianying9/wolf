@@ -1,11 +1,11 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.data.DataType;
 import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
+import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,12 +26,12 @@ import com.wolf.framework.service.request.ListRequest;
         route = "/wolf/service",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = DataType.STRING, desc = ""),
-            @ResponseConfig(name = "groupName", dataType = DataType.STRING, desc = ""),
-            @ResponseConfig(name = "validateSession", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "hasAsyncResponse", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "page", dataType = DataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "desc", dataType = DataType.STRING, desc = "")
+            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "groupName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
         },
         responseCodes = {},
         validateSession = false,

@@ -10,26 +10,28 @@ import java.util.regex.Pattern;
  *
  * @author aladdin
  */
-public final class RegexRequestParameterHandlerImpl implements RequestParameterHandler {
+public abstract class AbstractRegexRequestParameterHandler implements RequestParameterHandler {
 
     private final String name;
+    private final RequestDataType dataType;
     private final Pattern pattern;
     private final String errorInfo;
 
-    public RegexRequestParameterHandlerImpl(String name, String text) {
+    public AbstractRegexRequestParameterHandler(String name, RequestDataType dataType, String text, String errorInfo) {
         this.name = name;
         this.pattern = Pattern.compile(text);
-        this.errorInfo = " must be regex(" + text + ")";
+        this.dataType = dataType;
+        this.errorInfo = errorInfo;
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return this.name;
     }
 
     @Override
-    public RequestDataType getDataType() {
-        return RequestDataType.REGEX;
+    public final RequestDataType getDataType() {
+        return this.dataType;
     }
 
     @Override
