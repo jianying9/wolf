@@ -2,7 +2,10 @@ package com.wolf.framework.dao.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.Resource;
+import com.wolf.framework.logger.LogFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -13,6 +16,8 @@ public class CassandraResourceImpl implements Resource {
     private final Session session;
 
     private final Cluster cluster;
+    
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
 
     public CassandraResourceImpl(Session session, Cluster cluster) {
         this.session = session;
@@ -21,6 +26,7 @@ public class CassandraResourceImpl implements Resource {
 
     @Override
     public void destory() {
+        this.logger.info("cassandra client shutdown...");
         this.session.close();
         this.cluster.close();
     }
