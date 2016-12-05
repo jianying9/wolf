@@ -20,15 +20,11 @@ public interface BaseServiceResponse {
     
     public String getNewSessionId();
     
+    public void setPushId(String pushId);
+    
+    public String getPushId();
+    
     public String getPushMessage();
-    
-    public boolean push(String sid);
-    
-    public boolean push(String sid, String responseMessage);
-    
-    public boolean asyncPush(String sid);
-    
-    public boolean asyncPush(String sid, String responseMessage);
     
     public void closeOtherSession(String otherSid);
 }

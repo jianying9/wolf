@@ -54,4 +54,5 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractServiceRespons
         newDataMap.put(name, value);
         this.dataMap = newDataMap;
     }
+
 }

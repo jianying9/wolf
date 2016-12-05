@@ -26,13 +26,13 @@ public interface Response {
     
     public String getNewSessionId();
     
+    public void setPushId(String pushId);
+    
+    public String getPushId();
+    
     public String getResponseMessage();
     
     public String getPushMessage();
-    
-    public boolean push(String sid, String responseMessage);
-    
-    public boolean asyncPush(String sid, String responseMessage);
     
     public void closeOtherSession(String otherSid);
 }

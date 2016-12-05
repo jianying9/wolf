@@ -1,6 +1,5 @@
 package com.wolf.framework.reponse;
 
-import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
@@ -23,6 +22,7 @@ public class ResponseImpl implements WorkerResponse {
     private String code = ResponseCodeConfig.SUCCESS;
     private String newSessionId = null;
     private String callback = null;
+    private String pushId = null;
     private final Set<String> customCodeSet;
 
     public ResponseImpl(WorkerContext workerContext) {
@@ -108,6 +108,9 @@ public class ResponseImpl implements WorkerResponse {
         if (this.callback != null && isPush == false) {
             jsonBuilder.append("\",\"callback\":\"").append(this.callback);
         }
+        if (isPush && this.pushId != null) {
+            jsonBuilder.append("\",\"pushId\":\"").append(this.pushId);
+        }
         jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
         this.responseMessage = jsonBuilder.toString();
     }
@@ -146,19 +149,17 @@ public class ResponseImpl implements WorkerResponse {
     }
 
     @Override
-    public boolean push(String sid, String responseMessage) {
-        CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
-        return cometContext.push(sid, responseMessage);
-    }
-
-    @Override
-    public boolean asyncPush(String sid, String responseMessage) {
-        CometContext cometContext = this.workerContext.getApplicationContext().getCometContext();
-        return cometContext.asyncPush(sid, responseMessage);
-    }
-
-    @Override
     public void closeOtherSession(String otherSid) {
         this.workerContext.closeSession(otherSid);
+    }
+
+    @Override
+    public void setPushId(String pushId) {
+        this.pushId = pushId;
+    }
+
+    @Override
+    public String getPushId() {
+        return this.pushId;
     }
 }

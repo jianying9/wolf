@@ -55,29 +55,17 @@ public abstract class AbstractServiceResponse  implements BaseServiceResponse {
     }
     
     @Override
-    public boolean push(String sid) {
-        String responseMessage = this.getPushMessage();
-        return this.push(sid, responseMessage);
-    }
-    
-    @Override
-    public boolean push(String sid, String responseMessage) {
-        return this.response.push(sid, responseMessage);
-    }
-    
-    @Override
-    public boolean asyncPush(String sid) {
-        String responseMessage = this.getPushMessage();
-        return this.asyncPush(sid, responseMessage);
-    }
-    
-    @Override
-    public boolean asyncPush(String sid, String responseMessage) {
-        return this.response.asyncPush(sid, responseMessage);
-    }
-    
-    @Override
     public void closeOtherSession(String otherSid) {
         this.response.closeOtherSession(otherSid);
+    }
+    
+    @Override
+    public void setPushId(String pushId) {
+        this.response.setPushId(pushId);
+    }
+
+    @Override
+    public String getPushId() {
+        return this.response.getPushId();
     }
 }
