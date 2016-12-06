@@ -58,6 +58,8 @@ public class WorkerBuilder {
             } else if (ListService.class.isAssignableFrom(clazz)) {
                 //集合类型
                 page = true;
+            } else {
+                throw new RuntimeException(clazz.getName() + "没有实现制定的接口");
             }
             //构造服务上下文信息
             ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, page, this.workerBuildContext);
@@ -80,7 +82,7 @@ public class WorkerBuilder {
                     workHandler = new ListServiceWorkHandlerImpl(listService, serviceContext);
                 }
             } catch (InstantiationException | IllegalAccessException ex) {
-                this.logger.error("instance class:" + clazz.getName(), ex);
+                throw new RuntimeException(ex);
             }
             //判断是否加入拦截环节
             if(this.workerBuildContext.getInterceptorList().isEmpty() == false) {

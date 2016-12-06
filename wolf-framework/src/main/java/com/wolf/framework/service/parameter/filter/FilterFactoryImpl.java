@@ -1,5 +1,6 @@
 package com.wolf.framework.service.parameter.filter;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -19,5 +20,11 @@ public final class FilterFactoryImpl implements FilterFactory {
     @Override
     public Filter getFilter(final FilterType filterType) {
         return this.filterMap.get(filterType);
+    }
+
+    @Override
+    public Filter[] getAllFilter() {
+        Collection<Filter> filterCollection = this.filterMap.values();
+        return filterCollection.toArray(new Filter[filterCollection.size()]);
     }
 }

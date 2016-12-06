@@ -8,4 +8,6 @@ package com.wolf.framework.service.parameter.filter;
 public interface FilterFactory {
 
     public Filter getFilter(final FilterType filterType);
+    
+    public Filter[] getAllFilter();
 }

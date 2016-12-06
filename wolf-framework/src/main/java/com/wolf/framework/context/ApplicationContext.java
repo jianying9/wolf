@@ -2,6 +2,8 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
+import com.wolf.framework.service.parameter.filter.FilterFactory;
+import com.wolf.framework.service.parameter.filter.FilterFactoryImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,11 @@ public final class ApplicationContext {
     private final List<Resource> resourceList = new ArrayList<>(2);
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
+    private final FilterFactory filterFactory = new FilterFactoryImpl();
+    
+    public FilterFactory getFilterFactory() {
+        return this.filterFactory;
+    }
 
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);

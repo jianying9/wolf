@@ -75,19 +75,22 @@ public final class JsonUtils {
     }
 
     public static String mapListToJSON(List<Map<String, String>> parameterMapList, String[] fieldNames, Map<String, ResponseParameterHandler> fieldMap) {
-        String jsonStr = "";//return
+        String jsonStr = "[]";//return
         if (parameterMapList != null && !parameterMapList.isEmpty()) {
+            StringBuilder jsonBuilder = new StringBuilder(parameterMapList.size() * fieldNames.length * 32);
+            jsonBuilder.append("[");
             if (parameterMapList.size() == 1) {
                 jsonStr = JsonUtils.mapToJSON(parameterMapList.get(0), fieldNames, fieldMap);
+                jsonBuilder.append(jsonStr);
             } else {
-                StringBuilder jsonBuilder = new StringBuilder(parameterMapList.size() * fieldNames.length * 32);
                 for (Map<String, String> parameterMap : parameterMapList) {
                     JsonUtils.mapToJSON(parameterMap, fieldNames, fieldMap, jsonBuilder);
                     jsonBuilder.append(',');
                 }
                 jsonBuilder.setLength(jsonBuilder.length() - 1);
-                jsonStr = jsonBuilder.toString();
             }
+            jsonBuilder.append("]");
+            jsonStr = jsonBuilder.toString();
         }
         return jsonStr;
     }

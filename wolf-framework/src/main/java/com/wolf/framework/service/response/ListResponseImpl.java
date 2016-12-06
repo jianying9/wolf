@@ -60,8 +60,8 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
         StringBuilder jsonBuilder = new StringBuilder(128);
         jsonBuilder.append("{\"nextIndex\":\"").append(this.nextIndex)
                 .append("\",\"nextSize\":").append(this.nextSize)
-                .append(",\"list\":[").append(listMessage)
-                .append("]}");
+                .append(",\"list\":").append(listMessage)
+                .append("}");
         String dataMessage = jsonBuilder.toString();
         return dataMessage;
     }
