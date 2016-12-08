@@ -1,9 +1,7 @@
-package com.wolf.framework.service;
+package com.wolf.framework.task;
 
 import com.wolf.framework.injecter.AbstractInjecter;
 import com.wolf.framework.injecter.Injecter;
-import com.wolf.framework.task.InjectTaskExecutor;
-import com.wolf.framework.task.TaskExecutor;
 import java.lang.reflect.Field;
 
 /**
@@ -25,7 +23,7 @@ public class TaskExecutorInjecterImpl extends AbstractInjecter<InjectTaskExecuto
 
     @Override
     protected Class<?> getObjectKey(Field field) {
-        return InjectTaskExecutor.class;
+        return TaskExecutor.class;
     }
 
     @Override

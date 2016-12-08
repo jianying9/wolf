@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -17,17 +18,16 @@ import java.util.concurrent.TimeUnit;
 public class TaskExecutorUnitTestImpl implements TaskExecutor {
 
     private final ThreadPoolExecutor threadPoolExecutor;
-    private final LinkedBlockingQueue<Runnable> linkedBlockingQueue;
-
+    
     public TaskExecutorUnitTestImpl() {
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
-        this.linkedBlockingQueue = new LinkedBlockingQueue<>(1000);
+        LinkedBlockingQueue<Runnable> linkedBlockingQueue = new LinkedBlockingQueue<>();
         this.threadPoolExecutor = new ThreadPoolExecutor(
-                2,
-                10,
-                360000,
+                1,
+                1,
+                10000,
                 TimeUnit.MILLISECONDS,
-                this.linkedBlockingQueue,
+                linkedBlockingQueue,
                 Executors.defaultThreadFactory(),
                 rejectedExecutionHandler);
     }
@@ -67,5 +67,9 @@ public class TaskExecutorUnitTestImpl implements TaskExecutor {
             }
         } catch (InterruptedException | ExecutionException ex) {
         }
+    }
+
+    @Override
+    public void schedule(Task task, long delay) {
     }
 }

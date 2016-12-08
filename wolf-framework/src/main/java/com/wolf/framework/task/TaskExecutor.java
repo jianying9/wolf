@@ -15,4 +15,6 @@ public interface TaskExecutor {
     public void syncSubmit(Task task);
 
     public void syncSubmit(List<Task> taskList);
+    
+    public void schedule(Task task, long delay);
 }

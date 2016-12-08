@@ -10,7 +10,7 @@ import com.wolf.framework.injecter.InjecterListImpl;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorBuilder;
 import com.wolf.framework.local.LocalServiceInjecterImpl;
-import com.wolf.framework.service.TaskExecutorInjecterImpl;
+import com.wolf.framework.task.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceBuilder;
