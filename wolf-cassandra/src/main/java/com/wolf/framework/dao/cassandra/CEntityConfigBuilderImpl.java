@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import com.wolf.framework.dao.cassandra.annotation.CEntityConfig;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -90,23 +92,23 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                     final String table = cDaoConfig.table();
                     String dataMap;
                     //set类型集合
-//                    Map<String, String> sets = new HashMap<String, String>(4, 1);
-//                    for (String name : cDaoConfig.sets()) {
-//                        dataMap = this.getDefaultDataMap(name);
-//                        sets.put(name, dataMap);
-//                    }
+                    Map<String, String> setNames = new HashMap<>(2, 1);
+                    for (String name : cDaoConfig.sets()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        setNames.put(name, dataMap);
+                    }
                     //list类型集合
-//                    Map<String, String> lists = new HashMap<String, String>(4, 1);
-//                    for (String name : cDaoConfig.lists()) {
-//                        dataMap = this.getDefaultDataMap(name);
-//                        sets.put(name, dataMap);
-//                    }
+                    Map<String, String> listNames = new HashMap<>(2, 1);
+                    for (String name : cDaoConfig.lists()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        listNames.put(name, dataMap);
+                    }
                     //map类型集合
-//                    Map<String, String> maps = new HashMap<String, String>(4, 1);
-//                    for (String name : cDaoConfig.maps()) {
-//                        dataMap = this.getDefaultDataMap(name);
-//                        sets.put(name, dataMap);
-//                    }
+                    Map<String, String> mapNames = new HashMap<>(2, 1);
+                    for (String name : cDaoConfig.maps()) {
+                        dataMap = this.getDefaultDataMap(name);
+                        mapNames.put(name, dataMap);
+                    }
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
@@ -147,6 +149,9 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                             table,
                             keyHandlerList,
                             columnHandlerList,
+                            setNames,
+                            listNames,
+                            mapNames,
                             clazz,
                             this.cassandraAdminContext
                     );

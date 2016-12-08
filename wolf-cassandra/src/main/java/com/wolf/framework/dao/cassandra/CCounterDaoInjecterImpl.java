@@ -4,7 +4,6 @@ import com.wolf.framework.dao.cassandra.annotation.InjectCCounterDao;
 import com.wolf.framework.injecter.AbstractInjecter;
 import com.wolf.framework.injecter.Injecter;
 import java.lang.reflect.Field;
-import com.wolf.framework.dao.cassandra.annotation.InjectCEntityDao;
 
 /**
  *

@@ -9,9 +9,13 @@ import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,6 +27,9 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     private final PreparedStatement insertPs;
     private final PreparedStatement countPs;
+    private final Map<String, String> setNames;
+    private final Map<String, String> listNames;
+    private final Map<String, String> mapNames;
 
     public CEntityDaoImpl(
             Session session,
@@ -30,8 +37,14 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             String table,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
+            Map<String, String> setNames,
+            Map<String, String> listNames,
+            Map<String, String> mapNames,
             Class<T> clazz) {
         super(session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
+        this.setNames = setNames;
+        this.listNames = listNames;
+        this.mapNames = mapNames;
         StringBuilder cqlBuilder = new StringBuilder(128);
         // insert
         cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
@@ -316,5 +329,420 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
         }
         return resultList;
+    }
+
+    @Override
+    public <S extends Object> void addSet(String columnName, S columnValue, Object... keyValue) {
+        Set<S> set = new HashSet<>(2, 1);
+        set.add(columnValue);
+        this.addSet(columnName, set, keyValue);
+    }
+
+    @Override
+    public <S extends Object> void addSet(String columnName, Set<S> columnValues, Object... keyValue) {
+        String dataMap = this.setNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(columnValues);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append(dataMap).append(" + ? WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <S extends Object> void removeSet(String columnName, S columnValue, Object... keyValue) {
+        Set<S> set = new HashSet<>(2, 1);
+        set.add(columnValue);
+        this.removeSet(columnName, set, keyValue);
+    }
+
+    @Override
+    public <S extends Object> void removeSet(String columnName, Set<S> columnValues, Object... keyValue) {
+        String dataMap = this.setNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(columnValues);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append(dataMap).append(" - ? WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public void clearSet(String columnName, Object... keyValue) {
+        String dataMap = this.setNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = {} WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <S extends Object> Set<S> getSet(String columnName, Class<S> type, Object... keyValue) {
+        Set<S> result = Collections.EMPTY_SET;
+        String dataMap = this.setNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (r != null) {
+                result = r.getSet(0, type);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public <L extends Object> void addList(String columnName, L columnValue, Object... keyValue) {
+        List<L> list = new ArrayList<>(1);
+        list.add(columnValue);
+        this.addList(columnName, list, keyValue);
+    }
+
+    @Override
+    public <L extends Object> void addList(String columnName, List<L> columnValues, Object... keyValue) {
+        String dataMap = this.listNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(columnValues);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append(dataMap).append(" + ? WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <L extends Object> void addFirstList(String columnName, L columnValue, Object... keyValue) {
+        List<L> list = new ArrayList<>(1);
+        list.add(columnValue);
+        this.addFirstList(columnName, list, keyValue);
+    }
+
+    @Override
+    public <L extends Object> void addFirstList(String columnName, List<L> columnValues, Object... keyValue) {
+        String dataMap = this.listNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(columnValues);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append("? + ").append(dataMap).append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <L extends Object> void removeList(String columnName, L columnValue, Object... keyValue) {
+        List<L> list = new ArrayList<>(1);
+        list.add(columnValue);
+        this.removeList(columnName, list, keyValue);
+    }
+
+    @Override
+    public <L extends Object> void removeList(String columnName, List<L> columnValues, Object... keyValue) {
+        String dataMap = this.listNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(columnValues);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append(dataMap).append(" - ? WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public void clearList(String columnName, Object... keyValue) {
+        String dataMap = this.listNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = [] WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <L extends Object> List<L> getList(String columnName, Class<L> type, Object... keyValue) {
+        List<L> result = Collections.EMPTY_LIST;
+        String dataMap = this.listNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (r != null) {
+                result = r.getList(0, type);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public <K extends Object, V extends Object> void addMap(String columnName, K mapKeyValue, V mapValue, Object... keyValue) {
+        Map<K, V> map = new HashMap<>(2, 1);
+        map.put(mapKeyValue, mapValue);
+        this.addMap(columnName, map, keyValue);
+    }
+
+    @Override
+    public <K extends Object, V extends Object> void addMap(String columnName, Map<K, V> maps, Object... keyValue) {
+        String dataMap = this.mapNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(maps);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = ").append(dataMap).append(" + ? WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <K extends Object, V extends Object> void removeMap(String columnName, K mapKeyValue, Object... keyValue) {
+        String dataMap = this.mapNames.get(columnName);
+        if (dataMap != null) {
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            valueList.add(mapKeyValue);
+            valueList.addAll(Arrays.asList(keyValue));
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("DELETE ").append(dataMap).append("[?] FROM ")
+                    .append(this.keyspace).append('.').append(this.table).append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(valueList.toArray()));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <K extends Object, V extends Object> void removeMap(String columnName, List<K> mapKeyValues, Object... keyValue) {
+        String dataMap = this.mapNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("DELETE ").append(dataMap).append("[?] FROM ")
+                    .append(this.keyspace).append('.').append(this.table).append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            BatchStatement batch = new BatchStatement();
+            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            for (K mapKeyValue : mapKeyValues) {
+                valueList.add(mapKeyValue);
+                valueList.addAll(Arrays.asList(keyValue));
+                batch.add(ps.bind(valueList.toArray()));
+                valueList.clear();
+            }
+            ResultSetFuture rsf = this.executeAsync(batch);
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public void clearMap(String columnName, Object... keyValue) {
+        String dataMap = this.mapNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                    .append(this.table).append(" SET ").append(dataMap)
+                    .append(" = {} WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+    @Override
+    public <K extends Object, V extends Object> Map<K, V> getMap(String columnName, Class<K> keyType, Class<V> valueType, Object... keyValue) {
+        Map<K, V> result = Collections.EMPTY_MAP;
+        String dataMap = this.mapNames.get(columnName);
+        if (dataMap != null) {
+            StringBuilder cqlBuilder = new StringBuilder(128);
+            cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
+                    .append(this.keyspace).append('.').append(this.table)
+                    .append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
+            ResultSetFuture rsf = this.executeAsync(ps.bind(keyValue));
+            ResultSet rs;
+            Row r = null;
+            try {
+                rs = rsf.get();
+                r = rs.one();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (r != null) {
+                result = r.getMap(0, keyType, valueType);
+            }
+        }
+        return result;
     }
 }

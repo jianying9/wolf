@@ -5,6 +5,7 @@ import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 实体数据访问对象创建类
@@ -18,9 +19,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String keyspace;
     //table name
     private final String table;
-//    private final Map<String, String> sets;
-//    private final Map<String, String> lists;
-//    private final Map<String, String> maps;
+    private final Map<String, String> setNames;
+    private final Map<String, String> listNames;
+    private final Map<String, String> mapNames;
     //key
     private final List<ColumnHandler> keyHandlerList;
     //column
@@ -36,6 +37,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
             String tableName,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
+            Map<String, String> setNames,
+            Map<String, String> listNames,
+            Map<String, String> mapNames,
             Class<T> clazz,
             CassandraAdminContext<T> cassandraAdminContext) {
         this.keyspace = keyspace;
@@ -46,6 +50,9 @@ public final class CEntityDaoBuilder<T extends Entity> {
         } else {
             this.columnHandlerList = columnHandlerList;
         }
+        this.setNames = setNames;
+        this.listNames = listNames;
+        this.mapNames = mapNames;
         this.clazz = clazz;
         this.cassandraAdminContext = cassandraAdminContext;
     }
@@ -71,10 +78,13 @@ public final class CEntityDaoBuilder<T extends Entity> {
         //
         CEntityDao<T> entityDao = new CEntityDaoImpl(
                 session,
-                keyspace,
-                table,
+                this.keyspace,
+                this.table,
                 this.keyHandlerList,
                 this.columnHandlerList,
+                this.setNames,
+                this.listNames,
+                this.mapNames,
                 this.clazz
         );
         return entityDao;
