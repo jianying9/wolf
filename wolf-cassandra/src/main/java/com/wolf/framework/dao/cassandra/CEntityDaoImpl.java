@@ -186,7 +186,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                 valueList.add(value);
             }
             cqlBuilder.setLength(cqlBuilder.length() - 4);
-            cqlBuilder.append(" IF EXISTS;");
+            cqlBuilder.append(";");
             Object[] values = valueList.toArray();
             String updateCql = cqlBuilder.toString();
             this.logger.debug("{} updateCql:{}", this.table, updateCql);
