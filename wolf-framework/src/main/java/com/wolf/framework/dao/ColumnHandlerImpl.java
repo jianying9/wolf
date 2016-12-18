@@ -27,7 +27,7 @@ public class ColumnHandlerImpl implements ColumnHandler {
             case "java.lang.Long":
                 this.columnDataType = ColumnDataType.LONG;
                 if (defaultValue.isEmpty()) {
-                    this.defaultValue = 0;
+                    this.defaultValue = 0l;
                 } else {
                     this.defaultValue = Long.parseLong(defaultValue);
                 }
@@ -54,7 +54,7 @@ public class ColumnHandlerImpl implements ColumnHandler {
             case "java.lang.Double":
                 this.columnDataType = ColumnDataType.DOUBLE;
                 if (defaultValue.isEmpty()) {
-                    this.defaultValue = 0;
+                    this.defaultValue = 0.0;
                 } else {
                     this.defaultValue = Double.parseDouble(defaultValue);
                 }
