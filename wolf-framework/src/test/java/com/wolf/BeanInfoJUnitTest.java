@@ -49,6 +49,10 @@ public class BeanInfoJUnitTest {
     //
 //     @Test
      public void hello() throws IntrospectionException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+         String a = "";
+         System.out.println(a.getClass().getName());
+         String b = new String("111");
+         System.out.println(b.getClass().getName());
          TestEntity te = new TestEntity();
          Field[] fields = TestEntity.class.getDeclaredFields();
          for (Field field : fields) {

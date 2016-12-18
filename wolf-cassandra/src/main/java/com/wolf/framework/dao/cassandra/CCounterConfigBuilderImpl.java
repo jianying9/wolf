@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 
 /**
@@ -29,10 +30,12 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     private final List<Class<T>> cEntityClassList = new ArrayList<>();
     private CassandraAdminContext cassandraAdminContext;
+    private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
 
     @Override
-    public void init(ApplicationContext context) {
+    public void init(ApplicationContext context, Map<Class<?>, List<ColumnHandler>> entityInfoMap) {
         this.cassandraAdminContext = CassandraAdminContextImpl.getInstance(context);
+        this.entityInfoMap = entityInfoMap;
     }
 
     @Override
@@ -124,6 +127,12 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                             }
                         }
                     }
+                    //缓存所有columnHandler
+                    List<ColumnHandler> allColumnHandlerList = new ArrayList(keyHandlerList.size() + columnHandlerList.size());
+                    allColumnHandlerList.addAll(keyHandlerList);
+                    allColumnHandlerList.addAll(columnHandlerList);
+                    this.entityInfoMap.put(clazz, allColumnHandlerList);
+                    //
                     CCounterDaoBuilder<T> entityDaoBuilder = new CCounterDaoBuilder<>(
                             keyspace,
                             table,

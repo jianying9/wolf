@@ -6,7 +6,7 @@ package com.wolf.framework.service.request;
  */
 public interface ListRequest extends ObjectRequest {
 
-    public String getNextIndex();
+    public long getNextIndex();
     
-    public int getNextSize();
+    public long getNextSize();
 }

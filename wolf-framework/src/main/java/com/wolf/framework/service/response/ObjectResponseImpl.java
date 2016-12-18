@@ -3,6 +3,7 @@ package com.wolf.framework.service.response;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
+import com.wolf.framework.utils.EntityUtils;
 import com.wolf.framework.utils.JsonUtils;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +26,9 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractServiceRespons
     }
 
     @Override
-    public void setEntity(Entity t) {
-        this.setDataMap(t.toMap());
+    public void setEntity(T t) {
+        Map<String, String> tMap = EntityUtils.getMap(t);
+        this.setDataMap(tMap);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.wolf.framework.service.context;
 
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.SessionHandleType;
-import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.service.parameter.RequestParameterHandlerBuilder;
@@ -99,7 +98,15 @@ public class ServiceContextImpl implements ServiceContext {
         this.requestConfigs = serviceConfig.requestConfigs();
         this.responseConfigs = serviceConfig.responseConfigs();
         this.responseCodes = serviceConfig.responseCodes();
-        this.hasAsyncResponse = serviceConfig.hasAsyncResponse();
+        boolean asyncResponse = false;
+        for (ResponseCode responseCode : this.responseCodes) {
+            if(responseCode.async()) {
+                asyncResponse = true;
+                break;
+            }
+        }
+        
+        this.hasAsyncResponse = asyncResponse;
         //
         Set<String> reservedParamSet = ServiceContextImpl.getReservedParamSet();
         Set<String> reservedCodeSet = ServiceContextImpl.getReservedCodeSet();
@@ -124,7 +131,6 @@ public class ServiceContextImpl implements ServiceContext {
             }
         }
         //
-        ParameterContext parameterContext = workerBuildContext.getParameterContext();
         RequestParameterHandler requestParameterHandler;
         RequestParameterHandlerBuilder requestParameterHandlerBuilder;
         final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(unrequiredRequestConfigList.size(), 1);
@@ -156,8 +162,8 @@ public class ServiceContextImpl implements ServiceContext {
         this.requiredParameter = requiredNames;
         this.requestParameterHandlerMap = requestParameterMap;
         //
-        ResponseParameterHandler outputParameterHandler;
-        ResponseParameterHandlerBuilder outputParameterHandlerBuilder;
+        ResponseParameterHandler responseParameterHandler;
+        ResponseParameterHandlerBuilder responseParameterHandlerBuilder;
         //获取返回参数
         final Map<String, ResponseParameterHandler> returnParameterMap;
         final String[] returnNames;
@@ -165,11 +171,10 @@ public class ServiceContextImpl implements ServiceContext {
             List<String> returnNameList = new ArrayList<>(this.responseConfigs.length);
             returnParameterMap = new HashMap<>(this.responseConfigs.length, 1);
             for (ResponseConfig parameterConfig : this.responseConfigs) {
-                outputParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
-                        parameterConfig,
-                        parameterContext);
-                outputParameterHandler = outputParameterHandlerBuilder.build();
-                returnParameterMap.put(parameterConfig.name(), outputParameterHandler);
+                responseParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
+                        parameterConfig);
+                responseParameterHandler = responseParameterHandlerBuilder.build();
+                returnParameterMap.put(parameterConfig.name(), responseParameterHandler);
                 returnNameList.add(parameterConfig.name());
             }
             returnNames = returnNameList.toArray(new String[returnNameList.size()]);

@@ -68,7 +68,6 @@ public class InquireServiceImpl implements ListService {
             resultMapList.add(resultMap);
         }
         listResponse.setDataMapList(resultMapList);
-        listResponse.setNextSize(resultMapList.size());
         listResponse.success();
     }
 

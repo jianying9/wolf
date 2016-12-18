@@ -2,6 +2,8 @@ package com.wolf.framework.dao;
 
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -9,7 +11,7 @@ import com.wolf.framework.injecter.Injecter;
  */
 public interface DaoConfigBuilder {
     
-    public void init(ApplicationContext context);
+    public void init(ApplicationContext context, Map<Class<?>, List<ColumnHandler>> entityInfoMap);
     
     public Class<?> getAnnotation();
     

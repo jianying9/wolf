@@ -1,19 +1,22 @@
 package com.wolf.framework.service.response;
 
+import com.wolf.framework.dao.Entity;
 import com.wolf.framework.reponse.Response;
 
 /**
  *
  * @author jianying9
+ * @param <T>
  */
-public abstract class AbstractServiceResponse  implements BaseServiceResponse {
+public abstract class AbstractServiceResponse<T extends Entity>  implements BaseServiceResponse {
 
     protected final Response response;
+    
     
     public AbstractServiceResponse(Response response) {
         this.response = response;
     }
-
+    
     @Override
     public final String getCode() {
         return this.response.getCode();

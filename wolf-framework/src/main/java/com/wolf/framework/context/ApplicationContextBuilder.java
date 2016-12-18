@@ -2,6 +2,7 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
@@ -25,8 +26,6 @@ import com.wolf.framework.interceptor.InterceptorContext;
 import com.wolf.framework.interceptor.InterceptorContextImpl;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.worker.build.WorkerBuilder;
-import com.wolf.framework.service.parameter.ParameterContext;
-import com.wolf.framework.service.parameter.ParameterContextImpl;
 import com.wolf.framework.task.TaskExecutor;
 import com.wolf.framework.task.TaskExecutorImpl;
 import com.wolf.framework.task.TaskExecutorUnitTestImpl;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import com.wolf.framework.worker.build.WorkerBuildContext;
+import java.util.HashMap;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -99,6 +99,8 @@ public class ApplicationContextBuilder<T extends Entity> {
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList<>();
         //动态查找需要搜索的dao注解创建对象
+        //实体信息存储对象
+        final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap<>(2, 1);
         this.logger.info("Finding dao annotation...");
         packageNameList.add("com.wolf.framework.dao");
         List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
@@ -111,13 +113,14 @@ public class ApplicationContextBuilder<T extends Entity> {
                     //发现DaoConfig类型,实例化
                     daoConfigBuilder = (DaoConfigBuilder) clazz.newInstance();
                     //初始化
-                    daoConfigBuilder.init(ApplicationContext.CONTEXT);
+                    daoConfigBuilder.init(ApplicationContext.CONTEXT, entityInfoMap);
                     this.daoConfigBuilderList.add(daoConfigBuilder);
                 }
             }
         } catch (InstantiationException | IllegalAccessException ex) {
             this.logger.error("Error when instance DaoConfig. Cause:", ex);
         }
+        ApplicationContext.CONTEXT.setEntityInfo(entityInfoMap);
         //查找注解类
         this.logger.info("Finding annotation...");
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
@@ -198,13 +201,10 @@ public class ApplicationContextBuilder<T extends Entity> {
         this.logger.info("parse annotation InterceptorConfig finished.");
         //对Interceptor进行注入
         interceptorContext.inject(injecterList);
-        //初始化参数上下文对象
-        ParameterContext parametersContext = new ParameterContextImpl(ApplicationContext.CONTEXT);
         //解析ServiceConfig
         this.logger.info("parsing annotation ServiceConfig...");
         this.workerBuildContext = new WorkerBuildContextImpl(
                 injecterList,
-                parametersContext,
                 interceptorContext,
                 ApplicationContext.CONTEXT);
         final WorkerBuilder workerBuilder = new WorkerBuilder(this.workerBuildContext);

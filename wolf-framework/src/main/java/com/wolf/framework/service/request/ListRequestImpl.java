@@ -8,8 +8,8 @@ import com.wolf.framework.request.Request;
  */
 public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
     
-    private final String nextIndex;
-    private final int nextSize;
+    private final long nextIndex;
+    private final long nextSize;
 
     public ListRequestImpl(Request request) {
         super(request);
@@ -17,21 +17,21 @@ public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
         if(nextIndexTemp == null) {
             nextIndexTemp = "-1";
         }
-        this.nextIndex = nextIndexTemp;
+        this.nextIndex = Long.parseLong(nextIndexTemp);
         String nextSizeTemp = this.getParameter("nextSize");
         if(nextSizeTemp == null) {
             nextSizeTemp = "6";
         }
-        this.nextSize = Integer.parseInt(nextSizeTemp);
+        this.nextSize = Long.parseLong(nextSizeTemp);
     }
 
     @Override
-    public String getNextIndex() {
+    public long getNextIndex() {
         return this.nextIndex;
     }
 
     @Override
-    public int getNextSize() {
+    public long getNextSize() {
         return this.nextSize;
     }
 }

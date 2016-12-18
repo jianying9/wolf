@@ -1,5 +1,6 @@
 package com.wolf.framework.service.parameter;
 
+import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.service.parameter.filter.Filter;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterType;
@@ -16,20 +17,16 @@ import com.wolf.framework.service.parameter.response.StringResponseParameterHand
 public class ResponseParameterHandlerBuilder {
 
     private final ResponseConfig outputConfig;
-    private final ParameterContext parameterContext;
 
-    public ResponseParameterHandlerBuilder(
-            final ResponseConfig outputConfig,
-            final ParameterContext parameterContext) {
-        this.outputConfig = outputConfig;
-        this.parameterContext = parameterContext;
+    public ResponseParameterHandlerBuilder(final ResponseConfig ResponseConfig) {
+        this.outputConfig = ResponseConfig;
     }
 
     public ResponseParameterHandler build() {
         ResponseParameterHandler parameterHandler = null;
         final String fieldName = this.outputConfig.name();
         //
-        final FilterFactory filterFactory = this.parameterContext.getFilterFactory();
+        final FilterFactory filterFactory = ApplicationContext.CONTEXT.getFilterFactory();
         //基本数据类型
         ResponseDataType dataType = this.outputConfig.dataType();
         switch (dataType) {

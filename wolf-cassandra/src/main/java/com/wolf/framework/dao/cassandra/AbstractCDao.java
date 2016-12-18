@@ -115,17 +115,11 @@ public abstract class AbstractCDao<T extends Entity> {
                 t = this.clazz.newInstance();
                 for (ColumnHandler key : this.keyHandlerList) {
                     value = entityMap.get(key.getColumnName());
-                    field = key.getField();
-                    field.setAccessible(true);
-                    field.set(t, value);
-                    field.setAccessible(false);
+                    key.setFieldValue(t, value);
                 }
-                for (ColumnHandler key : this.columnHandlerList) {
-                    value = entityMap.get(key.getColumnName());
-                    field = key.getField();
-                    field.setAccessible(true);
-                    field.set(t, value);
-                    field.setAccessible(false);
+                for (ColumnHandler column : this.columnHandlerList) {
+                    value = entityMap.get(column.getColumnName());
+                    column.setFieldValue(t, value);
                 }
             } catch (InstantiationException | IllegalAccessException ex) {
             }

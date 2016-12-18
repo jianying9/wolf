@@ -49,7 +49,6 @@ public class InquireGroupServiceImpl implements ListService {
             resultMapList.add(resultMap);
         }
         listResponse.setDataMapList(resultMapList);
-        listResponse.setNextSize(resultMapList.size());
         listResponse.success();
     }
 }

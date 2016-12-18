@@ -78,9 +78,4 @@ public @interface ServiceConfig {
      */
     public ResponseCode[] responseCodes() default {};
     
-    /**
-     * 是否有异步的响应业务
-     * @return 
-     */
-    public boolean hasAsyncResponse() default false;
 }

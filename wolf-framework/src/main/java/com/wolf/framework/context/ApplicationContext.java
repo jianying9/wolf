@@ -2,6 +2,8 @@ package com.wolf.framework.context;
 
 import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
+import com.wolf.framework.dao.ColumnHandler;
+import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterFactoryImpl;
 import com.wolf.framework.worker.ServiceWorker;
@@ -25,6 +27,16 @@ public final class ApplicationContext {
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
     private final FilterFactory filterFactory = new FilterFactoryImpl();
+    
+    private  Map<Class<?>, List<ColumnHandler>> entityInfoMap;
+    
+    public List<ColumnHandler> getEntityInfo(Class<? extends Entity> clazz) {
+        return this.entityInfoMap.get(clazz);
+    }
+    
+    void setEntityInfo(Map<Class<?>, List<ColumnHandler>> entityInfoMap) {
+        this.entityInfoMap = entityInfoMap;
+    }
     
     public FilterFactory getFilterFactory() {
         return this.filterFactory;

@@ -31,10 +31,12 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     private final List<Class<T>> cEntityClassList = new ArrayList<>();
     private CassandraAdminContext cassandraAdminContext;
+    private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
 
     @Override
-    public void init(ApplicationContext context) {
+    public void init(ApplicationContext context, Map<Class<?>, List<ColumnHandler>> entityInfoMap) {
         this.cassandraAdminContext = CassandraAdminContextImpl.getInstance(context);
+        this.entityInfoMap = entityInfoMap;
     }
 
     @Override
@@ -144,6 +146,12 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                             }
                         }
                     }
+                    //缓存所有columnHandler
+                    List<ColumnHandler> allColumnHandlerList = new ArrayList(keyHandlerList.size() + columnHandlerList.size());
+                    allColumnHandlerList.addAll(keyHandlerList);
+                    allColumnHandlerList.addAll(columnHandlerList);
+                    this.entityInfoMap.put(clazz, allColumnHandlerList);
+                    //
                     CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<>(
                             keyspace,
                             table,

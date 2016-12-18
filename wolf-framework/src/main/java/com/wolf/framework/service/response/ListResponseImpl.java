@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.wolf.framework.service.request.ListRequest;
+import com.wolf.framework.utils.EntityUtils;
 
 /**
  *
@@ -18,8 +19,8 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;
-    private String nextIndex;
-    private int nextSize;
+    private final long nextIndex;
+    private final long nextSize;
     private List<Map<String, String>> dataMapList = null;
 
     public ListResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap, ListRequest listServiceRequest) {
@@ -38,28 +39,25 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
     @Override
     public void setEntityList(List<T> tList) {
         List<Map<String, String>> dataMapListTemp = new ArrayList<>(tList.size());
+        Map<String, String> tMap;
         for(T t : tList) {
-            dataMapListTemp.add(t.toMap());
+            tMap = EntityUtils.getMap(t);
+            dataMapListTemp.add(tMap);
         }
         this.setDataMapList(dataMapListTemp);
-    }
-
-    @Override
-    public void setNextIndex(String nextIndex) {
-        this.nextIndex = nextIndex;
-    }
-
-    @Override
-    public void setNextSize(int nextSize) {
-        this.nextSize = nextSize;
     }
 
     @Override
     public String getDataMessage() {
         String listMessage = JsonUtils.mapListToJSON(this.dataMapList, this.returnParameter, this.parameterHandlerMap);
         StringBuilder jsonBuilder = new StringBuilder(128);
-        jsonBuilder.append("{\"nextIndex\":\"").append(this.nextIndex)
-                .append("\",\"nextSize\":").append(this.nextSize)
+        boolean hasNext = false;
+        if(this.dataMapList != null && this.dataMapList.size() == this.nextSize) {
+            hasNext = true;
+        }
+        jsonBuilder.append("{\"nextIndex\":").append(this.nextIndex)
+                .append(",\"nextSize\":").append(this.nextSize)
+                .append(",\"hasNext\":").append(hasNext)
                 .append(",\"list\":").append(listMessage)
                 .append("}");
         String dataMessage = jsonBuilder.toString();

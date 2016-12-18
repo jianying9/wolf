@@ -4,10 +4,8 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorContext;
-import com.wolf.framework.service.parameter.ParameterContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
-import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +22,6 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     private final Map<String, String> existClassMap = new HashMap<>(1024);
     private final Injecter injecter;
     private final ApplicationContext applicationContext;
-    private final ParameterContext parameterContext;
     private final RequestParameterHandler nextIndexHandler;
     private final RequestParameterHandler nextSizeHandler;
     private final List<Interceptor> interceptorList;
@@ -50,21 +47,18 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
      * 构造函数
      *
      * @param injecter
-     * @param parameterContext
      * @param interceptorContext
      * @param applicationContext
      */
     public WorkerBuildContextImpl(
             final Injecter injecter,
-            final ParameterContext parameterContext,
             final InterceptorContext interceptorContext,
             final ApplicationContext applicationContext) {
         this.serviceWorkerMap = new HashMap<>(256, 1);
         this.injecter = injecter;
-        this.parameterContext = parameterContext;
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
-        this.nextIndexHandler = new StringRequestParameterHandlerImpl("nextIndex", 64, 0);
+        this.nextIndexHandler = new LongRequestParameterHandlerImpl("nextIndex", Long.MAX_VALUE, 0);
         this.nextSizeHandler = new LongRequestParameterHandlerImpl("nextSize", 100, 1);
     }
 
@@ -86,11 +80,6 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     @Override
     public ApplicationContext getApplicationContext() {
         return this.applicationContext;
-    }
-
-    @Override
-    public ParameterContext getParameterContext() {
-        return this.parameterContext;
     }
 
     @Override
