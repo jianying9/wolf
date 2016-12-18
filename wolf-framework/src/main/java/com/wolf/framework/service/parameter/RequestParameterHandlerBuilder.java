@@ -52,7 +52,7 @@ public class RequestParameterHandlerBuilder {
                 parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName);
                 break;
             case ENUM:
-                String[] enumValues = text.split("|");
+                String[] enumValues = text.split(",");
                 parameterHandler = new EnumRequestParameterHandlerImpl(fieldName, enumValues);
                 break;
             case REGEX:
