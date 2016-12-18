@@ -8,5 +8,5 @@ public interface ListRequest extends ObjectRequest {
 
     public long getNextIndex();
     
-    public long getNextSize();
+    public int getNextSize();
 }

@@ -9,7 +9,7 @@ import com.wolf.framework.request.Request;
 public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
     
     private final long nextIndex;
-    private final long nextSize;
+    private final int nextSize;
 
     public ListRequestImpl(Request request) {
         super(request);
@@ -22,7 +22,7 @@ public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
         if(nextSizeTemp == null) {
             nextSizeTemp = "6";
         }
-        this.nextSize = Long.parseLong(nextSizeTemp);
+        this.nextSize = Integer.parseInt(nextSizeTemp);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
     }
 
     @Override
-    public long getNextSize() {
+    public int getNextSize() {
         return this.nextSize;
     }
 }
