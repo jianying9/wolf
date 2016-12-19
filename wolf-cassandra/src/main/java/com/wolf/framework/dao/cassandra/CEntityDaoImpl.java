@@ -186,7 +186,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                 valueList.add(value);
             }
             cqlBuilder.setLength(cqlBuilder.length() - 4);
-            cqlBuilder.append(";");
+            cqlBuilder.append(" IF EXISTS;");
             Object[] values = valueList.toArray();
             String updateCql = cqlBuilder.toString();
             this.logger.debug("{} updateCql:{}", this.table, updateCql);
@@ -251,6 +251,55 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                 throw new RuntimeException(ex);
             }
         }
+    }
+    
+    @Override
+    public Object[] updateOrInsert(Map<String, Object> entityMap) {
+        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        Object value;
+        for (ColumnHandler ch : this.keyHandlerList) {
+            value = entityMap.get(ch.getColumnName());
+            if (value == null) {
+                throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+            }
+            valueList.add(value);
+        }
+        Object[] keyValue = valueList.toArray();
+        valueList.clear();
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        boolean canUpdate = false;
+        cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
+                .append(this.table).append(" SET ");
+        for (ColumnHandler ch : this.columnHandlerList) {
+            value = entityMap.get(ch.getColumnName());
+            if (value != null) {
+                canUpdate = true;
+                valueList.add(value);
+                cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+            }
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        if (canUpdate) {
+            cqlBuilder.append(" WHERE ");
+            for (ColumnHandler ch : this.keyHandlerList) {
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+                value = entityMap.get(ch.getColumnName());
+                valueList.add(value);
+            }
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
+            cqlBuilder.append(";");
+            Object[] values = valueList.toArray();
+            String updateCql = cqlBuilder.toString();
+            this.logger.debug("{} updateCql:{}", this.table, updateCql);
+            PreparedStatement ps = this.cachePrepare(updateCql);
+            ResultSetFuture rsf = this.executeAsync(ps.bind(values));
+            try {
+                rsf.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return keyValue;
     }
 
     @Override

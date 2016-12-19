@@ -67,6 +67,14 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMapList
      */
     public void batchUpdate(List<Map<String, Object>> entityMapList);
+    
+    /**
+     * 更新或新增,返回keyValue
+     *
+     * @param entityMap
+     * @return
+     */
+    public Object[] updateOrInsert(Map<String, Object> entityMap);
 
     /**
      * 更新并返回更新结果
