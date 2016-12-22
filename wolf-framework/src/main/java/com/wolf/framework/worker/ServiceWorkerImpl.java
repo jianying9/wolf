@@ -62,11 +62,11 @@ public class ServiceWorkerImpl implements ServiceWorker {
         for (RequestConfig requestConfig : requestConfigs) {
             type = requestConfig.dataType();
             typeStr = type.name();
-            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE|| type == RequestDataType.STRING) {
+            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
                 typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
             ignoreEmpty = requestConfig.ignoreEmpty();
-            if(requestConfig.required()) {
+            if (requestConfig.required()) {
                 ignoreEmpty = false;
             }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
@@ -74,6 +74,20 @@ public class ServiceWorkerImpl implements ServiceWorker {
                     .append(",\"ignoreEmpty\":").append(ignoreEmpty)
                     .append(",\"type\":\"").append(typeStr)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
+                    .append("\"}").append(',');
+        }
+        if (this.serviceContext.page()) {
+            jsonBuilder.append("{\"name\":\"").append("nextIndex")
+                    .append("\",\"required\":").append("false")
+                    .append(",\"ignoreEmpty\":").append("true")
+                    .append(",\"type\":\"").append("LONG")
+                    .append("\",\"desc\":\"").append("分页起始记录id")
+                    .append("\"}").append(',');
+            jsonBuilder.append("{\"name\":\"").append("nextSize")
+                    .append("\",\"required\":").append("false")
+                    .append(",\"ignoreEmpty\":").append("true")
+                    .append(",\"type\":\"").append("LONG[1,100]")
+                    .append("\",\"desc\":\"").append("分页读取记录数量")
                     .append("\"}").append(',');
         }
         if (jsonBuilder.length() > 1) {
