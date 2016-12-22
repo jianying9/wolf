@@ -13,4 +13,9 @@ public final class EmailRequestParameterHandlerImpl extends AbstractRegexRequest
     public EmailRequestParameterHandlerImpl(final String name) {
         super(name, RequestDataType.EMAIL, "^[a-z\\d]+[a-z\\d_]+@[a-z\\d]+\\.com$", " must be email");
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "";
+    }
 }

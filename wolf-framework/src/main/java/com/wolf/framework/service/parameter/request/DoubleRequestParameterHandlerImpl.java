@@ -57,4 +57,9 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     public RequestDataType getDataType() {
         return RequestDataType.DOUBLE;
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "0";
+    }
 }

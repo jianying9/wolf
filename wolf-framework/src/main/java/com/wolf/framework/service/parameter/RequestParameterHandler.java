@@ -11,4 +11,6 @@ public interface RequestParameterHandler {
     public RequestDataType getDataType();
 
     public String validate(String value);
+    
+    public String getDefaultValue();
 }

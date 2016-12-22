@@ -49,4 +49,9 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     public RequestDataType getDataType() {
         return RequestDataType.STRING;
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "";
+    }
 }

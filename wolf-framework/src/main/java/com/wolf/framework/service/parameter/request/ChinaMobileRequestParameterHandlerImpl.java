@@ -13,4 +13,9 @@ public final class ChinaMobileRequestParameterHandlerImpl extends AbstractRegexR
     public ChinaMobileRequestParameterHandlerImpl(final String name) {
         super(name, RequestDataType.CHINA_MOBILE, "^1[3578]{1}\\d{9}\\d?$", " must be china mobile");
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "";
+    }
 }

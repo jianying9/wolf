@@ -13,4 +13,9 @@ public final class BooleanRequestParameterHandlerImpl extends AbstractRegexReque
     public BooleanRequestParameterHandlerImpl(final String name) {
         super(name, RequestDataType.BOOLEAN, "^true|false$", " must be boolean");
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "false";
+    }
 }

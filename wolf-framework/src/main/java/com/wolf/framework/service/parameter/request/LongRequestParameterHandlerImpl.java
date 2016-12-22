@@ -57,4 +57,9 @@ public final class LongRequestParameterHandlerImpl implements RequestParameterHa
     public RequestDataType getDataType() {
         return RequestDataType.LONG;
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "0";
+    }
 }

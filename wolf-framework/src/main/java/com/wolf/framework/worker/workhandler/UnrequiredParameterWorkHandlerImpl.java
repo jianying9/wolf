@@ -42,6 +42,9 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
                 //非空验证
                 paraValue = StringUtils.trim(paraValue);
                 parameterHandler = parameterHandlerMap.get(parameter);
+                if(paraValue.isEmpty()) {
+                    paraValue = parameterHandler.getDefaultValue();
+                }
                 errorMsg = parameterHandler.validate(paraValue);
                 if (errorMsg.isEmpty()) {
                     request.putParameter(parameter, paraValue);

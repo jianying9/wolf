@@ -37,4 +37,9 @@ public final class RegexRequestParameterHandlerImpl implements RequestParameterH
         Matcher matcher = this.pattern.matcher(value);
         return matcher.matches() ? "" : this.errorInfo;
     }
+
+    @Override
+    public String getDefaultValue() {
+        return "";
+    }
 }
