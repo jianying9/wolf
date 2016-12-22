@@ -17,7 +17,6 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
 
     private final WorkHandler nextWorkHandler;
     private final ServiceContext serviceContext;
-    
 
     public UnrequiredParameterWorkHandlerImpl(final WorkHandler workHandler, ServiceContext serviceContext) {
         this.serviceContext = serviceContext;
@@ -42,15 +41,15 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
                 //非空验证
                 paraValue = StringUtils.trim(paraValue);
                 parameterHandler = parameterHandlerMap.get(parameter);
-                if(paraValue.isEmpty()) {
-                    paraValue = parameterHandler.getDefaultValue();
-                }
-                errorMsg = parameterHandler.validate(paraValue);
-                if (errorMsg.isEmpty()) {
-                    request.putParameter(parameter, paraValue);
-                } else {
-                    errorParaName = parameter;
-                    break;
+                if (paraValue.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
+                    //如果输入参数不为空字符或则该参数不允许忽略空字符串,那么必须进行类型验证
+                    errorMsg = parameterHandler.validate(paraValue);
+                    if (errorMsg.isEmpty()) {
+                        request.putParameter(parameter, paraValue);
+                    } else {
+                        errorParaName = parameter;
+                        break;
+                    }
                 }
             }
         }

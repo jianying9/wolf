@@ -10,12 +10,7 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  */
 public final class ChinaMobileRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
     
-    public ChinaMobileRequestParameterHandlerImpl(final String name) {
-        super(name, RequestDataType.CHINA_MOBILE, "^1[3578]{1}\\d{9}\\d?$", " must be china mobile");
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return "";
+    public ChinaMobileRequestParameterHandlerImpl(final String name, boolean ignoreEmpty) {
+        super(name, RequestDataType.CHINA_MOBILE, "^1[3578]{1}\\d{9}\\d?$", " must be china mobile", ignoreEmpty);
     }
 }

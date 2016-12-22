@@ -25,6 +25,12 @@ public @interface RequestConfig {
      * @return 
      */
     public boolean required() default true;
+    
+    /**
+     * 非必填是,忽略空字符串数据
+     * @return 
+     */
+    public boolean ignoreEmpty() default true;
 
     /**
      * 数据类型

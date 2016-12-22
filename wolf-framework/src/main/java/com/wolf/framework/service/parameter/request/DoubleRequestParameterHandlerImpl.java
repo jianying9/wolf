@@ -17,8 +17,9 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     private final String name;
     private final String errorInfo;
     private final Pattern pattern = Pattern.compile("^\\d(\\.\\d{1,6})?|[1-9]\\d{1,15}(\\.\\d{1,6})?|-[1-9]\\d{0,15}(\\.\\d{1,24})?$");
+    private final boolean ignoreEmpty;
 
-    public DoubleRequestParameterHandlerImpl(final String name, final long max, final long min) {
+    public DoubleRequestParameterHandlerImpl(final String name, final long max, final long min, boolean ignoreEmpty) {
         this.max = max > min ? max : min;
         this.min = max > min ? min : max;
         this.name = name;
@@ -26,6 +27,7 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
         err.append(" must be double").append('[')
                 .append(this.min).append(',').append(this.max).append(']');
         this.errorInfo = err.toString();
+        this.ignoreEmpty = ignoreEmpty;
     }
 
     private String gerErrorInfo() {
@@ -59,7 +61,8 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     }
 
     @Override
-    public String getDefaultValue() {
-        return "0";
+    public boolean getIgnoreEmpty() {
+        return this.ignoreEmpty;
     }
+
 }

@@ -10,12 +10,8 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  */
 public final class BooleanRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
     
-    public BooleanRequestParameterHandlerImpl(final String name) {
-        super(name, RequestDataType.BOOLEAN, "^true|false$", " must be boolean");
+    public BooleanRequestParameterHandlerImpl(final String name, boolean ignoreEmpty) {
+        super(name, RequestDataType.BOOLEAN, "^true|false$", " must be boolean", ignoreEmpty);
     }
 
-    @Override
-    public String getDefaultValue() {
-        return "false";
-    }
 }

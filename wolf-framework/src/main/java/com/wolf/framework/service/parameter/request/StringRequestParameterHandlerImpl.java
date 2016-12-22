@@ -14,14 +14,16 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     private final long min;
     private final String name;
     private final String errorInfo = " must be char";
+    private final boolean ignoreEmpty;
     
 
-    public StringRequestParameterHandlerImpl(final String name, long max, long min) {
+    public StringRequestParameterHandlerImpl(final String name, long max, long min, boolean ignoreEmpty) {
         this.name = name;
         max = max < 0 ? 0 : max;
         min = min < 0 ? 0 : min;
         this.max = max > min ? max : min;
         this.min = max > min ? min : max;
+        this.ignoreEmpty = ignoreEmpty;
     }
     
     private String gerErrorInfo() {
@@ -51,7 +53,8 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     }
 
     @Override
-    public String getDefaultValue() {
-        return "";
+    public boolean getIgnoreEmpty() {
+        return ignoreEmpty;
     }
+
 }

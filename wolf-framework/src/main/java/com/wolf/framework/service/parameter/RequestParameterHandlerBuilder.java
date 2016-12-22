@@ -31,38 +31,39 @@ public class RequestParameterHandlerBuilder {
         RequestDataType dataType = this.requestConfig.dataType();
         long max = this.requestConfig.max();
         long min = this.requestConfig.min();
+        boolean ignoreEmpty = this.requestConfig.ignoreEmpty();
         String text = this.requestConfig.text();
         switch (dataType) {
             case STRING:
-                parameterHandler = new StringRequestParameterHandlerImpl(fieldName, max, min);
+                parameterHandler = new StringRequestParameterHandlerImpl(fieldName, max, min, ignoreEmpty);
                 break;
             case DATE:
-                parameterHandler = new DateRequestParameterHandlerImpl(fieldName);
+                parameterHandler = new DateRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
             case DATE_TIME:
-                parameterHandler = new DateTimeRequestParameterHandlerImpl(fieldName);
+                parameterHandler = new DateTimeRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
             case LONG:
-                parameterHandler = new LongRequestParameterHandlerImpl(fieldName, max, min);
+                parameterHandler = new LongRequestParameterHandlerImpl(fieldName, max, min, ignoreEmpty);
                 break;
             case DOUBLE:
-                parameterHandler = new DoubleRequestParameterHandlerImpl(fieldName, max, min);
+                parameterHandler = new DoubleRequestParameterHandlerImpl(fieldName, max, min, ignoreEmpty);
                 break;
             case BOOLEAN:
-                parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName);
+                parameterHandler = new BooleanRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
             case ENUM:
                 String[] enumValues = text.split(",");
-                parameterHandler = new EnumRequestParameterHandlerImpl(fieldName, enumValues);
+                parameterHandler = new EnumRequestParameterHandlerImpl(fieldName, enumValues, ignoreEmpty);
                 break;
             case REGEX:
-                parameterHandler = new RegexRequestParameterHandlerImpl(fieldName, text);
+                parameterHandler = new RegexRequestParameterHandlerImpl(fieldName, text, ignoreEmpty);
                 break;
             case CHINA_MOBILE:
-                parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName);
+                parameterHandler = new ChinaMobileRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
             case EMAIL:
-                parameterHandler = new EmailRequestParameterHandlerImpl(fieldName);
+                parameterHandler = new EmailRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
         }
         return parameterHandler;

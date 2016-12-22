@@ -10,12 +10,8 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  */
 public final class EmailRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
     
-    public EmailRequestParameterHandlerImpl(final String name) {
-        super(name, RequestDataType.EMAIL, "^[a-z\\d]+[a-z\\d_]+@[a-z\\d]+\\.com$", " must be email");
+    public EmailRequestParameterHandlerImpl(final String name, boolean ignoreEmpty) {
+        super(name, RequestDataType.EMAIL, "^[a-z\\d]+[a-z\\d_]+@[a-z\\d]+\\.com$", " must be email", ignoreEmpty);
     }
 
-    @Override
-    public String getDefaultValue() {
-        return "";
-    }
 }

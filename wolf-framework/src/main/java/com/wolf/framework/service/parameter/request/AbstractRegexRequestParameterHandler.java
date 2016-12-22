@@ -16,12 +16,20 @@ public abstract class AbstractRegexRequestParameterHandler implements RequestPar
     private final RequestDataType dataType;
     private final Pattern pattern;
     private final String errorInfo;
+    private final boolean ignoreEmpty;
+    
 
-    public AbstractRegexRequestParameterHandler(String name, RequestDataType dataType, String text, String errorInfo) {
+    public AbstractRegexRequestParameterHandler(String name, RequestDataType dataType, String text, String errorInfo, boolean ignoreEmpty) {
         this.name = name;
         this.pattern = Pattern.compile(text);
         this.dataType = dataType;
         this.errorInfo = errorInfo;
+        this.ignoreEmpty = ignoreEmpty;
+    }
+    
+    @Override
+    public boolean getIgnoreEmpty() {
+        return ignoreEmpty;
     }
 
     @Override

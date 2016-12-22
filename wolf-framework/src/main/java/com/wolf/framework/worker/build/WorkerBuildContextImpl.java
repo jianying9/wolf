@@ -58,8 +58,8 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
         this.injecter = injecter;
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
-        this.nextIndexHandler = new LongRequestParameterHandlerImpl("nextIndex", Long.MAX_VALUE, 0);
-        this.nextSizeHandler = new LongRequestParameterHandlerImpl("nextSize", 100, 1);
+        this.nextIndexHandler = new LongRequestParameterHandlerImpl("nextIndex", Long.MAX_VALUE, 0, true);
+        this.nextSizeHandler = new LongRequestParameterHandlerImpl("nextSize", 100, 1, true);
     }
 
     @Override

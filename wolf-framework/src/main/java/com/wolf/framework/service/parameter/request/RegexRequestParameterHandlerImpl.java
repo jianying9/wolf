@@ -15,11 +15,13 @@ public final class RegexRequestParameterHandlerImpl implements RequestParameterH
     private final String name;
     private final Pattern pattern;
     private final String errorInfo;
+    private final boolean ignoreEmpty;
 
-    public RegexRequestParameterHandlerImpl(String name, String text) {
+    public RegexRequestParameterHandlerImpl(String name, String text, boolean ignoreEmpty) {
         this.name = name;
         this.pattern = Pattern.compile(text);
         this.errorInfo = " must be regex";
+        this.ignoreEmpty = ignoreEmpty;
     }
 
     @Override
@@ -39,7 +41,8 @@ public final class RegexRequestParameterHandlerImpl implements RequestParameterH
     }
 
     @Override
-    public String getDefaultValue() {
-        return "";
+    public boolean getIgnoreEmpty() {
+        return this.ignoreEmpty;
     }
+
 }

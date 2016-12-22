@@ -15,8 +15,9 @@ public final class EnumRequestParameterHandlerImpl implements RequestParameterHa
     private final String name;
     private final Pattern pattern;
     private final String errorInfo;
+    private final boolean ignoreEmpty;
 
-    public EnumRequestParameterHandlerImpl(String name, String[] enumValues) {
+    public EnumRequestParameterHandlerImpl(String name, String[] enumValues, boolean ignoreEmpty) {
         this.name = name;
         StringBuilder stringBuilder = new StringBuilder();
         for (String value : enumValues) {
@@ -26,6 +27,7 @@ public final class EnumRequestParameterHandlerImpl implements RequestParameterHa
         String enumStr = stringBuilder.toString();
         this.errorInfo = " must be enum[" + enumStr + "]";
         this.pattern = Pattern.compile("^" + enumStr + "$");
+        this.ignoreEmpty = ignoreEmpty;
     }
 
     @Override
@@ -45,7 +47,8 @@ public final class EnumRequestParameterHandlerImpl implements RequestParameterHa
     }
 
     @Override
-    public String getDefaultValue() {
-        return "";
+    public boolean getIgnoreEmpty() {
+        return this.ignoreEmpty;
     }
+
 }

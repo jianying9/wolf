@@ -12,5 +12,5 @@ public interface RequestParameterHandler {
 
     public String validate(String value);
     
-    public String getDefaultValue();
+    public boolean getIgnoreEmpty();
 }

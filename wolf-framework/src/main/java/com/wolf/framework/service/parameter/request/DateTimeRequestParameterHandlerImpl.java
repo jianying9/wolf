@@ -10,12 +10,7 @@ import com.wolf.framework.service.parameter.RequestParameterHandler;
  */
 public final class DateTimeRequestParameterHandlerImpl extends AbstractRegexRequestParameterHandler implements RequestParameterHandler {
     
-    public DateTimeRequestParameterHandlerImpl(final String name) {
-        super(name, RequestDataType.DATE_TIME, "[1-9]\\d{3}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\\d|3[0-1])", " must be date[yyyy-mm-dd]");
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return "";
+    public DateTimeRequestParameterHandlerImpl(final String name, boolean ignoreEmpty) {
+        super(name, RequestDataType.DATE_TIME, "[1-9]\\d{3}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[1-2]\\d|3[0-1])", " must be date[yyyy-mm-dd]", ignoreEmpty);
     }
 }

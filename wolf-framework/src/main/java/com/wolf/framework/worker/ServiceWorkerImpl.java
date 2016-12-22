@@ -58,14 +58,20 @@ public class ServiceWorkerImpl implements ServiceWorker {
         RequestDataType type;
         String typeStr;
         jsonBuilder.append('[');
+        boolean ignoreEmpty;
         for (RequestConfig requestConfig : requestConfigs) {
             type = requestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE|| type == RequestDataType.STRING) {
                 typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
             }
+            ignoreEmpty = requestConfig.ignoreEmpty();
+            if(requestConfig.required()) {
+                ignoreEmpty = false;
+            }
             jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
                     .append("\",\"required\":").append(requestConfig.required())
+                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
                     .append(",\"type\":\"").append(typeStr)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
