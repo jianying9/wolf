@@ -19,7 +19,7 @@ public final class RegexRequestParameterHandlerImpl implements RequestParameterH
     public RegexRequestParameterHandlerImpl(String name, String text) {
         this.name = name;
         this.pattern = Pattern.compile(text);
-        this.errorInfo = " must be regex(" + text + ")";
+        this.errorInfo = " must be regex";
     }
 
     @Override
