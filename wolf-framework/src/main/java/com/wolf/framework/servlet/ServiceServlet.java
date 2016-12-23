@@ -72,7 +72,6 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         while (names.hasMoreElements()) {
             name = names.nextElement();
             value = request.getParameter(name);
-            value = StringUtils.trim(value);
             parameterMap.put(name, value);
         }
         this.logger.debug("http: {}", parameterMap);

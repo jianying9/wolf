@@ -76,7 +76,6 @@ public class FrameworkJUnitTest {
                 entry = iterator.next();
                 name = entry.getKey();
                 value = entry.getValue().getTextValue();
-                value = StringUtils.trim(value);
                 parameterMap.put(name, value);
             }
             System.out.println(parameterMap.toString());

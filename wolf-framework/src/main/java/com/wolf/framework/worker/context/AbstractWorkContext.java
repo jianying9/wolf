@@ -57,7 +57,6 @@ public abstract class AbstractWorkContext implements WorkerContext {
                         entry = iterator.next();
                         name = entry.getKey();
                         value = entry.getValue().getTextValue();
-                        value = StringUtils.trim(value);
                         this.parameterMap.put(name, value);
                     }
                 } else {
