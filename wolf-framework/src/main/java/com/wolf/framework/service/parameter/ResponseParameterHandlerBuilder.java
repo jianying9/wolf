@@ -33,7 +33,7 @@ public class ResponseParameterHandlerBuilder {
             case OBJECT:
                 parameterHandler = new JsonResponseParameterHandlerImpl(fieldName, dataType, "{}");
                 break;
-            case ARRAY:
+            case OBJECT_ARRAY:
                 parameterHandler = new JsonResponseParameterHandlerImpl(fieldName, dataType, "[]");
                 break;
             case STRING:

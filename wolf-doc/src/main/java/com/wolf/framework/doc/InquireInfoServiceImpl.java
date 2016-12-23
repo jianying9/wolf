@@ -27,9 +27,9 @@ import com.wolf.framework.service.request.ObjectRequest;
             @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "groupName", dataType = ResponseDataType.STRING, desc = ""),
-            @ResponseConfig(name = "requestConfigs", dataType = ResponseDataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "responseCodes", dataType = ResponseDataType.ARRAY, desc = ""),
-            @ResponseConfig(name = "responseConfigs", dataType = ResponseDataType.ARRAY, desc = ""),
+            @ResponseConfig(name = "requestConfigs", dataType = ResponseDataType.OBJECT_ARRAY, desc = ""),
+            @ResponseConfig(name = "responseCodes", dataType = ResponseDataType.OBJECT_ARRAY, desc = ""),
+            @ResponseConfig(name = "responseConfigs", dataType = ResponseDataType.OBJECT_ARRAY, desc = ""),
             @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = "")
         },
         responseCodes = {},
