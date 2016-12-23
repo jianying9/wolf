@@ -14,4 +14,6 @@ public interface ListResponse<T extends Entity> extends BaseServiceResponse {
     public void setDataMapList(List<Map<String, String>> dataMapList);
     
     public void setEntityList(List<T> tList);
+    
+    public void setNextIndex(long nextIndex);
 }

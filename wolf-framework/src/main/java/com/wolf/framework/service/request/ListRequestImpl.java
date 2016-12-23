@@ -15,7 +15,7 @@ public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
         super(request);
         String nextIndexTemp = this.getParameter("nextIndex");
         if(nextIndexTemp == null) {
-            nextIndexTemp = "-1";
+            nextIndexTemp = "0";
         }
         this.nextIndex = Long.parseLong(nextIndexTemp);
         String nextSizeTemp = this.getParameter("nextSize");

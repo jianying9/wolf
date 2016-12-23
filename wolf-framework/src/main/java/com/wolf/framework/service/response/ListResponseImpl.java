@@ -19,7 +19,7 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;
-    private final long nextIndex;
+    private long nextIndex = 0;
     private final long nextSize;
     private List<Map<String, String>> dataMapList = null;
 
@@ -27,7 +27,6 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
         super(response);
         this.returnParameter = returnParameter;
         this.parameterHandlerMap = parameterHandlerMap;
-        this.nextIndex = listServiceRequest.getNextIndex();
         this.nextSize = listServiceRequest.getNextSize();
     }
 
@@ -51,16 +50,16 @@ public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse
     public String getDataMessage() {
         String listMessage = JsonUtils.mapListToJSON(this.dataMapList, this.returnParameter, this.parameterHandlerMap);
         StringBuilder jsonBuilder = new StringBuilder(128);
-        boolean hasNext = false;
-        if(this.dataMapList != null && this.dataMapList.size() == this.nextSize) {
-            hasNext = true;
-        }
         jsonBuilder.append("{\"nextIndex\":").append(this.nextIndex)
                 .append(",\"nextSize\":").append(this.nextSize)
-                .append(",\"hasNext\":").append(hasNext)
                 .append(",\"list\":").append(listMessage)
                 .append("}");
         String dataMessage = jsonBuilder.toString();
         return dataMessage;
+    }
+
+    @Override
+    public void setNextIndex(long nextIndex) {
+        this.nextIndex = nextIndex;
     }
 }
