@@ -8,9 +8,9 @@ import java.util.Map;
  */
 public interface Request {
 
-    public Map<String, String> getParameterMap();
+    public Map<String, Object> getParameterMap();
     
-    public String getParameter(String name);
+    public Object getParameter(String name);
     
     public String getRoute();
 

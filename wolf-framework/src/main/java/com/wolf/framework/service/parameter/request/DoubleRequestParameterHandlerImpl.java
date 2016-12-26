@@ -2,8 +2,6 @@ package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * double类型处理类
@@ -16,7 +14,6 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     private final long min;
     private final String name;
     private final String errorInfo;
-    private final Pattern pattern = Pattern.compile("^\\d(\\.\\d{1,6})?|[1-9]\\d{1,15}(\\.\\d{1,6})?|-[1-9]\\d{0,15}(\\.\\d{1,24})?$");
     private final boolean ignoreEmpty;
 
     public DoubleRequestParameterHandlerImpl(final String name, final long max, final long min, boolean ignoreEmpty) {
@@ -35,17 +32,13 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     }
 
     @Override
-    public String validate(final String value) {
-        String msg = "";
-        Matcher matcher = this.pattern.matcher(value);
-        boolean result = matcher.matches();
-        if (result) {
-            double num = Double.parseDouble(value);
-            if (num > this.max || num < this.min) {
-                msg = this.gerErrorInfo();
+    public String validate(final Object value) {
+        String msg = this.errorInfo;
+        if (Double.class.isInstance(value)) {
+            double num = (Double) value;
+            if (num <= this.max || num >= this.min) {
+                msg = "";
             }
-        } else {
-            msg = this.gerErrorInfo();
         }
         return msg;
     }

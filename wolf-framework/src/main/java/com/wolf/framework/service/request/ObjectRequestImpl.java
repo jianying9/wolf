@@ -1,6 +1,7 @@
 package com.wolf.framework.service.request;
 
 import com.wolf.framework.request.Request;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class ObjectRequestImpl implements ObjectRequest {
     }
 
     @Override
-    public final Map<String, String> getParameterMap() {
+    public final Map<String, Object> getValueMap() {
         return this.request.getParameterMap();
     }
 
@@ -31,7 +32,43 @@ public class ObjectRequestImpl implements ObjectRequest {
     }
 
     @Override
-    public final String getParameter(String name) {
+    public final Object getValue(String name) {
         return this.request.getParameter(name);
+    }
+
+    @Override
+    public long getLongValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (long) value;
+    }
+
+    @Override
+    public boolean getBooleanValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (boolean) value;
+    }
+
+    @Override
+    public double getDoubleValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (double) value;
+    }
+
+    @Override
+    public String getStringValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (String) value;
+    }
+
+    @Override
+    public List<Long> getLongListValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (List<Long>) value;
+    }
+
+    @Override
+    public List<String> getStringListValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (List<String>) value;
     }
 }

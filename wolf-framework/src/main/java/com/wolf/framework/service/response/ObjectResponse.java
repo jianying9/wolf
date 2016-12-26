@@ -8,7 +8,7 @@ import java.util.Map;
  * @author jianying9
  * @param <T>
  */
-public interface ObjectResponse<T extends Entity> extends BaseServiceResponse {
+public interface ObjectResponse<T extends Entity> extends BaseResponse {
     
     public void setDataMap(Map<String, String> dataMap);
     

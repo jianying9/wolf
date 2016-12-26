@@ -39,7 +39,7 @@ public class InquireInfoServiceImpl implements Service {
 
     @Override
     public void execute(ObjectRequest objectRequest, ObjectResponse objectResponse) {
-        String route = objectRequest.getParameter("routeName");
+        String route = objectRequest.getStringValue("routeName");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker != null) {
             objectResponse.setNewSessionId(UUID.randomUUID().toString());

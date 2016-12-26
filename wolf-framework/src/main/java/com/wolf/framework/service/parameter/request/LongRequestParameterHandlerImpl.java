@@ -2,8 +2,6 @@ package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * long类型处理类
@@ -16,7 +14,6 @@ public final class LongRequestParameterHandlerImpl implements RequestParameterHa
     private final long min;
     private final String name;
     private final String errorInfo;
-    private final Pattern pattern = Pattern.compile("^\\d|[1-9]\\d{1,17}|-[1-9]\\d{0,17}$");
     private final boolean ignoreEmpty;
 
     public LongRequestParameterHandlerImpl(final String name, final long max, final long min, boolean ignoreEmpty) {
@@ -35,17 +32,13 @@ public final class LongRequestParameterHandlerImpl implements RequestParameterHa
     }
 
     @Override
-    public String validate(final String value) {
-        String msg = "";
-        Matcher matcher = this.pattern.matcher(value);
-        boolean result = matcher.matches();
-        if (result) {
-            long num = Long.parseLong(value);
-            if (num > this.max || num < this.min) {
-                msg = this.gerErrorInfo();
+    public String validate(final Object value) {
+        String msg = this.errorInfo;
+        if (Long.class.isInstance(value)) {
+            long num = (long) value;
+            if (num <= this.max || num >= this.min) {
+                msg = "";
             }
-        } else {
-            msg = this.gerErrorInfo();
         }
         return msg;
     }

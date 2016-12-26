@@ -5,7 +5,6 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
-import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 import org.slf4j.Logger;
 
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
  */
 public class AbstractTimer {
 
-    protected String executeService(final String route, final Map<String, String> parameterMap) {
+    protected String executeService(final String route, final Map<String, Object> parameterMap) {
         String result = "";
         if (ApplicationContext.CONTEXT.isReady()) {
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
@@ -23,7 +22,8 @@ public class AbstractTimer {
                 Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
                 logger.error("timer:Can not find route:".concat(route));
             } else {
-                WorkerContext workerContext = new LocalWorkerContextImpl(null, route, parameterMap, serviceWorker);
+                LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(null, route, serviceWorker);
+                workerContext.initParameter(parameterMap);
                 serviceWorker.doWork(workerContext);
                 result = workerContext.getWorkerResponse().getResponseMessage();
             }

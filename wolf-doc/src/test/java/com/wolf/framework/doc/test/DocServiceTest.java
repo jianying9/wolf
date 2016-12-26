@@ -41,19 +41,19 @@ public class DocServiceTest {
 
      @Test
      public void testGroup() {
-         Response response = testHander.execute("/wolf/group", new HashMap<String, String>());
+         Response response = testHander.execute("/wolf/group", new HashMap<String, Object>());
          System.out.println(response.getResponseMessage());
      }
      
      @Test
      public void testService() {
-         Response response = testHander.execute("/wolf/service", new HashMap<String, String>());
+         Response response = testHander.execute("/wolf/service", new HashMap<String, Object>());
          System.out.println(response.getResponseMessage());
      }
      
      @Test
      public void testRoute() {
-         Map<String, String> parameterMap = new HashMap<>();
+         Map<String, Object> parameterMap = new HashMap<>();
          parameterMap.put("routeName", "/doc/test/list");
          Response response = testHander.execute("/wolf/service/info", parameterMap);
          System.out.println(response.getResponseMessage());

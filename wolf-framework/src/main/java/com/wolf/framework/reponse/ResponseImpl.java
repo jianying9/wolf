@@ -21,13 +21,11 @@ public class ResponseImpl implements WorkerResponse {
     private String responseMessage = "";
     private String code = ResponseCodeConfig.SUCCESS;
     private String newSessionId = null;
-    private String callback = null;
     private String pushId = null;
     private final Set<String> customCodeSet;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
-        this.callback = workerContext.getParameter("callback");
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         ResponseCode[] responseCodes = serviceContext.responseCodes();
         this.customCodeSet = new HashSet<>(responseCodes.length);
@@ -105,8 +103,13 @@ public class ResponseImpl implements WorkerResponse {
         if (this.error.isEmpty() == false) {
             jsonBuilder.append("\",\"error\":\"").append(this.error);
         }
-        if (this.callback != null && isPush == false) {
-            jsonBuilder.append("\",\"callback\":\"").append(this.callback);
+        Object obj = workerContext.getParameter("callback");
+        String callback = null;
+        if(obj != null && String.class.isInstance(obj)) {
+            callback = (String) obj;
+        }
+        if (callback != null && isPush == false) {
+            jsonBuilder.append("\",\"callback\":\"").append(callback);
         }
         if (isPush && this.pushId != null) {
             jsonBuilder.append("\",\"pushId\":\"").append(this.pushId);

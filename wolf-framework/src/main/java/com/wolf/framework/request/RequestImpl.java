@@ -11,7 +11,7 @@ import java.util.Map;
 public class RequestImpl implements WorkerRequest {
 
     private final WorkerContext workerContext;
-    private final Map<String, String> parameterMap;
+    private final Map<String, Object> parameterMap;
 
     public RequestImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -19,7 +19,7 @@ public class RequestImpl implements WorkerRequest {
     }
 
     @Override
-    public Map<String, String> getParameterMap() {
+    public Map<String, Object> getParameterMap() {
         return this.parameterMap;
     }
 
@@ -39,12 +39,13 @@ public class RequestImpl implements WorkerRequest {
     }
 
     @Override
-    public String getParameter(String name) {
+    public Object getParameter(String name) {
         return this.parameterMap.get(name);
     }
 
     @Override
-    public void putParameter(String name, String value) {
+    public void putParameter(String name, Object value) {
         this.parameterMap.put(name, value);
     }
+
 }

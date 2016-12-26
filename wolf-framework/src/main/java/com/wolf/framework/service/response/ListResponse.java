@@ -9,7 +9,7 @@ import java.util.Map;
  * @author jianying9
  * @param <T>
  */
-public interface ListResponse<T extends Entity> extends BaseServiceResponse {
+public interface ListResponse<T extends Entity> extends BaseResponse {
     
     public void setDataMapList(List<Map<String, String>> dataMapList);
     

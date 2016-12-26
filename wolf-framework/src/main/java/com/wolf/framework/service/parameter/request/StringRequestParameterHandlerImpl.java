@@ -15,7 +15,6 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     private final String name;
     private final String errorInfo = " must be char";
     private final boolean ignoreEmpty;
-    
 
     public StringRequestParameterHandlerImpl(final String name, long max, long min, boolean ignoreEmpty) {
         this.name = name;
@@ -25,19 +24,22 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
         this.min = max > min ? min : max;
         this.ignoreEmpty = ignoreEmpty;
     }
-    
+
     private String gerErrorInfo() {
         StringBuilder err = new StringBuilder(64);
         err.append(this.errorInfo).append('[')
                 .append(this.min).append(',').append(this.max).append(']');
         return err.toString();
     }
-    
+
     @Override
-    public String validate(String value) {
-        String msg = "";
-        if(value.length() > this.max | value.length() < this.min) {
-            msg = this.gerErrorInfo();
+    public String validate(Object value) {
+        String msg = this.errorInfo;
+        if (String.class.isInstance(value)) {
+            String v = (String) value;
+            if (v.length() <= this.max || v.length() >= this.min) {
+                msg = "";
+            }
         }
         return msg;
     }

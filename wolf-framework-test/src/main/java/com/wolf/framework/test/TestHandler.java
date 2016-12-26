@@ -8,7 +8,6 @@ import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
-import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 import org.slf4j.Logger;
 
@@ -34,7 +33,7 @@ public final class TestHandler {
         this.sid = sid;
     }
 
-    public Response execute(String route, Map<String, String> parameterMap) {
+    public Response execute(String route, Map<String, Object> parameterMap) {
         Response result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
@@ -42,7 +41,24 @@ public final class TestHandler {
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
-            WorkerContext workerContext = new LocalWorkerContextImpl(this.sid, route, parameterMap, serviceWorker);
+            LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
+            workerContext.initParameter(parameterMap);
+            serviceWorker.doWork(workerContext);
+            result = workerContext.getWorkerResponse();
+        }
+        return result;
+    }
+    
+    public Response execute(String route, String json) {
+        Response result;
+        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
+        if (serviceWorker == null) {
+            Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
+            logger.error("timer:Can not find route:".concat(route));
+            result = null;
+        } else {
+            LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
+            workerContext.initParameter(json);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
         }

@@ -4,7 +4,6 @@ import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.Map;
 
@@ -25,11 +24,11 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
 
     @Override
     public void execute(WorkerContext workerContext) {
-        String paraValue;
+        Object paraValue;
         String errorParaName = "";
         String errorMsg = "";
         RequestParameterHandler parameterHandler;
-        final Map<String, String> parameterMap = workerContext.getParameterMap();
+        final Map<String, Object> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
         //验证必要参数是否合法
         final String[] requiredParameter = this.serviceContext.requiredParameter();
@@ -38,12 +37,6 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
             paraValue = parameterMap.get(parameter);
             if (paraValue == null) {
                 errorMsg = WorkHandler.NULL_MESSAGE;
-                errorParaName = parameter;
-                break;
-            }
-            paraValue = StringUtils.trim(paraValue);
-            if (paraValue.isEmpty()) {
-                errorMsg = WorkHandler.EMPTY_MESSAGE;
                 errorParaName = parameter;
                 break;
             }

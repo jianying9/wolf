@@ -2,7 +2,6 @@ package com.wolf.framework.worker.context;
 
 import com.wolf.framework.servlet.ServiceServlet;
 import com.wolf.framework.worker.ServiceWorker;
-import java.util.Map;
 
 /**
  *
@@ -14,8 +13,8 @@ public class ServletWorkerContextImpl extends AbstractWorkContext {
 
     private String sid;
 
-    public ServletWorkerContextImpl(ServiceServlet serviceServlet, String sid, String act, Map<String, String> parameterMap, ServiceWorker serviceWorker) {
-        super(act, parameterMap, serviceWorker);
+    public ServletWorkerContextImpl(ServiceServlet serviceServlet, String sid, String act, ServiceWorker serviceWorker) {
+        super(act, serviceWorker);
         this.sid = sid;
         this.serviceServlet = serviceServlet;
     }

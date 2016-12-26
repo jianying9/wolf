@@ -15,7 +15,7 @@ import com.wolf.framework.utils.EntityUtils;
  * @author jianying9
  * @param <T>
  */
-public class ListResponseImpl<T extends Entity>  extends AbstractServiceResponse implements ListResponse<T> {
+public class ListResponseImpl<T extends Entity>  extends AbstractResponse implements ListResponse<T> {
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;

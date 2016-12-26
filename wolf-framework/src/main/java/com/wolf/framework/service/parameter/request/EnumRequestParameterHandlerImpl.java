@@ -41,9 +41,15 @@ public final class EnumRequestParameterHandlerImpl implements RequestParameterHa
     }
 
     @Override
-    public String validate(String value) {
-        Matcher matcher = this.pattern.matcher(value);
-        return matcher.matches() ? "" : this.errorInfo;
+    public String validate(Object value) {
+        String result = this.errorInfo;
+        if (String.class.isInstance(value)) {
+            Matcher matcher = this.pattern.matcher((String) value);
+            if (matcher.matches()) {
+                result = "";
+            }
+        }
+        return result;
     }
 
     @Override

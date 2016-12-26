@@ -7,7 +7,6 @@ import com.wolf.framework.context.Resource;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
-import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -61,7 +60,8 @@ public class WebsocketEndPoint implements Resource {
                 responseMesssage = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
             } else {
                 //创建消息对象并执行服务
-                WorkerContext workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, text, serviceWorker);
+                WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker);
+                workerContext.initParameter(text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
                 responseMesssage = workerContext.getWorkerResponse().getResponseMessage();

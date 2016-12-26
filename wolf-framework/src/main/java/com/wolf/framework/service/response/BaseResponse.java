@@ -4,7 +4,7 @@ package com.wolf.framework.service.response;
  *
  * @author jianying9
  */
-public interface BaseServiceResponse {
+public interface BaseResponse {
     
     public String getCode();
     

@@ -13,7 +13,7 @@ import java.util.Map;
  * @author jianying9
  * @param <T>
  */
-public class ObjectResponseImpl<T extends Entity> extends AbstractServiceResponse implements ObjectResponse<T> {
+public class ObjectResponseImpl<T extends Entity> extends AbstractResponse implements ObjectResponse<T> {
     
     private final String[] returnParameter;
     private final Map<String, ResponseParameterHandler> parameterHandlerMap;

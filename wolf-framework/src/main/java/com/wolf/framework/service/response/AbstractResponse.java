@@ -8,12 +8,12 @@ import com.wolf.framework.reponse.Response;
  * @author jianying9
  * @param <T>
  */
-public abstract class AbstractServiceResponse<T extends Entity>  implements BaseServiceResponse {
+public abstract class AbstractResponse<T extends Entity>  implements BaseResponse {
 
     protected final Response response;
     
     
-    public AbstractServiceResponse(Response response) {
+    public AbstractResponse(Response response) {
         this.response = response;
     }
     

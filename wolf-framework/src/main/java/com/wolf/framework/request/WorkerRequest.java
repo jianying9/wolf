@@ -7,7 +7,7 @@ package com.wolf.framework.request;
 public interface WorkerRequest extends Request {
 
     
-    public void putParameter(String name , String value);
+    public void putParameter(String name , Object value);
     
     public void removeSession();
 }

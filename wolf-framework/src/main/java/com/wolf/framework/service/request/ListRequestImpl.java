@@ -7,22 +7,24 @@ import com.wolf.framework.request.Request;
  * @author jianying9
  */
 public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
-    
+
     private final long nextIndex;
     private final int nextSize;
 
     public ListRequestImpl(Request request) {
         super(request);
-        String nextIndexTemp = this.getParameter("nextIndex");
-        if(nextIndexTemp == null) {
-            nextIndexTemp = "0";
+        Object nextIndexTemp = this.getValue("nextIndex");
+        long index = 0;
+        if (nextIndexTemp != null && String.class.isInstance(nextIndexTemp)) {
+            index = Long.parseLong((String) nextIndexTemp);
         }
-        this.nextIndex = Long.parseLong(nextIndexTemp);
-        String nextSizeTemp = this.getParameter("nextSize");
-        if(nextSizeTemp == null) {
-            nextSizeTemp = "6";
+        this.nextIndex = index;
+        Object nextSizeTemp = this.getValue("nextSize");
+        int size = 6;
+        if (nextSizeTemp != null && String.class.isInstance(nextSizeTemp)) {
+            size = Integer.parseInt((String) nextSizeTemp);
         }
-        this.nextSize = Integer.parseInt(nextSizeTemp);
+        this.nextSize = size;
     }
 
     @Override

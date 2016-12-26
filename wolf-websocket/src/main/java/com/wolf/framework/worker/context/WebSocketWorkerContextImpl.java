@@ -15,8 +15,8 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
     private final SessionManager sessionManager;
     private final Session session;
 
-    public WebSocketWorkerContextImpl(SessionManager sessionManager, Session session, String route, String message, ServiceWorker serviceWorker) {
-        super(route, message, serviceWorker);
+    public WebSocketWorkerContextImpl(SessionManager sessionManager, Session session, String route, ServiceWorker serviceWorker) {
+        super(route, serviceWorker);
         this.sessionManager = sessionManager;
         this.session = session;
     }

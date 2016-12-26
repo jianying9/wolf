@@ -10,7 +10,6 @@ import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.ServletWorkerContextImpl;
-import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -66,12 +65,13 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         String result;
         //读取参数
         Enumeration<String> names = request.getParameterNames();
-        Map<String, String> parameterMap = new HashMap<>(8, 1);
+        Map<String, Object> parameterMap = new HashMap<>(8, 1);
         String name;
         String value;
         while (names.hasMoreElements()) {
             name = names.nextElement();
             value = request.getParameter(name);
+            value = StringUtils.trim(value);
             parameterMap.put(name, value);
         }
         this.logger.debug("http: {}", parameterMap);
@@ -80,10 +80,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             //route不存在,判断是否为comet请求
-            String comet = parameterMap.get("comet");
+            String comet = (String) parameterMap.get("comet");
             if (comet != null && comet.equals("start")) {
                 //该请求为一个长轮询推送请求
-                String sid = parameterMap.get("sid");
+                String sid = (String) parameterMap.get("sid");
                 if (sid != null) {
                     synchronized (this) {
                         //同sid冲突检测
@@ -106,13 +106,14 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //非特殊接口,放回提示route不存在
-                result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\""+ route + "\"}";
+                result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
                 HttpUtils.toWrite(request, response, result);
             }
         } else {
             //route存在
-            String sid = parameterMap.get("sid");
-            WorkerContext workerContext = new ServletWorkerContextImpl(this, sid, route, parameterMap, serviceWorker);
+            String sid = (String) parameterMap.get("sid");
+            ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
+            workerContext.initParameter(parameterMap);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
@@ -157,7 +158,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     public String getServletInfo() {
         return "server";
     }
-    
+
     @Override
     public boolean asyncPush(String sid, String message) {
         return this.push(sid, message);
