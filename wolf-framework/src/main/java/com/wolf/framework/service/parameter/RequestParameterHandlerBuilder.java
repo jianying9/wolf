@@ -7,8 +7,10 @@ import com.wolf.framework.service.parameter.request.DateTimeRequestParameterHand
 import com.wolf.framework.service.parameter.request.DoubleRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.EmailRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.EnumRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.LongArrayRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.RegexRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.request.StringArrayRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
 
 /**
@@ -64,6 +66,12 @@ public class RequestParameterHandlerBuilder {
                 break;
             case EMAIL:
                 parameterHandler = new EmailRequestParameterHandlerImpl(fieldName, ignoreEmpty);
+                break;
+            case LONG_ARRAY:
+                parameterHandler = new LongArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
+                break;
+            case STRING_ARRAY:
+                parameterHandler = new StringArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
         }
         return parameterHandler;
