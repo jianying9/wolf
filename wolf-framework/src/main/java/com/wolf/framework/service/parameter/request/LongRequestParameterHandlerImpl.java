@@ -27,10 +27,6 @@ public final class LongRequestParameterHandlerImpl implements RequestParameterHa
         this.ignoreEmpty = ignoreEmpty;
     }
 
-    private String gerErrorInfo() {
-        return this.errorInfo;
-    }
-
     @Override
     public String validate(final Object value) {
         String msg = this.errorInfo;

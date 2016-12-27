@@ -13,7 +13,7 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
     private final long max;
     private final long min;
     private final String name;
-    private final String errorInfo = " must be char";
+    private final String errorInfo;
     private final boolean ignoreEmpty;
 
     public StringRequestParameterHandlerImpl(final String name, long max, long min, boolean ignoreEmpty) {
@@ -23,13 +23,10 @@ public final class StringRequestParameterHandlerImpl implements RequestParameter
         this.max = max > min ? max : min;
         this.min = max > min ? min : max;
         this.ignoreEmpty = ignoreEmpty;
-    }
-
-    private String gerErrorInfo() {
         StringBuilder err = new StringBuilder(64);
-        err.append(this.errorInfo).append('[')
+        err.append(" must be string").append('[')
                 .append(this.min).append(',').append(this.max).append(']');
-        return err.toString();
+        this.errorInfo = err.toString();
     }
 
     @Override
