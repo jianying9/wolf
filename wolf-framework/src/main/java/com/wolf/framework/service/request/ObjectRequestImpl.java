@@ -37,21 +37,21 @@ public class ObjectRequestImpl implements ObjectRequest {
     }
 
     @Override
-    public long getLongValue(String name) {
+    public Long getLongValue(String name) {
         Object value = this.request.getParameter(name);
-        return (long) value;
+        return (Long) value;
     }
 
     @Override
-    public boolean getBooleanValue(String name) {
+    public Boolean getBooleanValue(String name) {
         Object value = this.request.getParameter(name);
-        return (boolean) value;
+        return (Boolean) value;
     }
 
     @Override
-    public double getDoubleValue(String name) {
+    public Double getDoubleValue(String name) {
         Object value = this.request.getParameter(name);
-        return (double) value;
+        return (Double) value;
     }
 
     @Override
@@ -71,4 +71,5 @@ public class ObjectRequestImpl implements ObjectRequest {
         Object value = this.request.getParameter(name);
         return (List<String>) value;
     }
+
 }

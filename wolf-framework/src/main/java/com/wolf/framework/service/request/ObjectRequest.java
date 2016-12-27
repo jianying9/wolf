@@ -13,11 +13,11 @@ public interface ObjectRequest {
     
     public Object getValue(String name);
     
-    public long getLongValue(String name);
+    public Long getLongValue(String name);
     
-    public boolean getBooleanValue(String name);
+    public Boolean getBooleanValue(String name);
     
-    public double getDoubleValue(String name);
+    public Double getDoubleValue(String name);
     
     public String getStringValue(String name);
     
