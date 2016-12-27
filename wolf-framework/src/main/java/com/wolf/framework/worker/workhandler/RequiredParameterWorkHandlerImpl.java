@@ -36,7 +36,7 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
         for (String parameter : requiredParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue == null) {
-                errorMsg = WorkHandler.NULL_MESSAGE;
+                errorMsg = " is null";
                 errorParaName = parameter;
                 break;
             }

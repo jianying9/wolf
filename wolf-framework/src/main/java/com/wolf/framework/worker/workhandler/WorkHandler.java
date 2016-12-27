@@ -9,7 +9,5 @@ import com.wolf.framework.worker.context.WorkerContext;
  */
 public interface WorkHandler {
 
-    public String NULL_MESSAGE = " is null";
-    
     public void execute(WorkerContext WorkerContext);
 }
