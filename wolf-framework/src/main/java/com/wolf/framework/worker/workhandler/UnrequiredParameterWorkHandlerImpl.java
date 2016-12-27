@@ -62,15 +62,15 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
                     }
                 }
             }
-            if (errorMsg.isEmpty()) {
-                //验证通过
-                this.nextWorkHandler.execute(workerContext);
-            } else {
-                errorMsg = errorParaName.concat(errorMsg);
-                WorkerResponse response = workerContext.getWorkerResponse();
-                response.invalid();
-                response.setError(errorMsg);
-            }
+        }
+        if (errorMsg.isEmpty()) {
+            //验证通过
+            this.nextWorkHandler.execute(workerContext);
+        } else {
+            errorMsg = errorParaName.concat(errorMsg);
+            WorkerResponse response = workerContext.getWorkerResponse();
+            response.invalid();
+            response.setError(errorMsg);
         }
     }
 }
