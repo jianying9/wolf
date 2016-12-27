@@ -26,6 +26,14 @@ public enum RequestDataType {
     //邮箱
     EMAIL,
     //布尔
-    BOOLEAN;
+    BOOLEAN,
+    //
+    OBJECT,
+    //
+    OBJECT_ARRAY,
+    //
+    STRING_ARRAY,
+    //
+    LONG_ARRAY;
 
 }
