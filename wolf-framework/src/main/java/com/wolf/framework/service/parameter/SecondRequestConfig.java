@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 第一层参数配置
+ * 第二层请求参数
  *
  * @author jianying9
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface RequestConfig {
+public @interface SecondRequestConfig {
 
     /**
      * 参数名
@@ -58,10 +58,10 @@ public @interface RequestConfig {
     public String text() default "";
     
     /**
-     * 第二级参数
+     * 第三层参数请求
      * @return 
      */
-    public SecondRequestConfig[] secondRequestConfigs() default {};
+    public ThirdRequestConfig[] thirdRequestConfigs() default {};
     
     /**
      * 描述

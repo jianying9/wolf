@@ -24,7 +24,7 @@ public @interface ServiceConfig {
     public String route();
 
     /**
-     * 重要的参数
+     * 请求的参数
      *
      * @return String[]
      */
