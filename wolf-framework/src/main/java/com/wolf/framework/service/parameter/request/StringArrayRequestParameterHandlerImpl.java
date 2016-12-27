@@ -46,7 +46,7 @@ public final class StringArrayRequestParameterHandlerImpl implements RequestPara
 
     @Override
     public RequestDataType getDataType() {
-        return RequestDataType.LONG;
+        return RequestDataType.STRING_ARRAY;
     }
 
     @Override

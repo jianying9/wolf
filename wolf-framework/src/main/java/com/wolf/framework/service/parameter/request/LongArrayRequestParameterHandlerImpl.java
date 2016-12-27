@@ -46,7 +46,7 @@ public final class LongArrayRequestParameterHandlerImpl implements RequestParame
 
     @Override
     public RequestDataType getDataType() {
-        return RequestDataType.LONG;
+        return RequestDataType.LONG_ARRAY;
     }
 
     @Override
