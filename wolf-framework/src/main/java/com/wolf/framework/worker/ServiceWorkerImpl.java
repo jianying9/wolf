@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.parameter.RequestDataType;
+import com.wolf.framework.service.parameter.SecondRequestConfig;
+import com.wolf.framework.service.parameter.ThirdRequestConfig;
 import java.util.Set;
 
 /**
@@ -52,10 +54,77 @@ public class ServiceWorkerImpl implements ServiceWorker {
         infoMap.put("hasAsyncResponse", Boolean.toString(this.serviceContext.hasAsyncResponse()));
         return infoMap;
     }
+    
+    private String createThirdRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] SecondRequestConfigs) {
+        StringBuilder jsonBuilder = new StringBuilder(64);
+        RequestDataType type;
+        String typeStr;
+        boolean ignoreEmpty;
+        for (SecondRequestConfig requestConfig : SecondRequestConfigs) {
+            type = requestConfig.dataType();
+            typeStr = type.name();
+            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
+                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+            }
+            ignoreEmpty = requestConfig.ignoreEmpty();
+            if (requestConfig.required()) {
+                ignoreEmpty = false;
+            }
+            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(requestConfig.name())
+                    .append("\",\"required\":").append(requestConfig.required())
+                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
+                    .append(",\"type\":\"").append(typeStr)
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
+                    .append("\"}").append(',');
+        }
+        if (jsonBuilder.length() > 1) {
+            jsonBuilder.setLength(jsonBuilder.length() - 1);
+        }
+        return jsonBuilder.toString();
+    }
+
+    private String createSecondRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] SecondRequestConfigs) {
+        StringBuilder jsonBuilder = new StringBuilder(64);
+        RequestDataType type;
+        ThirdRequestConfig[] thirdRequestConfigs;
+        String thirdParentName;
+        String thirdJson;
+        String typeStr;
+        boolean ignoreEmpty;
+        for (SecondRequestConfig requestConfig : SecondRequestConfigs) {
+            type = requestConfig.dataType();
+            typeStr = type.name();
+            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
+                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+            }
+            ignoreEmpty = requestConfig.ignoreEmpty();
+            if (requestConfig.required()) {
+                ignoreEmpty = false;
+            }
+            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(requestConfig.name())
+                    .append("\",\"required\":").append(requestConfig.required())
+                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
+                    .append(",\"type\":\"").append(typeStr)
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
+                    .append("\"}").append(',');
+            thirdRequestConfigs = requestConfig.thirdRequestConfigs();
+            if(thirdRequestConfigs.length > 0) {
+                thirdParentName = parentName + "." + requestConfig.name();
+                thirdJson = this.createThirdRequestParameterJson(thirdParentName, escapeFilter, SecondRequestConfigs);
+                jsonBuilder.append(thirdJson).append(",");
+            }
+        }
+        if (jsonBuilder.length() > 1) {
+            jsonBuilder.setLength(jsonBuilder.length() - 1);
+        }
+        return jsonBuilder.toString();
+    }
 
     private String getRequestParameterJson(RequestConfig[] requestConfigs, Filter escapeFilter) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         RequestDataType type;
+        SecondRequestConfig[] secondRequestConfigs;
+        String secondJson;
         String typeStr;
         jsonBuilder.append('[');
         boolean ignoreEmpty;
@@ -75,6 +144,11 @@ public class ServiceWorkerImpl implements ServiceWorker {
                     .append(",\"type\":\"").append(typeStr)
                     .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
                     .append("\"}").append(',');
+            secondRequestConfigs = requestConfig.secondRequestConfigs();
+            if (secondRequestConfigs.length > 0) {
+                secondJson = this.createSecondRequestParameterJson(requestConfig.name(), escapeFilter, secondRequestConfigs);
+                jsonBuilder.append(secondJson).append(",");
+            }
         }
         if (this.serviceContext.page()) {
             jsonBuilder.append("{\"name\":\"").append("nextIndex")
