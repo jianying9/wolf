@@ -21,13 +21,13 @@ import java.util.Map;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
-public class RequestParameterHandlerBuilder {
+public class SecondRequestParameterHandlerBuilder {
 
-    private final RequestConfig requestConfig;
+    private final SecondRequestConfig requestConfig;
 
-    public RequestParameterHandlerBuilder(final RequestConfig requestConfig) {
+    public SecondRequestParameterHandlerBuilder(final SecondRequestConfig requestConfig) {
         this.requestConfig = requestConfig;
     }
 
@@ -81,36 +81,40 @@ public class RequestParameterHandlerBuilder {
                 break;
             case OBJECT_ARRAY:
                 parameterHandler = new ObjectArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
-                break;    
+                break;
             case OBJECT:
-                SecondRequestConfig[] secondRequestConfigs = this.requestConfig.secondRequestConfigs();
-                final List<SecondRequestConfig> requiredRequestConfigList = new ArrayList<>(0);
-                final List<SecondRequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
-                for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
-                    if (secondRequestConfig.required()) {
-                        requiredRequestConfigList.add(secondRequestConfig);
+                ThirdRequestConfig[] thirdRequestConfigs = this.requestConfig.thirdRequestConfigs();
+                final List<ThirdRequestConfig> requiredRequestConfigList = new ArrayList<>(0);
+                final List<ThirdRequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
+                for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
+                    if (thirdRequestConfig.required()) {
+                        requiredRequestConfigList.add(thirdRequestConfig);
                     } else {
-                        unrequiredRequestConfigList.add(secondRequestConfig);
+                        unrequiredRequestConfigList.add(thirdRequestConfig);
                     }
                 }
                 RequestParameterHandler requestParameterHandler;
-                SecondRequestParameterHandlerBuilder requestParameterHandlerBuilder;
-                final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(secondRequestConfigs.length, 1);
+                ThirdRequestParameterHandlerBuilder requestParameterHandlerBuilder;
+                final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(thirdRequestConfigs.length, 1);
                 List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
-                for (SecondRequestConfig secondRequestConfig : unrequiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new SecondRequestParameterHandlerBuilder(secondRequestConfig);
+                for (ThirdRequestConfig thirdRequestConfig : unrequiredRequestConfigList) {
+                    requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
                     requestParameterHandler = requestParameterHandlerBuilder.build();
-                    requestParameterMap.put(secondRequestConfig.name(), requestParameterHandler);
-                    unrequiredNameList.add(secondRequestConfig.name());
+                    if (requestParameterHandler != null) {
+                        requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
+                        unrequiredNameList.add(thirdRequestConfig.name());
+                    }
                 }
                 final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
                 //
                 List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
-                for (SecondRequestConfig secondRequestConfig : requiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new SecondRequestParameterHandlerBuilder(secondRequestConfig);
+                for (ThirdRequestConfig thirdRequestConfig : requiredRequestConfigList) {
+                    requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
                     requestParameterHandler = requestParameterHandlerBuilder.build();
-                    requestParameterMap.put(secondRequestConfig.name(), requestParameterHandler);
-                    requiredNameList.add(secondRequestConfig.name());
+                    if (requestParameterHandler != null) {
+                        requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
+                        requiredNameList.add(thirdRequestConfig.name());
+                    }
                 }
                 final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
                 //

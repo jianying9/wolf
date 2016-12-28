@@ -9,25 +9,19 @@ import com.wolf.framework.service.parameter.request.EmailRequestParameterHandler
 import com.wolf.framework.service.parameter.request.EnumRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.LongArrayRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
-import com.wolf.framework.service.parameter.request.ObjectArrayRequestParameterHandlerImpl;
-import com.wolf.framework.service.parameter.request.ObjectRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.RegexRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringArrayRequestParameterHandlerImpl;
 import com.wolf.framework.service.parameter.request.StringRequestParameterHandlerImpl;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
-public class RequestParameterHandlerBuilder {
+public class ThirdRequestParameterHandlerBuilder {
 
-    private final RequestConfig requestConfig;
+    private final ThirdRequestConfig requestConfig;
 
-    public RequestParameterHandlerBuilder(final RequestConfig requestConfig) {
+    public ThirdRequestParameterHandlerBuilder(final ThirdRequestConfig requestConfig) {
         this.requestConfig = requestConfig;
     }
 
@@ -78,43 +72,6 @@ public class RequestParameterHandlerBuilder {
                 break;
             case STRING_ARRAY:
                 parameterHandler = new StringArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
-                break;
-            case OBJECT_ARRAY:
-                parameterHandler = new ObjectArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
-                break;    
-            case OBJECT:
-                SecondRequestConfig[] secondRequestConfigs = this.requestConfig.secondRequestConfigs();
-                final List<SecondRequestConfig> requiredRequestConfigList = new ArrayList<>(0);
-                final List<SecondRequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
-                for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
-                    if (secondRequestConfig.required()) {
-                        requiredRequestConfigList.add(secondRequestConfig);
-                    } else {
-                        unrequiredRequestConfigList.add(secondRequestConfig);
-                    }
-                }
-                RequestParameterHandler requestParameterHandler;
-                SecondRequestParameterHandlerBuilder requestParameterHandlerBuilder;
-                final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(secondRequestConfigs.length, 1);
-                List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
-                for (SecondRequestConfig secondRequestConfig : unrequiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new SecondRequestParameterHandlerBuilder(secondRequestConfig);
-                    requestParameterHandler = requestParameterHandlerBuilder.build();
-                    requestParameterMap.put(secondRequestConfig.name(), requestParameterHandler);
-                    unrequiredNameList.add(secondRequestConfig.name());
-                }
-                final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
-                //
-                List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
-                for (SecondRequestConfig secondRequestConfig : requiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new SecondRequestParameterHandlerBuilder(secondRequestConfig);
-                    requestParameterHandler = requestParameterHandlerBuilder.build();
-                    requestParameterMap.put(secondRequestConfig.name(), requestParameterHandler);
-                    requiredNameList.add(secondRequestConfig.name());
-                }
-                final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
-                //
-                parameterHandler = new ObjectRequestParameterHandlerImpl(fieldName, ignoreEmpty, requiredNames, unrequiredNames, requestParameterMap);
                 break;
         }
         return parameterHandler;

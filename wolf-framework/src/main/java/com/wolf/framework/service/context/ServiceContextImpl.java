@@ -133,7 +133,7 @@ public class ServiceContextImpl implements ServiceContext {
         //
         RequestParameterHandler requestParameterHandler;
         RequestParameterHandlerBuilder requestParameterHandlerBuilder;
-        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(unrequiredRequestConfigList.size(), 1);
+        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(this.requestConfigs.length, 1);
         List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
         for (RequestConfig requestConfig : unrequiredRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(requestConfig);
