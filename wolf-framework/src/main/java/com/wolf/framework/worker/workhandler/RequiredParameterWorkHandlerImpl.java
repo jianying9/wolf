@@ -5,6 +5,7 @@ import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.context.WorkerContext;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +28,8 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
         Object paraValue;
         String errorParaName = "";
         String errorMsg = "";
+        String stringValue;
+        List listValue;
         RequestParameterHandler parameterHandler;
         final Map<String, Object> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
@@ -39,6 +42,22 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
                 errorMsg = " is null";
                 errorParaName = parameter;
                 break;
+            }
+            if (String.class.isInstance(paraValue)) {
+                stringValue = (String) paraValue;
+                if (stringValue.isEmpty()) {
+                    errorMsg = " is empty";
+                    errorParaName = parameter;
+                    break;
+                }
+            }
+            if (List.class.isInstance(paraValue)) {
+                listValue = (List) paraValue;
+                if (listValue.isEmpty()) {
+                    errorMsg = " is empty";
+                    errorParaName = parameter;
+                    break;
+                }
             }
             parameterHandler = parameterHandlerMap.get(parameter);
             errorMsg = parameterHandler.validate(paraValue);

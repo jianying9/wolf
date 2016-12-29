@@ -5,6 +5,7 @@ import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.context.WorkerContext;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +27,8 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
     @Override
     public void execute(WorkerContext workerContext) {
         Object paraValue;
-        String value;
+        String stringValue;
+        List listValue;
         String errorParaName = "";
         String errorMsg = "";
         RequestParameterHandler parameterHandler;
@@ -41,8 +43,20 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
                 //非空验证
                 parameterHandler = parameterHandlerMap.get(parameter);
                 if (String.class.isInstance(paraValue)) {
-                    value = (String) paraValue;
-                    if (value.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
+                    stringValue = (String) paraValue;
+                    if (stringValue.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
+                        //如果输入参数不为空字符或则该参数不允许忽略空字符串,那么必须进行类型验证
+                        errorMsg = parameterHandler.validate(paraValue);
+                        if (errorMsg.isEmpty()) {
+                            request.putParameter(parameter, paraValue);
+                        } else {
+                            errorParaName = parameter;
+                            break;
+                        }
+                    }
+                } else if (List.class.isInstance(paraValue)) {
+                    listValue = (List) paraValue;
+                    if (listValue.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
                         //如果输入参数不为空字符或则该参数不允许忽略空字符串,那么必须进行类型验证
                         errorMsg = parameterHandler.validate(paraValue);
                         if (errorMsg.isEmpty()) {
