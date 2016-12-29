@@ -32,11 +32,6 @@ public class ObjectRequestImpl implements ObjectRequest {
     }
 
     @Override
-    public final Object getValue(String name) {
-        return this.request.getParameter(name);
-    }
-
-    @Override
     public Long getLongValue(String name) {
         Object value = this.request.getParameter(name);
         return (Long) value;
@@ -70,6 +65,66 @@ public class ObjectRequestImpl implements ObjectRequest {
     public List<String> getStringListValue(String name) {
         Object value = this.request.getParameter(name);
         return (List<String>) value;
+    }
+
+    @Override
+    public Map<String, Object> getObjectValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (Map<String, Object>) value;
+    }
+
+    @Override
+    public List<Map<String, Object>> getObjectListValue(String name) {
+        Object value = this.request.getParameter(name);
+        return (List<Map<String, Object>>) value;
+    }
+
+    @Override
+    public Long getLongValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Long) value;
+    }
+
+    @Override
+    public Boolean getBooleanValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Boolean) value;
+    }
+
+    @Override
+    public Double getDoubleValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Double) value;
+    }
+
+    @Override
+    public String getStringValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (String) value;
+    }
+
+    @Override
+    public List<Long> getLongListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<Long>) value;
+    }
+
+    @Override
+    public List<String> getStringListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<String>) value;
+    }
+
+    @Override
+    public Map<String, Object> getObjectValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Map<String, Object>) value;
+    }
+
+    @Override
+    public List<Map<String, Object>> getObjectListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<Map<String, Object>>) value;
     }
 
 }

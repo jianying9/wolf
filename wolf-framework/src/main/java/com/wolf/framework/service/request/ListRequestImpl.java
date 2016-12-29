@@ -13,18 +13,16 @@ public class ListRequestImpl extends ObjectRequestImpl implements ListRequest {
 
     public ListRequestImpl(Request request) {
         super(request);
-        Object nextIndexTemp = this.getValue("nextIndex");
-        long index = 0;
-        if (nextIndexTemp != null && String.class.isInstance(nextIndexTemp)) {
-            index = Long.parseLong((String) nextIndexTemp);
+        Long index = super.getLongValue("nextIndex");
+        if(index == null) {
+            index = 0l;
         }
         this.nextIndex = index;
-        Object nextSizeTemp = this.getValue("nextSize");
-        int size = 6;
-        if (nextSizeTemp != null && String.class.isInstance(nextSizeTemp)) {
-            size = Integer.parseInt((String) nextSizeTemp);
+        Long size = super.getLongValue("nextSize");
+        if(size == null) {
+            size = 6l;
         }
-        this.nextSize = size;
+        this.nextSize = size.intValue();
     }
 
     @Override
