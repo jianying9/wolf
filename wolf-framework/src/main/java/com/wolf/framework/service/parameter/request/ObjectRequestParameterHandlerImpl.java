@@ -2,6 +2,7 @@ package com.wolf.framework.service.parameter.request;
 
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +37,8 @@ public final class ObjectRequestParameterHandlerImpl implements RequestParameter
         Object paraValue;
         String errorParaName = "";
         String errorMsg = "";
+        String stringValue;
+        List listValue;
         RequestParameterHandler parameterHandler;
         for (String parameter : this.requiredParameter) {
             paraValue = parameterMap.get(parameter);
@@ -43,6 +46,22 @@ public final class ObjectRequestParameterHandlerImpl implements RequestParameter
                 errorMsg = " is null";
                 errorParaName = parameter;
                 break;
+            }
+            if (String.class.isInstance(paraValue)) {
+                stringValue = (String) paraValue;
+                if (stringValue.isEmpty()) {
+                    errorMsg = " is empty";
+                    errorParaName = parameter;
+                    break;
+                }
+            }
+            if (List.class.isInstance(paraValue)) {
+                listValue = (List) paraValue;
+                if (listValue.isEmpty()) {
+                    errorMsg = " is empty";
+                    errorParaName = parameter;
+                    break;
+                }
             }
             parameterHandler = this.requestParameterHandlerMap.get(parameter);
             errorMsg = parameterHandler.validate(paraValue);
@@ -59,7 +78,8 @@ public final class ObjectRequestParameterHandlerImpl implements RequestParameter
 
     private String validateUnrequiredParameter(Map<String, Object> parameterMap) {
         Object paraValue;
-        String value;
+        String stringValue;
+        List listValue;
         String errorParaName = "";
         String errorMsg = "";
         RequestParameterHandler parameterHandler;
@@ -68,8 +88,18 @@ public final class ObjectRequestParameterHandlerImpl implements RequestParameter
             if (paraValue != null) {
                 parameterHandler = this.requestParameterHandlerMap.get(parameter);
                 if (String.class.isInstance(paraValue)) {
-                    value = (String) paraValue;
-                    if (value.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
+                    stringValue = (String) paraValue;
+                    if (stringValue.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
+                        //如果输入参数不为空字符或则该参数不允许忽略空字符串,那么必须进行类型验证
+                        errorMsg = parameterHandler.validate(paraValue);
+                        if (errorMsg.isEmpty() == false) {
+                            errorParaName = parameter;
+                            break;
+                        }
+                    }
+                } else if (List.class.isInstance(paraValue)) {
+                    listValue = (List) paraValue;
+                    if (listValue.isEmpty() == false || parameterHandler.getIgnoreEmpty() == false) {
                         //如果输入参数不为空字符或则该参数不允许忽略空字符串,那么必须进行类型验证
                         errorMsg = parameterHandler.validate(paraValue);
                         if (errorMsg.isEmpty() == false) {
