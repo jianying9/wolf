@@ -6,6 +6,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
@@ -66,7 +67,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         cqlBuilder.append(");");
         String insertCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.insertPs = this.prepare(insertCql);
+        try {
+            this.insertPs = this.prepare(insertCql);
+        } catch (InvalidQueryException e) {
+            this.logger.error("{} insertCql:{}", this.table, insertCql);
+            throw new RuntimeException(e);
+        }
+        
         this.logger.debug("{} insertCql:{}", this.table, insertCql);
         //count
         cqlBuilder.append("SELECT COUNT(*) FROM ").append(this.keyspace)
