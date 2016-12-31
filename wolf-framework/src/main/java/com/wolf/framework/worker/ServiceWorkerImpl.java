@@ -55,26 +55,26 @@ public class ServiceWorkerImpl implements ServiceWorker {
         return infoMap;
     }
     
-    private String createThirdRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] SecondRequestConfigs) {
+    private String createThirdRequestParameterJson(String parentName, Filter escapeFilter, ThirdRequestConfig[] thirdRequestConfigs) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         RequestDataType type;
         String typeStr;
         boolean ignoreEmpty;
-        for (SecondRequestConfig requestConfig : SecondRequestConfigs) {
-            type = requestConfig.dataType();
+        for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
+            type = thirdRequestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
-                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+                typeStr = typeStr + "[" + thirdRequestConfig.min() + "," + thirdRequestConfig.max() + "]";
             }
-            ignoreEmpty = requestConfig.ignoreEmpty();
-            if (requestConfig.required()) {
+            ignoreEmpty = thirdRequestConfig.ignoreEmpty();
+            if (thirdRequestConfig.required()) {
                 ignoreEmpty = false;
             }
-            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(requestConfig.name())
-                    .append("\",\"required\":").append(requestConfig.required())
+            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(thirdRequestConfig.name())
+                    .append("\",\"required\":").append(thirdRequestConfig.required())
                     .append(",\"ignoreEmpty\":").append(ignoreEmpty)
                     .append(",\"type\":\"").append(typeStr)
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(thirdRequestConfig.desc()))
                     .append("\"}").append(',');
         }
         if (jsonBuilder.length() > 1) {
@@ -83,7 +83,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         return jsonBuilder.toString();
     }
 
-    private String createSecondRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] SecondRequestConfigs) {
+    private String createSecondRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] secondRequestConfigs) {
         StringBuilder jsonBuilder = new StringBuilder(64);
         RequestDataType type;
         ThirdRequestConfig[] thirdRequestConfigs;
@@ -91,26 +91,26 @@ public class ServiceWorkerImpl implements ServiceWorker {
         String thirdJson;
         String typeStr;
         boolean ignoreEmpty;
-        for (SecondRequestConfig requestConfig : SecondRequestConfigs) {
-            type = requestConfig.dataType();
+        for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
+            type = secondRequestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
-                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
+                typeStr = typeStr + "[" + secondRequestConfig.min() + "," + secondRequestConfig.max() + "]";
             }
-            ignoreEmpty = requestConfig.ignoreEmpty();
-            if (requestConfig.required()) {
+            ignoreEmpty = secondRequestConfig.ignoreEmpty();
+            if (secondRequestConfig.required()) {
                 ignoreEmpty = false;
             }
-            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(requestConfig.name())
-                    .append("\",\"required\":").append(requestConfig.required())
+            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(secondRequestConfig.name())
+                    .append("\",\"required\":").append(secondRequestConfig.required())
                     .append(",\"ignoreEmpty\":").append(ignoreEmpty)
                     .append(",\"type\":\"").append(typeStr)
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
+                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(secondRequestConfig.desc()))
                     .append("\"}").append(',');
-            thirdRequestConfigs = requestConfig.thirdRequestConfigs();
+            thirdRequestConfigs = secondRequestConfig.thirdRequestConfigs();
             if(thirdRequestConfigs.length > 0) {
-                thirdParentName = parentName + "." + requestConfig.name();
-                thirdJson = this.createThirdRequestParameterJson(thirdParentName, escapeFilter, SecondRequestConfigs);
+                thirdParentName = parentName + "." + secondRequestConfig.name();
+                thirdJson = this.createThirdRequestParameterJson(thirdParentName, escapeFilter, thirdRequestConfigs);
                 jsonBuilder.append(thirdJson).append(",");
             }
         }
