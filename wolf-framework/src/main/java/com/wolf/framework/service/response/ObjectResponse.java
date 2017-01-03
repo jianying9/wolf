@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public interface ObjectResponse<T extends Entity> extends BaseResponse {
     
-    public void setDataMap(Map<String, String> dataMap);
+    public void setDataMap(Map<String, Object> dataMap);
     
-    public void setData(String name, String value);
+    public void setData(String name, Object value);
     
     public void setEntity(T t);
 }

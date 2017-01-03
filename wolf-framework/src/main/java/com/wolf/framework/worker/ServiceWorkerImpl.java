@@ -4,9 +4,6 @@ import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
-import com.wolf.framework.service.parameter.filter.EscapeFilterImpl;
-import com.wolf.framework.service.parameter.filter.Filter;
-import com.wolf.framework.service.parameter.filter.FilterType;
 import com.wolf.framework.worker.context.WorkerContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
@@ -14,7 +11,11 @@ import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.SecondRequestConfig;
+import com.wolf.framework.service.parameter.SecondResponseConfig;
 import com.wolf.framework.service.parameter.ThirdRequestConfig;
+import com.wolf.framework.service.parameter.ThirdResponseConfig;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,9 +26,9 @@ import java.util.Set;
 public class ServiceWorkerImpl implements ServiceWorker {
 
     private final WorkHandler nextWorkHandler;
-    private String requestConfigs = "[]";
-    private String responseConfigs = "[]";
-    private String responseCodes = "[]";
+    private List<Map<String, Object>> requestConfigs = new ArrayList<>();
+    private List<Map<String, Object>> responseConfigs = new ArrayList<>();
+    private List<Map<String, Object>> responseCodes = new ArrayList<>();
     private final ServiceContext serviceContext;
 
     public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
@@ -41,26 +42,26 @@ public class ServiceWorkerImpl implements ServiceWorker {
     }
 
     @Override
-    public Map<String, String> getInfoMap() {
-        Map<String, String> infoMap = new HashMap<>(8, 1);
-        infoMap.put("route", this.serviceContext.route());
-        infoMap.put("group", this.serviceContext.group());
-        infoMap.put("page", Boolean.toString(this.serviceContext.page()));
-        infoMap.put("validateSession", Boolean.toString(this.serviceContext.validateSession()));
+    public Map<String, Object> getInfoMap() {
+        Map<String, Object> infoMap = new HashMap<>(8, 1);
+        infoMap.put("routeName", this.serviceContext.route());
+        infoMap.put("page", this.serviceContext.page());
+        infoMap.put("validateSession", this.serviceContext.validateSession());
         infoMap.put("desc", this.serviceContext.desc());
         infoMap.put("requestConfigs", this.requestConfigs);
         infoMap.put("responseConfigs", this.responseConfigs);
         infoMap.put("responseCodes", this.responseCodes);
-        infoMap.put("hasAsyncResponse", Boolean.toString(this.serviceContext.hasAsyncResponse()));
+        infoMap.put("hasAsyncResponse", this.serviceContext.hasAsyncResponse());
         return infoMap;
     }
-    
-    private String createThirdRequestParameterJson(String parentName, Filter escapeFilter, ThirdRequestConfig[] thirdRequestConfigs) {
-        StringBuilder jsonBuilder = new StringBuilder(64);
+
+    private void createThirdRequestParameter(String parentName, ThirdRequestConfig[] thirdRequestConfigs) {
         RequestDataType type;
         String typeStr;
         boolean ignoreEmpty;
+        Map<String, Object> requestMap;
         for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
+            requestMap = new HashMap<>(8, 1);
             type = thirdRequestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
@@ -70,28 +71,26 @@ public class ServiceWorkerImpl implements ServiceWorker {
             if (thirdRequestConfig.required()) {
                 ignoreEmpty = false;
             }
-            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(thirdRequestConfig.name())
-                    .append("\",\"required\":").append(thirdRequestConfig.required())
-                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
-                    .append(",\"type\":\"").append(typeStr)
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(thirdRequestConfig.desc()))
-                    .append("\"}").append(',');
+            String name = parentName + "." + thirdRequestConfig.name();
+            requestMap.put("name", name);
+            requestMap.put("required", thirdRequestConfig.required());
+            requestMap.put("ignoreEmpty", ignoreEmpty);
+            requestMap.put("type", typeStr);
+            requestMap.put("desc", thirdRequestConfig.desc());
+            this.requestConfigs.add(requestMap);
         }
-        if (jsonBuilder.length() > 1) {
-            jsonBuilder.setLength(jsonBuilder.length() - 1);
-        }
-        return jsonBuilder.toString();
     }
 
-    private String createSecondRequestParameterJson(String parentName, Filter escapeFilter, SecondRequestConfig[] secondRequestConfigs) {
-        StringBuilder jsonBuilder = new StringBuilder(64);
+    private void createSecondRequestParameter(String parentName, SecondRequestConfig[] secondRequestConfigs) {
         RequestDataType type;
         ThirdRequestConfig[] thirdRequestConfigs;
         String thirdParentName;
-        String thirdJson;
         String typeStr;
         boolean ignoreEmpty;
+        Map<String, Object> requestMap;
+        String name;
         for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
+            requestMap = new HashMap<>(8, 1);
             type = secondRequestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
@@ -101,34 +100,29 @@ public class ServiceWorkerImpl implements ServiceWorker {
             if (secondRequestConfig.required()) {
                 ignoreEmpty = false;
             }
-            jsonBuilder.append("{\"name\":\"").append(parentName).append(".").append(secondRequestConfig.name())
-                    .append("\",\"required\":").append(secondRequestConfig.required())
-                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
-                    .append(",\"type\":\"").append(typeStr)
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(secondRequestConfig.desc()))
-                    .append("\"}").append(',');
+            name = parentName + "." + secondRequestConfig.name();
+            requestMap.put("name", name);
+            requestMap.put("required", secondRequestConfig.required());
+            requestMap.put("ignoreEmpty", ignoreEmpty);
+            requestMap.put("type", typeStr);
+            requestMap.put("desc", secondRequestConfig.desc());
+            this.requestConfigs.add(requestMap);
             thirdRequestConfigs = secondRequestConfig.thirdRequestConfigs();
-            if(thirdRequestConfigs.length > 0) {
-                thirdParentName = parentName + "." + secondRequestConfig.name();
-                thirdJson = this.createThirdRequestParameterJson(thirdParentName, escapeFilter, thirdRequestConfigs);
-                jsonBuilder.append(thirdJson).append(",");
+            if (thirdRequestConfigs.length > 0) {
+                thirdParentName = name;
+                this.createThirdRequestParameter(thirdParentName, thirdRequestConfigs);
             }
         }
-        if (jsonBuilder.length() > 1) {
-            jsonBuilder.setLength(jsonBuilder.length() - 1);
-        }
-        return jsonBuilder.toString();
     }
 
-    private String getRequestParameterJson(RequestConfig[] requestConfigs, Filter escapeFilter) {
-        StringBuilder jsonBuilder = new StringBuilder(64);
+    private void createRequestParameter(RequestConfig[] requestConfigs) {
         RequestDataType type;
         SecondRequestConfig[] secondRequestConfigs;
-        String secondJson;
         String typeStr;
-        jsonBuilder.append('[');
         boolean ignoreEmpty;
+        Map<String, Object> requestMap;
         for (RequestConfig requestConfig : requestConfigs) {
+            requestMap = new HashMap<>(8, 1);
             type = requestConfig.dataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
@@ -138,99 +132,119 @@ public class ServiceWorkerImpl implements ServiceWorker {
             if (requestConfig.required()) {
                 ignoreEmpty = false;
             }
-            jsonBuilder.append("{\"name\":\"").append(requestConfig.name())
-                    .append("\",\"required\":").append(requestConfig.required())
-                    .append(",\"ignoreEmpty\":").append(ignoreEmpty)
-                    .append(",\"type\":\"").append(typeStr)
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(requestConfig.desc()))
-                    .append("\"}").append(',');
+            requestMap.put("name", requestConfig.name());
+            requestMap.put("required", requestConfig.required());
+            requestMap.put("ignoreEmpty", ignoreEmpty);
+            requestMap.put("type", typeStr);
+            requestMap.put("desc", requestConfig.desc());
+            this.requestConfigs.add(requestMap);
             secondRequestConfigs = requestConfig.secondRequestConfigs();
             if (secondRequestConfigs.length > 0) {
-                secondJson = this.createSecondRequestParameterJson(requestConfig.name(), escapeFilter, secondRequestConfigs);
-                jsonBuilder.append(secondJson).append(",");
+                this.createSecondRequestParameter(requestConfig.name(), secondRequestConfigs);
             }
         }
         if (this.serviceContext.page()) {
-            jsonBuilder.append("{\"name\":\"").append("nextIndex")
-                    .append("\",\"required\":").append("false")
-                    .append(",\"ignoreEmpty\":").append("true")
-                    .append(",\"type\":\"").append("LONG")
-                    .append("\",\"desc\":\"").append("分页起始记录id")
-                    .append("\"}").append(',');
-            jsonBuilder.append("{\"name\":\"").append("nextSize")
-                    .append("\",\"required\":").append("false")
-                    .append(",\"ignoreEmpty\":").append("true")
-                    .append(",\"type\":\"").append("LONG[1,100]")
-                    .append("\",\"desc\":\"").append("分页读取记录数量")
-                    .append("\"}").append(',');
+            //nextIndex
+            requestMap = new HashMap<>(8, 1);
+            requestMap.put("name", "nextIndex");
+            requestMap.put("required", false);
+            requestMap.put("ignoreEmpty", true);
+            requestMap.put("type", "LONG");
+            requestMap.put("desc", "分页起始记录id");
+            this.requestConfigs.add(requestMap);
+            //nextIndex
+            requestMap = new HashMap<>(8, 1);
+            requestMap.put("name", "nextSize");
+            requestMap.put("required", false);
+            requestMap.put("ignoreEmpty", true);
+            requestMap.put("type", "LONG[1,100]");
+            requestMap.put("desc", "分页读取记录数量");
+            this.requestConfigs.add(requestMap);
         }
-        if (jsonBuilder.length() > 1) {
-            jsonBuilder.setLength(jsonBuilder.length() - 1);
-        }
-        jsonBuilder.append(']');
-        return jsonBuilder.toString();
     }
 
-    private String getResponseParameterJson(ResponseConfig[] responseConfigs, Filter escapeFilter) {
-        StringBuilder jsonBuilder = new StringBuilder(64);
-        jsonBuilder.append('[');
+    private void createThirdResponseParameter(String parentName, ThirdResponseConfig[] thirdResponseConfigs) {
+        Map<String, Object> responseMap;
+        String name;
+        for (ThirdResponseConfig thirdResponseConfig : thirdResponseConfigs) {
+            responseMap = new HashMap<>(4, 1);
+            name = parentName + "." + thirdResponseConfig.name();
+            responseMap.put("name", name);
+            responseMap.put("type", thirdResponseConfig.dataType().name());
+            responseMap.put("desc", thirdResponseConfig.desc());
+            this.responseConfigs.add(responseMap);
+        }
+    }
+
+    private void createSecondResponseParameter(String parentName, SecondResponseConfig[] sesondResponseConfigs) {
+        Map<String, Object> responseMap;
+        ThirdResponseConfig[] thirdResponseConfigs;
+        String name;
+        for (SecondResponseConfig secondResponseConfig : sesondResponseConfigs) {
+            responseMap = new HashMap<>(4, 1);
+            name = parentName + "." + secondResponseConfig.name();
+            responseMap.put("name", name);
+            responseMap.put("type", secondResponseConfig.dataType().name());
+            responseMap.put("desc", secondResponseConfig.desc());
+            this.responseConfigs.add(responseMap);
+            thirdResponseConfigs = secondResponseConfig.thirdResponseConfigs();
+            this.createThirdResponseParameter(name, thirdResponseConfigs);
+        }
+    }
+
+    private void createResponseParameter(ResponseConfig[] responseConfigs) {
+        Map<String, Object> responseMap;
+        SecondResponseConfig[] sesondResponseConfigs;
         for (ResponseConfig responseConfig : responseConfigs) {
-            jsonBuilder.append("{\"name\":\"").append(responseConfig.name())
-                    .append("\",\"type\":\"").append(responseConfig.dataType().name())
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseConfig.desc()))
-                    .append("\",\"filter\":\"");
-            if (responseConfig.filterTypes().length > 0) {
-                for (FilterType filterType : responseConfig.filterTypes()) {
-                    jsonBuilder.append(filterType.name()).append(',');
-                }
-                jsonBuilder.setLength(jsonBuilder.length() - 1);
-            }
-            jsonBuilder.append("\"}").append(',');
+            responseMap = new HashMap<>(4, 1);
+            responseMap.put("name", responseConfig.name());
+            responseMap.put("type", responseConfig.dataType().name());
+            responseMap.put("desc", responseConfig.desc());
+            this.responseConfigs.add(responseMap);
+            sesondResponseConfigs = responseConfig.secondResponseConfigs();
+            this.createSecondResponseParameter(responseConfig.name(), sesondResponseConfigs);
         }
-        if (jsonBuilder.length() > 1) {
-            jsonBuilder.setLength(jsonBuilder.length() - 1);
-        }
-        jsonBuilder.append(']');
-        return jsonBuilder.toString();
     }
 
-    @Override
-    public final void createInfo() {
-        Filter escapeFilter = new EscapeFilterImpl();
+    private void createResonseCode() {
         Map<String, String> responseCodeMap = new HashMap<>();
         responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
         responseCodeMap.put(ResponseCodeConfig.INVALID, "非法参数");
         responseCodeMap.put(ResponseCodeConfig.UNLOGIN, "未登陆");
         responseCodeMap.put(ResponseCodeConfig.TIMEOUT, "session超期");
         responseCodeMap.put(ResponseCodeConfig.DENIED, "无权限访问");
-        responseCodeMap.put(ResponseCodeConfig.NOTFOUND, "服务部存在");
+        responseCodeMap.put(ResponseCodeConfig.NOTFOUND, "服务不存在");
         responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
-        //构造请求参数信息
-        this.requestConfigs = this.getRequestParameterJson(this.serviceContext.requestConfigs(), escapeFilter);
-        //构造返回参数信息
-        this.responseConfigs = this.getResponseParameterJson(this.serviceContext.responseConfigs(), escapeFilter);
-        //返回状态提示
-        StringBuilder responseCodeBuilder = new StringBuilder(64);
-        responseCodeBuilder.append('[');
+        Map<String, Object> codeMap;
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
             responseCodeMap.remove(responseCode.code());
-            responseCodeBuilder.append("{\"code\":\"").append(responseCode.code())
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(responseCode.desc()))
-                    .append("\",\"asycn\":").append(Boolean.toString(responseCode.async()))
-                    .append(",\"type\":\"custom\"}").append(',');
+            codeMap = new HashMap<>(4, 1);
+            codeMap.put("code", responseCode.code());
+            codeMap.put("async", responseCode.async());
+            codeMap.put("desc", responseCode.desc());
+            codeMap.put("type", "custom");
+            this.responseCodes.add(codeMap);
         }
         Set<Map.Entry<String, String>> codeSet = responseCodeMap.entrySet();
         for (Map.Entry<String, String> entry : codeSet) {
-            responseCodeBuilder.append("{\"code\":\"").append(entry.getKey())
-                    .append("\",\"desc\":\"").append(escapeFilter.doFilter(entry.getValue()))
-                    .append("\",\"asycn\":").append("false")
-                    .append(",\"type\":\"global\"}").append(',');
+            codeMap = new HashMap<>(4, 1);
+            codeMap.put("code", entry.getKey());
+            codeMap.put("async", false);
+            codeMap.put("desc", entry.getValue());
+            codeMap.put("type", "global");
+            this.responseCodes.add(codeMap);
         }
-        if (responseCodeBuilder.length() > 1) {
-            responseCodeBuilder.setLength(responseCodeBuilder.length() - 1);
-        }
-        responseCodeBuilder.append(']');
-        this.responseCodes = responseCodeBuilder.toString();
+    }
+
+    @Override
+    public final void createInfo() {
+
+        //构造请求参数信息
+        this.createRequestParameter(this.serviceContext.requestConfigs());
+        //构造返回参数信息
+        this.createResponseParameter(this.serviceContext.responseConfigs());
+        //返回状态提示
+        this.createResonseCode();
     }
 
     @Override

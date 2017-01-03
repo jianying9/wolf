@@ -27,10 +27,10 @@ import com.wolf.framework.service.request.ListRequest;
         requestConfigs = {},
         responseConfigs = {
             @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
-            @ResponseConfig(name = "groupName", dataType = ResponseDataType.STRING, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
+            @ResponseConfig(name = "list", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
         },
         responseCodes = {},
@@ -47,24 +47,24 @@ public class InquireServiceImpl implements ListService {
         ServiceContext serviceContext;
         for (Entry<String, ServiceWorker> entryService : entrySet) {
             serviceContext = entryService.getValue().getServiceContext();
-            if (serviceContext.group().equals("wolf") == false) {
+            if (serviceContext.route().indexOf("/wolf") != 0) {
                 serviceWorkerList.add(entryService.getValue());
             }
         }
         //排序
         Collections.sort(serviceWorkerList, new ServiceWorkerSort());
         //输出
-        Map<String, String> resultMap;
-        List<Map<String, String>> resultMapList = new ArrayList<>(serviceWorkerList.size());
+        Map<String, Object> resultMap;
+        List<Map<String, Object>> resultMapList = new ArrayList<>(serviceWorkerList.size());
         for (ServiceWorker serviceWorker : serviceWorkerList) {
             serviceContext = serviceWorker.getServiceContext();
             resultMap = new HashMap<>(4, 1);
             resultMap.put("routeName", serviceContext.route());
-            resultMap.put("groupName", serviceContext.group());
             resultMap.put("desc", serviceContext.desc());
-            resultMap.put("validateSession", Boolean.toString(serviceContext.validateSession()));
-            resultMap.put("hasAsyncResponse", Boolean.toString(serviceContext.hasAsyncResponse()));
-            resultMap.put("page", Boolean.toString(serviceContext.page()));
+            resultMap.put("validateSession", serviceContext.validateSession());
+            resultMap.put("hasAsyncResponse", serviceContext.hasAsyncResponse());
+            resultMap.put("page", serviceContext.page());
+            resultMap.put("list", serviceContext.isList());
             resultMapList.add(resultMap);
         }
         listResponse.setDataMapList(resultMapList);
@@ -77,10 +77,7 @@ public class InquireServiceImpl implements ListService {
         public int compare(ServiceWorker o1, ServiceWorker o2) {
             ServiceContext s1 = o1.getServiceContext();
             ServiceContext s2 = o2.getServiceContext();
-            int result = s1.group().compareTo(s2.group());
-            if (result == 0) {
-                result = s1.route().compareTo(s2.route());
-            }
+            int result = s1.route().compareTo(s2.route());
             return result;
         }
     }

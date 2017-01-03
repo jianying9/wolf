@@ -50,12 +50,20 @@ public @interface ServiceConfig {
      * @return
      */
     public boolean validateSession() default true;
+
     /**
      * 是否验证访问来至合法的客户端
      *
      * @return
      */
     public boolean validateSecurity() default false;
+
+    /**
+     * 是否分页
+     *
+     * @return
+     */
+    public boolean page() default false;
 
     /**
      * 是否设置session(用于保持连接)
@@ -77,5 +85,5 @@ public @interface ServiceConfig {
      * @return
      */
     public ResponseCode[] responseCodes() default {};
-    
+
 }

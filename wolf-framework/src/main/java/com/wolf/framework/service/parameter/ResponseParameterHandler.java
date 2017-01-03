@@ -2,7 +2,7 @@ package com.wolf.framework.service.parameter;
 
 /**
  *
- * @author aladdin
+ * @author jianying9
  */
 public interface ResponseParameterHandler {
 
@@ -10,5 +10,5 @@ public interface ResponseParameterHandler {
 
     public ResponseDataType getDataType();
 
-    public String getJson(String value);
+    public Object getResponseValue(Object value);
 }

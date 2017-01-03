@@ -17,8 +17,6 @@ import com.wolf.framework.service.ResponseCode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -27,12 +25,12 @@ import java.util.regex.Pattern;
 public class ServiceContextImpl implements ServiceContext {
 
     private final String route;
-    private final String group;
     private final String desc;
     private final boolean requireTransaction;
     private final boolean validateSession;
     private final boolean validateSecurity;
     private final boolean page;
+    private final boolean isList;
     private final SessionHandleType sessionHandleType;
     private final String[] requiredParameter;
     private final String[] unrequiredParameter;
@@ -43,7 +41,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final ResponseConfig[] responseConfigs;
     private final ResponseCode[] responseCodes;
     private final boolean hasAsyncResponse;
-    
+
     /**
      * 保留字段集合
      *
@@ -61,10 +59,11 @@ public class ServiceContextImpl implements ServiceContext {
         wordSet.add("callback");
         return Collections.unmodifiableSet(wordSet);
     }
-    
+
     /**
      * 保留code集合
-     * @return 
+     *
+     * @return
      */
     public static Set<String> getReservedCodeSet() {
         Set<String> codeSet = new HashSet<>(4, 1);
@@ -80,18 +79,12 @@ public class ServiceContextImpl implements ServiceContext {
         return Collections.unmodifiableSet(codeSet);
     }
 
-    public ServiceContextImpl(ServiceConfig serviceConfig, boolean page, WorkerBuildContext workerBuildContext) {
+    public ServiceContextImpl(ServiceConfig serviceConfig, boolean isList, boolean page, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
         this.desc = serviceConfig.desc();
-        Pattern groupPattern = Pattern.compile("(?:/)([a-zA-Z]+)(?:/)");
-        Matcher matcher = groupPattern.matcher(this.route);
-        if(matcher.find()) {
-            this.group = matcher.group(1);
-        } else {
-            this.group = "default";
-        }
         this.sessionHandleType = serviceConfig.sessionHandleType();
         this.page = page;
+        this.isList = isList;
         this.requireTransaction = serviceConfig.requireTransaction();
         this.validateSession = serviceConfig.validateSession();
         this.validateSecurity = serviceConfig.validateSecurity();
@@ -100,19 +93,19 @@ public class ServiceContextImpl implements ServiceContext {
         this.responseCodes = serviceConfig.responseCodes();
         boolean asyncResponse = false;
         for (ResponseCode responseCode : this.responseCodes) {
-            if(responseCode.async()) {
+            if (responseCode.async()) {
                 asyncResponse = true;
                 break;
             }
         }
-        
+
         this.hasAsyncResponse = asyncResponse;
         //
         Set<String> reservedParamSet = ServiceContextImpl.getReservedParamSet();
         Set<String> reservedCodeSet = ServiceContextImpl.getReservedCodeSet();
         //
         for (ResponseCode responseCode : this.responseCodes) {
-            if(reservedCodeSet.contains(responseCode.code())) {
+            if (reservedCodeSet.contains(responseCode.code())) {
                 //配置中存在保留code,抛出异常提示
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved code[".concat(responseCode.code()) + "]");
             }
@@ -120,7 +113,7 @@ public class ServiceContextImpl implements ServiceContext {
         final List<RequestConfig> requiredRequestConfigList = new ArrayList<>(0);
         final List<RequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
         for (RequestConfig requestConfig : requestConfigs) {
-            if(reservedParamSet.contains(requestConfig.name())) {
+            if (reservedParamSet.contains(requestConfig.name())) {
                 //配置中存在保留参数名,抛出异常提示
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved param[".concat(requestConfig.name()) + "]");
             }
@@ -138,11 +131,13 @@ public class ServiceContextImpl implements ServiceContext {
         for (RequestConfig requestConfig : unrequiredRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(requestConfig);
             requestParameterHandler = requestParameterHandlerBuilder.build();
-            requestParameterMap.put(requestConfig.name(), requestParameterHandler);
-            unrequiredNameList.add(requestConfig.name());
+            if (requestParameterHandler != null) {
+                requestParameterMap.put(requestConfig.name(), requestParameterHandler);
+                unrequiredNameList.add(requestConfig.name());
+            }
         }
         //
-        if(page) {
+        if (page) {
             unrequiredNameList.add("nextIndex");
             unrequiredNameList.add("nextSize");
             requestParameterMap.put("nextIndex", workerBuildContext.getNextIndexHandler());
@@ -155,8 +150,10 @@ public class ServiceContextImpl implements ServiceContext {
         for (RequestConfig requestConfig : requiredRequestConfigList) {
             requestParameterHandlerBuilder = new RequestParameterHandlerBuilder(requestConfig);
             requestParameterHandler = requestParameterHandlerBuilder.build();
-            requestParameterMap.put(requestConfig.name(), requestParameterHandler);
-            requiredNameList.add(requestConfig.name());
+            if (requestParameterHandler != null) {
+                requestParameterMap.put(requestConfig.name(), requestParameterHandler);
+                requiredNameList.add(requestConfig.name());
+            }
         }
         final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
         this.requiredParameter = requiredNames;
@@ -174,8 +171,10 @@ public class ServiceContextImpl implements ServiceContext {
                 responseParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
                         parameterConfig);
                 responseParameterHandler = responseParameterHandlerBuilder.build();
-                returnParameterMap.put(parameterConfig.name(), responseParameterHandler);
-                returnNameList.add(parameterConfig.name());
+                if (responseParameterHandler != null) {
+                    returnParameterMap.put(parameterConfig.name(), responseParameterHandler);
+                    returnNameList.add(parameterConfig.name());
+                }
             }
             returnNames = returnNameList.toArray(new String[returnNameList.size()]);
         } else {
@@ -222,11 +221,6 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
-    public String group() {
-        return this.group;
-    }
-
-    @Override
     public String[] requiredParameter() {
         return this.requiredParameter;
     }
@@ -269,5 +263,10 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public boolean hasAsyncResponse() {
         return this.hasAsyncResponse;
+    }
+
+    @Override
+    public boolean isList() {
+        return this.isList;
     }
 }

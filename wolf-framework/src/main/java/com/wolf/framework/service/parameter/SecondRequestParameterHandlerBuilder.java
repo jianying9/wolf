@@ -31,6 +31,45 @@ public class SecondRequestParameterHandlerBuilder {
         this.requestConfig = requestConfig;
     }
 
+    private ObjectRequestHandlerInfo createObjectHandlerInfo(ThirdRequestConfig[] thirdRequestConfigs) {
+        final List<ThirdRequestConfig> requiredRequestConfigList = new ArrayList<>(0);
+        final List<ThirdRequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
+        for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
+            if (thirdRequestConfig.required()) {
+                requiredRequestConfigList.add(thirdRequestConfig);
+            } else {
+                unrequiredRequestConfigList.add(thirdRequestConfig);
+            }
+        }
+        RequestParameterHandler requestParameterHandler;
+        ThirdRequestParameterHandlerBuilder requestParameterHandlerBuilder;
+        final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(thirdRequestConfigs.length, 1);
+        List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
+        for (ThirdRequestConfig thirdRequestConfig : unrequiredRequestConfigList) {
+            requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
+            requestParameterHandler = requestParameterHandlerBuilder.build();
+            if (requestParameterHandler != null) {
+                requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
+                unrequiredNameList.add(thirdRequestConfig.name());
+            }
+        }
+        final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
+        //
+        List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
+        for (ThirdRequestConfig thirdRequestConfig : requiredRequestConfigList) {
+            requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
+            requestParameterHandler = requestParameterHandlerBuilder.build();
+            if (requestParameterHandler != null) {
+                requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
+                requiredNameList.add(thirdRequestConfig.name());
+            }
+        }
+        final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
+        //
+        ObjectRequestHandlerInfo objectHandlerInfo = new ObjectRequestHandlerInfo(requiredNames, unrequiredNames, requestParameterMap);
+        return objectHandlerInfo;
+    }
+
     public RequestParameterHandler build() {
         RequestParameterHandler parameterHandler = null;
         final String fieldName = this.requestConfig.name();
@@ -79,46 +118,20 @@ public class SecondRequestParameterHandlerBuilder {
             case STRING_ARRAY:
                 parameterHandler = new StringArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
                 break;
-            case OBJECT_ARRAY:
-                parameterHandler = new ObjectArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty);
-                break;
             case OBJECT:
                 ThirdRequestConfig[] thirdRequestConfigs = this.requestConfig.thirdRequestConfigs();
-                final List<ThirdRequestConfig> requiredRequestConfigList = new ArrayList<>(0);
-                final List<ThirdRequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
-                for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
-                    if (thirdRequestConfig.required()) {
-                        requiredRequestConfigList.add(thirdRequestConfig);
-                    } else {
-                        unrequiredRequestConfigList.add(thirdRequestConfig);
-                    }
+                if(thirdRequestConfigs.length > 0) {
+                    ObjectRequestHandlerInfo objectRequestHandlerInfo = this.createObjectHandlerInfo(thirdRequestConfigs);
+                    parameterHandler = new ObjectRequestParameterHandlerImpl(fieldName, ignoreEmpty, objectRequestHandlerInfo);
                 }
-                RequestParameterHandler requestParameterHandler;
-                ThirdRequestParameterHandlerBuilder requestParameterHandlerBuilder;
-                final Map<String, RequestParameterHandler> requestParameterMap = new HashMap<>(thirdRequestConfigs.length, 1);
-                List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestConfigList.size());
-                for (ThirdRequestConfig thirdRequestConfig : unrequiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
-                    requestParameterHandler = requestParameterHandlerBuilder.build();
-                    if (requestParameterHandler != null) {
-                        requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
-                        unrequiredNameList.add(thirdRequestConfig.name());
-                    }
-                }
-                final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
                 //
-                List<String> requiredNameList = new ArrayList<>(requiredRequestConfigList.size());
-                for (ThirdRequestConfig thirdRequestConfig : requiredRequestConfigList) {
-                    requestParameterHandlerBuilder = new ThirdRequestParameterHandlerBuilder(thirdRequestConfig);
-                    requestParameterHandler = requestParameterHandlerBuilder.build();
-                    if (requestParameterHandler != null) {
-                        requestParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
-                        requiredNameList.add(thirdRequestConfig.name());
-                    }
+                break;
+            case OBJECT_ARRAY:
+                thirdRequestConfigs = this.requestConfig.thirdRequestConfigs();
+                if(thirdRequestConfigs.length > 0) {
+                    ObjectRequestHandlerInfo objectRequestHandlerInfo = this.createObjectHandlerInfo(thirdRequestConfigs);
+                    parameterHandler = new ObjectArrayRequestParameterHandlerImpl(fieldName, ignoreEmpty, objectRequestHandlerInfo);
                 }
-                final String[] requiredNames = requiredNameList.toArray(new String[requiredNameList.size()]);
-                //
-                parameterHandler = new ObjectRequestParameterHandlerImpl(fieldName, ignoreEmpty, requiredNames, unrequiredNames, requestParameterMap);
                 break;
         }
         return parameterHandler;

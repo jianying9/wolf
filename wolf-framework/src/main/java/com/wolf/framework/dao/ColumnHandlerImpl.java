@@ -100,27 +100,11 @@ public class ColumnHandlerImpl implements ColumnHandler {
     }
 
     @Override
-    public String getFieldStringValue(Object object) {
-        String result = "";
+    public Object getFieldValue(Object object) {
+        Object result = null;
         try {
             this.field.setAccessible(true);
-            switch (this.columnDataType) {
-                case LONG:
-                    result = Long.toString(this.field.getLong(object));
-                    break;
-                case INT:
-                    result = Integer.toString(this.field.getInt(object));
-                    break;
-                case DOUBLE:
-                    result = Double.toString(this.field.getDouble(object));
-                    break;
-                case STRING:
-                    result = (String) this.field.get(object);
-                    break;
-                case BOOLEAN:
-                    result = Boolean.toString(this.field.getBoolean(object));
-                    break;
-            }
+            result = field.get(object);
             this.field.setAccessible(false);
             return result;
         } catch (IllegalArgumentException | IllegalAccessException ex) {

@@ -52,17 +52,21 @@ public class WorkerBuilder {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);
             boolean page = false;
+            boolean isList = false;
             if (Service.class.isAssignableFrom(clazz)) {
                 //对象类型
                 page = false;
             } else if (ListService.class.isAssignableFrom(clazz)) {
                 //集合类型
-                page = true;
+                isList = true;
+                if (serviceConfig.page()) {
+                    page = true;
+                }
             } else {
-                throw new RuntimeException(clazz.getName() + "没有实现制定的接口");
+                throw new RuntimeException(clazz.getName() + "没有实现指定的接口");
             }
             //构造服务上下文信息
-            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, page, this.workerBuildContext);
+            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, isList, page, this.workerBuildContext);
             //开始生成业务处理链
             //注入相关对象
             Injecter injecter = this.workerBuildContext.getInjecter();
@@ -85,7 +89,7 @@ public class WorkerBuilder {
                 throw new RuntimeException(ex);
             }
             //判断是否加入拦截环节
-            if(this.workerBuildContext.getInterceptorList().isEmpty() == false) {
+            if (this.workerBuildContext.getInterceptorList().isEmpty() == false) {
                 workHandler = new InterceptorWorkHandlerImpl(workHandler, this.workerBuildContext.getInterceptorList());
             }
             //判断是否需要事务，如果需要则加入事务处理环节

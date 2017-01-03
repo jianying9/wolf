@@ -7,29 +7,44 @@ import com.wolf.framework.service.parameter.filter.Filter;
 /**
  * 字符类型处理类
  *
- * @author aladdin
+ * @author jianying9
  */
-public final class StringResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
+public final class StringResponseParameterHandlerImpl implements ResponseParameterHandler {
 
     private final Filter[] filters;
+    private final String name;
+    private final ResponseDataType responseDataType;
 
-    public StringResponseParameterHandlerImpl(final String name, final Filter[] filters) {
-        super(name, ResponseDataType.STRING);
+    public StringResponseParameterHandlerImpl(final String name, ResponseDataType responseDataType, final Filter[] filters) {
         this.filters = filters;
+        this.name = name;
+        this.responseDataType = responseDataType;
     }
-    
+
     @Override
-    public String getJson(final String value) {
-        String result;
-        String filterValue = value;
-        if (this.filters != null) {
-            for (Filter filter : filters) {
-                filterValue = filter.doFilter(filterValue);
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public ResponseDataType getDataType() {
+        return this.responseDataType;
+    }
+
+    @Override
+    public Object getResponseValue(Object value) {
+        String result = "";
+        if (String.class.isInstance(value)) {
+            result = (String) value;
+            if (this.filters != null) {
+                for (Filter filter : filters) {
+                    result = filter.doFilter(result);
+                }
             }
+        } else {
+            String errMsg = "response:" + this.name + "'s type is not " + this.responseDataType.name();
+            throw new RuntimeException(errMsg);
         }
-        StringBuilder jsonBuilder = new StringBuilder(this.name.length() + filterValue.length() + 5);
-        jsonBuilder.append('"').append(this.name).append("\":\"").append(filterValue).append('"');
-        result = jsonBuilder.toString();
         return result;
     }
 }

@@ -1,5 +1,6 @@
 package com.wolf.framework.service.parameter.request;
 
+import com.wolf.framework.service.parameter.ObjectRequestHandlerInfo;
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestParameterHandler;
 import java.util.List;
@@ -10,15 +11,12 @@ import java.util.Map;
  *
  * @author jianying9
  */
-public final class ObjectArrayRequestParameterHandlerImpl implements RequestParameterHandler {
+public final class ObjectArrayRequestParameterHandlerImpl extends AbstractObjectRequestParameterHandler implements RequestParameterHandler {
 
-    private final String name;
     private final String errorInfo = " must be object array";
-    private final boolean ignoreEmpty;
 
-    public ObjectArrayRequestParameterHandlerImpl(final String name, boolean ignoreEmpty) {
-        this.name = name;
-        this.ignoreEmpty = ignoreEmpty;
+    public ObjectArrayRequestParameterHandlerImpl(final String name, boolean ignoreEmpty, ObjectRequestHandlerInfo objectRequestHandlerInfo) {
+        super(name, ignoreEmpty, objectRequestHandlerInfo);
     }
 
     @Override
@@ -26,14 +24,24 @@ public final class ObjectArrayRequestParameterHandlerImpl implements RequestPara
         String msg = this.errorInfo;
         if (List.class.isInstance(value)) {
             boolean isMap = true;
+            Map<String, Object> valueMap;
             List<Object> objectList = (List<Object>) value;
             for (Object object : objectList) {
-                if(Map.class.isInstance(object) == false) {
+                if (Map.class.isInstance(object) == false) {
                     isMap = false;
                     break;
+                } else {
+                    valueMap = (Map<String, Object>) object;
+                    //验证必填参数
+                    msg = this.validateRequiredParameter(valueMap);
+                    if (msg.isEmpty()) {
+                        msg = this.validateUnrequiredParameter(valueMap);
+                    } else {
+                        break;
+                    }
                 }
             }
-            if(isMap) {
+            if (isMap) {
                 msg = "";
             }
         }
@@ -41,18 +49,8 @@ public final class ObjectArrayRequestParameterHandlerImpl implements RequestPara
     }
 
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
     public RequestDataType getDataType() {
         return RequestDataType.OBJECT_ARRAY;
-    }
-
-    @Override
-    public boolean getIgnoreEmpty() {
-        return ignoreEmpty;
     }
 
 }

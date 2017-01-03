@@ -15,7 +15,7 @@ public interface ServiceWorker {
 
     public void createInfo();
 
-    public Map<String, String> getInfoMap();
+    public Map<String, Object> getInfoMap();
     
     public ServiceContext getServiceContext();
 }

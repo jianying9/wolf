@@ -8,18 +8,30 @@ import com.wolf.framework.service.parameter.ResponseParameterHandler;
  *
  * @author aladdin
  */
-public final class BooleanResponseParameterHandlerImpl extends AbstractResponseParameterHandler implements ResponseParameterHandler {
+public final class BooleanResponseParameterHandlerImpl implements ResponseParameterHandler {
 
-    public BooleanResponseParameterHandlerImpl(final String name) {
-        super(name, ResponseDataType.BOOLEAN);
+    private final String name;
+
+    public BooleanResponseParameterHandlerImpl(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override
-    public String getJson(final String value) {
-        String result;
-        StringBuilder jsonBuilder = new StringBuilder(this.name.length() + value.length() + 3);
-        jsonBuilder.append('"').append(this.name).append("\":").append(value);
-        result = jsonBuilder.toString();
-        return result;
+    public ResponseDataType getDataType() {
+        return ResponseDataType.BOOLEAN;
+    }
+
+    @Override
+    public Object getResponseValue(Object value) {
+        if(Boolean.class.isInstance(value) == false) {
+            String errMsg = "response:" + this.name + "'s type is not Boolean.";
+            throw new RuntimeException(errMsg);
+        }
+        return value;
     }
 }

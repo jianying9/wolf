@@ -26,9 +26,9 @@ public interface ServiceContext {
     
     public boolean page();
     
-    public String desc();
+    public boolean isList();
     
-    public String group();
+    public String desc();
     
     public String[] requiredParameter();
     

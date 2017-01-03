@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface ListResponse<T extends Entity> extends BaseResponse {
     
-    public void setDataMapList(List<Map<String, String>> dataMapList);
+    public void setDataMapList(List<Map<String, Object>> dataMapList);
     
     public void setEntityList(List<T> tList);
     

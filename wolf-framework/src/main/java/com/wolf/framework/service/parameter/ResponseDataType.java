@@ -7,10 +7,8 @@ package com.wolf.framework.service.parameter;
  */
 public enum ResponseDataType {
 
-    //BigIntSigned [-9223372036854775808,9223372036854775807]
-//BigIntSigned [-9223372036854775808,9223372036854775807]
     LONG,
-    //Double [-1.7976931348623157×10+308, -4.94065645841246544×10-324]
+    
     DOUBLE,
     //DateTime {YYYY-MM-DD HH:MI,YYYY-MM-DD HH:MI:SS}
     DATE_TIME,
@@ -29,5 +27,9 @@ public enum ResponseDataType {
     //json对象
     OBJECT,
     //json数组
-    OBJECT_ARRAY;
+    OBJECT_ARRAY,
+    //
+    STRING_ARRAY,
+    //
+    LONG_ARRAY;
 }

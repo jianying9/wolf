@@ -21,26 +21,26 @@ import java.util.Map;
  *
  * @author jianying9
  */
-public class ResponseParameterHandlerBuilder {
+public class SecondResponseParameterHandlerBuilder {
 
-    private final ResponseConfig responseConfig;
+    private final SecondResponseConfig secondResponseConfig;
 
-    public ResponseParameterHandlerBuilder(final ResponseConfig ResponseConfig) {
-        this.responseConfig = ResponseConfig;
+    public SecondResponseParameterHandlerBuilder(final SecondResponseConfig secondResponseConfig) {
+        this.secondResponseConfig = secondResponseConfig;
     }
 
-    private ObjectResponseHandlerInfo createObjectHandlerInfo(SecondResponseConfig[] secondResponseConfigs) {
+    private ObjectResponseHandlerInfo createObjectHandlerInfo(ThirdResponseConfig[] thirdResponseConfigs) {
         ResponseParameterHandler requestParameterHandler;
-        SecondResponseParameterHandlerBuilder responseParameterHandlerBuilder;
-        final Map<String, ResponseParameterHandler> responseParameterMap = new HashMap<>(secondResponseConfigs.length, 1);
+        ThirdResponseParameterHandlerBuilder requestParameterHandlerBuilder;
+        final Map<String, ResponseParameterHandler> responseParameterMap = new HashMap<>(thirdResponseConfigs.length, 1);
         //
-        List<String> nameList = new ArrayList<>(secondResponseConfigs.length);
-        for (SecondResponseConfig secondRequestConfig : secondResponseConfigs) {
-            responseParameterHandlerBuilder = new SecondResponseParameterHandlerBuilder(secondRequestConfig);
-            requestParameterHandler = responseParameterHandlerBuilder.build();
+        List<String> nameList = new ArrayList<>(thirdResponseConfigs.length);
+        for (ThirdResponseConfig thirdRequestConfig : thirdResponseConfigs) {
+            requestParameterHandlerBuilder = new ThirdResponseParameterHandlerBuilder(thirdRequestConfig);
+            requestParameterHandler = requestParameterHandlerBuilder.build();
             if (requestParameterHandler != null) {
-                responseParameterMap.put(secondRequestConfig.name(), requestParameterHandler);
-                nameList.add(secondRequestConfig.name());
+                responseParameterMap.put(thirdRequestConfig.name(), requestParameterHandler);
+                nameList.add(thirdRequestConfig.name());
             }
         }
         final String[] names = nameList.toArray(new String[nameList.size()]);
@@ -51,12 +51,12 @@ public class ResponseParameterHandlerBuilder {
 
     public ResponseParameterHandler build() {
         ResponseParameterHandler parameterHandler = null;
-        final String fieldName = this.responseConfig.name();
+        final String fieldName = this.secondResponseConfig.name();
         //
         final FilterFactory filterFactory = ApplicationContext.CONTEXT.getFilterFactory();
         Filter[] filters = null;
         //获取过滤对象
-        FilterType[] filterTypeEnums = this.responseConfig.filterTypes();
+        FilterType[] filterTypeEnums = this.secondResponseConfig.filterTypes();
         if (filterTypeEnums.length > 0) {
             Filter filter;
             filters = new Filter[filterTypeEnums.length];
@@ -69,7 +69,7 @@ public class ResponseParameterHandlerBuilder {
             }
         }
         //基本数据类型
-        ResponseDataType dataType = this.responseConfig.dataType();
+        ResponseDataType dataType = this.secondResponseConfig.dataType();
         switch (dataType) {
             case STRING:
                 parameterHandler = new StringResponseParameterHandlerImpl(fieldName, ResponseDataType.STRING, filters);
@@ -105,16 +105,16 @@ public class ResponseParameterHandlerBuilder {
                 parameterHandler = new StringArrayResponseParameterHandlerImpl(fieldName, filters);
                 break;
             case OBJECT:
-                SecondResponseConfig[] secondResponseConfigs = this.responseConfig.secondResponseConfigs();
-                if(secondResponseConfigs.length > 0) {
-                    ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(secondResponseConfigs);
+                ThirdResponseConfig[] thirdResponseConfigs = this.secondResponseConfig.thirdResponseConfigs();
+                if(thirdResponseConfigs.length > 0) {
+                    ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(thirdResponseConfigs);
                     parameterHandler = new ObjectResponseParameterHandlerImpl(fieldName, objectHandlerInfo);
                 }
                 break;
             case OBJECT_ARRAY:
-                secondResponseConfigs = this.responseConfig.secondResponseConfigs();
-                if(secondResponseConfigs.length > 0) {
-                    ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(secondResponseConfigs);
+                thirdResponseConfigs = this.secondResponseConfig.thirdResponseConfigs();
+                if(thirdResponseConfigs.length > 0) {
+                    ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(thirdResponseConfigs);
                     parameterHandler = new ObjectArrayResponseParameterHandlerImpl(fieldName, objectHandlerInfo);
                 }
                 break;

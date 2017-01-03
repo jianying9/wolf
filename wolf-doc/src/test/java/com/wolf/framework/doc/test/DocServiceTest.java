@@ -40,12 +40,6 @@ public class DocServiceTest {
     }
 
      @Test
-     public void testGroup() {
-         Response response = testHander.execute("/wolf/group", new HashMap<String, Object>());
-         System.out.println(response.getResponseMessage());
-     }
-     
-     @Test
      public void testService() {
          Response response = testHander.execute("/wolf/service", new HashMap<String, Object>());
          System.out.println(response.getResponseMessage());

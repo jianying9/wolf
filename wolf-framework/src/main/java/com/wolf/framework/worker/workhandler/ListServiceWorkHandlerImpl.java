@@ -27,10 +27,11 @@ public class ListServiceWorkHandlerImpl implements WorkHandler {
 
     @Override
     public void execute(WorkerContext workerContext) {
+        boolean page = workerContext.getServiceWorker().getServiceContext().page();
         ListRequest listRequest = new ListRequestImpl(workerContext.getWorkerRequest());
         String[] returnParameter = this.serviceContext.returnParameter();
         Map<String, ResponseParameterHandler> parameterHandlerMap = this.serviceContext.responseParameterHandlerMap();
-        ListResponse listResponse = new ListResponseImpl(workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap, listRequest);
+        ListResponse listResponse = new ListResponseImpl(page, workerContext.getWorkerResponse(), returnParameter, parameterHandlerMap, listRequest);
         this.listService.execute(listRequest, listResponse);
         String dataMessage = listResponse.getDataMessage();
         workerContext.getWorkerResponse().setDataMessage(dataMessage);

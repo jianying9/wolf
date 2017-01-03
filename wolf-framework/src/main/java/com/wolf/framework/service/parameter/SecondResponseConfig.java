@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface ResponseConfig {
+public @interface SecondResponseConfig {
 
     /**
      * 参数名
@@ -35,15 +35,15 @@ public @interface ResponseConfig {
     public String desc();
 
     /**
-     * 该parameter在输出时过滤行为
+     * String类型在输出时过滤行为
      *
      * @return
      */
     public FilterType[] filterTypes() default {FilterType.ESCAPE, FilterType.SECURITY};
     
     /**
-     * 二级响应参数
+     * 三级参数配置
      * @return 
      */
-    public SecondResponseConfig[] secondResponseConfigs() default {};
+    public ThirdResponseConfig[] thirdResponseConfigs() default {};
 }
