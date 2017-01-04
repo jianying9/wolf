@@ -23,7 +23,7 @@ import com.wolf.framework.service.request.ObjectRequest;
             @RequestConfig(name = "routeName", dataType = RequestDataType.STRING, max = 200, desc = "")
         },
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, filterTypes = {}, desc = ""),
             @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = ""),
             @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),

@@ -26,7 +26,7 @@ import com.wolf.framework.service.request.ListRequest;
         route = "/wolf/service",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, filterTypes = {}, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
