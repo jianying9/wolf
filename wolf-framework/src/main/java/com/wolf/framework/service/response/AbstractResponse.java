@@ -2,6 +2,8 @@ package com.wolf.framework.service.response;
 
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.reponse.Response;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
+import java.util.Map;
 
 /**
  *
@@ -11,10 +13,14 @@ import com.wolf.framework.reponse.Response;
 public abstract class AbstractResponse<T extends Entity>  implements BaseResponse {
 
     protected final Response response;
+    private final String[] returnParameter;
+    private final Map<String, ResponseParameterHandler> parameterHandlerMap;
     
     
-    public AbstractResponse(Response response) {
+    public AbstractResponse(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> responseHandlerMap) {
         this.response = response;
+        this.returnParameter = returnParameter;
+        this.parameterHandlerMap = responseHandlerMap;
     }
     
     @Override
@@ -71,4 +77,20 @@ public abstract class AbstractResponse<T extends Entity>  implements BaseRespons
     public String getPushId() {
         return this.response.getPushId();
     }
+    
+    protected final void checkAndFilterDataMap(Map<String, Object> map) {
+        if (map != null) {
+            Object paraValue;
+            ResponseParameterHandler responseParameterHandler;
+            for (String paraName : this.returnParameter) {
+                paraValue = map.get(paraName);
+                if (paraValue != null) {
+                    responseParameterHandler = this.parameterHandlerMap.get(paraName);
+                    paraValue = responseParameterHandler.getResponseValue(paraValue);
+                    map.put(paraName, paraValue);
+                }
+            }
+        }
+    }
+    
 }

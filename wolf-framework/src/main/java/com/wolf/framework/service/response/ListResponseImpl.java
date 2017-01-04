@@ -9,6 +9,7 @@ import java.util.Map;
 import com.wolf.framework.service.request.ListRequest;
 import com.wolf.framework.utils.EntityUtils;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -19,23 +20,23 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class ListResponseImpl<T extends Entity> extends AbstractResponse implements ListResponse<T> {
 
-    private final String[] returnParameter;
-    private final Map<String, ResponseParameterHandler> parameterHandlerMap;
     private Long nextIndex = null;
     private final long nextSize;
     private final boolean page;
     private List<Map<String, Object>> dataMapList = null;
 
-    public ListResponseImpl(boolean page, Response response, String[] returnParameter, Map<String, ResponseParameterHandler> parameterHandlerMap, ListRequest listServiceRequest) {
-        super(response);
+    public ListResponseImpl(boolean page, Response response, String[] returnParameter, Map<String, ResponseParameterHandler> responseHandlerMap, ListRequest listServiceRequest) {
+        super(response, returnParameter, responseHandlerMap);
         this.page = page;
-        this.returnParameter = returnParameter;
-        this.parameterHandlerMap = parameterHandlerMap;
         this.nextSize = listServiceRequest.getNextSize();
     }
 
     @Override
     public void setDataMapList(List<Map<String, Object>> dataMapList) {
+        for (Map<String, Object> map : dataMapList) {
+            //检测响应参数
+            this.checkAndFilterDataMap(map);
+        }
         this.dataMapList = dataMapList;
     }
 
@@ -53,30 +54,16 @@ public class ListResponseImpl<T extends Entity> extends AbstractResponse impleme
     @Override
     public String getDataMessage() {
         String dataMessage = null;
+        List<Map<String, Object>> dataList = Collections.EMPTY_LIST;
         if (this.dataMapList != null) {
-            Map<String, Object> dataMap;
-            Object paraValue;
-            ResponseParameterHandler responseParameterHandler;
-            for (int i = 0; i < this.dataMapList.size(); i++) {
-                dataMap = this.dataMapList.get(i);
-                if (dataMap != null) {
-                    for (String paraName : this.returnParameter) {
-                        paraValue = dataMap.get(paraName);
-                        if (paraValue != null) {
-                            responseParameterHandler = this.parameterHandlerMap.get(paraName);
-                            paraValue = responseParameterHandler.getResponseValue(paraValue);
-                            dataMap.put(paraName, paraValue);
-                        }
-                    }
-                }
-            }
+            dataList = this.dataMapList;
         }
         Map<String, Object> listMessageMap = new HashMap<>(4, 1);
         if (this.nextIndex != null && this.page) {
             listMessageMap.put("nextIndex", this.nextIndex);
             listMessageMap.put("nextSize", this.nextSize);
         }
-        listMessageMap.put("list", this.dataMapList);
+        listMessageMap.put("list", dataList);
         //输出json
         ObjectMapper mapper = new ObjectMapper();
         try {

@@ -16,14 +16,10 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class ObjectResponseImpl<T extends Entity> extends AbstractResponse implements ObjectResponse<T> {
 
-    private final String[] returnParameter;
-    private final Map<String, ResponseParameterHandler> parameterHandlerMap;
     private Map<String, Object> dataMap = null;
 
     public ObjectResponseImpl(Response response, String[] returnParameter, Map<String, ResponseParameterHandler> responseHandlerMap) {
-        super(response);
-        this.returnParameter = returnParameter;
-        this.parameterHandlerMap = responseHandlerMap;
+        super(response, returnParameter, responseHandlerMap);
     }
 
     @Override
@@ -34,6 +30,7 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
 
     @Override
     public void setDataMap(Map<String, Object> dataMap) {
+        this.checkAndFilterDataMap(dataMap);
         this.dataMap = dataMap;
     }
 
@@ -42,22 +39,12 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
         String dataMessage = null;
         //检查并过滤响应参数
         if (this.dataMap != null) {
-            Object paraValue;
-            ResponseParameterHandler responseParameterHandler;
-            for (String paraName : this.returnParameter) {
-                paraValue = this.dataMap.get(paraName);
-                if (paraValue != null) {
-                    responseParameterHandler = this.parameterHandlerMap.get(paraName);
-                    paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    this.dataMap.put(paraName, paraValue);
-                }
+            //输出json
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                dataMessage = mapper.writeValueAsString(this.dataMap);
+            } catch (IOException ex) {
             }
-        }
-        //输出json
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            dataMessage = mapper.writeValueAsString(this.dataMap);
-        } catch (IOException ex) {
         }
         return dataMessage;
     }
@@ -66,6 +53,9 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
     public void setData(String name, Object value) {
         Map<String, Object> newDataMap = new HashMap<>(2, 1);
         newDataMap.put(name, value);
+        //检测并过滤响应参数
+        this.checkAndFilterDataMap(newDataMap);
+        //
         this.dataMap = newDataMap;
     }
 
