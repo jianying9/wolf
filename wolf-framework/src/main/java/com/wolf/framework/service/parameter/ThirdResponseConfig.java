@@ -39,5 +39,5 @@ public @interface ThirdResponseConfig {
      *
      * @return
      */
-    public FilterType[] filterTypes() default {FilterType.ESCAPE, FilterType.SECURITY};
+    public FilterType[] filterTypes() default {FilterType.SECURITY};
 }

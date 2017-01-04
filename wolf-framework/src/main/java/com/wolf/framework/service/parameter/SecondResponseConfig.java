@@ -39,7 +39,7 @@ public @interface SecondResponseConfig {
      *
      * @return
      */
-    public FilterType[] filterTypes() default {FilterType.ESCAPE, FilterType.SECURITY};
+    public FilterType[] filterTypes() default {FilterType.SECURITY};
     
     /**
      * 三级参数配置

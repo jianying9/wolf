@@ -39,7 +39,7 @@ public @interface ResponseConfig {
      *
      * @return
      */
-    public FilterType[] filterTypes() default {FilterType.ESCAPE, FilterType.SECURITY};
+    public FilterType[] filterTypes() default {FilterType.SECURITY};
     
     /**
      * 二级响应参数
