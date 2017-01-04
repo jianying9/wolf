@@ -36,15 +36,14 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
 
     @Override
     public String getDataMessage() {
-        String dataMessage = null;
-        //检查并过滤响应参数
-        if (this.dataMap != null) {
-            //输出json
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                dataMessage = mapper.writeValueAsString(this.dataMap);
-            } catch (IOException ex) {
-            }
+        String dataMessage = "{}";
+        Map<String, Object> objectMessageMap = new HashMap<String, Object>(2, 1);
+        objectMessageMap.put("object", this.dataMap);
+        //输出json
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            dataMessage = mapper.writeValueAsString(objectMessageMap);
+        } catch (IOException ex) {
         }
         return dataMessage;
     }

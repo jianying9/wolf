@@ -53,7 +53,7 @@ public class ListResponseImpl<T extends Entity> extends AbstractResponse impleme
 
     @Override
     public String getDataMessage() {
-        String dataMessage = null;
+        String dataMessage = "{}";
         List<Map<String, Object>> dataList = Collections.EMPTY_LIST;
         if (this.dataMapList != null) {
             dataList = this.dataMapList;
