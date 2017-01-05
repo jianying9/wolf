@@ -37,7 +37,7 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
     @Override
     public String getDataMessage() {
         String dataMessage = "{}";
-        Map<String, Object> objectMessageMap = new HashMap<String, Object>(2, 1);
+        Map<String, Object> objectMessageMap = new HashMap<>(2, 1);
         objectMessageMap.put("object", this.dataMap);
         //输出json
         ObjectMapper mapper = new ObjectMapper();

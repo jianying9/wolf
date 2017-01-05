@@ -32,7 +32,7 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
         String msg = this.errorInfo;
         if (Double.class.isInstance(value)) {
             double num = (Double) value;
-            if (num <= this.max || num >= this.min) {
+            if (num <= this.max && num >= this.min) {
                 msg = "";
             }
         }

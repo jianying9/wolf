@@ -32,7 +32,7 @@ public final class LongRequestParameterHandlerImpl implements RequestParameterHa
         String msg = this.errorInfo;
         if (Long.class.isInstance(value)) {
             long num = (long) value;
-            if (num <= this.max || num >= this.min) {
+            if (num <= this.max && num >= this.min) {
                 msg = "";
             }
         }
