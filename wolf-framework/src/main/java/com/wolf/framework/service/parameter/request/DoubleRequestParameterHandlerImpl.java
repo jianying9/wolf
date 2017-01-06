@@ -30,11 +30,15 @@ public final class DoubleRequestParameterHandlerImpl implements RequestParameter
     @Override
     public String validate(final Object value) {
         String msg = this.errorInfo;
-        if (Double.class.isInstance(value)) {
-            double num = (Double) value;
-            if (num <= this.max && num >= this.min) {
-                msg = "";
-            }
+        Double num = null;
+        if (Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            num = l.doubleValue();
+        } else if (Double.class.isInstance(value)) {
+            num = (Double) value;
+        }
+        if (num != null && num <= this.max && num >= this.min) {
+            msg = "";
         }
         return msg;
     }
