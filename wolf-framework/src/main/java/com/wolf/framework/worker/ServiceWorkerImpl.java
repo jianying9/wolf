@@ -26,9 +26,9 @@ import java.util.Set;
 public class ServiceWorkerImpl implements ServiceWorker {
 
     private final WorkHandler nextWorkHandler;
-    private List<Map<String, Object>> requestConfigs = new ArrayList<>();
-    private List<Map<String, Object>> responseConfigs = new ArrayList<>();
-    private List<Map<String, Object>> responseCodes = new ArrayList<>();
+    private final List<Map<String, Object>> requestConfigs = new ArrayList<>();
+    private final List<Map<String, Object>> responseConfigs = new ArrayList<>();
+    private final List<Map<String, Object>> responseCodes = new ArrayList<>();
     private final ServiceContext serviceContext;
 
     public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
@@ -215,6 +215,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         responseCodeMap.put(ResponseCodeConfig.DENIED, "无权限访问");
         responseCodeMap.put(ResponseCodeConfig.NOTFOUND, "服务不存在");
         responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
+        responseCodeMap.put(ResponseCodeConfig.UNMODIFYED, "请求返回数据没有变化");
         Map<String, Object> codeMap;
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
             responseCodeMap.remove(responseCode.code());

@@ -31,6 +31,8 @@ public abstract class AbstractWorkContext implements WorkerContext {
     //input
     private Map<String, Object> parameterMap;
     private final String route;
+    private String callback = null;
+    private String md5 = null;
     private final ServiceWorker serviceWorker;
     private final WorkerRequest request;
     private final WorkerResponse response;
@@ -127,6 +129,17 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 logger.error("parse json error:", e);
             }
             if (rootNode != null) {
+                //读取公共数据
+                //callback
+                JsonNode globalNode = rootNode.get("callback");
+                if(globalNode != null) {
+                    this.callback = globalNode.getTextValue();
+                }
+                //md5
+                globalNode = rootNode.get("md5");
+                if(globalNode != null) {
+                    this.md5 = globalNode.getTextValue();
+                }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
                 if (paramNode.isNull() == false) {
@@ -190,4 +203,15 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public WorkerResponse getWorkerResponse() {
         return this.response;
     }
+
+    @Override
+    public String getCallback() {
+        return callback;
+    }
+
+    @Override
+    public String getMd5() {
+        return md5;
+    }
+    
 }

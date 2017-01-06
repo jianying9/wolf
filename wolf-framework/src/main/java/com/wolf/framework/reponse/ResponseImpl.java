@@ -4,6 +4,7 @@ import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.context.ServiceContext;
+import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.HashSet;
 import java.util.Set;
@@ -94,27 +95,39 @@ public class ResponseImpl implements WorkerResponse {
 
     private void createResponseMessage(boolean isPush) {
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
-        StringBuilder jsonBuilder = new StringBuilder(128);
+        StringBuilder jsonBuilder = new StringBuilder(this.dataMessage.length() + 256);
+        String md5 = workerContext.getMd5();
+        String msg = this.dataMessage;
+        if(md5 != null) {
+            //判断数据是否有变化
+            String newMd5 = SecurityUtils.encryptByMd5(this.dataMessage);
+            if(md5.equals(newMd5)) {
+                //数据没有变化
+                this.code = ResponseCodeConfig.UNMODIFYED;
+                msg = "{}";
+            } else {
+                md5 = newMd5;
+            }
+        }
         jsonBuilder.append("{\"code\":\"").append(this.code)
                 .append("\",\"route\":\"").append(this.workerContext.getRoute());
+        if(md5 != null) {
+            jsonBuilder.append("\",\"md5\":\"").append(md5);
+        }
         if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
             jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
         }
         if (this.error.isEmpty() == false) {
             jsonBuilder.append("\",\"error\":\"").append(this.error);
         }
-        Object obj = workerContext.getParameter("callback");
-        String callback = null;
-        if(obj != null && String.class.isInstance(obj)) {
-            callback = (String) obj;
-        }
+        String callback = workerContext.getCallback();
         if (callback != null && isPush == false) {
             jsonBuilder.append("\",\"callback\":\"").append(callback);
         }
         if (isPush && this.pushId != null) {
             jsonBuilder.append("\",\"pushId\":\"").append(this.pushId);
         }
-        jsonBuilder.append("\",\"data\":").append(this.dataMessage).append("}");
+        jsonBuilder.append("\",\"data\":").append(msg).append("}");
         this.responseMessage = jsonBuilder.toString();
     }
 

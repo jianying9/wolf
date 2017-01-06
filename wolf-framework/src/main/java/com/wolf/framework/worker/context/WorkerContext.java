@@ -16,6 +16,10 @@ public interface WorkerContext {
     
     public Object getParameter(String name);
     
+    public String getCallback();
+    
+    public String getMd5();
+    
     public String getRoute();
 
     public String getSessionId();
