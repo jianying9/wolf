@@ -46,6 +46,11 @@ public class ObjectRequestImpl implements ObjectRequest {
     @Override
     public Double getDoubleValue(String name) {
         Object value = this.request.getParameter(name);
+        if(value != null && Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            Double newValue = l.doubleValue();
+            value = newValue;
+        }
         return (Double) value;
     }
 
@@ -94,6 +99,11 @@ public class ObjectRequestImpl implements ObjectRequest {
     @Override
     public Double getDoubleValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
+        if(value != null && Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            Double newValue = l.doubleValue();
+            value = newValue;
+        }
         return (Double) value;
     }
 
