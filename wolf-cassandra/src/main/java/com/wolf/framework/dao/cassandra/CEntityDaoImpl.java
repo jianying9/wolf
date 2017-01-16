@@ -654,7 +654,9 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                 throw new RuntimeException(ex);
             }
             if (r != null) {
-                result = r.getList(0, type);
+                List<L> list = r.getList(0, type);
+                result = new ArrayList<>(list.size());
+                result.addAll(list);
             }
         }
         return result;
