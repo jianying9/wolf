@@ -91,6 +91,14 @@ public final class TimeUtils {
         Date date = new Date(milliseconds);
         return TimeUtils.FM_YY_MM_DD.format(date);
     }
+    
+    public static long convertMillisecondToYYYYMMDD(long milliseconds, long day) {
+        milliseconds = milliseconds + 86400000 * day;
+        Date date = new Date(milliseconds);
+        String fmDate = TimeUtils.FM_YY_MM_DD.format(date);
+        long time = convertYYYYMMDDToMillisecond(fmDate);
+        return time;
+    }
 
     public static long convertYYYYMMDDToMillisecond(String dateStr) {
         long result = 0;
