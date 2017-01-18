@@ -31,7 +31,13 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YYMMDD.format(currentTime);
     }
-
+    
+    public static String getDateFotmatYYMMDD(long day) {
+        long milliseconds = System.currentTimeMillis() + 86400000 * day;
+        Date currentTime = new Date(milliseconds);
+        return TimeUtils.FM_YYMMDD.format(currentTime);
+    }
+    
     /**
      * 获取当前时间yyyy-MM-dd
      *
@@ -92,14 +98,6 @@ public final class TimeUtils {
         return TimeUtils.FM_YY_MM_DD.format(date);
     }
     
-    public static long convertMillisecondToYYYYMMDD(long milliseconds, long day) {
-        milliseconds = milliseconds + 86400000 * day;
-        Date date = new Date(milliseconds);
-        String fmDate = TimeUtils.FM_YY_MM_DD.format(date);
-        long time = convertYYYYMMDDToMillisecond(fmDate);
-        return time;
-    }
-
     public static long convertYYYYMMDDToMillisecond(String dateStr) {
         long result = 0;
         try {
