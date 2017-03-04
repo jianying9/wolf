@@ -59,6 +59,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         RequestDataType type;
         String typeStr;
         boolean ignoreEmpty;
+        String desc;
         Map<String, Object> requestMap;
         for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
             requestMap = new HashMap<>(8, 1);
@@ -76,7 +77,8 @@ public class ServiceWorkerImpl implements ServiceWorker {
             requestMap.put("required", thirdRequestConfig.required());
             requestMap.put("ignoreEmpty", ignoreEmpty);
             requestMap.put("type", typeStr);
-            requestMap.put("desc", thirdRequestConfig.desc());
+            desc = thirdRequestConfig.desc() + ":" + thirdRequestConfig.text();
+            requestMap.put("desc", desc);
             this.requestConfigs.add(requestMap);
         }
     }
@@ -89,6 +91,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         boolean ignoreEmpty;
         Map<String, Object> requestMap;
         String name;
+        String desc;
         for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
             requestMap = new HashMap<>(8, 1);
             type = secondRequestConfig.dataType();
@@ -105,7 +108,8 @@ public class ServiceWorkerImpl implements ServiceWorker {
             requestMap.put("required", secondRequestConfig.required());
             requestMap.put("ignoreEmpty", ignoreEmpty);
             requestMap.put("type", typeStr);
-            requestMap.put("desc", secondRequestConfig.desc());
+            desc = secondRequestConfig.desc() + ":" + secondRequestConfig.text();
+            requestMap.put("desc", desc);
             this.requestConfigs.add(requestMap);
             thirdRequestConfigs = secondRequestConfig.thirdRequestConfigs();
             if (thirdRequestConfigs.length > 0) {
@@ -121,6 +125,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         String typeStr;
         boolean ignoreEmpty;
         Map<String, Object> requestMap;
+        String desc;
         for (RequestConfig requestConfig : requestConfigs) {
             requestMap = new HashMap<>(8, 1);
             type = requestConfig.dataType();
@@ -136,7 +141,8 @@ public class ServiceWorkerImpl implements ServiceWorker {
             requestMap.put("required", requestConfig.required());
             requestMap.put("ignoreEmpty", ignoreEmpty);
             requestMap.put("type", typeStr);
-            requestMap.put("desc", requestConfig.desc());
+            desc = requestConfig.desc() + ":" + requestConfig.text();
+            requestMap.put("desc", desc);
             this.requestConfigs.add(requestMap);
             secondRequestConfigs = requestConfig.secondRequestConfigs();
             if (secondRequestConfigs.length > 0) {
@@ -152,7 +158,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
             requestMap.put("type", "LONG");
             requestMap.put("desc", "分页起始记录id");
             this.requestConfigs.add(requestMap);
-            //nextIndex
+            //nextSize
             requestMap = new HashMap<>(8, 1);
             requestMap.put("name", "nextSize");
             requestMap.put("required", false);
@@ -214,7 +220,6 @@ public class ServiceWorkerImpl implements ServiceWorker {
         responseCodeMap.put(ResponseCodeConfig.TIMEOUT, "session超期");
         responseCodeMap.put(ResponseCodeConfig.DENIED, "无权限访问");
         responseCodeMap.put(ResponseCodeConfig.NOTFOUND, "服务不存在");
-        responseCodeMap.put(ResponseCodeConfig.SUCCESS, "操作成功");
         responseCodeMap.put(ResponseCodeConfig.UNMODIFYED, "请求返回数据没有变化");
         Map<String, Object> codeMap;
         for (ResponseCode responseCode : this.serviceContext.responseCodes()) {
