@@ -33,11 +33,16 @@ public class ListResponseImpl<T extends Entity> extends AbstractResponse impleme
 
     @Override
     public void setDataMapList(List<Map<String, Object>> dataMapList) {
+        List<Map<String, Object>> resultMapList = new ArrayList(dataMapList.size());
+        Map<String, Object> resultMap;
         for (Map<String, Object> map : dataMapList) {
             //检测响应参数
-            this.checkAndFilterDataMap(map);
+            resultMap = this.checkAndFilterDataMap(map);
+            if(resultMap != null) {
+                resultMapList.add(resultMap);
+            }
         }
-        this.dataMapList = dataMapList;
+        this.dataMapList = resultMapList;
     }
 
     @Override

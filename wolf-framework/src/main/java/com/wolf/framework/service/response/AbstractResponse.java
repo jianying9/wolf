@@ -3,6 +3,7 @@ package com.wolf.framework.service.response;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -78,19 +79,23 @@ public abstract class AbstractResponse<T extends Entity>  implements BaseRespons
         return this.response.getPushId();
     }
     
-    protected final void checkAndFilterDataMap(Map<String, Object> map) {
-        if (map != null) {
+    protected final Map<String, Object> checkAndFilterDataMap(Map<String, Object> paraMap) {
+        Map<String, Object> resultMap = null;
+        if (paraMap != null) {
             Object paraValue;
             ResponseParameterHandler responseParameterHandler;
+            resultMap = new HashMap(paraMap.size(), 1);
+            //过滤
             for (String paraName : this.returnParameter) {
-                paraValue = map.get(paraName);
+                paraValue = paraMap.get(paraName);
                 if (paraValue != null) {
                     responseParameterHandler = this.parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    map.put(paraName, paraValue);
+                    resultMap.put(paraName, paraValue);
                 }
             }
         }
+        return resultMap;
     }
     
 }

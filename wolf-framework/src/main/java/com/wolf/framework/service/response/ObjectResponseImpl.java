@@ -30,8 +30,7 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
 
     @Override
     public void setDataMap(Map<String, Object> dataMap) {
-        this.checkAndFilterDataMap(dataMap);
-        this.dataMap = dataMap;
+        this.dataMap = this.checkAndFilterDataMap(dataMap);
     }
 
     @Override
@@ -53,9 +52,7 @@ public class ObjectResponseImpl<T extends Entity> extends AbstractResponse imple
         Map<String, Object> newDataMap = new HashMap<>(2, 1);
         newDataMap.put(name, value);
         //检测并过滤响应参数
-        this.checkAndFilterDataMap(newDataMap);
-        //
-        this.dataMap = newDataMap;
+        this.dataMap = this.checkAndFilterDataMap(newDataMap);
     }
 
 }
