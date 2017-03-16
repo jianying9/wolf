@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import com.wolf.framework.service.ResponseCode;
+import com.wolf.framework.service.parameter.PushConfig;
+import com.wolf.framework.service.parameter.PushHandler;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,9 +39,11 @@ public class ServiceContextImpl implements ServiceContext {
     private final String[] returnParameter;
     private final Map<String, RequestParameterHandler> requestParameterHandlerMap;
     private final Map<String, ResponseParameterHandler> responseParameterHandlerMap;
+    private final Map<String, PushHandler> pushHandlerMap;
     private final RequestConfig[] requestConfigs;
     private final ResponseConfig[] responseConfigs;
     private final ResponseCode[] responseCodes;
+    private final PushConfig[] pushConfigs;
     private final boolean hasAsyncResponse;
 
     /**
@@ -90,6 +94,7 @@ public class ServiceContextImpl implements ServiceContext {
         this.validateSecurity = serviceConfig.validateSecurity();
         this.requestConfigs = serviceConfig.requestConfigs();
         this.responseConfigs = serviceConfig.responseConfigs();
+        this.pushConfigs = serviceConfig.pushConfigs();
         this.responseCodes = serviceConfig.responseCodes();
         boolean asyncResponse = false;
         for (ResponseCode responseCode : this.responseCodes) {
@@ -166,7 +171,7 @@ public class ServiceContextImpl implements ServiceContext {
         final String[] returnNames;
         if (this.responseConfigs.length > 0) {
             List<String> returnNameList = new ArrayList<>(this.responseConfigs.length);
-            returnParameterMap = new HashMap<>(this.responseConfigs.length, 1);
+            returnParameterMap = new HashMap(this.responseConfigs.length, 1);
             for (ResponseConfig parameterConfig : this.responseConfigs) {
                 responseParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
                         parameterConfig);
@@ -178,11 +183,42 @@ public class ServiceContextImpl implements ServiceContext {
             }
             returnNames = returnNameList.toArray(new String[returnNameList.size()]);
         } else {
-            returnParameterMap = new HashMap<>(0, 1);
+            returnParameterMap = Collections.EMPTY_MAP;
             returnNames = new String[0];
         }
         this.returnParameter = returnNames;
         this.responseParameterHandlerMap = returnParameterMap;
+        //获取push配置
+        final Map<String, PushHandler> pushMap;
+        if (this.pushConfigs.length > 0) {
+            pushMap = new HashMap(this.pushConfigs.length, 1);
+            Map<String, ResponseParameterHandler> pushResponseParameterMap;
+            String[] pushReturnNames;
+            List<String> pushReturnNameList;
+            String pushRouteName;
+            PushHandler pushHandler;
+            for (PushConfig pushConfig : this.pushConfigs) {
+                pushRouteName = pushConfig.route();
+                pushReturnNameList = new ArrayList(pushConfig.responseConfigs().length);
+                pushResponseParameterMap = new HashMap(pushConfig.responseConfigs().length, 1);
+                for (ResponseConfig parameterConfig : pushConfig.responseConfigs()) {
+                    responseParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
+                            parameterConfig);
+                    responseParameterHandler = responseParameterHandlerBuilder.build();
+                    if (responseParameterHandler != null) {
+                        pushResponseParameterMap.put(parameterConfig.name(), responseParameterHandler);
+                        pushReturnNameList.add(parameterConfig.name());
+                    }
+                }
+                pushReturnNames = pushReturnNameList.toArray(new String[pushReturnNameList.size()]);
+                //
+                pushHandler = new PushHandler(pushRouteName, pushReturnNames, pushResponseParameterMap);
+                pushMap.put(pushRouteName, pushHandler);
+            }
+        } else {
+            pushMap = Collections.EMPTY_MAP;
+        }
+        this.pushHandlerMap = pushMap;
     }
 
     @Override
@@ -268,5 +304,15 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public boolean isList() {
         return this.isList;
+    }
+
+    @Override
+    public PushConfig[] pushConfigs() {
+        return this.pushConfigs;
+    }
+
+    @Override
+    public Map<String, PushHandler> pushHandlerMap() {
+        return this.pushHandlerMap;
     }
 }

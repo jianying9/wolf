@@ -7,6 +7,8 @@ import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
+import com.wolf.framework.service.parameter.PushConfig;
+import com.wolf.framework.service.parameter.PushHandler;
 
 /**
  *
@@ -45,6 +47,10 @@ public interface ServiceContext {
     public ResponseConfig[] responseConfigs();
     
     public ResponseCode[] responseCodes();
+    
+    public PushConfig[] pushConfigs();
+    
+    public Map<String, PushHandler> pushHandlerMap();
     
     public boolean hasAsyncResponse();
 }

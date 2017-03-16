@@ -1,5 +1,6 @@
 package com.wolf.framework.service;
 
+import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import java.lang.annotation.ElementType;
@@ -36,6 +37,12 @@ public @interface ServiceConfig {
      * @return String[]
      */
     public ResponseConfig[] responseConfigs() default {};
+    
+    /**
+     * 推送配置
+     * @return 
+     */
+    public PushConfig[] pushConfigs() default {};
 
     /**
      * 事务类型 需要事务控制--true 不需要事务控制--false

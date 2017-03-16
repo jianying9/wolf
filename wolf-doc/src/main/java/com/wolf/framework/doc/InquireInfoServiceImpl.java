@@ -8,6 +8,7 @@ import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.SecondResponseConfig;
+import com.wolf.framework.service.parameter.ThirdResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.UUID;
 import com.wolf.framework.service.response.ObjectResponse;
@@ -48,6 +49,16 @@ import com.wolf.framework.service.request.ObjectRequest;
                         @SecondResponseConfig(name = "name", dataType = ResponseDataType.STRING, desc = ""),
                         @SecondResponseConfig(name = "type", dataType = ResponseDataType.STRING, desc = ""),
                         @SecondResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
+                    }),
+            @ResponseConfig(name = "pushConfigs", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
+                    secondResponseConfigs = {
+                        @SecondResponseConfig(name = "route", dataType = ResponseDataType.STRING, desc = ""),
+                        @SecondResponseConfig(name = "responseConfigs", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
+                                thirdResponseConfigs = {
+                                    @ThirdResponseConfig(name = "name", dataType = ResponseDataType.STRING, desc = ""),
+                                    @ThirdResponseConfig(name = "type", dataType = ResponseDataType.STRING, desc = ""),
+                                    @ThirdResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
+                                })
                     }),
             @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = "")
         },

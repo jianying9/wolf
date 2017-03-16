@@ -9,6 +9,7 @@ import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
+import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.SecondRequestConfig;
 import com.wolf.framework.service.parameter.SecondResponseConfig;
@@ -29,6 +30,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
     private final List<Map<String, Object>> requestConfigs = new ArrayList<>();
     private final List<Map<String, Object>> responseConfigs = new ArrayList<>();
     private final List<Map<String, Object>> responseCodes = new ArrayList<>();
+    private final List<Map<String, Object>> pushConfigs = new ArrayList<>();
     private final ServiceContext serviceContext;
 
     public ServiceWorkerImpl(WorkHandler nextWorkHandler, ServiceContext serviceContext) {
@@ -52,6 +54,7 @@ public class ServiceWorkerImpl implements ServiceWorker {
         infoMap.put("responseConfigs", this.responseConfigs);
         infoMap.put("responseCodes", this.responseCodes);
         infoMap.put("hasAsyncResponse", this.serviceContext.hasAsyncResponse());
+        infoMap.put("pushConfigs", this.pushConfigs);
         return infoMap;
     }
 
@@ -169,23 +172,27 @@ public class ServiceWorkerImpl implements ServiceWorker {
         }
     }
 
-    private void createThirdResponseParameter(String parentName, ThirdResponseConfig[] thirdResponseConfigs) {
+    private List<Map<String, Object>> createThirdResponseParameter(String parentName, ThirdResponseConfig[] thirdResponseConfigs) {
         Map<String, Object> responseMap;
         String name;
+        List<Map<String, Object>> thirdResultList = new ArrayList(thirdResponseConfigs.length);
         for (ThirdResponseConfig thirdResponseConfig : thirdResponseConfigs) {
             responseMap = new HashMap<>(4, 1);
             name = parentName + "." + thirdResponseConfig.name();
             responseMap.put("name", name);
             responseMap.put("type", thirdResponseConfig.dataType().name());
             responseMap.put("desc", thirdResponseConfig.desc());
-            this.responseConfigs.add(responseMap);
+            thirdResultList.add(responseMap);
         }
+        return thirdResultList;
     }
 
-    private void createSecondResponseParameter(String parentName, SecondResponseConfig[] sesondResponseConfigs) {
+    private List<Map<String, Object>> createSecondResponseParameter(String parentName, SecondResponseConfig[] sesondResponseConfigs) {
         Map<String, Object> responseMap;
         ThirdResponseConfig[] thirdResponseConfigs;
         String name;
+        List<Map<String, Object>> thirdResultList;
+        List<Map<String, Object>> secondResultList = new ArrayList(sesondResponseConfigs.length);
         for (SecondResponseConfig secondResponseConfig : sesondResponseConfigs) {
             responseMap = new HashMap<>(4, 1);
             name = parentName + "." + secondResponseConfig.name();
@@ -194,21 +201,39 @@ public class ServiceWorkerImpl implements ServiceWorker {
             responseMap.put("desc", secondResponseConfig.desc());
             this.responseConfigs.add(responseMap);
             thirdResponseConfigs = secondResponseConfig.thirdResponseConfigs();
-            this.createThirdResponseParameter(name, thirdResponseConfigs);
+            thirdResultList = this.createThirdResponseParameter(name, thirdResponseConfigs);
+            secondResultList.addAll(thirdResultList);
         }
+        return secondResultList;
     }
 
-    private void createResponseParameter(ResponseConfig[] responseConfigs) {
+    private List<Map<String, Object>> createResponseParameter(ResponseConfig[] responseConfigs) {
         Map<String, Object> responseMap;
         SecondResponseConfig[] sesondResponseConfigs;
+        List<Map<String, Object>> secondResultList;
+        List<Map<String, Object>> firstResultList = new ArrayList(responseConfigs.length);
         for (ResponseConfig responseConfig : responseConfigs) {
             responseMap = new HashMap<>(4, 1);
             responseMap.put("name", responseConfig.name());
             responseMap.put("type", responseConfig.dataType().name());
             responseMap.put("desc", responseConfig.desc());
-            this.responseConfigs.add(responseMap);
+            firstResultList.add(responseMap);
             sesondResponseConfigs = responseConfig.secondResponseConfigs();
-            this.createSecondResponseParameter(responseConfig.name(), sesondResponseConfigs);
+            secondResultList = this.createSecondResponseParameter(responseConfig.name(), sesondResponseConfigs);
+            firstResultList.addAll(secondResultList);
+        }
+        return firstResultList;
+    }
+
+    private void createPush(PushConfig[] pushConfigs) {
+        Map<String, Object> pushMap;
+        List<Map<String, Object>> pushResponseConfigs;
+        for (PushConfig pushConfig : pushConfigs) {
+            pushResponseConfigs = this.createResponseParameter(pushConfig.responseConfigs());
+            pushMap = new HashMap(2, 1);
+            pushMap.put("route", pushConfig.route());
+            pushMap.put("responseConfigs", pushResponseConfigs);
+            this.pushConfigs.add(pushMap);
         }
     }
 
@@ -248,9 +273,12 @@ public class ServiceWorkerImpl implements ServiceWorker {
         //构造请求参数信息
         this.createRequestParameter(this.serviceContext.requestConfigs());
         //构造返回参数信息
-        this.createResponseParameter(this.serviceContext.responseConfigs());
+        List<Map<String, Object>> responseList = this.createResponseParameter(this.serviceContext.responseConfigs());
+        this.responseConfigs.addAll(responseList);
         //返回状态提示
         this.createResonseCode();
+        //构造push参数信息
+        this.createPush(this.serviceContext.pushConfigs());
     }
 
     @Override
