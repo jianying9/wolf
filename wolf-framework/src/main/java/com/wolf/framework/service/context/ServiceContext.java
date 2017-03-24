@@ -26,10 +26,6 @@ public interface ServiceContext {
     
     public boolean validateSecurity();
     
-    public boolean page();
-    
-    public boolean isList();
-    
     public String desc();
     
     public String[] requiredParameter();
@@ -53,4 +49,6 @@ public interface ServiceContext {
     public Map<String, PushHandler> pushHandlerMap();
     
     public boolean hasAsyncResponse();
+    
+    public PushHandler getPushHandler(String route);
 }

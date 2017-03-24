@@ -6,7 +6,8 @@ package com.wolf.framework.service.parameter;
  * @author jianying9
  */
 public enum RequestDataType {
-
+    EXTEND, 
+    //
     LONG,
     //
     DOUBLE,

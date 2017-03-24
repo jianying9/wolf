@@ -1,4 +1,4 @@
-package com.wolf.framework.service.response;
+package com.wolf.framework.reponse;
 
 import com.wolf.framework.dao.Entity;
 import java.util.Map;
@@ -16,9 +16,13 @@ public interface PushResponse<T extends Entity> {
     
     public void setEntity(T t);
     
+    public String getPushId();
+    
     public void setPushId(String pushId);
     
-    public String getPushId();
+    public String getCode();
+    
+    public void setCode(String code);
     
     public String getPushMessage();
 }

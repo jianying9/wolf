@@ -66,13 +66,6 @@ public @interface ServiceConfig {
     public boolean validateSecurity() default false;
 
     /**
-     * 是否分页
-     *
-     * @return
-     */
-    public boolean page() default false;
-
-    /**
      * 是否设置session(用于保持连接)
      *
      * @return

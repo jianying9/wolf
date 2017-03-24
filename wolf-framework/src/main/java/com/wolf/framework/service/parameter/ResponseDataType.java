@@ -6,9 +6,11 @@ package com.wolf.framework.service.parameter;
  * @author jianying9
  */
 public enum ResponseDataType {
-
-    LONG,
     
+    EXTEND,
+    //
+    LONG,
+    //
     DOUBLE,
     //DateTime {YYYY-MM-DD HH:MI,YYYY-MM-DD HH:MI:SS}
     DATE_TIME,

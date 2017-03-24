@@ -15,7 +15,5 @@ public @interface ResponseCode {
 
     public String code();
     
-    public boolean async() default false;
-
     public String desc();
 }

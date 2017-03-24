@@ -2,6 +2,7 @@ package com.wolf.framework.request;
 
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ public class RequestImpl implements WorkerRequest {
     }
 
     @Override
-    public Map<String, Object> getParameterMap() {
+    public Map<String, Object> getValueMap() {
         return this.parameterMap;
     }
 
@@ -39,13 +40,119 @@ public class RequestImpl implements WorkerRequest {
     }
 
     @Override
-    public Object getParameter(String name) {
+    public Object getValue(String name) {
         return this.parameterMap.get(name);
     }
 
     @Override
     public void putParameter(String name, Object value) {
         this.parameterMap.put(name, value);
+    }
+    
+    @Override
+    public Long getLongValue(String name) {
+        Object value = this.getValue(name);
+        return (Long) value;
+    }
+
+    @Override
+    public Boolean getBooleanValue(String name) {
+        Object value = this.getValue(name);
+        return (Boolean) value;
+    }
+
+    @Override
+    public Double getDoubleValue(String name) {
+        Object value = this.getValue(name);
+        if(value != null && Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            Double newValue = l.doubleValue();
+            value = newValue;
+        }
+        return (Double) value;
+    }
+
+    @Override
+    public String getStringValue(String name) {
+        Object value = this.getValue(name);
+        return (String) value;
+    }
+
+    @Override
+    public List<Long> getLongListValue(String name) {
+        Object value = this.getValue(name);
+        return (List<Long>) value;
+    }
+
+    @Override
+    public List<String> getStringListValue(String name) {
+        Object value = this.getValue(name);
+        return (List<String>) value;
+    }
+
+    @Override
+    public Map<String, Object> getObjectValue(String name) {
+        Object value = this.getValue(name);
+        return (Map<String, Object>) value;
+    }
+
+    @Override
+    public List<Map<String, Object>> getObjectListValue(String name) {
+        Object value = this.getValue(name);
+        return (List<Map<String, Object>>) value;
+    }
+
+    @Override
+    public Long getLongValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Long) value;
+    }
+
+    @Override
+    public Boolean getBooleanValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Boolean) value;
+    }
+
+    @Override
+    public Double getDoubleValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        if(value != null && Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            Double newValue = l.doubleValue();
+            value = newValue;
+        }
+        return (Double) value;
+    }
+
+    @Override
+    public String getStringValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (String) value;
+    }
+
+    @Override
+    public List<Long> getLongListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<Long>) value;
+    }
+
+    @Override
+    public List<String> getStringListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<String>) value;
+    }
+
+    @Override
+    public Map<String, Object> getObjectValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (Map<String, Object>) value;
+    }
+
+    @Override
+    public List<Map<String, Object>> getObjectListValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        return (List<Map<String, Object>>) value;
     }
 
 }

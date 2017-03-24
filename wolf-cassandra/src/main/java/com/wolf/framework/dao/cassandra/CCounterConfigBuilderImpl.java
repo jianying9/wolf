@@ -83,7 +83,7 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
         if (this.cEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation CCounterConfig...");
             for (Class<T> clazz : this.cEntityClassList) {
-                this.logger.info("--parsing cassandra CCounterDao {}--", clazz.getName());
+                this.logger.debug("--parsing cassandra CCounterDao {}--", clazz.getName());
                 if (clazz.isAnnotationPresent(CCounterConfig.class)) {
                     //获取注解RDaoConfig
                     final CCounterConfig cDaoConfig = clazz.getAnnotation(CCounterConfig.class);

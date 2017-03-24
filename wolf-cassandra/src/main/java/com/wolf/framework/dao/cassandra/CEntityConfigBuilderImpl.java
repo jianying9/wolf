@@ -84,7 +84,7 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
         if (this.cEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation CEntityDaoConfig...");
             for (Class<T> clazz : this.cEntityClassList) {
-                this.logger.info("--parsing cassandra CEntityDao {}--", clazz.getName());
+                this.logger.debug("--parsing cassandra CEntityDao {}--", clazz.getName());
                 if (clazz.isAnnotationPresent(CEntityConfig.class)) {
                     //获取注解RDaoConfig
                     final CEntityConfig cDaoConfig = clazz.getAnnotation(CEntityConfig.class);
