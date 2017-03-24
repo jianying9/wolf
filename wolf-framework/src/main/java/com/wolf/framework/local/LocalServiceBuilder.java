@@ -24,7 +24,7 @@ public final class LocalServiceBuilder {
      * @param clazz
      */
     public void build(final Class<Local> clazz) {
-        this.logger.info("--parsing local service {}--", clazz.getName());
+        this.logger.debug("--parsing local service {}--", clazz.getName());
         //判断是否实现Local接口
             Class<? extends Local> clazzi = null;
             Class<?>[] clazzInterfaces = clazz.getInterfaces();

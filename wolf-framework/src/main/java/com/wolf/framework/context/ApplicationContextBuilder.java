@@ -24,7 +24,11 @@ import com.wolf.framework.parser.ClassParser;
 import com.wolf.framework.interceptor.InterceptorConfig;
 import com.wolf.framework.interceptor.InterceptorContext;
 import com.wolf.framework.interceptor.InterceptorContextImpl;
+import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
+import com.wolf.framework.service.parameter.ServiceExtend;
+import com.wolf.framework.service.parameter.ServiceExtendBuilder;
+import com.wolf.framework.service.parameter.ServiceExtendConfig;
 import com.wolf.framework.worker.build.WorkerBuilder;
 import com.wolf.framework.task.TaskExecutor;
 import com.wolf.framework.task.TaskExecutorImpl;
@@ -47,11 +51,12 @@ import java.util.HashMap;
 public class ApplicationContextBuilder<T extends Entity> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    protected final List<Class<T>> rEntityClassList = new ArrayList<>();
-    protected final List<Class<?>> serviceClassList = new ArrayList<>();
-    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<>();
-    protected final List<Class<Local>> localServiceClassList = new ArrayList<>();
-    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<>();
+    protected final List<Class<T>> rEntityClassList = new ArrayList<>(0);
+    protected final List<Class<Service>> serviceClassList = new ArrayList<>(0);
+    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<>(0);
+    protected final List<Class<Local>> localServiceClassList = new ArrayList<>(0);
+    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<>(0);
+    protected final List<Class<?>> serviceExtendClassList = new ArrayList<>(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
 
@@ -168,7 +173,7 @@ public class ApplicationContextBuilder<T extends Entity> {
             dcBuilder.build();
         }
         //解析LocalService
-        this.logger.info("parsing annotation LocalServiceConfig...");
+        this.logger.debug("parsing annotation LocalServiceConfig...");
         final LocalServiceContext localServiceContext = new LocalServiceContextImpl();
         final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContext);
         for (Class<Local> clazzl : this.localServiceClassList) {
@@ -192,23 +197,30 @@ public class ApplicationContextBuilder<T extends Entity> {
         localServiceContext.inject(injecterList);
         //
         //解析InterceptorConfig
-        this.logger.info("parsing annotation InterceptorConfig...");
+        this.logger.debug("parsing annotation InterceptorConfig...");
         final InterceptorContext interceptorContext = new InterceptorContextImpl();
         InterceptorBuilder interceptorBuilder = new InterceptorBuilder(interceptorContext);
         for (Class<Interceptor> clazzi : this.interceptorClassList) {
             interceptorBuilder.build(clazzi);
         }
-        this.logger.info("parse annotation InterceptorConfig finished.");
+        this.logger.debug("parse annotation InterceptorConfig finished.");
         //对Interceptor进行注入
         interceptorContext.inject(injecterList);
+        //解析ServiceExtendConfig
+        ServiceExtendBuilder serviceExtendBuilder = new ServiceExtendBuilder();
+        for (Class<?> clazze: this.serviceExtendClassList) {
+            serviceExtendBuilder.add(clazze);
+        }
+        final ServiceExtend serviceExtend = serviceExtendBuilder.build();
         //解析ServiceConfig
-        this.logger.info("parsing annotation ServiceConfig...");
+        this.logger.debug("parsing annotation ServiceConfig...");
         this.workerBuildContext = new WorkerBuildContextImpl(
+                serviceExtend,
                 injecterList,
                 interceptorContext,
                 ApplicationContext.CONTEXT);
         final WorkerBuilder workerBuilder = new WorkerBuilder(this.workerBuildContext);
-        for (Class<?> clazzs : this.serviceClassList) {
+        for (Class<Service> clazzs : this.serviceClassList) {
             workerBuilder.build(clazzs);
         }
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
@@ -245,12 +257,12 @@ public class ApplicationContextBuilder<T extends Entity> {
     private void parseClass(final ClassLoader classloader, final String className) throws ClassNotFoundException {
         Class<?> clazz = this.loadClass(classloader, className);
         if (clazz != null) {
-            Class<?> clazzs;
+            Class<Service> clazzs;
             Class<Local> clazzl;
             Class<Interceptor> clazzi;
-            if (clazz.isAnnotationPresent(ServiceConfig.class)) {
+            if (clazz.isAnnotationPresent(ServiceConfig.class) && Service.class.isAssignableFrom(clazz)) {
                 //是外部服务
-                clazzs = clazz;
+                clazzs = (Class<Service>) clazz;
                 if (this.serviceClassList.contains(clazzs) == false) {
                     this.serviceClassList.add(clazzs);
                     this.logger.debug("find service class ".concat(className));
@@ -268,6 +280,12 @@ public class ApplicationContextBuilder<T extends Entity> {
                 if (this.localServiceClassList.contains(clazzl) == false) {
                     this.localServiceClassList.add(clazzl);
                     this.logger.debug("find local service class ".concat(className));
+                }
+            } else if (clazz.isAnnotationPresent(ServiceExtendConfig.class)){
+                //自定义请求和响应参数注解集合
+                if (this.serviceExtendClassList.contains(clazz) == false) {
+                    this.serviceExtendClassList.add(clazz);
+                    this.logger.debug("find local service extend class ".concat(className));
                 }
             } else {
                 //其他注解类型

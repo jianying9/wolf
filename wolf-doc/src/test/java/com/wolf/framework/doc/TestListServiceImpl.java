@@ -1,14 +1,14 @@
 package com.wolf.framework.doc;
 
-import com.wolf.framework.service.ListService;
+import com.wolf.framework.reponse.Response;
+import com.wolf.framework.request.Request;
+import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.filter.FilterType;
-import com.wolf.framework.service.response.ListResponse;
-import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
@@ -28,10 +28,10 @@ import com.wolf.framework.service.request.ListRequest;
             @ResponseConfig(name = "value", dataType = ResponseDataType.STRING, desc = "", filterTypes = {FilterType.ESCAPE})
         }
 )
-public class TestListServiceImpl implements ListService {
+public class TestListServiceImpl implements Service {
 
     @Override
-    public void execute(ListRequest listRequest, ListResponse listResponse) {
+    public void execute(Request request, Response response) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

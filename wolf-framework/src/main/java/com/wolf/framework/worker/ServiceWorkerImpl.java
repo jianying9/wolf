@@ -47,7 +47,6 @@ public class ServiceWorkerImpl implements ServiceWorker {
     public Map<String, Object> getInfoMap() {
         Map<String, Object> infoMap = new HashMap<>(8, 1);
         infoMap.put("routeName", this.serviceContext.route());
-        infoMap.put("page", this.serviceContext.page());
         infoMap.put("validateSession", this.serviceContext.validateSession());
         infoMap.put("desc", this.serviceContext.desc());
         infoMap.put("requestConfigs", this.requestConfigs);
@@ -152,24 +151,6 @@ public class ServiceWorkerImpl implements ServiceWorker {
                 this.createSecondRequestParameter(requestConfig.name(), secondRequestConfigs);
             }
         }
-        if (this.serviceContext.page()) {
-            //nextIndex
-            requestMap = new HashMap<>(8, 1);
-            requestMap.put("name", "nextIndex");
-            requestMap.put("required", false);
-            requestMap.put("ignoreEmpty", true);
-            requestMap.put("type", "LONG");
-            requestMap.put("desc", "分页起始记录id");
-            this.requestConfigs.add(requestMap);
-            //nextSize
-            requestMap = new HashMap<>(8, 1);
-            requestMap.put("name", "nextSize");
-            requestMap.put("required", false);
-            requestMap.put("ignoreEmpty", true);
-            requestMap.put("type", "LONG[1,100]");
-            requestMap.put("desc", "分页读取记录数量");
-            this.requestConfigs.add(requestMap);
-        }
     }
 
     private List<Map<String, Object>> createThirdResponseParameter(String parentName, ThirdResponseConfig[] thirdResponseConfigs) {
@@ -251,7 +232,6 @@ public class ServiceWorkerImpl implements ServiceWorker {
             responseCodeMap.remove(responseCode.code());
             codeMap = new HashMap<>(4, 1);
             codeMap.put("code", responseCode.code());
-            codeMap.put("async", responseCode.async());
             codeMap.put("desc", responseCode.desc());
             codeMap.put("type", "custom");
             this.responseCodes.add(codeMap);

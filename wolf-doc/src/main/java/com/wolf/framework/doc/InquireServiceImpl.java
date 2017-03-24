@@ -1,11 +1,14 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
-import com.wolf.framework.service.ListService;
+import com.wolf.framework.reponse.Response;
+import com.wolf.framework.request.Request;
+import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.service.parameter.ResponseDataType;
+import com.wolf.framework.service.parameter.SecondResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import com.wolf.framework.service.response.ListResponse;
-import com.wolf.framework.service.request.ListRequest;
 
 /**
  *
@@ -26,20 +27,21 @@ import com.wolf.framework.service.request.ListRequest;
         route = "/wolf/service",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, filterTypes = {}, desc = ""),
-            @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "list", dataType = ResponseDataType.BOOLEAN, desc = ""),
-            @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
+            @ResponseConfig(name = "list", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
+                    secondResponseConfigs = {
+                        @SecondResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+                        @SecondResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
+                        @SecondResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
+                        @SecondResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
+                    })
         },
         responseCodes = {},
         validateSession = false,
         desc = "")
-public class InquireServiceImpl implements ListService {
+public class InquireServiceImpl implements Service {
 
     @Override
-    public void execute(ListRequest listRequest, ListResponse listResponse) {
+    public void execute(Request request, Response response) {
         Map<String, ServiceWorker> serviceWorkerMap = ApplicationContext.CONTEXT.getServiceWorkerMap();
         Set<Map.Entry<String, ServiceWorker>> entrySet = serviceWorkerMap.entrySet();
         //过滤系统接口
@@ -63,12 +65,12 @@ public class InquireServiceImpl implements ListService {
             resultMap.put("desc", serviceContext.desc());
             resultMap.put("validateSession", serviceContext.validateSession());
             resultMap.put("hasAsyncResponse", serviceContext.hasAsyncResponse());
-            resultMap.put("page", serviceContext.page());
-            resultMap.put("list", serviceContext.isList());
             resultMapList.add(resultMap);
         }
-        listResponse.setDataMapList(resultMapList);
-        listResponse.success();
+        Map<String, Object> dataMap = new HashMap(2, 1);
+        dataMap.put("list", resultMapList);
+        response.setDataMap(dataMap);
+        response.success();
     }
 
     private class ServiceWorkerSort implements Comparator<ServiceWorker> {

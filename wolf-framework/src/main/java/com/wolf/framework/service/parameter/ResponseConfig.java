@@ -16,7 +16,8 @@ public @interface ResponseConfig {
 
     /**
      * 参数名
-     * @return 
+     *
+     * @return
      */
     public String name();
 
@@ -26,6 +27,13 @@ public @interface ResponseConfig {
      * @return
      */
     public ResponseDataType dataType();
+
+    /**
+     * 外部参数名称
+     * @return 
+     */
+    
+    public String extendName() default "";
 
     /**
      * 描述
@@ -40,10 +48,11 @@ public @interface ResponseConfig {
      * @return
      */
     public FilterType[] filterTypes() default {FilterType.SECURITY};
-    
+
     /**
      * 二级响应参数
-     * @return 
+     *
+     * @return
      */
     public SecondResponseConfig[] secondResponseConfigs() default {};
 }

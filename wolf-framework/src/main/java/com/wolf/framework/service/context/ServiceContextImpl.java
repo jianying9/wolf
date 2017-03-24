@@ -16,6 +16,9 @@ import com.wolf.framework.worker.build.WorkerBuildContext;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.PushHandler;
+import com.wolf.framework.service.parameter.RequestDataType;
+import com.wolf.framework.service.parameter.ResponseDataType;
+import com.wolf.framework.service.parameter.ServiceExtend;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,8 +34,6 @@ public class ServiceContextImpl implements ServiceContext {
     private final boolean requireTransaction;
     private final boolean validateSession;
     private final boolean validateSecurity;
-    private final boolean page;
-    private final boolean isList;
     private final SessionHandleType sessionHandleType;
     private final String[] requiredParameter;
     private final String[] unrequiredParameter;
@@ -57,8 +58,6 @@ public class ServiceContextImpl implements ServiceContext {
         wordSet.add("route");
         wordSet.add("filters");
         wordSet.add("sid");
-        wordSet.add("nextIndex");
-        wordSet.add("nextSize");
         wordSet.add("comet");
         wordSet.add("callback");
         return Collections.unmodifiableSet(wordSet);
@@ -83,12 +82,10 @@ public class ServiceContextImpl implements ServiceContext {
         return Collections.unmodifiableSet(codeSet);
     }
 
-    public ServiceContextImpl(ServiceConfig serviceConfig, boolean isList, boolean page, WorkerBuildContext workerBuildContext) {
+    public ServiceContextImpl(ServiceConfig serviceConfig, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
         this.desc = serviceConfig.desc();
         this.sessionHandleType = serviceConfig.sessionHandleType();
-        this.page = page;
-        this.isList = isList;
         this.requireTransaction = serviceConfig.requireTransaction();
         this.validateSession = serviceConfig.validateSession();
         this.validateSecurity = serviceConfig.validateSecurity();
@@ -97,14 +94,12 @@ public class ServiceContextImpl implements ServiceContext {
         this.pushConfigs = serviceConfig.pushConfigs();
         this.responseCodes = serviceConfig.responseCodes();
         boolean asyncResponse = false;
-        for (ResponseCode responseCode : this.responseCodes) {
-            if (responseCode.async()) {
-                asyncResponse = true;
-                break;
-            }
+        if (pushConfigs.length > 0) {
+            asyncResponse = true;
         }
-
         this.hasAsyncResponse = asyncResponse;
+        //
+        final ServiceExtend serviceExtend = workerBuildContext.getServiceExtend();
         //
         Set<String> reservedParamSet = ServiceContextImpl.getReservedParamSet();
         Set<String> reservedCodeSet = ServiceContextImpl.getReservedCodeSet();
@@ -115,9 +110,29 @@ public class ServiceContextImpl implements ServiceContext {
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved code[".concat(responseCode.code()) + "]");
             }
         }
+        //处理外部参数
+        List<RequestConfig> requestConfigList = new ArrayList(this.requestConfigs.length);
+        List<RequestConfig> extendRequestConfigList;
+        for (RequestConfig requestConfig : this.requestConfigs) {
+            //判断是是否外部参数引用
+            if (requestConfig.dataType() == RequestDataType.EXTEND && requestConfig.extendName().isEmpty() == false) {
+                //为外部参数引用
+                extendRequestConfigList = serviceExtend.getRequestExtend(requestConfig.extendName());
+                if (extendRequestConfigList != null) {
+                    for (RequestConfig extendrequestConfig : extendRequestConfigList) {
+                        if (extendrequestConfig.dataType() != RequestDataType.EXTEND) {
+                            requestConfigList.add(extendrequestConfig);
+                        }
+                    }
+                }
+            } else {
+                requestConfigList.add(requestConfig);
+            }
+        }
+        //
         final List<RequestConfig> requiredRequestConfigList = new ArrayList<>(0);
         final List<RequestConfig> unrequiredRequestConfigList = new ArrayList<>(0);
-        for (RequestConfig requestConfig : requestConfigs) {
+        for (RequestConfig requestConfig : requestConfigList) {
             if (reservedParamSet.contains(requestConfig.name())) {
                 //配置中存在保留参数名,抛出异常提示
                 throw new RuntimeException("Error when read ServiceConfig. Cause: route[" + serviceConfig.route() + "] contain reserved param[".concat(requestConfig.name()) + "]");
@@ -142,12 +157,6 @@ public class ServiceContextImpl implements ServiceContext {
             }
         }
         //
-        if (page) {
-            unrequiredNameList.add("nextIndex");
-            unrequiredNameList.add("nextSize");
-            requestParameterMap.put("nextIndex", workerBuildContext.getNextIndexHandler());
-            requestParameterMap.put("nextSize", workerBuildContext.getNextSizeHandler());
-        }
         final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
         this.unrequiredParameter = unrequiredNames;
         //
@@ -170,15 +179,31 @@ public class ServiceContextImpl implements ServiceContext {
         final Map<String, ResponseParameterHandler> returnParameterMap;
         final String[] returnNames;
         if (this.responseConfigs.length > 0) {
-            List<String> returnNameList = new ArrayList<>(this.responseConfigs.length);
-            returnParameterMap = new HashMap(this.responseConfigs.length, 1);
-            for (ResponseConfig parameterConfig : this.responseConfigs) {
+            //处理外部扩展的参数
+            List<ResponseConfig> extendResponseConfigList;
+            List<ResponseConfig> responseConfigList = new ArrayList(this.requestConfigs.length);
+            for (ResponseConfig responseConfig : this.responseConfigs) {
+                if (responseConfig.dataType() == ResponseDataType.EXTEND && responseConfig.extendName().isEmpty() == false) {
+                    extendResponseConfigList = serviceExtend.getResponseExtend(responseConfig.extendName());
+                    for (ResponseConfig extendResponseConfig : extendResponseConfigList) {
+                        if(extendResponseConfig.dataType() != ResponseDataType.EXTEND) {
+                            responseConfigList.add(extendResponseConfig);
+                        }
+                    }
+                } else {
+                    responseConfigList.add(responseConfig);
+                }
+            }
+            //
+            List<String> returnNameList = new ArrayList<>(responseConfigList.size());
+            returnParameterMap = new HashMap(responseConfigList.size(), 1);
+            for (ResponseConfig responseConfig : responseConfigList) {
                 responseParameterHandlerBuilder = new ResponseParameterHandlerBuilder(
-                        parameterConfig);
+                        responseConfig);
                 responseParameterHandler = responseParameterHandlerBuilder.build();
                 if (responseParameterHandler != null) {
-                    returnParameterMap.put(parameterConfig.name(), responseParameterHandler);
-                    returnNameList.add(parameterConfig.name());
+                    returnParameterMap.put(responseConfig.name(), responseParameterHandler);
+                    returnNameList.add(responseConfig.name());
                 }
             }
             returnNames = returnNameList.toArray(new String[returnNameList.size()]);
@@ -247,11 +272,6 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
-    public boolean page() {
-        return this.page;
-    }
-
-    @Override
     public String desc() {
         return this.desc;
     }
@@ -302,11 +322,6 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
-    public boolean isList() {
-        return this.isList;
-    }
-
-    @Override
     public PushConfig[] pushConfigs() {
         return this.pushConfigs;
     }
@@ -314,5 +329,10 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public Map<String, PushHandler> pushHandlerMap() {
         return this.pushHandlerMap;
+    }
+
+    @Override
+    public PushHandler getPushHandler(String route) {
+        return this.pushHandlerMap.get(route);
     }
 }

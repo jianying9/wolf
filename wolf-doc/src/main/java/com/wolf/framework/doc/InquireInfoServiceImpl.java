@@ -1,6 +1,8 @@
 package com.wolf.framework.doc;
 
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.reponse.Response;
+import com.wolf.framework.request.Request;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
@@ -11,8 +13,6 @@ import com.wolf.framework.service.parameter.SecondResponseConfig;
 import com.wolf.framework.service.parameter.ThirdResponseConfig;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.UUID;
-import com.wolf.framework.service.response.ObjectResponse;
-import com.wolf.framework.service.request.ObjectRequest;
 
 /**
  *
@@ -68,13 +68,13 @@ import com.wolf.framework.service.request.ObjectRequest;
 public class InquireInfoServiceImpl implements Service {
 
     @Override
-    public void execute(ObjectRequest objectRequest, ObjectResponse objectResponse) {
-        String route = objectRequest.getStringValue("routeName");
+    public void execute(Request request, Response response) {
+        String route = request.getStringValue("routeName");
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker != null) {
-            objectResponse.setNewSessionId(UUID.randomUUID().toString());
-            objectResponse.setDataMap(serviceWorker.getInfoMap());
-            objectResponse.success();
+            response.setNewSessionId(UUID.randomUUID().toString());
+            response.setDataMap(serviceWorker.getInfoMap());
+            response.success();
         }
     }
 }

@@ -5,7 +5,6 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
-import com.wolf.framework.service.ListService;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
 import static com.wolf.framework.service.SessionHandleType.REMOVE;
@@ -14,11 +13,9 @@ import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.context.ServiceContextImpl;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.ServiceWorkerImpl;
-import com.wolf.framework.worker.workhandler.ObjectServiceWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.ExceptionWorkHandlerImpl;
+import com.wolf.framework.worker.workhandler.DefaultServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RequiredParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.InterceptorWorkHandlerImpl;
-import com.wolf.framework.worker.workhandler.ListServiceWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.UnrequiredParameterWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.RemoveSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
@@ -46,45 +43,24 @@ public class WorkerBuilder {
      *
      * @param clazz
      */
-    public void build(final Class<?> clazz) {
-        this.logger.info("--parsing service {}--", clazz.getName());
+    public void build(final Class<Service> clazz) {
+        this.logger.debug("--parsing service {}--", clazz.getName());
         if (clazz.isAnnotationPresent(ServiceConfig.class)) {
             //1.获取注解ServiceConfig
             final ServiceConfig serviceConfig = clazz.getAnnotation(ServiceConfig.class);
-            boolean page = false;
-            boolean isList = false;
-            if (Service.class.isAssignableFrom(clazz)) {
-                //对象类型
-                page = false;
-            } else if (ListService.class.isAssignableFrom(clazz)) {
-                //集合类型
-                isList = true;
-                if (serviceConfig.page()) {
-                    page = true;
-                }
-            } else {
-                throw new RuntimeException(clazz.getName() + "没有实现指定的接口");
-            }
             //构造服务上下文信息
-            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, isList, page, this.workerBuildContext);
+            ServiceContext serviceContext = new ServiceContextImpl(serviceConfig, this.workerBuildContext);
             //开始生成业务处理链
             //注入相关对象
             Injecter injecter = this.workerBuildContext.getInjecter();
             //根据接口类型实例化并注入相关对象
             //包装服务类
             WorkHandler workHandler = null;
+            //对象类型
             try {
-                if (Service.class.isAssignableFrom(clazz)) {
-                    //对象类型
-                    Service service = (Service) clazz.newInstance();
-                    injecter.parse(service);
-                    workHandler = new ObjectServiceWorkHandlerImpl(service, serviceContext);
-                } else if (ListService.class.isAssignableFrom(clazz)) {
-                    //集合类型
-                    ListService listService = (ListService) clazz.newInstance();
-                    injecter.parse(listService);
-                    workHandler = new ListServiceWorkHandlerImpl(listService, serviceContext);
-                }
+                Service service = clazz.newInstance();
+                injecter.parse(service);
+                workHandler = new DefaultServiceWorkHandlerImpl(service);
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
@@ -98,8 +74,6 @@ public class WorkerBuilder {
             if (serviceContext.requireTransaction() && compileModel.equals(FrameworkConfig.SERVER)) {
                 workHandler = new TransactionWorkHandlerImpl(workHandler);
             }
-            //异常处理
-            workHandler = new ExceptionWorkHandlerImpl(workHandler);
             //--------------------------------业务执行后处理环节------------------
             //session处理
             switch (serviceContext.sessionHandleType()) {

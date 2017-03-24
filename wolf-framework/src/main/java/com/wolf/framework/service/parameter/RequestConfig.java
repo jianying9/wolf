@@ -58,6 +58,13 @@ public @interface RequestConfig {
     public String text() default "";
     
     /**
+     * 外部参数名称
+     * @return 
+     */
+    
+    public String extendName() default "";
+    
+    /**
      * 第二级参数
      * @return 
      */

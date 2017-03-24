@@ -1,29 +1,37 @@
 package com.wolf.framework.reponse;
 
 import com.wolf.framework.config.ResponseCodeConfig;
+import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.context.ServiceContext;
+import com.wolf.framework.service.parameter.PushHandler;
+import com.wolf.framework.service.parameter.ResponseParameterHandler;
+import com.wolf.framework.utils.EntityUtils;
 import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.worker.context.WorkerContext;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
  * @author jianying9
+ * @param <T>
  */
-public class ResponseImpl implements WorkerResponse {
+public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     private final WorkerContext workerContext;
     //message
     private String error = "";
-    private String dataMessage = "{}";
-    private String responseMessage = "";
     private String code = ResponseCodeConfig.SUCCESS;
     private String newSessionId = null;
-    private String pushId = null;
     private final Set<String> customCodeSet;
+    private Map<String, Object> dataMap = Collections.EMPTY_MAP;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -33,10 +41,6 @@ public class ResponseImpl implements WorkerResponse {
         for (ResponseCode responseCode : responseCodes) {
             this.customCodeSet.add(responseCode.code());
         }
-    }
-
-    public final WorkerContext getWorkerContext() {
-        return this.workerContext;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class ResponseImpl implements WorkerResponse {
     public final void unlogin() {
         this.code = ResponseCodeConfig.UNLOGIN;
     }
-    
+
     @Override
     public final void timeout() {
         this.code = ResponseCodeConfig.TIMEOUT;
@@ -68,12 +72,12 @@ public class ResponseImpl implements WorkerResponse {
     public final void success() {
         this.code = ResponseCodeConfig.SUCCESS;
     }
-    
+
     @Override
     public final void exception() {
         this.code = ResponseCodeConfig.EXCEPTION;
     }
-    
+
     @Override
     public final void unsupport() {
         this.code = ResponseCodeConfig.UNKNOWN;
@@ -81,7 +85,7 @@ public class ResponseImpl implements WorkerResponse {
 
     @Override
     public final void setCode(String code) {
-        if(this.customCodeSet.contains(code)) {
+        if (this.customCodeSet.contains(code)) {
             this.code = code;
         } else {
             this.code = ResponseCodeConfig.UNKNOWN;
@@ -93,65 +97,52 @@ public class ResponseImpl implements WorkerResponse {
         this.error = error;
     }
 
-    private void createResponseMessage(boolean isPush) {
-        ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
-        StringBuilder jsonBuilder = new StringBuilder(this.dataMessage.length() + 256);
+    @Override
+    public final String getResponseMessage() {
+        String responseMsg = "{}";
+        Map<String, Object> responseMap = new HashMap(8, 1);
+        //核心返回数据
+        responseMap.put("code", this.code);
+        responseMap.put("route", this.workerContext.getRoute());
+        responseMap.put("data", this.dataMap);
+        //md5判断本次返回数据是否没有变化
         String md5 = workerContext.getMd5();
-        String msg = this.dataMessage;
-        if(md5 != null) {
+        ObjectMapper mapper = new ObjectMapper();
+        if (md5 != null) {
+            String thisData = "{}";
+            try {
+                thisData = mapper.writeValueAsString(responseMap);
+            } catch (IOException ex) {
+            }
             //判断数据是否有变化
-            String newMd5 = SecurityUtils.encryptByMd5(this.dataMessage);
-            if(md5.equals(newMd5)) {
+            String newMd5 = SecurityUtils.encryptByMd5(thisData);
+            if (md5.equals(newMd5)) {
                 //数据没有变化
-                this.code = ResponseCodeConfig.UNMODIFYED;
-                msg = "{}";
+                responseMap.put("code", ResponseCodeConfig.UNMODIFYED);
+                responseMap.put("data", Collections.EMPTY_MAP);
             } else {
                 md5 = newMd5;
             }
+            responseMap.put("md5", md5);
         }
-        jsonBuilder.append("{\"code\":\"").append(this.code)
-                .append("\",\"route\":\"").append(this.workerContext.getRoute());
-        if(md5 != null) {
-            jsonBuilder.append("\",\"md5\":\"").append(md5);
-        }
+        //
+        ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
-            jsonBuilder.append("\",\"sid\":\"").append(this.newSessionId);
+            responseMap.put("sid", this.newSessionId);
         }
+        //
         if (this.error.isEmpty() == false) {
-            jsonBuilder.append("\",\"error\":\"").append(this.error);
+            responseMap.put("error", this.error);
         }
         String callback = workerContext.getCallback();
-        if (callback != null && isPush == false) {
-            jsonBuilder.append("\",\"callback\":\"").append(callback);
+        if (callback != null) {
+            responseMap.put("callback", callback);
         }
-        if (isPush && this.pushId != null) {
-            jsonBuilder.append("\",\"pushId\":\"").append(this.pushId);
+        try {
+            responseMsg = mapper.writeValueAsString(responseMap);
+        } catch (IOException ex) {
         }
-        jsonBuilder.append("\",\"data\":").append(msg).append("}");
-        this.responseMessage = jsonBuilder.toString();
-    }
-
-
-    @Override
-    public final String getResponseMessage() {
-        this.createResponseMessage(false);
-        return this.responseMessage;
-    }
-    
-    @Override
-    public String getPushMessage() {
-        this.createResponseMessage(true);
-        return this.responseMessage;
-    }
-
-    @Override
-    public String getDataMessage() {
-        return this.dataMessage;
-    }
-
-    @Override
-    public void setDataMessage(String dataMessage) {
-        this.dataMessage = dataMessage;
+        return responseMsg;
     }
 
     @Override
@@ -169,13 +160,56 @@ public class ResponseImpl implements WorkerResponse {
         this.workerContext.closeSession(otherSid);
     }
 
-    @Override
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
+    protected final Map<String, Object> checkAndFilterDataMap(Map<String, Object> paraMap) {
+        Map<String, Object> resultMap = null;
+        if (paraMap != null) {
+            ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
+            String[] returnParameter = serviceContext.returnParameter();
+            Map<String, ResponseParameterHandler> parameterHandlerMap = serviceContext.responseParameterHandlerMap();
+            Object paraValue;
+            ResponseParameterHandler responseParameterHandler;
+            resultMap = new HashMap(paraMap.size(), 1);
+            //过滤
+            for (String paraName : returnParameter) {
+                paraValue = paraMap.get(paraName);
+                if (paraValue != null) {
+                    responseParameterHandler = parameterHandlerMap.get(paraName);
+                    paraValue = responseParameterHandler.getResponseValue(paraValue);
+                    resultMap.put(paraName, paraValue);
+                }
+            }
+        }
+        return resultMap;
     }
 
     @Override
-    public String getPushId() {
-        return this.pushId;
+    public void setEntity(T t) {
+        Map<String, Object> tMap = EntityUtils.getMap(t);
+        this.setDataMap(tMap);
+    }
+
+    @Override
+    public void setDataMap(Map<String, Object> dataMap) {
+        this.dataMap = this.checkAndFilterDataMap(dataMap);
+    }
+
+    @Override
+    public void setData(String name, Object value) {
+        Map<String, Object> newDataMap = new HashMap<>(2, 1);
+        newDataMap.put(name, value);
+        //检测并过滤响应参数
+        this.dataMap = this.checkAndFilterDataMap(newDataMap);
+    }
+
+    @Override
+    public PushResponse getPushResponse(String route) {
+        PushResponse pushResponse = null;
+        ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
+        Map<String, PushHandler> pushHandlerMap = serviceContext.pushHandlerMap();
+        PushHandler pushHandler = pushHandlerMap.get(route);
+        if(pushHandler != null) {
+            pushResponse = new PushResponseImpl(pushHandler);
+        }
+        return pushResponse;
     }
 }
