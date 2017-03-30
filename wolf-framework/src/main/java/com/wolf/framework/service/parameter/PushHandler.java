@@ -12,12 +12,12 @@ public class PushHandler {
     
     private final String[] returnParameter;
     
-    private final Map<String, ResponseParameterHandler> responseParameterHandlerMap;
+    private final Map<String, ResponseHandler> responseHandlerMap;
 
-    public PushHandler(String route, String[] returnParameter, Map<String, ResponseParameterHandler> responseParameterHandlerMap) {
+    public PushHandler(String route, String[] returnParameter, Map<String, ResponseHandler> responseHandlerMap) {
         this.route = route;
         this.returnParameter = returnParameter;
-        this.responseParameterHandlerMap = responseParameterHandlerMap;
+        this.responseHandlerMap = responseHandlerMap;
     }
 
     public String getRoute() {
@@ -28,8 +28,8 @@ public class PushHandler {
         return returnParameter;
     }
 
-    public Map<String, ResponseParameterHandler> getResponseParameterHandlerMap() {
-        return responseParameterHandlerMap;
+    public Map<String, ResponseHandler> getResponseHandlerMap() {
+        return responseHandlerMap;
     }
     
 }

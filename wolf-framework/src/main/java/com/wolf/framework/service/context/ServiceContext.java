@@ -1,14 +1,15 @@
 package com.wolf.framework.service.context;
 
 import com.wolf.framework.service.SessionHandleType;
-import com.wolf.framework.service.parameter.RequestConfig;
-import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.service.parameter.ResponseConfig;
-import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
-import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.PushHandler;
+import com.wolf.framework.service.parameter.PushInfo;
+import java.util.List;
+import com.wolf.framework.service.parameter.RequestInfo;
+import com.wolf.framework.service.parameter.ResponseInfo;
+import com.wolf.framework.service.parameter.RequestHandler;
+import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
  *
@@ -32,19 +33,19 @@ public interface ServiceContext {
     
     public String[] unrequiredParameter();
     
-    public Map<String, RequestParameterHandler> requestParameterHandlerMap();
+    public Map<String, RequestHandler> requestParameterHandlerMap();
     
     public String[] returnParameter();
     
-    public Map<String, ResponseParameterHandler> responseParameterHandlerMap();
+    public Map<String, ResponseHandler> responseParameterHandlerMap();
     
-    public RequestConfig[] requestConfigs();
+    public List<RequestInfo> requestConfigs();
     
-    public ResponseConfig[] responseConfigs();
+    public List<ResponseInfo> responseConfigs();
     
     public ResponseCode[] responseCodes();
     
-    public PushConfig[] pushConfigs();
+    public List<PushInfo> pushConfigs();
     
     public Map<String, PushHandler> pushHandlerMap();
     

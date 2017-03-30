@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface RequestConfig {
+public @interface ExtendRequestConfig {
 
     /**
      * 参数名
@@ -56,12 +56,6 @@ public @interface RequestConfig {
      * @return 
      */
     public String text() default "";
-    
-    /**
-     * 第二级参数
-     * @return 
-     */
-    public SecondRequestConfig[] secondRequestConfigs() default {};
     
     /**
      * 描述

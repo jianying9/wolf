@@ -4,7 +4,6 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +17,8 @@ import org.slf4j.Logger;
 public class ServiceExtendBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    private final Map<String, List<RequestConfig>> requestExtendMap = new HashMap(2, 1);
-    private final Map<String, List<ResponseConfig>> responseExtendMap = new HashMap(2, 1);
+    private final Map<String, List<RequestInfo>> requestExtendMap = new HashMap(2, 1);
+    private final Map<String, List<ResponseInfo>> responseExtendMap = new HashMap(2, 1);
 
     /**
      * 解析方法
@@ -34,33 +33,45 @@ public class ServiceExtendBuilder {
             String fieldName;
             RequestGroupConfig requestGroupConfig;
             ResponseGroupConfig responseGroupConfig;
-            List<RequestConfig> requestConfigList;
-            List<ResponseConfig> responseConfigList;
+            List<RequestInfo> requestInfoList;
+            List<ResponseInfo> responsInfoList;
+            RequestInfo requestInfo;
+            ResponseInfo responseInfo;
             for (Field field : fieldTemp) {
                 fieldName = field.getName().toLowerCase();
                 if (field.isAnnotationPresent(RequestGroupConfig.class)) {
                     //请求集合组
                     requestGroupConfig = field.getAnnotation(RequestGroupConfig.class);
-                    requestConfigList = new ArrayList(requestGroupConfig.requestConfigs().length);
-                    requestConfigList.addAll(Arrays.asList(requestGroupConfig.requestConfigs()));
+                    requestInfoList = new ArrayList(requestGroupConfig.requestConfigs().length);
+                    for (ExtendRequestConfig extendRequestConfig : requestGroupConfig.requestConfigs()) {
+                        if(extendRequestConfig.dataType() != RequestDataType.EXTEND) {
+                            requestInfo = new RequestInfoImpl(extendRequestConfig);
+                            requestInfoList.add(requestInfo);
+                        }
+                    }
                     if (this.requestExtendMap.containsKey(fieldName)) {
                         StringBuilder errBuilder = new StringBuilder(1024);
                         errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldName).append("\n").append("exist class : ").append(clazz);
                         throw new RuntimeException(errBuilder.toString());
                     }
-                    this.requestExtendMap.put(fieldName, requestConfigList);
+                    this.requestExtendMap.put(fieldName, requestInfoList);
                 }
                 if (field.isAnnotationPresent(ResponseGroupConfig.class)) {
                     //响应集合组
                     responseGroupConfig = field.getAnnotation(ResponseGroupConfig.class);
-                    responseConfigList = new ArrayList(responseGroupConfig.responseConfigs().length);
-                    responseConfigList.addAll(Arrays.asList(responseGroupConfig.responseConfigs()));
+                    responsInfoList = new ArrayList(responseGroupConfig.responseConfigs().length);
+                    for (ExtendResponseConfig extendResponseConfig : responseGroupConfig.responseConfigs()) {
+                        if(extendResponseConfig.dataType() != ResponseDataType.EXTEND) {
+                            responseInfo = new ResponseInfoImpl(extendResponseConfig);
+                            responsInfoList.add(responseInfo);
+                        }
+                    }
                     if (this.responseExtendMap.containsKey(fieldName)) {
                         StringBuilder errBuilder = new StringBuilder(1024);
                         errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldName).append("\n").append("exist class : ").append(clazz);
                         throw new RuntimeException(errBuilder.toString());
                     }
-                    this.responseExtendMap.put(fieldName, responseConfigList);
+                    this.responseExtendMap.put(fieldName, responsInfoList);
                 }
             }
             this.logger.debug("--parse service extend {} finished--", clazz.getName());

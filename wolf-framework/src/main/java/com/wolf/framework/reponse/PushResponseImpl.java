@@ -3,12 +3,12 @@ package com.wolf.framework.reponse;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushHandler;
-import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.EntityUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
+import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
  *
@@ -50,9 +50,9 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         Map<String, Object> resultMap = null;
         if (paraMap != null) {
             String[] returnParameter = this.pushHandler.getReturnParameter();
-            Map<String, ResponseParameterHandler> parameterHandlerMap = this.pushHandler.getResponseParameterHandlerMap();
+            Map<String, ResponseHandler> parameterHandlerMap = this.pushHandler.getResponseHandlerMap();
             Object paraValue;
-            ResponseParameterHandler responseParameterHandler;
+            ResponseHandler responseParameterHandler;
             resultMap = new HashMap(paraMap.size(), 1);
             //过滤
             for (String paraName : returnParameter) {

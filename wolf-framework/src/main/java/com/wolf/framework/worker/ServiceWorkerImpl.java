@@ -2,22 +2,18 @@ package com.wolf.framework.worker;
 
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.service.context.ServiceContext;
-import com.wolf.framework.service.parameter.RequestConfig;
-import com.wolf.framework.service.parameter.ResponseConfig;
 import com.wolf.framework.worker.context.WorkerContext;
 import com.wolf.framework.worker.workhandler.WorkHandler;
 import java.util.HashMap;
 import java.util.Map;
 import com.wolf.framework.service.ResponseCode;
-import com.wolf.framework.service.parameter.PushConfig;
+import com.wolf.framework.service.parameter.PushInfo;
 import com.wolf.framework.service.parameter.RequestDataType;
-import com.wolf.framework.service.parameter.SecondRequestConfig;
-import com.wolf.framework.service.parameter.SecondResponseConfig;
-import com.wolf.framework.service.parameter.ThirdRequestConfig;
-import com.wolf.framework.service.parameter.ThirdResponseConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import com.wolf.framework.service.parameter.RequestInfo;
+import com.wolf.framework.service.parameter.ResponseInfo;
 
 /**
  * 服务工作对象接口
@@ -57,165 +53,78 @@ public class ServiceWorkerImpl implements ServiceWorker {
         return infoMap;
     }
 
-    private void createThirdRequestParameter(String parentName, ThirdRequestConfig[] thirdRequestConfigs) {
+    private List<Map<String, Object>> createRequestParameter(String parentName, List<RequestInfo> requestParameterList) {
         RequestDataType type;
+        List<RequestInfo> childRequestParameterList;
+        String childParentName;
         String typeStr;
         boolean ignoreEmpty;
-        String desc;
         Map<String, Object> requestMap;
-        for (ThirdRequestConfig thirdRequestConfig : thirdRequestConfigs) {
+        String name;
+        String desc;
+        List<Map<String, Object>> childResultList;
+        List<Map<String, Object>> resultList = new ArrayList(requestParameterList.size());
+        for (RequestInfo requestParameter : requestParameterList) {
             requestMap = new HashMap<>(8, 1);
-            type = thirdRequestConfig.dataType();
+            type = requestParameter.getDataType();
             typeStr = type.name();
             if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
-                typeStr = typeStr + "[" + thirdRequestConfig.min() + "," + thirdRequestConfig.max() + "]";
+                typeStr = typeStr + "[" + requestParameter.getMin() + "," + requestParameter.getMax() + "]";
             }
-            ignoreEmpty = thirdRequestConfig.ignoreEmpty();
-            if (thirdRequestConfig.required()) {
+            ignoreEmpty = requestParameter.isIgnoreEmpty();
+            if (requestParameter.isRequired()) {
                 ignoreEmpty = false;
             }
-            String name = parentName + "." + thirdRequestConfig.name();
+            name = parentName + "." + requestParameter.getName();
             requestMap.put("name", name);
-            requestMap.put("required", thirdRequestConfig.required());
+            requestMap.put("required", requestParameter.isRequired());
             requestMap.put("ignoreEmpty", ignoreEmpty);
             requestMap.put("type", typeStr);
-            desc = thirdRequestConfig.desc() + ":" + thirdRequestConfig.text();
+            desc = requestParameter.getDesc() + ":" + requestParameter.getText();
             requestMap.put("desc", desc);
-            this.requestConfigs.add(requestMap);
-        }
-    }
-
-    private void createSecondRequestParameter(String parentName, SecondRequestConfig[] secondRequestConfigs) {
-        RequestDataType type;
-        ThirdRequestConfig[] thirdRequestConfigs;
-        String thirdParentName;
-        String typeStr;
-        boolean ignoreEmpty;
-        Map<String, Object> requestMap;
-        String name;
-        String desc;
-        for (SecondRequestConfig secondRequestConfig : secondRequestConfigs) {
-            requestMap = new HashMap<>(8, 1);
-            type = secondRequestConfig.dataType();
-            typeStr = type.name();
-            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
-                typeStr = typeStr + "[" + secondRequestConfig.min() + "," + secondRequestConfig.max() + "]";
-            }
-            ignoreEmpty = secondRequestConfig.ignoreEmpty();
-            if (secondRequestConfig.required()) {
-                ignoreEmpty = false;
-            }
-            name = parentName + "." + secondRequestConfig.name();
-            requestMap.put("name", name);
-            requestMap.put("required", secondRequestConfig.required());
-            requestMap.put("ignoreEmpty", ignoreEmpty);
-            requestMap.put("type", typeStr);
-            desc = secondRequestConfig.desc() + ":" + secondRequestConfig.text();
-            requestMap.put("desc", desc);
-            this.requestConfigs.add(requestMap);
-            thirdRequestConfigs = secondRequestConfig.thirdRequestConfigs();
-            if (thirdRequestConfigs.length > 0) {
-                thirdParentName = name;
-                this.createThirdRequestParameter(thirdParentName, thirdRequestConfigs);
+            resultList.add(requestMap);
+            childRequestParameterList = requestParameter.getChildList();
+            if (childRequestParameterList.isEmpty() == false) {
+                childParentName = name;
+                childResultList = this.createRequestParameter(childParentName, childRequestParameterList);
+                resultList.addAll(childResultList);
             }
         }
+        return resultList;
     }
 
-    private void createRequestParameter(RequestConfig[] requestConfigs) {
-        RequestDataType type;
-        SecondRequestConfig[] secondRequestConfigs;
-        String typeStr;
-        boolean ignoreEmpty;
-        Map<String, Object> requestMap;
-        String desc;
-        for (RequestConfig requestConfig : requestConfigs) {
-            requestMap = new HashMap<>(8, 1);
-            type = requestConfig.dataType();
-            typeStr = type.name();
-            if (type == RequestDataType.LONG || type == RequestDataType.DOUBLE || type == RequestDataType.STRING) {
-                typeStr = typeStr + "[" + requestConfig.min() + "," + requestConfig.max() + "]";
-            }
-            ignoreEmpty = requestConfig.ignoreEmpty();
-            if (requestConfig.required()) {
-                ignoreEmpty = false;
-            }
-            requestMap.put("name", requestConfig.name());
-            requestMap.put("required", requestConfig.required());
-            requestMap.put("ignoreEmpty", ignoreEmpty);
-            requestMap.put("type", typeStr);
-            desc = requestConfig.desc() + ":" + requestConfig.text();
-            requestMap.put("desc", desc);
-            this.requestConfigs.add(requestMap);
-            secondRequestConfigs = requestConfig.secondRequestConfigs();
-            if (secondRequestConfigs.length > 0) {
-                this.createSecondRequestParameter(requestConfig.name(), secondRequestConfigs);
-            }
-        }
-    }
-
-    private List<Map<String, Object>> createThirdResponseParameter(String parentName, ThirdResponseConfig[] thirdResponseConfigs) {
+    private List<Map<String, Object>> createResponseParameter(String parentName, List<ResponseInfo> responseParameterList) {
         Map<String, Object> responseMap;
+        List<ResponseInfo> childResponseParameterList;
         String name;
-        List<Map<String, Object>> thirdResultList = new ArrayList(thirdResponseConfigs.length);
-        for (ThirdResponseConfig thirdResponseConfig : thirdResponseConfigs) {
+        List<Map<String, Object>> childResultList;
+        List<Map<String, Object>> resultList = new ArrayList(responseParameterList.size());
+        for (ResponseInfo responseParameter : responseParameterList) {
             responseMap = new HashMap<>(4, 1);
-            name = parentName + "." + thirdResponseConfig.name();
+            name = parentName + "." + responseParameter.getName();
             responseMap.put("name", name);
-            responseMap.put("type", thirdResponseConfig.dataType().name());
-            responseMap.put("desc", thirdResponseConfig.desc());
-            thirdResultList.add(responseMap);
-        }
-        return thirdResultList;
-    }
-
-    private List<Map<String, Object>> createSecondResponseParameter(String parentName, SecondResponseConfig[] sesondResponseConfigs) {
-        Map<String, Object> responseMap;
-        ThirdResponseConfig[] thirdResponseConfigs;
-        String name;
-        List<Map<String, Object>> thirdResultList;
-        List<Map<String, Object>> secondResultList = new ArrayList(sesondResponseConfigs.length);
-        for (SecondResponseConfig secondResponseConfig : sesondResponseConfigs) {
-            responseMap = new HashMap<>(4, 1);
-            name = parentName + "." + secondResponseConfig.name();
-            responseMap.put("name", name);
-            responseMap.put("type", secondResponseConfig.dataType().name());
-            responseMap.put("desc", secondResponseConfig.desc());
+            responseMap.put("type", responseParameter.getDataType().name());
+            responseMap.put("desc", responseParameter.getDesc());
             this.responseConfigs.add(responseMap);
-            thirdResponseConfigs = secondResponseConfig.thirdResponseConfigs();
-            thirdResultList = this.createThirdResponseParameter(name, thirdResponseConfigs);
-            secondResultList.addAll(thirdResultList);
+            childResponseParameterList = responseParameter.getChildList();
+            childResultList = this.createResponseParameter(name, childResponseParameterList);
+            resultList.addAll(childResultList);
         }
-        return secondResultList;
+        return resultList;
     }
 
-    private List<Map<String, Object>> createResponseParameter(ResponseConfig[] responseConfigs) {
-        Map<String, Object> responseMap;
-        SecondResponseConfig[] sesondResponseConfigs;
-        List<Map<String, Object>> secondResultList;
-        List<Map<String, Object>> firstResultList = new ArrayList(responseConfigs.length);
-        for (ResponseConfig responseConfig : responseConfigs) {
-            responseMap = new HashMap<>(4, 1);
-            responseMap.put("name", responseConfig.name());
-            responseMap.put("type", responseConfig.dataType().name());
-            responseMap.put("desc", responseConfig.desc());
-            firstResultList.add(responseMap);
-            sesondResponseConfigs = responseConfig.secondResponseConfigs();
-            secondResultList = this.createSecondResponseParameter(responseConfig.name(), sesondResponseConfigs);
-            firstResultList.addAll(secondResultList);
-        }
-        return firstResultList;
-    }
-
-    private void createPush(PushConfig[] pushConfigs) {
+    private List<Map<String, Object>> createPush(List<PushInfo> pushInfoList) {
         Map<String, Object> pushMap;
         List<Map<String, Object>> pushResponseConfigs;
-        for (PushConfig pushConfig : pushConfigs) {
-            pushResponseConfigs = this.createResponseParameter(pushConfig.responseConfigs());
+        List<Map<String, Object>> resultList = new ArrayList(pushInfoList.size());
+        for (PushInfo pushInfo : pushInfoList) {
+            pushResponseConfigs = this.createResponseParameter("", pushInfo.getResponseInfoList());
             pushMap = new HashMap(2, 1);
-            pushMap.put("route", pushConfig.route());
+            pushMap.put("route", pushInfo.getRoute());
             pushMap.put("responseConfigs", pushResponseConfigs);
-            this.pushConfigs.add(pushMap);
+            resultList.add(pushMap);
         }
+        return resultList;
     }
 
     private void createResonseCode() {
@@ -251,14 +160,16 @@ public class ServiceWorkerImpl implements ServiceWorker {
     public final void createInfo() {
 
         //构造请求参数信息
-        this.createRequestParameter(this.serviceContext.requestConfigs());
+        List<Map<String, Object>> requestList = this.createRequestParameter("", this.serviceContext.requestConfigs());
+        this.requestConfigs.addAll(requestList);
         //构造返回参数信息
-        List<Map<String, Object>> responseList = this.createResponseParameter(this.serviceContext.responseConfigs());
+        List<Map<String, Object>> responseList = this.createResponseParameter("", this.serviceContext.responseConfigs());
         this.responseConfigs.addAll(responseList);
         //返回状态提示
         this.createResonseCode();
         //构造push参数信息
-        this.createPush(this.serviceContext.pushConfigs());
+        List<Map<String, Object>> pushList = this.createPush(this.serviceContext.pushConfigs());
+        this.pushConfigs.addAll(pushList);
     }
 
     @Override

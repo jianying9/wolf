@@ -26,7 +26,7 @@ public @interface ThirdResponseConfig {
      * @return
      */
     public ResponseDataType dataType();
-
+    
     /**
      * 描述
      *

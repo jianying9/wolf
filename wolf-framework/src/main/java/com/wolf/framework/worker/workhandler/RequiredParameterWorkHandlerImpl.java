@@ -3,10 +3,10 @@ package com.wolf.framework.worker.workhandler;
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
-import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.List;
 import java.util.Map;
+import com.wolf.framework.service.parameter.RequestHandler;
 
 /**
  * 必要参数处理
@@ -30,12 +30,12 @@ public class RequiredParameterWorkHandlerImpl implements WorkHandler {
         String errorMsg = "";
         String stringValue;
         List listValue;
-        RequestParameterHandler parameterHandler;
+        RequestHandler parameterHandler;
         final Map<String, Object> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
         //验证必要参数是否合法
         final String[] requiredParameter = this.serviceContext.requiredParameter();
-        final Map<String, RequestParameterHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
+        final Map<String, RequestHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
         for (String parameter : requiredParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue == null) {

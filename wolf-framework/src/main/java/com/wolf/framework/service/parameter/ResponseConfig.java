@@ -29,13 +29,6 @@ public @interface ResponseConfig {
     public ResponseDataType dataType();
 
     /**
-     * 外部参数名称
-     * @return 
-     */
-    
-    public String extendName() default "";
-
-    /**
      * 描述
      *
      * @return
