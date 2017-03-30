@@ -38,7 +38,7 @@ public class ServiceExtendBuilder {
             RequestInfo requestInfo;
             ResponseInfo responseInfo;
             for (Field field : fieldTemp) {
-                fieldName = field.getName().toLowerCase();
+                fieldName = field.getName().toLowerCase().replace("_", "");
                 if (field.isAnnotationPresent(RequestGroupConfig.class)) {
                     //请求集合组
                     requestGroupConfig = field.getAnnotation(RequestGroupConfig.class);

@@ -17,10 +17,12 @@ public class ServiceExtend {
     }
 
     public List<RequestInfo> getRequestExtend(String name) {
+        name = name.toLowerCase().replace("_", "");
         return requestInfoMap.get(name);
     }
 
     public List<ResponseInfo> getResponseExtend(String name) {
+        name = name.toLowerCase().replace("_", "");
         return responseInfoMap.get(name);
     }
     
