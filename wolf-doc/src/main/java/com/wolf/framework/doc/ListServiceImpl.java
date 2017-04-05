@@ -24,10 +24,10 @@ import java.util.Set;
  * @author jianying9
  */
 @ServiceConfig(
-        route = "/wolf/service",
+        route = "/wolf/service/list",
         requestConfigs = {},
         responseConfigs = {
-            @ResponseConfig(name = "list", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
+            @ResponseConfig(name = "serviceArray", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
                     secondResponseConfigs = {
                         @SecondResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
                         @SecondResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
@@ -38,7 +38,7 @@ import java.util.Set;
         responseCodes = {},
         validateSession = false,
         desc = "")
-public class InquireServiceImpl implements Service {
+public class ListServiceImpl implements Service {
 
     @Override
     public void execute(Request request, Response response) {
@@ -68,9 +68,8 @@ public class InquireServiceImpl implements Service {
             resultMapList.add(resultMap);
         }
         Map<String, Object> dataMap = new HashMap(2, 1);
-        dataMap.put("list", resultMapList);
+        dataMap.put("serviceArray", resultMapList);
         response.setDataMap(dataMap);
-        response.success();
     }
 
     private class ServiceWorkerSort implements Comparator<ServiceWorker> {

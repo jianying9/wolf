@@ -4,7 +4,8 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorContext;
-import com.wolf.framework.service.parameter.ServiceExtend;
+import com.wolf.framework.service.parameter.ServiceExtendContext;
+import com.wolf.framework.service.parameter.ServicePushContext;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +23,8 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     private final Injecter injecter;
     private final ApplicationContext applicationContext;
     private final List<Interceptor> interceptorList;
-    private final ServiceExtend serviceExtend;
+    private final ServiceExtendContext serviceExtendContext;
+    private final ServicePushContext servicePushContext;
     //服务集合
     private final Map<String, ServiceWorker> serviceWorkerMap;
 
@@ -44,18 +46,21 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     /**
      * 构造函数
      *
-     * @param serviceExtend
+     * @param serviceExtendContext
+     * @param servicePushContext
      * @param injecter
      * @param interceptorContext
      * @param applicationContext
      */
     public WorkerBuildContextImpl(
-            ServiceExtend serviceExtend,
+            ServiceExtendContext serviceExtendContext,
+            ServicePushContext servicePushContext,
             Injecter injecter,
             InterceptorContext interceptorContext,
             ApplicationContext applicationContext) {
         this.serviceWorkerMap = new HashMap<>(2, 1);
-        this.serviceExtend = serviceExtend;
+        this.serviceExtendContext = serviceExtendContext;
+        this.servicePushContext = servicePushContext;
         this.injecter = injecter;
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
@@ -87,7 +92,12 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     }
 
     @Override
-    public ServiceExtend getServiceExtend() {
-        return this.serviceExtend;
+    public ServiceExtendContext getServiceExtendContext() {
+        return this.serviceExtendContext;
+    }
+
+    @Override
+    public ServicePushContext getServicePushContext() {
+        return this.servicePushContext;
     }
 }

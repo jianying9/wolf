@@ -1,6 +1,5 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.service.ResponseCode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,19 +10,21 @@ import java.util.List;
 public class PushInfoImpl implements PushInfo {
     
     private final String route;
-    private final ResponseCode[] responseCodes;
+    private final String desc;
     private final List<ResponseInfo> responseInfoList;
+    private final List<String> serviceList;
     
     
 
-    public PushInfoImpl(PushConfig pushConfig) {
-        this.route = pushConfig.route();
-        this.responseCodes = pushConfig.responseCodes();
+    public PushInfoImpl(String route, PushConfig pushConfig) {
+        this.route = route;
+        this.desc = pushConfig.desc();
         ResponseConfig[] responseConfigs = pushConfig.responseConfigs();
         this.responseInfoList = new ArrayList(responseConfigs.length);
         for (ResponseConfig responseConfig : responseConfigs) {
             this.responseInfoList.add(new ResponseInfoImpl(responseConfig));
         }
+        this.serviceList = new ArrayList(0);
     }
 
     @Override
@@ -37,14 +38,24 @@ public class PushInfoImpl implements PushInfo {
     }
 
     @Override
-    public ResponseCode[] responseCodes() {
-        return this.responseCodes;
-    }
-
-    @Override
     public void setResponseInfoList(List<ResponseInfo> responseInfoList) {
         this.responseInfoList.clear();
         this.responseInfoList.addAll(responseInfoList);
+    }
+
+    @Override
+    public String getDesc() {
+        return this.desc;
+    }
+
+    @Override
+    public void addService(String route) {
+        this.serviceList.add(route);
+    }
+
+    @Override
+    public List<String> getServiceList() {
+        return this.serviceList;
     }
     
 }

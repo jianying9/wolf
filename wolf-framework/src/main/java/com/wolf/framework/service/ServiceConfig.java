@@ -42,7 +42,7 @@ public @interface ServiceConfig {
      * 推送配置
      * @return 
      */
-    public PushConfig[] pushConfigs() default {};
+    public String[] pushRoutes() default {};
 
     /**
      * 事务类型 需要事务控制--true 不需要事务控制--false

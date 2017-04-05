@@ -14,7 +14,7 @@ import org.slf4j.Logger;
  *
  * @author jianying9
  */
-public class ServiceExtendBuilder {
+public class ServiceExtendContextBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final Map<String, List<RequestInfo>> requestExtendMap = new HashMap(2, 1);
@@ -30,15 +30,16 @@ public class ServiceExtendBuilder {
         if (clazz.isAnnotationPresent(ServiceExtendConfig.class)) {
             //
             Field[] fieldTemp = clazz.getDeclaredFields();
-            String fieldName;
+            String fieldValue;
             RequestGroupConfig requestGroupConfig;
             ResponseGroupConfig responseGroupConfig;
             List<RequestInfo> requestInfoList;
             List<ResponseInfo> responsInfoList;
             RequestInfo requestInfo;
             ResponseInfo responseInfo;
-            for (Field field : fieldTemp) {
-                fieldName = field.getName().toLowerCase().replace("_", "");
+            try {
+                for (Field field : fieldTemp) {
+                fieldValue = String.valueOf(field.get(clazz));
                 if (field.isAnnotationPresent(RequestGroupConfig.class)) {
                     //请求集合组
                     requestGroupConfig = field.getAnnotation(RequestGroupConfig.class);
@@ -49,12 +50,12 @@ public class ServiceExtendBuilder {
                             requestInfoList.add(requestInfo);
                         }
                     }
-                    if (this.requestExtendMap.containsKey(fieldName)) {
+                    if (this.requestExtendMap.containsKey(fieldValue)) {
                         StringBuilder errBuilder = new StringBuilder(1024);
-                        errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldName).append("\n").append("exist class : ").append(clazz);
+                        errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldValue).append("\n").append("exist class : ").append(clazz);
                         throw new RuntimeException(errBuilder.toString());
                     }
-                    this.requestExtendMap.put(fieldName, requestInfoList);
+                    this.requestExtendMap.put(fieldValue, requestInfoList);
                 }
                 if (field.isAnnotationPresent(ResponseGroupConfig.class)) {
                     //响应集合组
@@ -66,13 +67,16 @@ public class ServiceExtendBuilder {
                             responsInfoList.add(responseInfo);
                         }
                     }
-                    if (this.responseExtendMap.containsKey(fieldName)) {
+                    if (this.responseExtendMap.containsKey(fieldValue)) {
                         StringBuilder errBuilder = new StringBuilder(1024);
-                        errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldName).append("\n").append("exist class : ").append(clazz);
+                        errBuilder.append("Error service extend config. Cause: fieldName reduplicated : ").append(fieldValue).append("\n").append("exist class : ").append(clazz);
                         throw new RuntimeException(errBuilder.toString());
                     }
-                    this.responseExtendMap.put(fieldName, responsInfoList);
+                    this.responseExtendMap.put(fieldValue, responsInfoList);
                 }
+            }
+            } catch (IllegalAccessException | RuntimeException e) {
+                throw new RuntimeException(e);
             }
             this.logger.debug("--parse service extend {} finished--", clazz.getName());
         } else {
@@ -80,8 +84,8 @@ public class ServiceExtendBuilder {
         }
     }
     
-    public ServiceExtend build() {
-        ServiceExtend serviceExtend = new ServiceExtend(this.requestExtendMap, this.responseExtendMap);
+    public ServiceExtendContext build() {
+        ServiceExtendContext serviceExtend = new ServiceExtendContext(this.requestExtendMap, this.responseExtendMap);
         return serviceExtend;
     }
 }

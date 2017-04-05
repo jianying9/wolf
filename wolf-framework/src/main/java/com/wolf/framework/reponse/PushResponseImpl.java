@@ -18,7 +18,7 @@ import com.wolf.framework.service.parameter.ResponseHandler;
 public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
 
     private final PushHandler pushHandler;
-    private String code = ResponseCodeConfig.SUCCESS;
+    private final String code = ResponseCodeConfig.SUCCESS;
     private Map<String, Object> dataMap = null;
     private String pushId = null;
 
@@ -26,16 +26,6 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         this.pushHandler = pushHandler;
     }
     
-    @Override
-    public String getCode() {
-        return this.code;
-    }
-
-    @Override
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     @Override
     public String getPushId() {
         return this.pushId;

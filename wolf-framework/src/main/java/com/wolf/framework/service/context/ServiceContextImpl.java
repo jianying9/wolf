@@ -12,22 +12,21 @@ import java.util.List;
 import java.util.Map;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import com.wolf.framework.service.ResponseCode;
-import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.PushHandler;
 import com.wolf.framework.service.parameter.PushInfo;
-import com.wolf.framework.service.parameter.PushInfoImpl;
 import com.wolf.framework.service.parameter.RequestDataType;
 import com.wolf.framework.service.parameter.RequestInfo;
 import com.wolf.framework.service.parameter.RequestInfoImpl;
 import com.wolf.framework.service.parameter.ResponseInfo;
 import com.wolf.framework.service.parameter.ResponseInfoImpl;
-import com.wolf.framework.service.parameter.ServiceExtend;
+import com.wolf.framework.service.parameter.ServiceExtendContext;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import com.wolf.framework.service.parameter.RequestHandler;
 import com.wolf.framework.service.parameter.ResponseDataType;
 import com.wolf.framework.service.parameter.ResponseHandler;
+import com.wolf.framework.service.parameter.ServicePushContext;
 
 /**
  *
@@ -88,10 +87,10 @@ public class ServiceContextImpl implements ServiceContext {
         return Collections.unmodifiableSet(codeSet);
     }
 
-    private List<RequestInfo> executeRequestExtend(ServiceExtend serviceExtend, List<RequestInfo> requestInfoList) {
+    private List<RequestInfo> executeRequestExtend(ServiceExtendContext serviceExtend, List<RequestInfo> requestInfoList) {
         List<RequestInfo> resultList = Collections.EMPTY_LIST;
         if (requestInfoList.isEmpty() == false) {
-            resultList = new ArrayList(requestInfoList.size());
+            Map<String, RequestInfo> requestInfoMap = new HashMap();
             List<RequestInfo> extendRequestInfoList;
             List<RequestInfo> childList;
             for (RequestInfo requestInfo : requestInfoList) {
@@ -99,23 +98,27 @@ public class ServiceContextImpl implements ServiceContext {
                     //外部参数
                     extendRequestInfoList = serviceExtend.getRequestExtend(requestInfo.getName());
                     if (extendRequestInfoList != null) {
-                        resultList.addAll(extendRequestInfoList);
+                        for (RequestInfo extendRequestInfo : extendRequestInfoList) {
+                            requestInfoMap.put(extendRequestInfo.getName(), extendRequestInfo);
+                        }
                     }
                 } else {
                     //过滤子参数
                     childList = this.executeRequestExtend(serviceExtend, requestInfo.getChildList());
                     requestInfo.setChildList(childList);
-                    resultList.add(requestInfo);
+                    requestInfoMap.put(requestInfo.getName(), requestInfo);
                 }
+                resultList = new ArrayList(requestInfoMap.size());
+                resultList.addAll(requestInfoMap.values());
             }
         }
         return resultList;
     }
     
-    private List<ResponseInfo> executeResponseExtend(ServiceExtend serviceExtend, List<ResponseInfo> responseInfoList) {
+    private List<ResponseInfo> executeResponseExtend(ServiceExtendContext serviceExtend, List<ResponseInfo> responseInfoList) {
         List<ResponseInfo> resultList = Collections.EMPTY_LIST;
         if (responseInfoList.isEmpty() == false) {
-            resultList = new ArrayList(responseInfoList.size());
+            Map<String, ResponseInfo> responseInfoMap = new HashMap();
             List<ResponseInfo> extendRequestInfoList;
             List<ResponseInfo> childList;
             for (ResponseInfo responseInfo : responseInfoList) {
@@ -123,15 +126,19 @@ public class ServiceContextImpl implements ServiceContext {
                     //外部参数
                     extendRequestInfoList = serviceExtend.getResponseExtend(responseInfo.getName());
                     if (extendRequestInfoList != null) {
-                        resultList.addAll(extendRequestInfoList);
+                        for (ResponseInfo extendResponseInfo : extendRequestInfoList) {
+                            responseInfoMap.put(extendResponseInfo.getName(), extendResponseInfo);
+                        }
                     }
                 } else {
                     //过滤子参数
                     childList = this.executeResponseExtend(serviceExtend, responseInfo.getChildList());
                     responseInfo.setChildList(childList);
-                    resultList.add(responseInfo);
+                    responseInfoMap.put(responseInfo.getName(), responseInfo);
                 }
             }
+            resultList = new ArrayList(responseInfoMap.size());
+            resultList.addAll(responseInfoMap.values());
         }
         return resultList;
     }
@@ -146,31 +153,36 @@ public class ServiceContextImpl implements ServiceContext {
         this.validateSession = serviceConfig.validateSession();
         this.validateSecurity = serviceConfig.validateSecurity();
         this.responseCodes = serviceConfig.responseCodes();
-        final ServiceExtend serviceExtend = workerBuildContext.getServiceExtend();
+        final ServiceExtendContext serviceExtendContext = workerBuildContext.getServiceExtendContext();
         //
         List<RequestInfo> requestInfoResultList = new ArrayList(serviceConfig.requestConfigs().length);
         for (RequestConfig requestConfig : serviceConfig.requestConfigs()) {
             requestInfoResultList.add(new RequestInfoImpl(requestConfig));
         }
         //处理外部请求参数
-        this.requestInfoList = this.executeRequestExtend(serviceExtend, requestInfoResultList);
+        this.requestInfoList = this.executeRequestExtend(serviceExtendContext, requestInfoResultList);
         //
         List<ResponseInfo> responseInfoResultList = new ArrayList(serviceConfig.responseConfigs().length);
         for (ResponseConfig responseConfig : serviceConfig.responseConfigs()) {
             responseInfoResultList.add(new ResponseInfoImpl(responseConfig));
         }
         //处理外部响应参数
-        this.responseInfoList = this.executeResponseExtend(serviceExtend, responseInfoResultList);
+        this.responseInfoList = this.executeResponseExtend(serviceExtendContext, responseInfoResultList);
         //
-        this.pushInfoList = new ArrayList(serviceConfig.pushConfigs().length);
-        PushInfo tempPushInfo;
-        List<ResponseInfo> pushResponseInfoResultList;
-        for (PushConfig pushConfig : serviceConfig.pushConfigs()) {
-            tempPushInfo = new PushInfoImpl(pushConfig);
-            //处理外部请求参数
-            pushResponseInfoResultList = this.executeResponseExtend(serviceExtend, tempPushInfo.getResponseInfoList());
-            tempPushInfo.setResponseInfoList(pushResponseInfoResultList);
-            this.pushInfoList.add(tempPushInfo);
+        final ServicePushContext servicePushContext = workerBuildContext.getServicePushContext();
+        this.pushInfoList = new ArrayList(serviceConfig.pushRoutes().length);
+        this.pushHandlerMap = new HashMap(serviceConfig.pushRoutes().length, 1);
+        PushInfo pushInfo;
+        PushHandler pushHandler;
+        for (String pushRoute : serviceConfig.pushRoutes()) {
+            pushInfo = servicePushContext.getPushInfo(pushRoute);
+            if(pushInfo == null) {
+                throw new RuntimeException("Can not find push route:" + pushRoute);
+            }
+            pushInfo.addService(this.route);
+            this.pushInfoList.add(pushInfo);
+            pushHandler = servicePushContext.getPushHandler(pushRoute);
+            this.pushHandlerMap.put(pushRoute, pushHandler);
         }
         //
         boolean asyncResponse = false;
@@ -257,39 +269,6 @@ public class ServiceContextImpl implements ServiceContext {
         }
         this.returnParameter = returnNames;
         this.responseParameterHandlerMap = returnParameterMap;
-        //获取push配置
-        final Map<String, PushHandler> pushMap;
-        if (this.pushInfoList.isEmpty() == false) {
-            pushMap = new HashMap(this.pushInfoList.size(), 1);
-            Map<String, ResponseHandler> pushResponseHandlerMap;
-            String[] pushReturnNames;
-            List<String> pushReturnNameList;
-            List<ResponseInfo> pushResponseInfoList;
-            String pushRouteName;
-            PushHandler pushHandler;
-            for (PushInfo pushInfo : this.pushInfoList) {
-                pushRouteName = pushInfo.getRoute();
-                pushResponseInfoList = pushInfo.getResponseInfoList();
-                pushReturnNameList = new ArrayList(pushResponseInfoList.size());
-                pushResponseHandlerMap = new HashMap(pushResponseInfoList.size(), 1);
-                for (ResponseInfo responseInfo : pushResponseInfoList) {
-                    responseHandlerBuilder = new ResponseHandlerBuilder(
-                            responseInfo);
-                    responseHandler = responseHandlerBuilder.build();
-                    if (responseHandler != null) {
-                        pushResponseHandlerMap.put(responseInfo.getName(), responseHandler);
-                        pushReturnNameList.add(responseInfo.getName());
-                    }
-                }
-                pushReturnNames = pushReturnNameList.toArray(new String[pushReturnNameList.size()]);
-                //
-                pushHandler = new PushHandler(pushRouteName, pushReturnNames, pushResponseHandlerMap);
-                pushMap.put(pushRouteName, pushHandler);
-            }
-        } else {
-            pushMap = Collections.EMPTY_MAP;
-        }
-        this.pushHandlerMap = pushMap;
     }
 
     @Override

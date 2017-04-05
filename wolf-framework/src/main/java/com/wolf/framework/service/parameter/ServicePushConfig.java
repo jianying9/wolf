@@ -9,20 +9,7 @@ import java.lang.annotation.Target;
  *
  * @author jianying9
  */
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface PushConfig {
-    
-    /**
-     * 返回的参数
-     *
-     * @return String[]
-     */
-    public ResponseConfig[] responseConfigs() default {};
-    
-    /**
-     * 描述
-     * @return 
-     */
-    public String desc();
+public @interface ServicePushConfig {
 }

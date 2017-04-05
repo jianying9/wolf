@@ -1,6 +1,5 @@
 package com.wolf.framework.service.parameter;
 
-import com.wolf.framework.service.ResponseCode;
 import java.util.List;
 
 /**
@@ -16,6 +15,8 @@ public interface PushInfo {
      */
     public String getRoute();
     
+    public String getDesc();
+    
     /**
      * 返回的参数
      *
@@ -25,11 +26,8 @@ public interface PushInfo {
     
     public void setResponseInfoList(List<ResponseInfo> responseInfoList);
     
-    /**
-     * 返回标志描述
-     *
-     * @return
-     */
-    public ResponseCode[] responseCodes();
+    public void addService(String route);
+    
+    public List<String> getServiceList();
     
 }
