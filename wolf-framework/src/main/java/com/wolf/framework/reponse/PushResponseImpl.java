@@ -1,6 +1,5 @@
 package com.wolf.framework.reponse;
 
-import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushHandler;
 import com.wolf.framework.utils.EntityUtils;
@@ -9,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
+import java.util.Collections;
 
 /**
  *
@@ -18,8 +18,7 @@ import com.wolf.framework.service.parameter.ResponseHandler;
 public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
 
     private final PushHandler pushHandler;
-    private final String code = ResponseCodeConfig.SUCCESS;
-    private Map<String, Object> dataMap = null;
+    private Map<String, Object> dataMap = Collections.EMPTY_MAP;
     private String pushId = null;
 
     public PushResponseImpl(PushHandler pushHandler) {
@@ -81,7 +80,6 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         String responseMsg = "{}";
         Map<String, Object> responseMap = new HashMap(8, 1);
         //核心返回数据
-        responseMap.put("code", this.code);
         responseMap.put("route", this.pushHandler.getRoute());
         responseMap.put("data", this.dataMap);
         responseMap.put("pushId", this.pushId);
