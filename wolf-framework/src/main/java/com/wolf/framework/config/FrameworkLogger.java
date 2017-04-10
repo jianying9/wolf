@@ -10,6 +10,7 @@ public enum FrameworkLogger implements LoggerType{
     FRAMEWORK,
     DAO,
     LUCENE,
+    HTTP,
     WEBSOCKET;
 
     @Override

@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTP);
     Map<String, AsyncContext> asyncContextMap = new HashMap<>(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
@@ -64,8 +64,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             throws ServletException, IOException {
         String result;
         //读取参数
+        Map<String, Object> parameterMap;
+        String route = request.getPathInfo();
         Enumeration<String> names = request.getParameterNames();
-        Map<String, Object> parameterMap = new HashMap<>(8, 1);
+        parameterMap = new HashMap<>(8, 1);
         String name;
         String value;
         while (names.hasMoreElements()) {
@@ -74,9 +76,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             value = StringUtils.trim(value);
             parameterMap.put(name, value);
         }
-        this.logger.debug("http: {}", parameterMap);
-        //
-        String route = request.getPathInfo();
+        this.logger.debug("http:on message:{}", parameterMap);
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             //route不存在,判断是否为comet请求
@@ -113,10 +113,16 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             //route存在
             String sid = (String) parameterMap.get("sid");
             ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
-            workerContext.initParameter(parameterMap);
+            String param = (String) parameterMap.get("param");
+            if(param != null && param.isEmpty() == false) {
+                workerContext.initParameter(param);
+            } else {
+                workerContext.initParameter(parameterMap);
+            }
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
+            this.logger.debug("http send message:{}", result);
         }
     }
 
@@ -174,6 +180,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             result = true;
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
+            this.logger.debug("http push message:{}", message);
             this.asyncContextMap.remove(sid);
         } else {
             this.logger.debug("async-servlet push message:sid not exist:{}", sid);
