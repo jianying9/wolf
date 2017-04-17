@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface ThirdResponseConfig {
+public @interface FourResponseConfig {
 
     /**
      * 参数名
@@ -41,10 +41,4 @@ public @interface ThirdResponseConfig {
      */
     public FilterType[] filterTypes() default {FilterType.SECURITY};
     
-    /**
-     * 四级响应参数
-     *
-     * @return
-     */
-    public FourResponseConfig[] fourResponseConfigs() default {};
 }

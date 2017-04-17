@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface ThirdRequestConfig {
+public @interface FourRequestConfig {
 
     /**
      * 参数名
@@ -63,10 +63,4 @@ public @interface ThirdRequestConfig {
      * @return
      */
     public String desc();
-    
-    /**
-     * 第四级参数
-     * @return 
-     */
-    public FourRequestConfig[] fourRequestConfigs() default {};
 }

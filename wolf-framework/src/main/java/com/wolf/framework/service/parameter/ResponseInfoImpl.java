@@ -17,12 +17,27 @@ public class ResponseInfoImpl implements ResponseInfo {
     private final String desc;
     private final List<ResponseInfo> childList;
     
+    public ResponseInfoImpl(ResponseInfo parentResponseParameter, FourResponseConfig fourResponseConfig) {
+        this.name = fourResponseConfig.name();
+        this.dataType = fourResponseConfig.dataType();
+        this.filterType = fourResponseConfig.filterTypes();
+        this.desc = fourResponseConfig.desc();
+        this.childList = Collections.EMPTY_LIST;
+    }
+    
     public ResponseInfoImpl(ResponseInfo parentResponseParameter, ThirdResponseConfig thirdResponseConfig) {
         this.name = thirdResponseConfig.name();
         this.dataType = thirdResponseConfig.dataType();
         this.filterType = thirdResponseConfig.filterTypes();
         this.desc = thirdResponseConfig.desc();
-        this.childList = Collections.EMPTY_LIST;
+        //
+        FourResponseConfig[] fourResponseConfigs = thirdResponseConfig.fourResponseConfigs();
+        this.childList = new ArrayList(fourResponseConfigs.length);
+        ResponseInfo childResponseParameter;
+        for (FourResponseConfig fourResponseConfig : fourResponseConfigs) {
+            childResponseParameter = new ResponseInfoImpl(this, fourResponseConfig);
+            this.childList.add(childResponseParameter);
+        }
     }
 
     public ResponseInfoImpl(ResponseInfo parenteResponseInfo, SecondResponseConfig secondResponseConfig) {
@@ -30,6 +45,7 @@ public class ResponseInfoImpl implements ResponseInfo {
         this.dataType = secondResponseConfig.dataType();
         this.filterType = secondResponseConfig.filterTypes();
         this.desc = secondResponseConfig.desc();
+        //
         ThirdResponseConfig[] thirdResponseConfigs = secondResponseConfig.thirdResponseConfigs();
         this.childList = new ArrayList(thirdResponseConfigs.length);
         ResponseInfo childResponseParameter;
@@ -44,10 +60,13 @@ public class ResponseInfoImpl implements ResponseInfo {
         this.dataType = responseConfig.dataType();
         this.filterType = responseConfig.filterTypes();
         this.desc = responseConfig.desc();
+        //
         SecondResponseConfig[] secondResponseConfigs = responseConfig.secondResponseConfigs();
         this.childList = new ArrayList(secondResponseConfigs.length);
+        ResponseInfo childResponseParameter;
         for (SecondResponseConfig secondResponseConfig : secondResponseConfigs) {
-            this.childList.add(new ResponseInfoImpl(this, secondResponseConfig));
+            childResponseParameter = new ResponseInfoImpl(this, secondResponseConfig);
+            this.childList.add(childResponseParameter);
         }
     }
     

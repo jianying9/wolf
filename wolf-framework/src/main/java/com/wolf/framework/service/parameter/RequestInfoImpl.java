@@ -20,6 +20,18 @@ public class RequestInfoImpl implements RequestInfo {
     private final String desc;
     private final List<RequestInfo> childList;
     
+    public RequestInfoImpl(RequestInfo parentRequestInfo, FourRequestConfig fourRequestConfig) {
+        this.name = fourRequestConfig.name();
+        this.required = fourRequestConfig.required();
+        this.ignoreEmpty = fourRequestConfig.ignoreEmpty();
+        this.dataType = fourRequestConfig.dataType();
+        this.max = fourRequestConfig.max();
+        this.min = fourRequestConfig.min();
+        this.text = fourRequestConfig.text();
+        this.desc = fourRequestConfig.desc();
+        this.childList = Collections.EMPTY_LIST;
+    }
+    
     public RequestInfoImpl(RequestInfo parentRequestInfo, ThirdRequestConfig thirdRequestConfig) {
         this.name = thirdRequestConfig.name();
         this.required = thirdRequestConfig.required();
@@ -29,7 +41,14 @@ public class RequestInfoImpl implements RequestInfo {
         this.min = thirdRequestConfig.min();
         this.text = thirdRequestConfig.text();
         this.desc = thirdRequestConfig.desc();
-        this.childList = Collections.EMPTY_LIST;
+        //
+        FourRequestConfig[] fourRequestConfigs = thirdRequestConfig.fourRequestConfigs();
+        this.childList = new ArrayList(fourRequestConfigs.length);
+        RequestInfo childRequestInfo;
+        for (FourRequestConfig fourRequestConfig : fourRequestConfigs) {
+            childRequestInfo = new RequestInfoImpl(this, fourRequestConfig);
+            this.childList.add(childRequestInfo);
+        }
     }
 
     public RequestInfoImpl(RequestInfo parentRequestInfo, SecondRequestConfig secondRequestConfig) {
@@ -41,6 +60,7 @@ public class RequestInfoImpl implements RequestInfo {
         this.min = secondRequestConfig.min();
         this.text = secondRequestConfig.text();
         this.desc = secondRequestConfig.desc();
+        //
         ThirdRequestConfig[] thirdRequestConfigs = secondRequestConfig.thirdRequestConfigs();
         this.childList = new ArrayList(thirdRequestConfigs.length);
         RequestInfo childRequestInfo;
@@ -59,6 +79,7 @@ public class RequestInfoImpl implements RequestInfo {
         this.min = requestConfig.min();
         this.text = requestConfig.text();
         this.desc = requestConfig.desc();
+        //
         SecondRequestConfig[] secondRequestConfigs = requestConfig.secondRequestConfigs();
         this.childList = new ArrayList(secondRequestConfigs.length);
         RequestInfo childRequestInfo;
