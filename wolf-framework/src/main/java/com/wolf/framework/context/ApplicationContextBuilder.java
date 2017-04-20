@@ -26,9 +26,12 @@ import com.wolf.framework.interceptor.InterceptorContext;
 import com.wolf.framework.interceptor.InterceptorContextImpl;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.service.ServiceConfig;
-import com.wolf.framework.service.parameter.ServiceExtend;
-import com.wolf.framework.service.parameter.ServiceExtendBuilder;
+import com.wolf.framework.service.parameter.ServiceExtendContext;
+import com.wolf.framework.service.parameter.ServiceExtendContextBuilder;
 import com.wolf.framework.service.parameter.ServiceExtendConfig;
+import com.wolf.framework.service.parameter.ServicePushConfig;
+import com.wolf.framework.service.parameter.ServicePushContext;
+import com.wolf.framework.service.parameter.ServicePushContextBuilder;
 import com.wolf.framework.worker.build.WorkerBuilder;
 import com.wolf.framework.task.TaskExecutor;
 import com.wolf.framework.task.TaskExecutorImpl;
@@ -57,6 +60,7 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final List<Class<Local>> localServiceClassList = new ArrayList<>(0);
     protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<>(0);
     protected final List<Class<?>> serviceExtendClassList = new ArrayList<>(0);
+    protected final List<Class<?>> servicePushClassList = new ArrayList<>(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
 
@@ -206,16 +210,23 @@ public class ApplicationContextBuilder<T extends Entity> {
         this.logger.debug("parse annotation InterceptorConfig finished.");
         //对Interceptor进行注入
         interceptorContext.inject(injecterList);
-        //解析ServiceExtendConfig
-        ServiceExtendBuilder serviceExtendBuilder = new ServiceExtendBuilder();
-        for (Class<?> clazze: this.serviceExtendClassList) {
-            serviceExtendBuilder.add(clazze);
-        }
-        final ServiceExtend serviceExtend = serviceExtendBuilder.build();
         //解析ServiceConfig
         this.logger.debug("parsing annotation ServiceConfig...");
+        //解析ServiceExtendConfig
+        ServiceExtendContextBuilder serviceExtendBuilder = new ServiceExtendContextBuilder();
+        for (Class<?> clazze : this.serviceExtendClassList) {
+            serviceExtendBuilder.add(clazze);
+        }
+        final ServiceExtendContext serviceExtendContext = serviceExtendBuilder.build();
+        //解析ServicePushConfig
+        ServicePushContextBuilder servicePushContextBuilder = new ServicePushContextBuilder(serviceExtendContext);
+        for (Class<?> clazzp : this.servicePushClassList) {
+            servicePushContextBuilder.add(clazzp);
+        }
+        final ServicePushContext servicePushContext = servicePushContextBuilder.build();
         this.workerBuildContext = new WorkerBuildContextImpl(
-                serviceExtend,
+                serviceExtendContext,
+                servicePushContext,
                 injecterList,
                 interceptorContext,
                 ApplicationContext.CONTEXT);
@@ -223,6 +234,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         for (Class<Service> clazzs : this.serviceClassList) {
             workerBuilder.build(clazzs);
         }
+        ApplicationContext.CONTEXT.setPushInfoMap(servicePushContext.getPushInfoMap());
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");
         //load module
@@ -281,11 +293,17 @@ public class ApplicationContextBuilder<T extends Entity> {
                     this.localServiceClassList.add(clazzl);
                     this.logger.debug("find local service class ".concat(className));
                 }
-            } else if (clazz.isAnnotationPresent(ServiceExtendConfig.class)){
+            } else if (clazz.isAnnotationPresent(ServiceExtendConfig.class)) {
                 //自定义请求和响应参数注解集合
                 if (this.serviceExtendClassList.contains(clazz) == false) {
                     this.serviceExtendClassList.add(clazz);
                     this.logger.debug("find local service extend class ".concat(className));
+                }
+            } else if (clazz.isAnnotationPresent(ServicePushConfig.class)) {
+                //自定义请求和响应参数注解集合
+                if (this.servicePushClassList.contains(clazz) == false) {
+                    this.servicePushClassList.add(clazz);
+                    this.logger.debug("find local service push class ".concat(className));
                 }
             } else {
                 //其他注解类型

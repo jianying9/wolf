@@ -1,14 +1,14 @@
 package com.wolf.framework.reponse;
 
-import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushHandler;
-import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.EntityUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
+import com.wolf.framework.service.parameter.ResponseHandler;
+import java.util.Collections;
 
 /**
  *
@@ -18,24 +18,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
 
     private final PushHandler pushHandler;
-    private String code = ResponseCodeConfig.SUCCESS;
-    private Map<String, Object> dataMap = null;
+    private Map<String, Object> dataMap = Collections.EMPTY_MAP;
     private String pushId = null;
 
     public PushResponseImpl(PushHandler pushHandler) {
         this.pushHandler = pushHandler;
     }
     
-    @Override
-    public String getCode() {
-        return this.code;
-    }
-
-    @Override
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     @Override
     public String getPushId() {
         return this.pushId;
@@ -50,9 +39,9 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         Map<String, Object> resultMap = null;
         if (paraMap != null) {
             String[] returnParameter = this.pushHandler.getReturnParameter();
-            Map<String, ResponseParameterHandler> parameterHandlerMap = this.pushHandler.getResponseParameterHandlerMap();
+            Map<String, ResponseHandler> parameterHandlerMap = this.pushHandler.getResponseHandlerMap();
             Object paraValue;
-            ResponseParameterHandler responseParameterHandler;
+            ResponseHandler responseParameterHandler;
             resultMap = new HashMap(paraMap.size(), 1);
             //过滤
             for (String paraName : returnParameter) {
@@ -91,7 +80,6 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         String responseMsg = "{}";
         Map<String, Object> responseMap = new HashMap(8, 1);
         //核心返回数据
-        responseMap.put("code", this.code);
         responseMap.put("route", this.pushHandler.getRoute());
         responseMap.put("data", this.dataMap);
         responseMap.put("pushId", this.pushId);

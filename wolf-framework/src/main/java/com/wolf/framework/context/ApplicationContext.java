@@ -4,6 +4,7 @@ import com.wolf.framework.comet.CometContext;
 import com.wolf.framework.comet.CometContextImpl;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.service.parameter.PushInfo;
 import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterFactoryImpl;
 import com.wolf.framework.worker.ServiceWorker;
@@ -23,6 +24,7 @@ public final class ApplicationContext {
     private boolean ready = false;
     private Map<String, String> parameterMap;
     private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<>(2, 1);
+    private final Map<String, PushInfo> pushInfoMap = new HashMap(2, 1);
     private final List<Resource> resourceList = new ArrayList<>(2);
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
@@ -44,6 +46,14 @@ public final class ApplicationContext {
 
     public Map<String, ServiceWorker> getServiceWorkerMap() {
         return Collections.unmodifiableMap(this.serviceWorkerMap);
+    }
+    
+    public Map<String, PushInfo> getPushInfoMap() {
+        return Collections.unmodifiableMap(this.pushInfoMap);
+    }
+    
+    void setPushInfoMap(Map<String, PushInfo> pushInfoMap) {
+        this.pushInfoMap.putAll(pushInfoMap);
     }
 
     public ServiceWorker getServiceWorker(String route) {

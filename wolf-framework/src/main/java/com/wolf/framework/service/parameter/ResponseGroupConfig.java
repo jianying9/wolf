@@ -13,11 +13,13 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface ResponseGroupConfig {
     
+    
+    
     /**
      * 返回的参数
      *
      * @return String[]
      */
-    public ResponseConfig[] responseConfigs() default {};
+    public ExtendResponseConfig[] responseConfigs() default {};
     
 }

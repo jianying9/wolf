@@ -20,9 +20,5 @@ public interface PushResponse<T extends Entity> {
     
     public void setPushId(String pushId);
     
-    public String getCode();
-    
-    public void setCode(String code);
-    
     public String getPushMessage();
 }

@@ -26,7 +26,7 @@ public @interface SecondResponseConfig {
      * @return
      */
     public ResponseDataType dataType();
-
+    
     /**
      * 描述
      *

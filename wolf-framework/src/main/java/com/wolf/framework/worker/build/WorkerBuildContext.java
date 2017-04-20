@@ -3,7 +3,8 @@ package com.wolf.framework.worker.build;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
-import com.wolf.framework.service.parameter.ServiceExtend;
+import com.wolf.framework.service.parameter.ServiceExtendContext;
+import com.wolf.framework.service.parameter.ServicePushContext;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ public interface WorkerBuildContext {
     
     public List<Interceptor> getInterceptorList();
     
-    public ServiceExtend getServiceExtend();
+    public ServiceExtendContext getServiceExtendContext();
+    
+    public ServicePushContext getServicePushContext();
     
 }

@@ -6,7 +6,6 @@ import com.wolf.framework.service.ResponseCode;
 import com.wolf.framework.service.SessionHandleType;
 import com.wolf.framework.service.context.ServiceContext;
 import com.wolf.framework.service.parameter.PushHandler;
-import com.wolf.framework.service.parameter.ResponseParameterHandler;
 import com.wolf.framework.utils.EntityUtils;
 import com.wolf.framework.utils.SecurityUtils;
 import com.wolf.framework.worker.context.WorkerContext;
@@ -17,6 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
+import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
  *
@@ -165,9 +165,9 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         if (paraMap != null) {
             ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
             String[] returnParameter = serviceContext.returnParameter();
-            Map<String, ResponseParameterHandler> parameterHandlerMap = serviceContext.responseParameterHandlerMap();
+            Map<String, ResponseHandler> parameterHandlerMap = serviceContext.responseParameterHandlerMap();
             Object paraValue;
-            ResponseParameterHandler responseParameterHandler;
+            ResponseHandler responseParameterHandler;
             resultMap = new HashMap(paraMap.size(), 1);
             //过滤
             for (String paraName : returnParameter) {

@@ -18,6 +18,6 @@ public @interface RequestGroupConfig {
      *
      * @return String[]
      */
-    public RequestConfig[] requestConfigs() default {};
+    public ExtendRequestConfig[] requestConfigs() default {};
     
 }

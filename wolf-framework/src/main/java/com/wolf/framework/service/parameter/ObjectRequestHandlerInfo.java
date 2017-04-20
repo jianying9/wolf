@@ -10,12 +10,12 @@ public class ObjectRequestHandlerInfo {
     
     private final String[] requiredParameter;
     private final String[] unrequiredParameter;
-    private final Map<String, RequestParameterHandler> requestParameterHandlerMap;
+    private final Map<String, RequestHandler> requestHandlerMap;
 
-    public ObjectRequestHandlerInfo(String[] requiredParameter, String[] unrequiredParameter, Map<String, RequestParameterHandler> requestParameterHandlerMap) {
+    public ObjectRequestHandlerInfo(String[] requiredParameter, String[] unrequiredParameter, Map<String, RequestHandler> requestHandlerMap) {
         this.requiredParameter = requiredParameter;
         this.unrequiredParameter = unrequiredParameter;
-        this.requestParameterHandlerMap = requestParameterHandlerMap;
+        this.requestHandlerMap = requestHandlerMap;
     }
 
     public String[] getRequiredParameter() {
@@ -26,8 +26,8 @@ public class ObjectRequestHandlerInfo {
         return unrequiredParameter;
     }
 
-    public Map<String, RequestParameterHandler> getRequestParameterHandlerMap() {
-        return requestParameterHandlerMap;
+    public Map<String, RequestHandler> getRequestHandlerMap() {
+        return requestHandlerMap;
     }
     
 }

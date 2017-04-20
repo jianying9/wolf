@@ -3,10 +3,10 @@ package com.wolf.framework.worker.workhandler;
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 import com.wolf.framework.service.context.ServiceContext;
-import com.wolf.framework.service.parameter.RequestParameterHandler;
 import com.wolf.framework.worker.context.WorkerContext;
 import java.util.List;
 import java.util.Map;
+import com.wolf.framework.service.parameter.RequestHandler;
 
 /**
  * 次要参数处理类,保留空字符
@@ -31,12 +31,12 @@ public class UnrequiredParameterWorkHandlerImpl implements WorkHandler {
         List listValue;
         String errorParaName = "";
         String errorMsg = "";
-        RequestParameterHandler parameterHandler;
+        RequestHandler parameterHandler;
         //验证必要参数是否合法
         final Map<String, Object> parameterMap = workerContext.getParameterMap();
         final WorkerRequest request = workerContext.getWorkerRequest();
         final String[] unrequiredParameter = this.serviceContext.unrequiredParameter();
-        final Map<String, RequestParameterHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
+        final Map<String, RequestHandler> parameterHandlerMap = this.serviceContext.requestParameterHandlerMap();
         for (String parameter : unrequiredParameter) {
             paraValue = parameterMap.get(parameter);
             if (paraValue != null) {

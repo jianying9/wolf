@@ -26,7 +26,7 @@ public @interface ThirdResponseConfig {
      * @return
      */
     public ResponseDataType dataType();
-
+    
     /**
      * 描述
      *
@@ -40,4 +40,11 @@ public @interface ThirdResponseConfig {
      * @return
      */
     public FilterType[] filterTypes() default {FilterType.SECURITY};
+    
+    /**
+     * 四级响应参数
+     *
+     * @return
+     */
+    public FourResponseConfig[] fourResponseConfigs() default {};
 }
