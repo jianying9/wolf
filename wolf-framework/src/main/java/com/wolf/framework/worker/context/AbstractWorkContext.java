@@ -50,10 +50,10 @@ public abstract class AbstractWorkContext implements WorkerContext {
         Object value;
         for (String key : keySet) {
             value = parameterMap.get(key);
-            if(Integer.class.isInstance(value)) {
+            if (Integer.class.isInstance(value)) {
                 long newValue = (int) value;
                 value = newValue;
-            } else if(Float.class.isInstance(value)) {
+            } else if (Float.class.isInstance(value)) {
                 double newValue = (float) value;
                 value = newValue;
             }
@@ -132,34 +132,33 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 //读取公共数据
                 //callback
                 JsonNode globalNode = rootNode.get("callback");
-                if(globalNode != null) {
+                if (globalNode != null) {
                     this.callback = globalNode.getTextValue();
                 }
                 //md5
                 globalNode = rootNode.get("md5");
-                if(globalNode != null) {
+                if (globalNode != null) {
                     this.md5 = globalNode.getTextValue();
                 }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
-                if (paramNode.isNull() == false) {
-                    this.parameterMap = new HashMap<>(4, 1);
-                    Map.Entry<String, JsonNode> entry;
-                    String name;
-                    Object value;
-                    JsonNode jsonNode;
-                    Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
-                    while (iterator.hasNext()) {
-                        entry = iterator.next();
-                        name = entry.getKey();
-                        jsonNode = entry.getValue();
-                        if (jsonNode.isNull() == false) {
-                            value = this.getValue(jsonNode);
-                            this.parameterMap.put(name, value);
-                        }
+                if (paramNode == null ||  paramNode.isNull()) {
+                    paramNode = rootNode;
+                }
+                this.parameterMap = new HashMap<>(8, 1);
+                Map.Entry<String, JsonNode> entry;
+                String name;
+                Object value;
+                JsonNode jsonNode;
+                Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+                while (iterator.hasNext()) {
+                    entry = iterator.next();
+                    name = entry.getKey();
+                    jsonNode = entry.getValue();
+                    if (jsonNode.isNull() == false) {
+                        value = this.getValue(jsonNode);
+                        this.parameterMap.put(name, value);
                     }
-                } else {
-                    this.parameterMap = Collections.emptyMap();
                 }
             } else {
                 this.parameterMap = Collections.emptyMap();
@@ -213,5 +212,5 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public String getMd5() {
         return md5;
     }
-    
+
 }
