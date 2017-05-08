@@ -213,11 +213,4 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         return pushResponse;
     }
 
-    @Override
-    public void setData(String name, Map<String, Object> dataMap) {
-        Map<String, Object> newDataMap = new HashMap<>(2, 1);
-        newDataMap.put(name, dataMap);
-        //检测并过滤响应参数
-        this.dataMap = this.checkAndFilterDataMap(newDataMap);
-    }
 }
