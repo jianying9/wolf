@@ -41,8 +41,8 @@ public final class ObjectArrayRequestHandlerImpl extends AbstractObjectRequestHa
                     }
                 }
             }
-            if (isMap) {
-                msg = "";
+            if (isMap == false) {
+                msg = this.errorInfo;
             }
         }
         return msg;
