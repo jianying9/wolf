@@ -23,26 +23,26 @@ public final class ObjectArrayRequestHandlerImpl extends AbstractObjectRequestHa
     public String validate(final Object value) {
         String msg = this.errorInfo;
         if (List.class.isInstance(value)) {
-            boolean isMap = true;
             Map<String, Object> valueMap;
             List<Object> objectList = (List<Object>) value;
             for (Object object : objectList) {
                 if (Map.class.isInstance(object) == false) {
-                    isMap = false;
+                    msg = this.errorInfo;
                     break;
                 } else {
                     valueMap = (Map<String, Object>) object;
                     //验证必填参数
                     msg = this.validateRequiredParameter(valueMap);
                     if (msg.isEmpty()) {
+                        //验证选填参数
                         msg = this.validateUnrequiredParameter(valueMap);
+                        if(msg.isEmpty() == false) {
+                            break;
+                        }
                     } else {
                         break;
                     }
                 }
-            }
-            if (isMap == false) {
-                msg = this.errorInfo;
             }
         }
         return msg;
