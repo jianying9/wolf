@@ -6,6 +6,7 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
@@ -39,8 +40,8 @@ public abstract class AbstractCDao<T extends Entity> {
             Session session,
             String keyspace,
             String table,
-            List<ColumnHandler> keyHandlerList, 
-            List<ColumnHandler> columnHandlerList, 
+            List<ColumnHandler> keyHandlerList,
+            List<ColumnHandler> columnHandlerList,
             Class<T> clazz) {
         this.session = session;
         this.keyspace = keyspace;
@@ -60,8 +61,13 @@ public abstract class AbstractCDao<T extends Entity> {
         cqlBuilder.append(';');
         String inquireByKeyCql = cqlBuilder.toString();
         cqlBuilder.setLength(0);
-        this.inquireByKeyPs = this.session.prepare(inquireByKeyCql);
         this.logger.debug("{} inquireByKeyCql:{}", this.table, inquireByKeyCql);
+        try {
+            this.inquireByKeyPs = this.session.prepare(inquireByKeyCql);
+        } catch (InvalidQueryException e) {
+            this.logger.error("{} inquireByKeyCql:{}", this.table, inquireByKeyCql);
+            throw e;
+        }
         //delete
         cqlBuilder.append("DELETE FROM ").append(this.keyspace).append('.')
                 .append(this.table).append(" WHERE ");
@@ -88,20 +94,20 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         return r != null;
     }
-    
+
     protected final PreparedStatement cachePrepare(String cql) {
         PreparedStatement ps = this.psCacheMap.get(cql);
-        if(ps == null) {
+        if (ps == null) {
             ps = this.session.prepare(cql);
             this.psCacheMap.put(cql, ps);
         }
         return ps;
     }
-    
+
     protected final PreparedStatement prepare(String cql) {
         return this.session.prepare(cql);
     }
-    
+
     protected final ResultSetFuture executeAsync(Statement stmnt) {
         return this.session.executeAsync(stmnt);
     }
@@ -126,7 +132,7 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         return t;
     }
-    
+
     protected final Object getValue(Row row, ColumnHandler columnHander) {
         Object result;
         String name = columnHander.getDataMap();
@@ -148,7 +154,7 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         return result;
     }
-    
+
     protected final Map<String, Object> parseRow(Row r) {
         Map<String, Object> result = null;
         if (r != null) {
