@@ -46,7 +46,7 @@ public final class CEntityDaoBuilder<T extends Entity> {
         this.table = tableName;
         this.keyHandlerList = keyHandlerList;
         if (columnHandlerList == null) {
-            this.columnHandlerList = new ArrayList<>(0);
+            this.columnHandlerList = new ArrayList(0);
         } else {
             this.columnHandlerList = columnHandlerList;
         }
@@ -69,9 +69,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
         }
         if (this.keyHandlerList.isEmpty()) {
             throw new RuntimeException("Error when building CEntityDao. Cause: key is empty");
-        }
-        if (this.columnHandlerList.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: column is empty");
         }
         //session
         final Session session = this.cassandraAdminContext.getSession();
