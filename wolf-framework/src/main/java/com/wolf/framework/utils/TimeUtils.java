@@ -21,7 +21,7 @@ public final class TimeUtils {
 
     private TimeUtils() {
     }
-    
+
     /**
      * 获取当前时间yyyyMMdd
      *
@@ -31,13 +31,13 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YYMMDD.format(currentTime);
     }
-    
-    public static String getDateFotmatYYMMDD(long day) {
-        long milliseconds = System.currentTimeMillis() + 86400000 * day;
+
+    public static long getDateFotmatYYMMDD(long milliseconds) {
         Date currentTime = new Date(milliseconds);
-        return TimeUtils.FM_YYMMDD.format(currentTime);
+        String date = TimeUtils.FM_YYMMDD.format(currentTime);
+        return Long.parseLong(date);
     }
-    
+
     /**
      * 获取当前时间yyyy-MM-dd
      *
@@ -57,7 +57,7 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YY_MM_DD_HHMMSS.format(currentTime);
     }
-    
+
     public static String getDateFotmatHHmm() {
         Date currentTime = new Date();
         return TimeUtils.FM_HHMM.format(currentTime);
@@ -97,7 +97,7 @@ public final class TimeUtils {
         Date date = new Date(milliseconds);
         return TimeUtils.FM_YY_MM_DD.format(date);
     }
-    
+
     public static long convertYYYYMMDDToMillisecond(String dateStr) {
         long result = 0;
         try {
@@ -107,7 +107,7 @@ public final class TimeUtils {
         }
         return result;
     }
-    
+
     public static long convertYYYYMMDDHHmmSSToMillisecond(String dateStr) {
         long result = 0;
         try {
