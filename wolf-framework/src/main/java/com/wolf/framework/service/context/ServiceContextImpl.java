@@ -36,6 +36,7 @@ public class ServiceContextImpl implements ServiceContext {
 
     private final String route;
     private final String desc;
+    private final String group;
     private final boolean requireTransaction;
     private final boolean validateSession;
     private final boolean validateSecurity;
@@ -147,6 +148,7 @@ public class ServiceContextImpl implements ServiceContext {
 
     public ServiceContextImpl(ServiceConfig serviceConfig, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
+        this.group = serviceConfig.group();
         this.desc = serviceConfig.desc();
         this.sessionHandleType = serviceConfig.sessionHandleType();
         this.requireTransaction = serviceConfig.requireTransaction();
@@ -359,5 +361,10 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public PushHandler getPushHandler(String route) {
         return this.pushHandlerMap.get(route);
+    }
+
+    @Override
+    public String group() {
+        return this.group;
     }
 }

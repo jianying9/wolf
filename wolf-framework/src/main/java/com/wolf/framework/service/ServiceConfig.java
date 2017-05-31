@@ -1,6 +1,5 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import java.lang.annotation.ElementType;
@@ -23,6 +22,13 @@ public @interface ServiceConfig {
      * @return route
      */
     public String route();
+    
+    /**
+     * 分组
+     *
+     * @return route
+     */
+    public String group() default "default";
 
     /**
      * 请求的参数

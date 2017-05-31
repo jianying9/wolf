@@ -19,6 +19,8 @@ public interface ServiceContext {
     
     public String route();
     
+    public String group();
+    
     public boolean requireTransaction();
     
     public SessionHandleType sessionHandleType();
