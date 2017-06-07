@@ -44,8 +44,8 @@ public abstract class AbstractWorkContext implements WorkerContext {
         this.response = new ResponseImpl(this);
     }
 
-    public void initParameter(Map<String, Object> parameterMap) {
-        Map<String, Object> tempMap = new HashMap<>(parameterMap.size(), 1);
+    public void initLocalParameter(Map<String, Object> parameterMap) {
+        Map<String, Object> tempMap = new HashMap(parameterMap.size(), 1);
         Set<String> keySet = parameterMap.keySet();
         Object value;
         for (String key : keySet) {
@@ -84,7 +84,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     private Map<String, Object> initObject(JsonNode paramNode) {
-        Map<String, Object> paramMap = new HashMap<>(8, 1);
+        Map<String, Object> paramMap = new HashMap(8, 1);
         Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
         Map.Entry<String, JsonNode> entry;
         String name;
@@ -103,7 +103,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     private List<Object> initArray(ArrayNode paramNode) {
-        List<Object> paramList = new ArrayList<>();
+        List<Object> paramList = new ArrayList();
         Iterator<JsonNode> iterator = paramNode.getElements();
         JsonNode jsonNode;
         Object value;
@@ -117,7 +117,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
         return paramList;
     }
 
-    public void initParameter(String json) {
+    public void initWebsocketParameter(String json) {
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -142,15 +142,54 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
-                if (paramNode == null ||  paramNode.isNull()) {
+                if (paramNode == null || paramNode.isNull()) {
                     paramNode = rootNode;
                 }
-                this.parameterMap = new HashMap<>(8, 1);
+                this.parameterMap = new HashMap(8, 1);
                 Map.Entry<String, JsonNode> entry;
                 String name;
                 Object value;
                 JsonNode jsonNode;
                 Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+                while (iterator.hasNext()) {
+                    entry = iterator.next();
+                    name = entry.getKey();
+                    jsonNode = entry.getValue();
+                    if (jsonNode.isNull() == false) {
+                        value = this.getValue(jsonNode);
+                        this.parameterMap.put(name, value);
+                    }
+                }
+            } else {
+                this.parameterMap = Collections.emptyMap();
+            }
+        } else {
+            this.parameterMap = Collections.emptyMap();
+        }
+    }
+
+    public void initHttpParameter(Map<String, String> parameterMap, String json) {
+        //读取公共数据
+        //callback
+        this.callback = parameterMap.get("callback");
+        if (json.isEmpty() == false) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = null;
+            try {
+                rootNode = mapper.readValue(json, JsonNode.class);
+            } catch (IOException e) {
+                Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
+                logger.error("error json message:{}", json);
+                logger.error("parse json error:", e);
+            }
+            if (rootNode != null) {
+                //读数据
+                this.parameterMap = new HashMap(8, 1);
+                Map.Entry<String, JsonNode> entry;
+                String name;
+                Object value;
+                JsonNode jsonNode;
+                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
                 while (iterator.hasNext()) {
                     entry = iterator.next();
                     name = entry.getKey();

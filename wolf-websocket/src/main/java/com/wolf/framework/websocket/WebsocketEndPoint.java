@@ -61,7 +61,7 @@ public class WebsocketEndPoint implements Resource {
             } else {
                 //创建消息对象并执行服务
                 WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker);
-                workerContext.initParameter(text);
+                workerContext.initWebsocketParameter(text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
                 responseMesssage = workerContext.getWorkerResponse().getResponseMessage();

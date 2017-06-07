@@ -33,7 +33,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTP);
-    Map<String, AsyncContext> asyncContextMap = new HashMap<>(32, 1);
+    Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
 
@@ -64,10 +64,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             throws ServletException, IOException {
         String result;
         //读取参数
-        Map<String, Object> parameterMap;
+        Map<String, String> parameterMap;
         String route = request.getPathInfo();
         Enumeration<String> names = request.getParameterNames();
-        parameterMap = new HashMap<>(8, 1);
+        parameterMap = new HashMap(8, 1);
         String name;
         String value;
         while (names.hasMoreElements()) {
@@ -80,10 +80,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {
             //route不存在,判断是否为comet请求
-            String comet = (String) parameterMap.get("comet");
+            String comet = parameterMap.get("comet");
             if (comet != null && comet.equals("start")) {
                 //该请求为一个长轮询推送请求
-                String sid = (String) parameterMap.get("sid");
+                String sid = parameterMap.get("sid");
                 if (sid != null) {
                     synchronized (this) {
                         //同sid冲突检测
@@ -111,14 +111,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             }
         } else {
             //route存在
-            String sid = (String) parameterMap.get("sid");
+            String sid = parameterMap.get("sid");
             ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
-            String param = (String) parameterMap.get("param");
-            if(param != null && param.isEmpty() == false) {
-                workerContext.initParameter(param);
-            } else {
-                workerContext.initParameter(parameterMap);
-            }
+            String param = parameterMap.get("param");
+            workerContext.initHttpParameter(parameterMap, param);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse().getResponseMessage();
             HttpUtils.toWrite(request, response, result);
