@@ -113,7 +113,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             //route存在
             String sid = parameterMap.get("sid");
             ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
-            String param = parameterMap.get("param");
+            String param = parameterMap.get("_json");
             workerContext.initHttpParameter(parameterMap, param);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse().getResponseMessage();
