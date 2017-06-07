@@ -121,6 +121,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             this.logger.debug("http send message:{}", result);
         }
     }
+    
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -134,6 +139,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         processRequest(request, response);
     }
 
@@ -148,6 +154,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         processRequest(request, response);
     }
 
