@@ -48,16 +48,16 @@ public class RequestImpl implements WorkerRequest {
     public void putParameter(String name, Object value) {
         this.parameterMap.put(name, value);
     }
-    
+
     @Override
     public Long getLongValue(String name) {
         Object value = this.getValue(name);
         Long result = null;
-        if(Long.class.isInstance(value)) {
+        if (Long.class.isInstance(value)) {
             result = (Long) value;
-        } else if(Integer.class.isInstance(value)) {
+        } else if (Integer.class.isInstance(value)) {
             result = ((Integer) value).longValue();
-        } else if(String.class.isInstance(value)) {
+        } else if (String.class.isInstance(value)) {
             result = Long.valueOf((String) value);
         }
         return result;
@@ -67,9 +67,9 @@ public class RequestImpl implements WorkerRequest {
     public Boolean getBooleanValue(String name) {
         Object value = this.getValue(name);
         Boolean result = null;
-        if(Boolean.class.isInstance(value)) {
+        if (Boolean.class.isInstance(value)) {
             result = (Boolean) value;
-        } else if(String.class.isInstance(value)) {
+        } else if (String.class.isInstance(value)) {
             result = Boolean.valueOf((String) value);
         }
         return result;
@@ -79,14 +79,16 @@ public class RequestImpl implements WorkerRequest {
     public Double getDoubleValue(String name) {
         Object value = this.getValue(name);
         Double result = null;
-        if(Long.class.isInstance(value)) {
+        if (Long.class.isInstance(value)) {
             Long l = (Long) value;
             result = l.doubleValue();
-        } else if(Integer.class.isInstance(value)) {
+        } else if (Integer.class.isInstance(value)) {
             result = ((Integer) value).doubleValue();
-        } else if(Double.class.isInstance(value)) {
+        } else if (Double.class.isInstance(value)) {
             result = (Double) value;
-        } else if(String.class.isInstance(value)) {
+        } else if (Float.class.isInstance(value)) {
+            result = ((Float) value).doubleValue();
+        } else if (String.class.isInstance(value)) {
             result = Double.valueOf((String) value);
         }
         return result;
@@ -137,7 +139,7 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Double getDoubleValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        if(value != null && Long.class.isInstance(value)) {
+        if (value != null && Long.class.isInstance(value)) {
             Long l = (Long) value;
             Double newValue = l.doubleValue();
             value = newValue;

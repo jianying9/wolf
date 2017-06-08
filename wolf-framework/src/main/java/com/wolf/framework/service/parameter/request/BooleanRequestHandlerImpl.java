@@ -9,11 +9,11 @@ import com.wolf.framework.service.parameter.RequestHandler;
  * @author jianying9
  */
 public final class BooleanRequestHandlerImpl implements RequestHandler {
-    
+
     private final String name;
     private final boolean ignoreEmpty;
     private final String errorInfo = " must be boolean";
-    
+
     public BooleanRequestHandlerImpl(final String name, boolean ignoreEmpty) {
         this.name = name;
         this.ignoreEmpty = ignoreEmpty;
@@ -22,12 +22,12 @@ public final class BooleanRequestHandlerImpl implements RequestHandler {
     @Override
     public String validate(Object value) {
         String result = this.errorInfo;
-        if(Boolean.class.isInstance(value)) {
+        if (Boolean.class.isInstance(value)) {
             result = "";
-        } else if(String.class.isInstance(value)) {
+        } else if (String.class.isInstance(value)) {
             String v = (String) value;
             v = v.toLowerCase();
-            if(v.equals("true") || v.equals("false")) {
+            if (v.equals("true") || v.equals("false")) {
                 result = "";
             }
         }

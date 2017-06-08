@@ -46,21 +46,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     public void initLocalParameter(Map<String, Object> parameterMap) {
-        Map<String, Object> tempMap = new HashMap(parameterMap.size(), 1);
-        Set<String> keySet = parameterMap.keySet();
-        Object value;
-        for (String key : keySet) {
-            value = parameterMap.get(key);
-            if (Integer.class.isInstance(value)) {
-                long newValue = (int) value;
-                value = newValue;
-            } else if (Float.class.isInstance(value)) {
-                double newValue = (float) value;
-                value = newValue;
-            }
-            tempMap.put(key, value);
-        }
-        this.parameterMap = tempMap;
+        this.parameterMap = parameterMap;
     }
 
     private Object getValue(JsonNode jsonNode) {

@@ -34,8 +34,8 @@ public final class LongRequestHandlerImpl implements RequestHandler {
         if (Long.class.isInstance(value)) {
             num = (Long) value;
         } else if (Integer.class.isInstance(value)) {
-                Integer i = (Integer) value;
-                num = i.longValue();
+            Integer i = (Integer) value;
+            num = i.longValue();
         } else if (String.class.isInstance(value)) {
             String v = (String) value;
             try {
