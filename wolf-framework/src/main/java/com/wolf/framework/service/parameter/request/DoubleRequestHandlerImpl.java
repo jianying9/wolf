@@ -34,8 +34,17 @@ public final class DoubleRequestHandlerImpl implements RequestHandler {
         if (Long.class.isInstance(value)) {
             Long l = (Long) value;
             num = l.doubleValue();
-        } else if (Double.class.isInstance(value)) {
+        } else if (Integer.class.isInstance(value)) {
+            Integer i = (Integer) value;
+            num = i.doubleValue();
+        }else if (Double.class.isInstance(value)) {
             num = (Double) value;
+        } else if(String.class.isInstance(value)) {
+            String v = (String) value;
+            try {
+                num = Double.valueOf(v);
+            } catch (NumberFormatException e) {
+            }
         }
         if (num != null && num <= this.max && num >= this.min) {
             msg = "";

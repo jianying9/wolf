@@ -30,11 +30,21 @@ public final class LongRequestHandlerImpl implements RequestHandler {
     @Override
     public String validate(final Object value) {
         String msg = this.errorInfo;
+        Long num = null;
         if (Long.class.isInstance(value)) {
-            long num = (long) value;
-            if (num <= this.max && num >= this.min) {
-                msg = "";
+            num = (Long) value;
+        } else if (Integer.class.isInstance(value)) {
+                Integer i = (Integer) value;
+                num = i.longValue();
+        } else if (String.class.isInstance(value)) {
+            String v = (String) value;
+            try {
+                num = Long.valueOf(v);
+            } catch (NumberFormatException e) {
             }
+        }
+        if (num != null && num <= this.max && num >= this.min) {
+            msg = "";
         }
         return msg;
     }

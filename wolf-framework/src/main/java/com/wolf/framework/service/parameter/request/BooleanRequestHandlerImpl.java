@@ -24,6 +24,12 @@ public final class BooleanRequestHandlerImpl implements RequestHandler {
         String result = this.errorInfo;
         if(Boolean.class.isInstance(value)) {
             result = "";
+        } else if(String.class.isInstance(value)) {
+            String v = (String) value;
+            v = v.toLowerCase();
+            if(v.equals("true") || v.equals("false")) {
+                result = "";
+            }
         }
         return result;
     }

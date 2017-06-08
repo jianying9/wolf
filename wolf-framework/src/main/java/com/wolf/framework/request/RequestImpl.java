@@ -52,24 +52,44 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Long getLongValue(String name) {
         Object value = this.getValue(name);
-        return (Long) value;
+        Long result = null;
+        if(Long.class.isInstance(value)) {
+            result = (Long) value;
+        } else if(Integer.class.isInstance(value)) {
+            result = ((Integer) value).longValue();
+        } else if(String.class.isInstance(value)) {
+            result = Long.valueOf((String) value);
+        }
+        return result;
     }
 
     @Override
     public Boolean getBooleanValue(String name) {
         Object value = this.getValue(name);
-        return (Boolean) value;
+        Boolean result = null;
+        if(Boolean.class.isInstance(value)) {
+            result = (Boolean) value;
+        } else if(String.class.isInstance(value)) {
+            result = Boolean.valueOf((String) value);
+        }
+        return result;
     }
 
     @Override
     public Double getDoubleValue(String name) {
         Object value = this.getValue(name);
-        if(value != null && Long.class.isInstance(value)) {
+        Double result = null;
+        if(Long.class.isInstance(value)) {
             Long l = (Long) value;
-            Double newValue = l.doubleValue();
-            value = newValue;
+            result = l.doubleValue();
+        } else if(Integer.class.isInstance(value)) {
+            result = ((Integer) value).doubleValue();
+        } else if(Double.class.isInstance(value)) {
+            result = (Double) value;
+        } else if(String.class.isInstance(value)) {
+            result = Double.valueOf((String) value);
         }
-        return (Double) value;
+        return result;
     }
 
     @Override

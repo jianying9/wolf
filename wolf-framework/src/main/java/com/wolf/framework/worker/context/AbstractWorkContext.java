@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -204,6 +205,13 @@ public abstract class AbstractWorkContext implements WorkerContext {
             }
         } else {
             this.parameterMap = Collections.emptyMap();
+        }
+        //两类参数合并
+        Set<Entry<String, String>> entrySet = parameterMap.entrySet();
+        for (Entry<String, String> entry : entrySet) {
+            if(this.parameterMap.containsKey(entry.getKey()) == false) {
+                this.parameterMap.put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
