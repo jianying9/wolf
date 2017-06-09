@@ -20,11 +20,6 @@ public class RequestImpl implements WorkerRequest {
     }
 
     @Override
-    public Map<String, Object> getValueMap() {
-        return this.parameterMap;
-    }
-
-    @Override
     public String getRoute() {
         return this.workerContext.getRoute();
     }
@@ -39,8 +34,7 @@ public class RequestImpl implements WorkerRequest {
         this.workerContext.removeSession();
     }
 
-    @Override
-    public Object getValue(String name) {
+    private Object getValue(String name) {
         return this.parameterMap.get(name);
     }
 

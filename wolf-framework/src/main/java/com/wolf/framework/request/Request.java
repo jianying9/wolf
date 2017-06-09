@@ -9,10 +9,6 @@ import java.util.Map;
  */
 public interface Request {
 
-    public Map<String, Object> getValueMap();
-    
-    public Object getValue(String name);
-    
     public Long getLongValue(String name);
     
     public Boolean getBooleanValue(String name);
