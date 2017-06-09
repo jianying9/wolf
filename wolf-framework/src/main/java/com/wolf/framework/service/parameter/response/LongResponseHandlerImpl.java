@@ -28,7 +28,7 @@ public final class LongResponseHandlerImpl implements ResponseHandler {
 
     @Override
     public Object getResponseValue(Object value) {
-        if(Long.class.isInstance(value) == false) {
+        if(Long.class.isInstance(value) == false && Integer.class.isInstance(value) == false) {
             String errMsg = "response:" + this.name + "'s type is not Long.";
             throw new RuntimeException(errMsg);
         }
