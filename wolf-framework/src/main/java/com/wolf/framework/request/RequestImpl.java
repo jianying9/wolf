@@ -80,8 +80,6 @@ public class RequestImpl implements WorkerRequest {
             result = ((Integer) value).doubleValue();
         } else if (Double.class.isInstance(value)) {
             result = (Double) value;
-        } else if (Float.class.isInstance(value)) {
-            result = ((Float) value).doubleValue();
         } else if (String.class.isInstance(value)) {
             result = Double.valueOf((String) value);
         }
