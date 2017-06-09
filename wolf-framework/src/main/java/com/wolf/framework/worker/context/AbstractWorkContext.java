@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 public abstract class AbstractWorkContext implements WorkerContext {
 
     //input
-    private Map<String, Object> parameterMap;
+    private Map<String, Object> parameterMap = null;
     private final String route;
     private String callback = null;
     private String md5 = null;
@@ -186,11 +186,10 @@ public abstract class AbstractWorkContext implements WorkerContext {
                         this.parameterMap.put(name, value);
                     }
                 }
-            } else {
-                this.parameterMap = Collections.emptyMap();
             }
-        } else {
-            this.parameterMap = Collections.emptyMap();
+        }
+        if(this.parameterMap == null) {
+            this.parameterMap = new HashMap(parameterMap.size(), 1);
         }
         //两类参数合并
         Set<Entry<String, String>> entrySet = parameterMap.entrySet();
