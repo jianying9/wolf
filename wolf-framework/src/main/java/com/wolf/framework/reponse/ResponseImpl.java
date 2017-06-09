@@ -37,7 +37,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         this.workerContext = workerContext;
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         ResponseCode[] responseCodes = serviceContext.responseCodes();
-        this.customCodeSet = new HashSet<>(responseCodes.length);
+        this.customCodeSet = new HashSet(responseCodes.length);
         for (ResponseCode responseCode : responseCodes) {
             this.customCodeSet.add(responseCode.code());
         }
@@ -195,7 +195,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     @Override
     public void setData(String name, Object value) {
-        Map<String, Object> newDataMap = new HashMap<>(2, 1);
+        Map<String, Object> newDataMap = new HashMap(2, 1);
         newDataMap.put(name, value);
         //检测并过滤响应参数
         this.dataMap = this.checkAndFilterDataMap(newDataMap);

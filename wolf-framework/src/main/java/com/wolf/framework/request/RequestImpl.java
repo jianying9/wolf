@@ -16,7 +16,7 @@ public class RequestImpl implements WorkerRequest {
 
     public RequestImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
-        this.parameterMap = new HashMap<>(8, 1);
+        this.parameterMap = new HashMap(8, 1);
     }
 
     @Override

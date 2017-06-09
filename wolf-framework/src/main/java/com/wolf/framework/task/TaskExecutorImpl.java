@@ -35,7 +35,7 @@ public class TaskExecutorImpl implements TaskExecutor {
             corePoolSize = maxPoolSize;
         }
         RejectedExecutionHandler rejectedExecutionHandler = new TaskRejectedExecutionHandlerImpl();
-        LinkedBlockingQueue<Runnable> linkedBlockingQueue = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<Runnable> linkedBlockingQueue = new LinkedBlockingQueue();
         this.threadPoolExecutor = new ThreadPoolExecutor(
                 corePoolSize,
                 maxPoolSize,
@@ -73,7 +73,7 @@ public class TaskExecutorImpl implements TaskExecutor {
     public void syncSubmit(List<Task> taskList) {
         String result = "";
         Future<String> futureTask;
-        List<Future<String>> futureTaskList = new ArrayList<>(taskList.size());
+        List<Future<String>> futureTaskList = new ArrayList(taskList.size());
         for (Task task : taskList) {
             futureTask = this.threadPoolExecutor.submit(task, result);
             futureTaskList.add(futureTask);

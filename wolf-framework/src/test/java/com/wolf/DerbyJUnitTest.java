@@ -61,12 +61,12 @@ public class DerbyJUnitTest {
                     }
                     if (rowCount > 0) {
                         Map<String, String> resultMap;
-                        resultMapList = new ArrayList<>(rowCount);
+                        resultMapList = new ArrayList(rowCount);
                         ResultSetMetaData rsmd = rs.getMetaData();
                         int columnCount = rsmd.getColumnCount();
                         rs.beforeFirst();
                         while (rs.next()) {
-                            resultMap = new HashMap<>(columnCount, 1);
+                            resultMap = new HashMap(columnCount, 1);
                             for (int index = 1; index <= columnCount; index++) {
                                 resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
                             }
@@ -106,12 +106,12 @@ public class DerbyJUnitTest {
                 }
                 if (rowCount > 0) {
                     Map<String, String> resultMap;
-                    resultMapList = new ArrayList<>(rowCount);
+                    resultMapList = new ArrayList(rowCount);
                     ResultSetMetaData rsmd = rs.getMetaData();
                     int columnCount = rsmd.getColumnCount();
                     rs.beforeFirst();
                     while (rs.next()) {
-                        resultMap = new HashMap<>(columnCount, 1);
+                        resultMap = new HashMap(columnCount, 1);
                         for (int index = 1; index <= columnCount; index++) {
                             resultMap.put(rsmd.getColumnLabel(index), rs.getString(index));
                         }

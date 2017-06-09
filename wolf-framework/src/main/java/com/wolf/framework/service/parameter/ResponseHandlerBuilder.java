@@ -32,9 +32,9 @@ public class ResponseHandlerBuilder {
     private ObjectResponseHandlerInfo createObjectHandlerInfo(List<ResponseInfo> childResponseInfoList) {
         ResponseHandler requestHandler;
         ResponseHandlerBuilder responseHandlerBuilder;
-        final Map<String, ResponseHandler> responseHandlerMap = new HashMap<>(childResponseInfoList.size(), 1);
+        final Map<String, ResponseHandler> responseHandlerMap = new HashMap(childResponseInfoList.size(), 1);
         //
-        List<String> nameList = new ArrayList<>(childResponseInfoList.size());
+        List<String> nameList = new ArrayList(childResponseInfoList.size());
         for (ResponseInfo childResponseInfo : childResponseInfoList) {
             responseHandlerBuilder = new ResponseHandlerBuilder(childResponseInfo);
             requestHandler = responseHandlerBuilder.build();

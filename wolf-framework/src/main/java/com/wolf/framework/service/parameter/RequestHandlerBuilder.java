@@ -32,8 +32,8 @@ public class RequestHandlerBuilder {
     }
 
     private ObjectRequestHandlerInfo createObjectHandlerInfo(List<RequestInfo> childRequestInfoList) {
-        final List<RequestInfo> requiredRequestInfoList = new ArrayList<>(0);
-        final List<RequestInfo> unrequiredRequestInfoList = new ArrayList<>(0);
+        final List<RequestInfo> requiredRequestInfoList = new ArrayList(0);
+        final List<RequestInfo> unrequiredRequestInfoList = new ArrayList(0);
         for (RequestInfo childRequestInfo : childRequestInfoList) {
             if (childRequestInfo.isRequired()) {
                 requiredRequestInfoList.add(childRequestInfo);
@@ -43,8 +43,8 @@ public class RequestHandlerBuilder {
         }
         RequestHandler childRequestHandler;
         RequestHandlerBuilder requestHandlerBuilder;
-        final Map<String, RequestHandler> requestHandlerMap = new HashMap<>(childRequestInfoList.size(), 1);
-        List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestInfoList.size());
+        final Map<String, RequestHandler> requestHandlerMap = new HashMap(childRequestInfoList.size(), 1);
+        List<String> unrequiredNameList = new ArrayList(unrequiredRequestInfoList.size());
         for (RequestInfo childRequestInfo : unrequiredRequestInfoList) {
             requestHandlerBuilder = new RequestHandlerBuilder(childRequestInfo);
             childRequestHandler = requestHandlerBuilder.build();
@@ -55,7 +55,7 @@ public class RequestHandlerBuilder {
         }
         final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
         //
-        List<String> requiredNameList = new ArrayList<>(requiredRequestInfoList.size());
+        List<String> requiredNameList = new ArrayList(requiredRequestInfoList.size());
         for (RequestInfo childRequestInfo : requiredRequestInfoList) {
             requestHandlerBuilder = new RequestHandlerBuilder(childRequestInfo);
             childRequestHandler = requestHandlerBuilder.build();

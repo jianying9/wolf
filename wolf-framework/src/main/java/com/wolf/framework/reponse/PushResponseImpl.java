@@ -69,7 +69,7 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
 
     @Override
     public void setData(String name, Object value) {
-        Map<String, Object> newDataMap = new HashMap<>(2, 1);
+        Map<String, Object> newDataMap = new HashMap(2, 1);
         newDataMap.put(name, value);
         //检测并过滤响应参数
         this.dataMap = this.checkAndFilterDataMap(newDataMap);

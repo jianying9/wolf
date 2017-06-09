@@ -23,9 +23,9 @@ public final class ApplicationContext {
     public final static ApplicationContext CONTEXT = new ApplicationContext();
     private boolean ready = false;
     private Map<String, String> parameterMap;
-    private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap<>(2, 1);
+    private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap(2, 1);
     private final Map<String, PushInfo> pushInfoMap = new HashMap(2, 1);
-    private final List<Resource> resourceList = new ArrayList<>(2);
+    private final List<Resource> resourceList = new ArrayList(2);
     private final CometContext cometContext = new CometContextImpl();
     private String appContextPath ="/";
     private final FilterFactory filterFactory = new FilterFactoryImpl();

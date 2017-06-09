@@ -59,7 +59,7 @@ public class ServiceContextImpl implements ServiceContext {
      * @return
      */
     public static Set<String> getReservedParamSet() {
-        Set<String> wordSet = new HashSet<>(4, 1);
+        Set<String> wordSet = new HashSet(4, 1);
         //保留接口参数
         wordSet.add("route");
         wordSet.add("filters");
@@ -75,7 +75,7 @@ public class ServiceContextImpl implements ServiceContext {
      * @return
      */
     public static Set<String> getReservedCodeSet() {
-        Set<String> codeSet = new HashSet<>(4, 1);
+        Set<String> codeSet = new HashSet(4, 1);
         //保留接口参数
         codeSet.add("unlogin");
         codeSet.add("unmodifyed");
@@ -203,8 +203,8 @@ public class ServiceContextImpl implements ServiceContext {
             }
         }
         //
-        final List<RequestInfo> requiredRequestInfoList = new ArrayList<>(0);
-        final List<RequestInfo> unrequiredRequestInfoList = new ArrayList<>(0);
+        final List<RequestInfo> requiredRequestInfoList = new ArrayList(0);
+        final List<RequestInfo> unrequiredRequestInfoList = new ArrayList(0);
         for (RequestInfo requestInfo : this.requestInfoList) {
             if (reservedParamSet.contains(requestInfo.getName())) {
                 //配置中存在保留参数名,抛出异常提示
@@ -219,8 +219,8 @@ public class ServiceContextImpl implements ServiceContext {
         //
         RequestHandler requestHandler;
         RequestHandlerBuilder requestHandlerBuilder;
-        final Map<String, RequestHandler> requestParameterMap = new HashMap<>(this.requestInfoList.size(), 1);
-        List<String> unrequiredNameList = new ArrayList<>(unrequiredRequestInfoList.size());
+        final Map<String, RequestHandler> requestParameterMap = new HashMap(this.requestInfoList.size(), 1);
+        List<String> unrequiredNameList = new ArrayList(unrequiredRequestInfoList.size());
         for (RequestInfo requestInfo : unrequiredRequestInfoList) {
             requestHandlerBuilder = new RequestHandlerBuilder(requestInfo);
             requestHandler = requestHandlerBuilder.build();
@@ -233,7 +233,7 @@ public class ServiceContextImpl implements ServiceContext {
         final String[] unrequiredNames = unrequiredNameList.toArray(new String[unrequiredNameList.size()]);
         this.unrequiredParameter = unrequiredNames;
         //
-        List<String> requiredNameList = new ArrayList<>(requiredRequestInfoList.size());
+        List<String> requiredNameList = new ArrayList(requiredRequestInfoList.size());
         for (RequestInfo requestInfo : requiredRequestInfoList) {
             requestHandlerBuilder = new RequestHandlerBuilder(requestInfo);
             requestHandler = requestHandlerBuilder.build();
@@ -253,7 +253,7 @@ public class ServiceContextImpl implements ServiceContext {
         final String[] returnNames;
         if (this.responseInfoList.isEmpty() == false) {
             //
-            List<String> returnNameList = new ArrayList<>(this.responseInfoList.size());
+            List<String> returnNameList = new ArrayList(this.responseInfoList.size());
             returnParameterMap = new HashMap(this.responseInfoList.size(), 1);
             for (ResponseInfo responseInfo : this.responseInfoList) {
                 responseHandlerBuilder = new ResponseHandlerBuilder(
