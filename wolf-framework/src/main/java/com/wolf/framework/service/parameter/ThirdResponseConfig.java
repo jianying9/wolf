@@ -46,5 +46,5 @@ public @interface ThirdResponseConfig {
      *
      * @return
      */
-    public FourResponseConfig[] fourResponseConfigs() default {};
+    public FourthResponseConfig[] fourthResponseConfigs() default {};
 }

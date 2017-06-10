@@ -17,11 +17,11 @@ public class ResponseInfoImpl implements ResponseInfo {
     private final String desc;
     private final List<ResponseInfo> childList;
     
-    public ResponseInfoImpl(ResponseInfo parentResponseParameter, FourResponseConfig fourResponseConfig) {
-        this.name = fourResponseConfig.name();
-        this.dataType = fourResponseConfig.dataType();
-        this.filterType = fourResponseConfig.filterTypes();
-        this.desc = fourResponseConfig.desc();
+    public ResponseInfoImpl(ResponseInfo parentResponseParameter, FourthResponseConfig fourthResponseConfig) {
+        this.name = fourthResponseConfig.name();
+        this.dataType = fourthResponseConfig.dataType();
+        this.filterType = fourthResponseConfig.filterTypes();
+        this.desc = fourthResponseConfig.desc();
         this.childList = Collections.EMPTY_LIST;
     }
     
@@ -31,10 +31,10 @@ public class ResponseInfoImpl implements ResponseInfo {
         this.filterType = thirdResponseConfig.filterTypes();
         this.desc = thirdResponseConfig.desc();
         //
-        FourResponseConfig[] fourResponseConfigs = thirdResponseConfig.fourResponseConfigs();
-        this.childList = new ArrayList(fourResponseConfigs.length);
+        FourthResponseConfig[] fourthResponseConfigs = thirdResponseConfig.fourthResponseConfigs();
+        this.childList = new ArrayList(fourthResponseConfigs.length);
         ResponseInfo childResponseParameter;
-        for (FourResponseConfig fourResponseConfig : fourResponseConfigs) {
+        for (FourthResponseConfig fourResponseConfig : fourthResponseConfigs) {
             childResponseParameter = new ResponseInfoImpl(this, fourResponseConfig);
             this.childList.add(childResponseParameter);
         }
