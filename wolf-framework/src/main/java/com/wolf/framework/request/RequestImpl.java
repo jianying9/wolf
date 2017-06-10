@@ -119,7 +119,15 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Long getLongValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        return (Long) value;
+        Long result = null;
+        if (value != null) {
+            if (Long.class.isInstance(value)) {
+                result = (Long) value;
+            } else if (Integer.class.isInstance(value)) {
+                result = ((Integer) value).longValue();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -131,12 +139,17 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Double getDoubleValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        if (value != null && Long.class.isInstance(value)) {
-            Long l = (Long) value;
-            Double newValue = l.doubleValue();
-            value = newValue;
+        Double result = null;
+        if(value != null) {
+            if (Double.class.isInstance(value)) {
+                result = (Double) value;
+            } else if (Long.class.isInstance(value)) {
+                result = ((Long) value).doubleValue();
+            } else if (Integer.class.isInstance(value)) {
+                result = ((Integer) value).doubleValue();
+            }
         }
-        return (Double) value;
+        return result;
     }
 
     @Override
