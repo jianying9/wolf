@@ -125,6 +125,8 @@ public class RequestImpl implements WorkerRequest {
                 result = (Long) value;
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).longValue();
+            } else if (String.class.isInstance(value)) {
+                result = Long.parseLong((String) value);
             }
         }
         return result;
@@ -133,6 +135,12 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Boolean getBooleanValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
+        Boolean result = null;
+        if (Boolean.class.isInstance(value)) {
+            result = (Boolean) value;
+        } else if (String.class.isInstance(value)) {
+            result = Boolean.parseBoolean((String) value);
+        }
         return (Boolean) value;
     }
 
@@ -140,13 +148,15 @@ public class RequestImpl implements WorkerRequest {
     public Double getDoubleValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
         Double result = null;
-        if(value != null) {
+        if (value != null) {
             if (Double.class.isInstance(value)) {
                 result = (Double) value;
             } else if (Long.class.isInstance(value)) {
                 result = ((Long) value).doubleValue();
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).doubleValue();
+            } else if (String.class.isInstance(value)) {
+                result = Double.parseDouble((String) value);
             }
         }
         return result;
