@@ -9,6 +9,8 @@ public class FrameworkConfig {
     //配置文件
     public final static String CONFIG_FILE = "server-config.json";
     //----------------------------------------------------------
+    //打包时间
+    public final static String BUILD_TIMESTAMP = "build.timestamp";
     //运行模式
     public final static String COMPILE_MODEL = "compile.model";
     //服务器模式
