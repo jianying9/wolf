@@ -134,25 +134,12 @@ public abstract class AbstractCDao<T extends Entity> {
     }
 
     protected final Object getValue(Row row, ColumnHandler columnHander) {
-        Object result;
         String name = columnHander.getDataMap();
-        switch (columnHander.getColumnDataType()) {
-            case STRING:
-                result = row.getString(name);
-                break;
-            case LONG:
-                result = row.getLong(name);
-                break;
-            case INT:
-                result = row.getInt(name);
-                break;
-            case DOUBLE:
-                result = row.getDouble(name);
-                break;
-            default:
-                result = row.getBool(name);
+        Object value = row.getObject(name);
+        if(value == null) {
+            value = columnHander.getDefaultValue();
         }
-        return result;
+        return value;
     }
 
     protected final Map<String, Object> parseRow(Row r) {
@@ -162,16 +149,10 @@ public abstract class AbstractCDao<T extends Entity> {
             Object value;
             for (ColumnHandler ch : this.keyHandlerList) {
                 value = this.getValue(r, ch);
-                if (value == null || value.equals("null")) {
-                    value = ch.getDefaultValue();
-                }
                 result.put(ch.getColumnName(), value);
             }
             for (ColumnHandler ch : this.columnHandlerList) {
                 value = this.getValue(r, ch);
-                if (value == null || value.equals("null")) {
-                    value = ch.getDefaultValue();
-                }
                 result.put(ch.getColumnName(), value);
             }
         }
