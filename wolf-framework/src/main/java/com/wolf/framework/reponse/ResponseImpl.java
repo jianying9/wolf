@@ -80,7 +80,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     @Override
     public final void unsupport() {
-        this.code = ResponseCodeConfig.UNKNOWN;
+        this.code = ResponseCodeConfig.UNSUPPORT;
     }
 
     @Override
