@@ -6,7 +6,6 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
@@ -26,8 +25,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements CEntityDao<T> {
 
-    private final PreparedStatement insertPs;
-    private final PreparedStatement countPs;
+    private final String countCql;
     private final Map<String, String> setNames;
     private final Map<String, String> listNames;
     private final Map<String, String> mapNames;
@@ -47,41 +45,12 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         this.listNames = listNames;
         this.mapNames = mapNames;
         StringBuilder cqlBuilder = new StringBuilder(128);
-        // insert
-        cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
-                .append(this.table).append('(');
-        for (ColumnHandler ch : this.keyHandlerList) {
-            cqlBuilder.append(ch.getDataMap()).append(", ");
-        }
-        for (ColumnHandler ch : this.columnHandlerList) {
-            cqlBuilder.append(ch.getDataMap()).append(", ");
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(") values (");
-        long num = this.columnHandlerList.size() + this.keyHandlerList.size();
-        while (num > 0) {
-            cqlBuilder.append("?, ");
-            num--;
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(");");
-        String insertCql = cqlBuilder.toString();
-        cqlBuilder.setLength(0);
-        try {
-            this.insertPs = this.prepare(insertCql);
-        } catch (InvalidQueryException e) {
-            this.logger.error("{} insertCql:{}", this.table, insertCql);
-            throw new RuntimeException(e);
-        }
-        
-        this.logger.debug("{} insertCql:{}", this.table, insertCql);
         //count
+        cqlBuilder.setLength(0);
         cqlBuilder.append("SELECT COUNT(*) FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(';');
-        String countCql = cqlBuilder.toString();
-        cqlBuilder.setLength(0);
-        this.countPs = this.prepare(countCql);
-        this.logger.debug("{} countCql:{}", this.table, countCql);
+        this.countCql = cqlBuilder.toString();
+        this.logger.debug("{} countCql:{}", this.table, this.countCql);
     }
 
     @Override
@@ -104,7 +73,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             valueList.add(value);
         }
         Object[] values = valueList.toArray();
-        ResultSetFuture rsf = this.executeAsync(this.insertPs.bind(values));
+        PreparedStatement ps = this.cachePrepare(this.insertCql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
         try {
             rsf.get();
         } catch (InterruptedException | ExecutionException ex) {
@@ -124,6 +94,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         if (entityMapList.isEmpty() == false) {
             Object value;
             List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+            PreparedStatement ps = this.cachePrepare(this.insertCql);
             BatchStatement batch = new BatchStatement();
             boolean canInsert;
             Object[] values;
@@ -147,7 +118,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                         valueList.add(value);
                     }
                     values = valueList.toArray();
-                    batch.add(this.insertPs.bind(values));
+                    batch.add(ps.bind(values));
                 }
             }
             ResultSetFuture rsf = this.executeAsync(batch);
@@ -259,7 +230,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
         }
     }
-    
+
     @Override
     public Object[] updateOrInsert(Map<String, Object> entityMap) {
         List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
@@ -319,8 +290,9 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     public void batchDelete(List<Object[]> keyValues) {
         if (keyValues.isEmpty() == false) {
             BatchStatement batch = new BatchStatement();
+            PreparedStatement ps = this.cachePrepare(this.deleteCql);
             for (Object[] keyValue : keyValues) {
-                batch.add(this.deletePs.bind(keyValue));
+                batch.add(ps.bind(keyValue));
             }
             ResultSetFuture rsf = this.executeAsync(batch);
             try {
@@ -334,7 +306,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public long count() {
         long result = 0;
-        ResultSetFuture rsf = this.executeAsync(this.countPs.bind());
+        PreparedStatement ps = this.cachePrepare(this.countCql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind());
         ResultSet rs;
         Row r = null;
         try {

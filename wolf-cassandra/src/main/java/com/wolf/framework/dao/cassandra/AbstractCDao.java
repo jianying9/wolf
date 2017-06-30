@@ -23,7 +23,7 @@ import org.slf4j.Logger;
  * @author jianying9
  * @param <T>
  */
-public abstract class AbstractCDao<T extends Entity> {
+public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
 
     protected final List<ColumnHandler> keyHandlerList;
     protected final List<ColumnHandler> columnHandlerList;
@@ -32,8 +32,10 @@ public abstract class AbstractCDao<T extends Entity> {
     protected final String keyspace;
     protected final String table;
     private final Session session;
-    private final PreparedStatement inquireByKeyPs;
-    protected final PreparedStatement deletePs;
+    private final String inquireBuyKeyCql;
+    protected final String deleteCql;
+    protected final String insertCql;
+    
     private final Map<String, PreparedStatement> psCacheMap = new HashMap<>(2, 1);
 
     public AbstractCDao(
@@ -59,16 +61,10 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         cqlBuilder.setLength(cqlBuilder.length() - 4);
         cqlBuilder.append(';');
-        String inquireByKeyCql = cqlBuilder.toString();
-        cqlBuilder.setLength(0);
-        this.logger.debug("{} inquireByKeyCql:{}", this.table, inquireByKeyCql);
-        try {
-            this.inquireByKeyPs = this.session.prepare(inquireByKeyCql);
-        } catch (InvalidQueryException e) {
-            this.logger.error("{} inquireByKeyCql:{}", this.table, inquireByKeyCql);
-            throw e;
-        }
+        this.inquireBuyKeyCql = cqlBuilder.toString();
+        this.logger.debug("{} inquireByKeyCql:{}", this.table, this.inquireBuyKeyCql);
         //delete
+        cqlBuilder.setLength(0);
         cqlBuilder.append("DELETE FROM ").append(this.keyspace).append('.')
                 .append(this.table).append(" WHERE ");
         for (ColumnHandler columnHandler : this.keyHandlerList) {
@@ -76,14 +72,47 @@ public abstract class AbstractCDao<T extends Entity> {
         }
         cqlBuilder.setLength(cqlBuilder.length() - 4);
         cqlBuilder.append(';');
-        String deleteCql = cqlBuilder.toString();
+        this.deleteCql = cqlBuilder.toString();
+        this.logger.debug("{} deleteCql:{}", this.table, this.deleteCql);
+        // insert
         cqlBuilder.setLength(0);
-        this.deletePs = this.session.prepare(deleteCql);
-        this.logger.debug("{} deleteCql:{}", this.table, deleteCql);
+        cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
+                .append(this.table).append('(');
+        for (ColumnHandler ch : this.keyHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
+        }
+        for (ColumnHandler ch : this.columnHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        cqlBuilder.append(") values (");
+        long num = this.columnHandlerList.size() + this.keyHandlerList.size();
+        while (num > 0) {
+            cqlBuilder.append("?, ");
+            num--;
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        cqlBuilder.append(");");
+        this.insertCql = cqlBuilder.toString();
+        this.logger.debug("{} insertCql:{}", this.table, this.insertCql);
     }
 
+    @Override
+    public final String check() {
+        String result = "";
+        try {
+            PreparedStatement ps = this.session.prepare(this.insertCql);
+        } catch (InvalidQueryException e) {
+            this.logger.error("insertCql:{}", this.insertCql);
+            result = "[" + this.table + "]" + e.getMessage();
+        }
+        return result;
+    }
+
+    @Override
     public final boolean exist(Object... keyValue) {
-        ResultSetFuture rsf = this.session.executeAsync(this.inquireByKeyPs.bind(keyValue));
+        PreparedStatement ps = this.cachePrepare(this.inquireBuyKeyCql);
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
         ResultSet rs;
         Row r = null;
         try {
@@ -136,7 +165,7 @@ public abstract class AbstractCDao<T extends Entity> {
     protected final Object getValue(Row row, ColumnHandler columnHander) {
         String name = columnHander.getDataMap();
         Object value = row.getObject(name);
-        if(value == null) {
+        if (value == null) {
             value = columnHander.getDefaultValue();
         }
         return value;
@@ -159,8 +188,10 @@ public abstract class AbstractCDao<T extends Entity> {
         return result;
     }
 
+    @Override
     public final T inquireByKey(Object... keyValue) {
-        ResultSetFuture rsf = this.session.executeAsync(this.inquireByKeyPs.bind(keyValue));
+        PreparedStatement ps = this.cachePrepare(this.inquireBuyKeyCql);
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
         ResultSet rs;
         Row r = null;
         try {
@@ -173,8 +204,10 @@ public abstract class AbstractCDao<T extends Entity> {
         return this.parseMap(result);
     }
 
+    @Override
     public final void delete(Object... keyValue) {
-        ResultSetFuture rsf = this.session.executeAsync(this.deletePs.bind(keyValue));
+        PreparedStatement ps = this.cachePrepare(this.deleteCql);
+        ResultSetFuture rsf = this.session.executeAsync(ps.bind(keyValue));
         try {
             rsf.get();
         } catch (InterruptedException | ExecutionException ex) {

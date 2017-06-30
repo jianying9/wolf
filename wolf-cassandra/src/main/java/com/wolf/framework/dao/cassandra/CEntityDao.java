@@ -12,24 +12,8 @@ import java.util.Set;
  * @author jianying9
  * @param <T>
  */
-public interface CEntityDao<T extends Entity> {
-    
-    /**
-     * 判断主键是否存在
-     *
-     * @param keyValue
-     * @return
-     */
-    public boolean exist(Object... keyValue);
+public interface CEntityDao<T extends Entity> extends CDao<T> {
 
-    /**
-     * 根据主键查询
-     *
-     * @param keyValue
-     * @return
-     */
-    public T inquireByKey(Object... keyValue);
-    
     /**
      * 插入,返回keyValue
      *
@@ -67,7 +51,7 @@ public interface CEntityDao<T extends Entity> {
      * @param entityMapList
      */
     public void batchUpdate(List<Map<String, Object>> entityMapList);
-    
+
     /**
      * 更新或新增,返回keyValue
      *
@@ -85,13 +69,6 @@ public interface CEntityDao<T extends Entity> {
     public T updateAndInquire(Map<String, Object> entityMap);
 
     /**
-     * 删除
-     *
-     * @param keyValue
-     */
-    public void delete(Object... keyValue);
-
-    /**
      * 批量删除
      *
      * @param keyValues
@@ -104,61 +81,63 @@ public interface CEntityDao<T extends Entity> {
      * @return
      */
     public long count();
-    
+
     /**
      * 自定义cql查询
+     *
      * @param cql
      * @param values
-     * @return 
+     * @return
      */
     public List<T> query(String cql, Object... values);
-    
+
     /**
      * 自定义cql执行
+     *
      * @param cql
      * @param values
-     * @return 
+     * @return
      */
     public ResultSet execute(String cql, Object... values);
-    
-    public <S extends Object> void  addSet(String columnName, S  columnValue, Object... keyValue);
-    
+
+    public <S extends Object> void addSet(String columnName, S columnValue, Object... keyValue);
+
     public <S extends Object> void addSet(String columnName, Set<S> columnValues, Object... keyValue);
-    
+
     public <S extends Object> void removeSet(String columnName, S columnValue, Object... keyValue);
-    
+
     public <S extends Object> void removeSet(String columnName, Set<S> columnValues, Object... keyValue);
-    
+
     public void clearSet(String columnName, Object... keyValue);
-    
+
     public <S extends Object> Set<S> getSet(String columnName, Class<S> type, Object... keyValue);
-    
+
     public <L extends Object> void addList(String columnName, L columnValue, Object... keyValue);
-    
+
     public <L extends Object> void addList(String columnName, List<L> columnValues, Object... keyValue);
-    
+
     public <L extends Object> void addFirstList(String columnName, L columnValue, Object... keyValue);
-    
+
     public <L extends Object> void addFirstList(String columnName, List<L> columnValues, Object... keyValue);
-    
+
     public <L extends Object> void removeList(String columnName, L columnValue, Object... keyValue);
-    
+
     public <L extends Object> void removeList(String columnName, List<L> columnValues, Object... keyValue);
-    
+
     public void clearList(String columnName, Object... keyValue);
-    
+
     public <L extends Object> List<L> getList(String columnName, Class<L> type, Object... keyValue);
-    
+
     public <K extends Object, V extends Object> void addMap(String columnName, K mapKeyValue, V mapValue, Object... keyValue);
-    
+
     public <K extends Object, V extends Object> void addMap(String columnName, Map<K, V> maps, Object... keyValue);
-    
+
     public <K extends Object, V extends Object> void removeMap(String columnName, K mapKeyValue, Object... keyValue);
-    
+
     public <K extends Object, V extends Object> void removeMap(String columnName, List<K> mapKeyValues, Object... keyValue);
-    
+
     public void clearMap(String columnName, Object... keyValue);
-    
+
     public <K extends Object, V extends Object> Map<K, V> getMap(String columnName, Class<K> keyType, Class<V> valueType, Object... keyValue);
-    
+
 }
