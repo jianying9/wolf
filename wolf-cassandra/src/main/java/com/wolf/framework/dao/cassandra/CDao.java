@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.cassandra;
 
+import com.wolf.framework.dao.Dao;
 import com.wolf.framework.dao.Entity;
 
 /**
@@ -8,9 +9,7 @@ import com.wolf.framework.dao.Entity;
  * @author jianying9
  * @param <T>
  */
-public interface CDao<T extends Entity> {
-
-    public String check();
+public interface CDao<T extends Entity> extends Dao {
 
     /**
      * 判断主键是否存在

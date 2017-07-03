@@ -104,7 +104,7 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
             PreparedStatement ps = this.session.prepare(this.insertCql);
         } catch (InvalidQueryException e) {
             this.logger.error("insertCql:{}", this.insertCql);
-            result = "[" + this.table + "]" + e.getMessage();
+            result = "cassandra[" + this.table + "]:" + e.getMessage();
         }
         return result;
     }
