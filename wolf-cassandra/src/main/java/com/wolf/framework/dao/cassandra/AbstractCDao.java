@@ -35,7 +35,7 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     private final String inquireBuyKeyCql;
     protected final String deleteCql;
     protected final String insertCql;
-    
+
     private final Map<String, PreparedStatement> psCacheMap = new HashMap<>(2, 1);
 
     public AbstractCDao(
@@ -106,13 +106,13 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     }
 
     @Override
-    public final String check() {
+    public String check() {
         String result = "";
         try {
-            PreparedStatement ps = this.session.prepare(this.inquireBuyKeyCql);
+            this.session.prepare(this.inquireBuyKeyCql);
         } catch (InvalidQueryException e) {
             result = "cassandra[" + this.table + "]:" + e.getMessage();
-            this.logger.error(result);
+            System.err.println(result);
         }
         return result;
     }

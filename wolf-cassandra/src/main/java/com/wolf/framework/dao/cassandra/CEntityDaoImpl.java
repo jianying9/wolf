@@ -6,6 +6,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
@@ -475,6 +476,62 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
             if (r != null) {
                 result = r.getSet(0, type);
+            }
+        }
+        return result;
+    }
+
+    private String createGetCollectionCql(String columnName) {
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                .append(this.keyspace).append('.').append(this.table)
+                .append(" WHERE ");
+        for (ColumnHandler ch : this.keyHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 4);
+        cqlBuilder.append(";");
+        return cqlBuilder.toString();
+    }
+
+    @Override
+    public String check() {
+        String result = super.check();
+        String cql;
+        if (result.isEmpty()) {
+            //处理set
+            for (String columnName : this.setNames.values()) {
+                cql = this.createGetCollectionCql(columnName);
+                try {
+                    this.prepare(cql);
+                } catch (InvalidQueryException e) {
+                    result = "cassandra[" + this.table + "]:" + e.getMessage();
+                    System.err.println(result);
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            //处理list
+            for (String columnName : this.listNames.values()) {
+                cql = this.createGetCollectionCql(columnName);
+                try {
+                    this.prepare(cql);
+                } catch (InvalidQueryException e) {
+                    result = "cassandra[" + this.table + "]:" + e.getMessage();
+                    System.err.println(result);
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            //处理list
+            for (String columnName : this.mapNames.values()) {
+                cql = this.createGetCollectionCql(columnName);
+                try {
+                    this.prepare(cql);
+                } catch (InvalidQueryException e) {
+                    result = "cassandra[" + this.table + "]:" + e.getMessage();
+                    System.err.println(result);
+                }
             }
         }
         return result;
