@@ -6,6 +6,7 @@ import com.datastax.driver.core.Session;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.Resource;
 import com.wolf.framework.dao.Entity;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,5 +86,15 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
     @Override
     public CCounterDao<T> getCCounterDao(Class<T> clazz) {
         return this.cCounterDaoMap.get(clazz);
+    }
+
+    @Override
+    public Map<Class, CEntityDao<T>> getCEntityDao() {
+        return Collections.unmodifiableMap(this.cEntityDaoMap);
+    }
+
+    @Override
+    public Map<Class, CCounterDao<T>> getCCounterDao() {
+        return Collections.unmodifiableMap(this.cCounterDaoMap);
     }
 }

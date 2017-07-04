@@ -54,7 +54,15 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         //
         StringBuilder cqlBuilder = new StringBuilder(128);
         //inquire by key
-        cqlBuilder.append("SELECT * FROM ").append(this.keyspace)
+        cqlBuilder.append("SELECT ");
+        for (ColumnHandler ch : this.keyHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
+        }
+        for (ColumnHandler ch : this.columnHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(", ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 2);
+        cqlBuilder.append(" FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(" WHERE ");
         for (ColumnHandler columnHandler : this.keyHandlerList) {
             cqlBuilder.append(columnHandler.getDataMap()).append(" = ? AND ");
@@ -101,10 +109,10 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     public final String check() {
         String result = "";
         try {
-            PreparedStatement ps = this.session.prepare(this.insertCql);
+            PreparedStatement ps = this.session.prepare(this.inquireBuyKeyCql);
         } catch (InvalidQueryException e) {
-            this.logger.error("insertCql:{}", this.insertCql);
             result = "cassandra[" + this.table + "]:" + e.getMessage();
+            this.logger.error(result);
         }
         return result;
     }
