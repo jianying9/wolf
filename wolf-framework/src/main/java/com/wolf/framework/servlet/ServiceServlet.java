@@ -36,6 +36,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
+    private String referer = "";
 
     @Override
     public void init() throws ServletException {
@@ -46,6 +47,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 this.asyncTimeOut = Long.parseLong(asyncPushTimeout);
             } catch (NumberFormatException e) {
             }
+        }
+        String httpReferer = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.HTTP_REFERER);
+        if (httpReferer != null) {
+            this.referer = httpReferer;
         }
         //注册推送服务
         ApplicationContext.CONTEXT.getCometContext().addCometHandler(this);
@@ -62,66 +67,76 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String result;
-        //读取参数
-        Map<String, String> parameterMap;
-        String route = request.getPathInfo();
-        Enumeration<String> names = request.getParameterNames();
-        parameterMap = new HashMap(8, 1);
-        String name;
-        String value;
-        while (names.hasMoreElements()) {
-            name = names.nextElement();
-            value = request.getParameter(name);
-            value = StringUtils.trim(value);
-            parameterMap.put(name, value);
+        boolean validReferer = false;
+        if (this.referer != null && this.referer.isEmpty() == false) {
+            String r = request.getHeader("Referer");
+            if (r != null && r.contains(this.referer)) {
+                validReferer = true;
+            }
+        } else {
+            validReferer = true;
         }
-        this.logger.debug("http:on message:{}", parameterMap);
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
-        if (serviceWorker == null) {
-            //route不存在,判断是否为comet请求
-            String comet = parameterMap.get("comet");
-            if (comet != null && comet.equals("start")) {
-                //该请求为一个长轮询推送请求
-                String sid = parameterMap.get("sid");
-                if (sid != null) {
-                    synchronized (this) {
-                        //同sid冲突检测
-                        AsyncContext ctx = this.asyncContextMap.get(sid);
-                        if (ctx != null) {
-                            String stopMessage = "{\"comet\":\"stop\"}";
-                            HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
-                            ctx.complete();
-                            this.asyncContextMap.remove(sid);
+        if (validReferer) {
+            //读取参数
+            Map<String, String> parameterMap;
+            String route = request.getPathInfo();
+            Enumeration<String> names = request.getParameterNames();
+            parameterMap = new HashMap(8, 1);
+            String name;
+            String value;
+            while (names.hasMoreElements()) {
+                name = names.nextElement();
+                value = request.getParameter(name);
+                value = StringUtils.trim(value);
+                parameterMap.put(name, value);
+            }
+            this.logger.debug("http:on message:{}:{}", route, parameterMap);
+            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
+            if (serviceWorker == null) {
+                //route不存在,判断是否为comet请求
+                String comet = parameterMap.get("comet");
+                if (comet != null && comet.equals("start")) {
+                    //该请求为一个长轮询推送请求
+                    String sid = parameterMap.get("sid");
+                    if (sid != null) {
+                        synchronized (this) {
+                            //同sid冲突检测
+                            AsyncContext ctx = this.asyncContextMap.get(sid);
+                            if (ctx != null) {
+                                String stopMessage = "{\"comet\":\"stop\"}";
+                                HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
+                                ctx.complete();
+                                this.asyncContextMap.remove(sid);
+                            }
+                            ctx = request.startAsync(request, response);
+                            ctx.setTimeout(this.asyncTimeOut);
+                            ctx.addListener(this.asyncListener);
+                            this.asyncContextMap.put(sid, ctx);
                         }
-                        ctx = request.startAsync(request, response);
-                        ctx.setTimeout(this.asyncTimeOut);
-                        ctx.addListener(this.asyncListener);
-                        this.asyncContextMap.put(sid, ctx);
+                    } else {
+                        //无效的comet
+                        String result = "{\"comet\":\"invalid\",\"error\":\"push sid not exist\"}";
+                        HttpUtils.toWrite(request, response, result);
                     }
                 } else {
-                    //无效的comet
-                    result = "{\"comet\":\"invalid\",\"error\":\"push sid not exist\"}";
+                    //非特殊接口,放回提示route不存在
+                    String result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
                     HttpUtils.toWrite(request, response, result);
                 }
             } else {
-                //非特殊接口,放回提示route不存在
-                result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
+                //route存在
+                String sid = parameterMap.get("sid");
+                ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
+                String param = parameterMap.get("_json");
+                workerContext.initHttpParameter(parameterMap, param);
+                serviceWorker.doWork(workerContext);
+                String result = workerContext.getWorkerResponse().getResponseMessage();
                 HttpUtils.toWrite(request, response, result);
+                this.logger.debug("http send message:{}", result);
             }
-        } else {
-            //route存在
-            String sid = parameterMap.get("sid");
-            ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
-            String param = parameterMap.get("_json");
-            workerContext.initHttpParameter(parameterMap, param);
-            serviceWorker.doWork(workerContext);
-            result = workerContext.getWorkerResponse().getResponseMessage();
-            HttpUtils.toWrite(request, response, result);
-            this.logger.debug("http send message:{}", result);
         }
     }
-    
+
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.addHeader("Access-Control-Allow-Origin", "*");

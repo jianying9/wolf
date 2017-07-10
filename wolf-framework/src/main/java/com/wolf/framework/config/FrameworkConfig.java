@@ -49,4 +49,6 @@ public class FrameworkConfig {
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
     //http长轮询超时时间(毫秒)
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
+    //http referer
+    public final static String HTTP_REFERER = "http.referer";
 }
