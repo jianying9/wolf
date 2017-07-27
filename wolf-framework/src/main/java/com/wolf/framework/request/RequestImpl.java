@@ -141,7 +141,7 @@ public class RequestImpl implements WorkerRequest {
         } else if (String.class.isInstance(value)) {
             result = Boolean.parseBoolean((String) value);
         }
-        return (Boolean) value;
+        return result;
     }
 
     @Override
