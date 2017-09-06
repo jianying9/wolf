@@ -18,6 +18,7 @@ public final class TimeUtils {
     public final static SimpleDateFormat FM_YY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YY_MM_DD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat FM_HHMM = new SimpleDateFormat("HH:mm");
+    public final static SimpleDateFormat FM_HH = new SimpleDateFormat("HH");
 
     private TimeUtils() {
     }
@@ -61,6 +62,11 @@ public final class TimeUtils {
     public static String getDateFotmatHHmm() {
         Date currentTime = new Date();
         return TimeUtils.FM_HHMM.format(currentTime);
+    }
+
+    public static String getDateFotmatHH() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_HH.format(currentTime);
     }
 
     /**
