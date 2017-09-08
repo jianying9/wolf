@@ -14,6 +14,7 @@ public final class TimeUtils {
     /**
      * 日志对象
      */
+    public final static SimpleDateFormat FM_YYMM = new SimpleDateFormat("yyyyMM");
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyyMMdd");
     public final static SimpleDateFormat FM_YY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YY_MM_DD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -21,6 +22,11 @@ public final class TimeUtils {
     public final static SimpleDateFormat FM_HH = new SimpleDateFormat("HH");
 
     private TimeUtils() {
+    }
+
+    public static String getDateFotmatYYMM() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_YYMM.format(currentTime);
     }
 
     /**
