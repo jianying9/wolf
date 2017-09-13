@@ -45,6 +45,28 @@ public final class TimeUtils {
         return Long.parseLong(date);
     }
 
+    public static long getYYMMDDnum(String dateStr) {
+        long result = 0;
+        try {
+            Date date = TimeUtils.FM_YY_MM_DD.parse(dateStr);
+            String newDateStr = TimeUtils.FM_YYMMDD.format(date);
+            result = Long.parseLong(newDateStr);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        return result;
+    }
+
+    public static String getYYMMDDstring(long dateNum) {
+        String result = "";
+        String dateStr = Long.toString(dateNum);
+        try {
+            Date date = TimeUtils.FM_YYMMDD.parse(dateStr);
+            result = TimeUtils.FM_YY_MM_DD.format(date);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        return result;
+    }
+
     /**
      * 获取当前时间yyyy-MM-dd
      *
