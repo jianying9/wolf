@@ -24,12 +24,12 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
     public PushResponseImpl(PushHandler pushHandler) {
         this.pushHandler = pushHandler;
     }
-    
+
     @Override
     public String getPushId() {
         return this.pushId;
     }
-    
+
     @Override
     public void setPushId(String pushId) {
         this.pushId = pushId;
@@ -91,5 +91,15 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         }
         return responseMsg;
     }
-    
+
+    @Override
+    public String getRoute() {
+        return this.pushHandler.getRoute();
+    }
+
+    @Override
+    public Map<String, Object> getDataMap() {
+        return this.dataMap;
+    }
+
 }
