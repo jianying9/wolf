@@ -175,6 +175,11 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         Object value = row.getObject(name);
         if (value == null) {
             value = columnHander.getDefaultValue();
+        } else if (String.class.isInstance(value)) {
+            String str = (String) value;
+            if (str.isEmpty()) {
+                value = columnHander.getDefaultValue();
+            }
         }
         return value;
     }
