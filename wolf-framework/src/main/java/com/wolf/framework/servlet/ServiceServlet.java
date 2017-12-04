@@ -13,7 +13,10 @@ import com.wolf.framework.worker.context.ServletWorkerContextImpl;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
@@ -33,9 +36,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
 
     private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTP);
-    Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
+    private final Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
+    private final Map<String, MessageCache> messageCacheMap = new HashMap(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
+    private long lastCheckTime = 0;
     private String referer = "";
 
     @Override
@@ -99,19 +104,32 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                     //该请求为一个长轮询推送请求
                     String sid = parameterMap.get("sid");
                     if (sid != null) {
-                        synchronized (this) {
-                            //同sid冲突检测
-                            AsyncContext ctx = this.asyncContextMap.get(sid);
-                            if (ctx != null) {
-                                String stopMessage = "{\"comet\":\"stop\"}";
-                                HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
-                                ctx.complete();
-                                this.asyncContextMap.remove(sid);
+                        //判断缓存中是否有消息
+                        String msgCache = null;
+                        MessageCache messageCache = this.messageCacheMap.get(sid);
+                        if (messageCache != null) {
+                            msgCache = messageCache.poll();
+                        }
+                        //
+                        if (msgCache != null) {
+                            //有缓存的消息,直接返回
+                            HttpUtils.toWrite(request, response, msgCache);
+                        } else {
+                            //没有缓存消息,当前请求加入长轮询
+                            synchronized (this) {
+                                //同sid冲突检测
+                                AsyncContext ctx = this.asyncContextMap.get(sid);
+                                if (ctx != null) {
+                                    String stopMessage = "{\"comet\":\"stop\"}";
+                                    HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
+                                    ctx.complete();
+                                    this.asyncContextMap.remove(sid);
+                                }
+                                ctx = request.startAsync(request, response);
+                                ctx.setTimeout(this.asyncTimeOut);
+                                ctx.addListener(this.asyncListener);
+                                this.asyncContextMap.put(sid, ctx);
                             }
-                            ctx = request.startAsync(request, response);
-                            ctx.setTimeout(this.asyncTimeOut);
-                            ctx.addListener(this.asyncListener);
-                            this.asyncContextMap.put(sid, ctx);
                         }
                     } else {
                         //无效的comet
@@ -134,6 +152,30 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 HttpUtils.toWrite(request, response, result);
                 this.logger.debug("http send message:{}", result);
             }
+        }
+        //每个5分钟触发检查缓存消息过时的
+        long currentTime = System.currentTimeMillis();
+        if ((currentTime - this.lastCheckTime) >= 300000) {
+            this.lastCheckTime = currentTime;
+            this.checkMessageCache(currentTime);
+        }
+    }
+
+    private synchronized void checkMessageCache(long currentTime) {
+        Set<Entry<String, MessageCache>> entrySet = this.messageCacheMap.entrySet();
+        MessageCache messageCache;
+        long lastUpdateTime;
+        Set<String> expireSet = new HashSet();
+        for (Entry<String, MessageCache> entry : entrySet) {
+            messageCache = entry.getValue();
+            lastUpdateTime = messageCache.getLastUpdateTime();
+            if ((currentTime - lastUpdateTime) > 200000) {
+                expireSet.add(entry.getKey());
+            }
+        }
+        //
+        for (String sid : expireSet) {
+            this.messageCacheMap.remove(sid);
         }
     }
 
@@ -201,7 +243,15 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             this.logger.debug("http push message:{}", message);
             this.asyncContextMap.remove(sid);
         } else {
-            this.logger.debug("async-servlet push message:sid not exist:{}", sid);
+            synchronized (this) {
+                MessageCache messageCache = this.messageCacheMap.get(sid);
+                if (messageCache == null) {
+                    messageCache = new MessageCache();
+                    this.messageCacheMap.put(sid, messageCache);
+                }
+                messageCache.offer(message);
+            }
+            this.logger.debug("async-servlet cache message:sid :{}", sid);
         }
         return result;
     }
