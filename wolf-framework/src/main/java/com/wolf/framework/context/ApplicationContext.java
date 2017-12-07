@@ -67,6 +67,10 @@ public final class ApplicationContext {
     public String getParameter(String name) {
         return this.parameterMap.get(name);
     }
+    
+    public void setParameter(String name, String value) {
+        this.parameterMap.put(name, value);
+    }
 
     void setParameterMap(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
