@@ -12,9 +12,7 @@ import com.wolf.framework.worker.context.WorkerContext;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
 
@@ -29,17 +27,18 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
     //message
     private String error = "";
     private String code = ResponseCodeConfig.SUCCESS;
+    private String msg = "";
     private String newSessionId = null;
-    private final Set<String> customCodeSet;
+    private final Map<String, String> customCodeMap;
     private Map<String, Object> dataMap = Collections.EMPTY_MAP;
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         ResponseCode[] responseCodes = serviceContext.responseCodes();
-        this.customCodeSet = new HashSet(responseCodes.length);
+        this.customCodeMap = new HashMap(responseCodes.length, 1);
         for (ResponseCode responseCode : responseCodes) {
-            this.customCodeSet.add(responseCode.code());
+            this.customCodeMap.put(responseCode.code(), responseCode.desc());
         }
     }
 
@@ -85,8 +84,10 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     @Override
     public final void setCode(String code) {
-        if (this.customCodeSet.contains(code)) {
+        String codeDesc = this.customCodeMap.get(code);
+        if (codeDesc != null) {
             this.code = code;
+            this.msg = codeDesc;
         } else {
             this.code = ResponseCodeConfig.UNKNOWN;
         }
@@ -103,6 +104,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         Map<String, Object> responseMap = new HashMap(8, 1);
         //核心返回数据
         responseMap.put("code", this.code);
+        responseMap.put("msg", this.msg);
         responseMap.put("route", this.workerContext.getRoute());
         responseMap.put("data", this.dataMap);
         //md5判断本次返回数据是否没有变化
@@ -207,7 +209,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
         Map<String, PushHandler> pushHandlerMap = serviceContext.pushHandlerMap();
         PushHandler pushHandler = pushHandlerMap.get(route);
-        if(pushHandler != null) {
+        if (pushHandler != null) {
             pushResponse = new PushResponseImpl(pushHandler);
         }
         return pushResponse;
