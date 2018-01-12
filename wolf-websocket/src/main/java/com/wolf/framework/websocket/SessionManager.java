@@ -20,6 +20,7 @@ public class SessionManager implements PushHandler {
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
 
     public Session remove(String sid) {
+        this.logger.debug("websocket-session remove sid:{}", sid);
         return this.savedSessionMap.remove(sid);
     }
 
@@ -68,7 +69,6 @@ public class SessionManager implements PushHandler {
 
     public void removSession(String sid) {
         this.savedSessionMap.remove(sid);
-        this.logger.debug("websocket-session remove sid:{}", sid);
     }
 
     public synchronized void putNewSession(String sid, Session session) {
