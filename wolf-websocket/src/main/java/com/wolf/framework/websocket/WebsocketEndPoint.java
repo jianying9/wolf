@@ -133,9 +133,9 @@ public class WebsocketEndPoint implements Resource {
     @OnClose
     public void onClose(Session session) {
         String sid = "no sid";
-        Object o = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
-        if (o != null) {
-            sid = Long.toString((Long) o);
+        Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
+        if (s != null) {
+            sid = (String) s;
             this.sessionManager.remove(sid);
         }
         this.logger.debug("wobsocket-on close:{}", sid);
