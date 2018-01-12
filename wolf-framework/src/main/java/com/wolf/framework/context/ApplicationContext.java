@@ -1,7 +1,6 @@
 package com.wolf.framework.context;
 
-import com.wolf.framework.comet.CometContext;
-import com.wolf.framework.comet.CometContextImpl;
+import com.wolf.framework.push.PushContextImpl;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushInfo;
@@ -13,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.wolf.framework.push.PushContext;
 
 /**
  *
@@ -26,7 +26,7 @@ public final class ApplicationContext {
     private final Map<String, ServiceWorker> serviceWorkerMap = new HashMap(2, 1);
     private final Map<String, PushInfo> pushInfoMap = new HashMap(2, 1);
     private final List<Resource> resourceList = new ArrayList(2);
-    private final CometContext cometContext = new CometContextImpl();
+    private final PushContext pushContext = new PushContextImpl();
     private String appContextPath ="/";
     private final FilterFactory filterFactory = new FilterFactoryImpl();
     
@@ -94,8 +94,8 @@ public final class ApplicationContext {
         }
     }
 
-    public CometContext getCometContext() {
-        return cometContext;
+    public PushContext getPushContext() {
+        return pushContext;
     }
 
     public String getAppContextPath() {

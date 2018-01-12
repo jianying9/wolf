@@ -41,7 +41,7 @@ public class WebsocketEndPoint implements Resource {
         this.sessionManager = new SessionManager();
         this.expireTime = 1000 * 60;
         //注册推送服务
-        ApplicationContext.CONTEXT.getCometContext().addCometHandler(this.sessionManager);
+        ApplicationContext.CONTEXT.getPushContext().setPushHandler(this.sessionManager);
     }
 
     public SessionManager getSessionManager() {
@@ -162,7 +162,7 @@ public class WebsocketEndPoint implements Resource {
     public static class WebsocketServerConfigurator extends ServerEndpointConfig.Configurator {
 
         public static final WebsocketEndPoint END_POINT = new WebsocketEndPoint();
-        
+
         static {
             ApplicationContext.CONTEXT.addResource(END_POINT);
         }

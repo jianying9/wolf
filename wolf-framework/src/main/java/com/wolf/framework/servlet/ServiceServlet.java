@@ -1,6 +1,6 @@
 package com.wolf.framework.servlet;
 
-import com.wolf.framework.comet.CometHandler;
+import com.wolf.framework.push.CometHandler;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.config.ResponseCodeConfig;
@@ -58,7 +58,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             this.referer = httpReferer;
         }
         //注册推送服务
-        ApplicationContext.CONTEXT.getCometContext().addCometHandler(this);
+        ApplicationContext.CONTEXT.getPushContext().setCometHandler(this);
     }
 
     /**
