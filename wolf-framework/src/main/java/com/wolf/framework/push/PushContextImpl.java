@@ -54,7 +54,11 @@ public final class PushContextImpl implements PushContext {
 
     @Override
     public boolean contains(String sid) {
-        return this.pushHandler.contains(sid);
+        boolean result = false;
+        if (this.pushHandler != null) {
+            result = this.pushHandler.contains(sid);
+        }
+        return result;
     }
 
 }
