@@ -28,6 +28,7 @@ public class DefaultServiceWorkHandlerImpl implements WorkHandler {
         } catch (RuntimeException re) {
             Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
             logger.error("wolf-exception", re);
+            re.printStackTrace();
             Throwable t = re.getCause();
             if (t == null) {
                 t = re;
@@ -36,7 +37,7 @@ public class DefaultServiceWorkHandlerImpl implements WorkHandler {
             if (ResponseCodeException.class.isInstance(t)) {
                 ResponseCodeException te = (ResponseCodeException) t;
                 response.setCode(te.getCode());
-            } else if(UnsupportedOperationException.class.isInstance(t)) {
+            } else if (UnsupportedOperationException.class.isInstance(t)) {
                 response.unsupport();
             } else {
                 response.exception();
