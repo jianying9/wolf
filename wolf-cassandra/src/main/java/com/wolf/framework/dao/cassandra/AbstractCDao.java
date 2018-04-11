@@ -105,6 +105,18 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         this.logger.debug("{} insertCql:{}", this.table, this.insertCql);
     }
 
+    public List<ColumnHandler> getKeyHandlerList() {
+        return keyHandlerList;
+    }
+
+    public String getKeyspace() {
+        return keyspace;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
     @Override
     public String check() {
         String result = "";
@@ -152,7 +164,6 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     protected final T parseMap(Map<String, Object> entityMap) {
         T t = null;
         if (entityMap != null) {
-            Field field;
             Object value;
             try {
                 t = this.clazz.newInstance();

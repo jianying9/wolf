@@ -12,11 +12,12 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-public @interface CEntityConfig{
-    
+public @interface CEntityConfig {
+
     /**
      * 表空间
-     * @return 
+     *
+     * @return
      */
     public String keyspace();
 
@@ -26,22 +27,32 @@ public @interface CEntityConfig{
      * @return
      */
     public String table();
-    
+
+    /**
+     * 表
+     *
+     * @return
+     */
+    public boolean cache() default false;
+
     /**
      * set类型列定义
-     * @return 
+     *
+     * @return
      */
     public String[] sets() default {};
-    
+
     /**
      * list类型列定义
-     * @return 
+     *
+     * @return
      */
     public String[] lists() default {};
-    
+
     /**
      * map类型列定义
-     * @return 
+     *
+     * @return
      */
     public String[] maps() default {};
 }

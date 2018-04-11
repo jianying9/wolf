@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import com.wolf.framework.dao.cassandra.annotation.CEntityConfig;
 import java.util.HashMap;
 import java.util.Map;
+import net.sf.ehcache.Cache;
 
 /**
  *
@@ -32,11 +33,13 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
     private final List<Class<T>> cEntityClassList = new ArrayList<>();
     private CassandraAdminContext cassandraAdminContext;
     private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
+    private Cache escache;
 
     @Override
     public void init(ApplicationContext context, Map<Class<?>, List<ColumnHandler>> entityInfoMap) {
         this.cassandraAdminContext = CassandraAdminContextImpl.getInstance(context);
         this.entityInfoMap = entityInfoMap;
+        this.escache = context.getCache();
     }
 
     @Override
@@ -92,6 +95,9 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                     final String keyspace = cDaoConfig.keyspace();
                     //表
                     final String table = cDaoConfig.table();
+                    //缓存
+                    boolean cache = cDaoConfig.cache();
+                    //
                     String dataMap;
                     //set类型集合
                     Map<String, String> setNames = new HashMap<>(2, 1);
@@ -161,7 +167,9 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                             listNames,
                             mapNames,
                             clazz,
-                            this.cassandraAdminContext
+                            this.cassandraAdminContext,
+                            cache,
+                            escache
                     );
                     CEntityDao<T> entityDao = entityDaoBuilder.build();
                     this.cassandraAdminContext.putCEntityDao(clazz, entityDao, keyspace, table);

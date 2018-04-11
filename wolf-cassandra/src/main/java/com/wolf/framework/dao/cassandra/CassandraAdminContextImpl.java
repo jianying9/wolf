@@ -16,12 +16,12 @@ import java.util.Map;
  * @param <T>
  */
 public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdminContext<T> {
-    
+
     private static CassandraAdminContextImpl INSTANCE = null;
-    
+
     public static CassandraAdminContextImpl getInstance(ApplicationContext applicationContext) {
-        synchronized(CassandraAdminContextImpl.class) {
-            if(INSTANCE == null) {
+        synchronized (CassandraAdminContextImpl.class) {
+            if (INSTANCE == null) {
                 INSTANCE = new CassandraAdminContextImpl(applicationContext);
             }
         }
@@ -41,7 +41,7 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
         final String password = applicationContext.getParameter(CassandraConfig.CASSANDRA_PASSWORD);
         this.cluster = Cluster.builder()
                 .addContactPoint(point)
-                .withCredentials(userName, password) 
+                .withCredentials(userName, password)
                 .build();
         this.cluster.getConfiguration()
                 .getProtocolOptions()
@@ -50,7 +50,7 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
         Resource resource = new CassandraResourceImpl(this.session, this.cluster);
         applicationContext.addResource(resource);
     }
-    
+
     @Override
     public Session getSession() {
         return this.session;
