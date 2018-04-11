@@ -14,7 +14,7 @@ import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 public class DefaultCacheConfiguration {
 
     public static CacheConfiguration getDefault() {
-        final String name = "default";
+        final String name = "wolf-cache";
         final int maxEntriesLocalHeap = 100000;
         final MemoryStoreEvictionPolicy memoryStoreEvictionPolicy = MemoryStoreEvictionPolicy.LRU;
         final boolean eternal = false;
