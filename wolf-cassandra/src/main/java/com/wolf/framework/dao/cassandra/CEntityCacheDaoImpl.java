@@ -99,9 +99,11 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     public T insertAndInquire(Map<String, Object> entityMap) {
         T t = this.cEntityDaoImpl.insertAndInquire(entityMap);
         //加入缓存
-        String entityKey = this.getEntityKey(entityMap);
-        Element element = new Element(entityKey, t);
-        this.cache.put(element);
+        if (t != null) {
+            String entityKey = this.getEntityKey(entityMap);
+            Element element = new Element(entityKey, t);
+            this.cache.put(element);
+        }
         return t;
     }
 
@@ -113,6 +115,7 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public Object[] update(Map<String, Object> entityMap) {
         Object[] keyValueArray = this.cEntityDaoImpl.update(entityMap);
+        //删除缓存
         String entityKey = this.getEntityKey(entityMap);
         this.cache.remove(entityKey);
         return keyValueArray;
@@ -121,6 +124,7 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public void batchUpdate(List<Map<String, Object>> entityMapList) {
         this.cEntityDaoImpl.batchUpdate(entityMapList);
+        //删除缓存
         String entityKey;
         for (Map<String, Object> entityMap : entityMapList) {
             entityKey = this.getEntityKey(entityMap);
@@ -131,6 +135,7 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public Object[] updateOrInsert(Map<String, Object> entityMap) {
         Object[] keyValueArray = this.cEntityDaoImpl.updateOrInsert(entityMap);
+        //删除缓存
         String entityKey = this.getEntityKey(entityMap);
         this.cache.remove(entityKey);
         return keyValueArray;
@@ -140,15 +145,18 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     public T updateAndInquire(Map<String, Object> entityMap) {
         T t = this.cEntityDaoImpl.updateAndInquire(entityMap);
         //加入缓存
-        String entityKey = this.getEntityKey(entityMap);
-        Element element = new Element(entityKey, t);
-        this.cache.put(element);
+        if (t != null) {
+            String entityKey = this.getEntityKey(entityMap);
+            Element element = new Element(entityKey, t);
+            this.cache.put(element);
+        }
         return t;
     }
 
     @Override
     public void batchDelete(List<Object[]> keyValues) {
         this.cEntityDaoImpl.batchDelete(keyValues);
+        //删除缓存
         String entityKey;
         for (Object[] keyValueArray : keyValues) {
             entityKey = this.getEntityKey(keyValueArray);
@@ -285,6 +293,11 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
             t = (T) element.getObjectValue();
         } else {
             t = this.cEntityDaoImpl.inquireByKey(keyValue);
+            if (t != null) {
+                //放入缓存
+                element = new Element(entityKey, t);
+                this.cache.put(element);
+            }
         }
         return t;
     }
@@ -292,6 +305,7 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
     @Override
     public void delete(Object... keyValue) {
         this.cEntityDaoImpl.delete(keyValue);
+        //删除缓存
         String entityKey = this.getEntityKey(keyValue);
         this.cache.remove(entityKey);
     }
