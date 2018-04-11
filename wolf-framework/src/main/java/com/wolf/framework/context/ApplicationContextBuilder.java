@@ -1,5 +1,6 @@
 package com.wolf.framework.context;
 
+import com.wolf.framework.cache.DefaultCacheConfiguration;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
@@ -44,6 +45,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import java.util.HashMap;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -52,7 +56,7 @@ import java.util.HashMap;
  * @param <T>
  */
 public class ApplicationContextBuilder<T extends Entity> {
-
+    
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList(0);
     protected final List<Class<Service>> serviceClassList = new ArrayList(0);
@@ -63,15 +67,15 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final List<Class<?>> servicePushClassList = new ArrayList(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
-
+    
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
     }
-
+    
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
-
+    
     private boolean checkException(Throwable e) {
         boolean result = true;
         String error = e.getMessage();
@@ -82,7 +86,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         return result;
     }
-
+    
     private Class<?> loadClass(ClassLoader classloader, String className) {
         Class<?> clazz = null;
         try {
@@ -93,10 +97,10 @@ public class ApplicationContextBuilder<T extends Entity> {
                 this.logger.error(className, ex);
             }
         }
-
+        
         return clazz;
     }
-
+    
     public final void build() {
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
@@ -107,6 +111,12 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList();
+        //初始化缓存管理器
+        CacheConfiguration cacheConfiguration = DefaultCacheConfiguration.getDefault();
+        CacheManager cacheManager = new CacheManager();
+        Cache cache = new Cache(cacheConfiguration);
+        cacheManager.addCache(cache);
+        ApplicationContext.CONTEXT.setCache(cache);
         //动态查找需要搜索的dao注解创建对象
         //实体信息存储对象
         final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap(2, 1);
