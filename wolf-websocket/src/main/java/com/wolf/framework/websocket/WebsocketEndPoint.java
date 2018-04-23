@@ -85,14 +85,15 @@ public class WebsocketEndPoint implements Resource {
                 session.close();
             } catch (IOException ex) {
             }
-        }
-        long lastTime = (Long) l;
-        if (System.currentTimeMillis() - lastTime > this.expireTime) {
-            //心跳超时，关闭接口
-            try {
-                session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
-                session.close();
-            } catch (IOException ex) {
+        } else {
+            long lastTime = (Long) l;
+            if (System.currentTimeMillis() - lastTime > this.expireTime) {
+                //心跳超时，关闭接口
+                try {
+                    session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
+                    session.close();
+                } catch (IOException ex) {
+                }
             }
         }
     }
