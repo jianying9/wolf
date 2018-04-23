@@ -86,6 +86,7 @@ public class SessionManager implements PushHandler {
 
     @Override
     public boolean contains(String sid) {
+        //ConcurrentHashMap已经remove某个key,通过get方法返回null,但是通过containsKey查询key是否存在,会返回true
         boolean result = false;
         Session session = this.savedSessionMap.get(sid);
         if (session != null && session.isOpen()) {
