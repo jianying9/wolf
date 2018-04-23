@@ -86,6 +86,11 @@ public class SessionManager implements PushHandler {
 
     @Override
     public boolean contains(String sid) {
-        return this.savedSessionMap.containsKey(sid);
+        boolean result = false;
+        Session session = this.savedSessionMap.get(sid);
+        if (session != null && session.isOpen()) {
+            result = true;
+        }
+        return result;
     }
 }
