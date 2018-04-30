@@ -83,15 +83,6 @@ public interface CEntityDao<T extends Entity> extends CDao<T> {
     public long count();
 
     /**
-     * 自定义cql查询
-     *
-     * @param cql
-     * @param values
-     * @return
-     */
-    public List<T> query(String cql, Object... values);
-
-    /**
      * 自定义cql执行
      *
      * @param cql

@@ -11,7 +11,8 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
-import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     protected final String deleteCql;
     protected final String insertCql;
 
-    private final Map<String, PreparedStatement> psCacheMap = new HashMap<>(2, 1);
+    private final Map<String, PreparedStatement> psCacheMap = new HashMap(2, 1);
 
     public AbstractCDao(
             Session session,
@@ -198,7 +199,7 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     protected final Map<String, Object> parseRow(Row r) {
         Map<String, Object> result = null;
         if (r != null) {
-            result = new HashMap<>(this.columnHandlerList.size() + this.keyHandlerList.size(), 1);
+            result = new HashMap(this.columnHandlerList.size() + this.keyHandlerList.size(), 1);
             Object value;
             for (ColumnHandler ch : this.keyHandlerList) {
                 value = this.getValue(r, ch);
@@ -237,5 +238,30 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         } catch (InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<T> query(String cql, Object... values) {
+        List<T> resultList = Collections.EMPTY_LIST;
+        PreparedStatement ps = this.cachePrepare(cql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
+        ResultSet rs;
+        try {
+            rs = rsf.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            throw new RuntimeException(ex);
+        }
+        List<Row> rList = rs.all();
+        if (rList.isEmpty() == false) {
+            resultList = new ArrayList(rList.size());
+            Map<String, Object> map;
+            T t;
+            for (Row r : rList) {
+                map = this.parseRow(r);
+                t = this.parseMap(map);
+                resultList.add(t);
+            }
+        }
+        return resultList;
     }
 }

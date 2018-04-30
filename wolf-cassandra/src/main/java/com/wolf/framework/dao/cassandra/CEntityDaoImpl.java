@@ -337,31 +337,6 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     }
 
     @Override
-    public List<T> query(String cql, Object... values) {
-        List<T> resultList = Collections.EMPTY_LIST;
-        PreparedStatement ps = this.cachePrepare(cql);
-        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
-        ResultSet rs;
-        try {
-            rs = rsf.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException(ex);
-        }
-        List<Row> rList = rs.all();
-        if (rList.isEmpty() == false) {
-            resultList = new ArrayList<>(rList.size());
-            Map<String, Object> map;
-            T t;
-            for (Row r : rList) {
-                map = this.parseRow(r);
-                t = this.parseMap(map);
-                resultList.add(t);
-            }
-        }
-        return resultList;
-    }
-
-    @Override
     public <S extends Object> void addSet(String columnName, S columnValue, Object... keyValue) {
         Set<S> set = new HashSet<>(2, 1);
         set.add(columnValue);

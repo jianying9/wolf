@@ -2,6 +2,7 @@ package com.wolf.framework.dao.cassandra;
 
 import com.wolf.framework.dao.Dao;
 import com.wolf.framework.dao.Entity;
+import java.util.List;
 
 /**
  * cassandra entity dao
@@ -33,5 +34,14 @@ public interface CDao<T extends Entity> extends Dao {
      * @param keyValue
      */
     public void delete(Object... keyValue);
+    
+    /**
+     * 自定义cql查询
+     *
+     * @param cql
+     * @param values
+     * @return
+     */
+    public List<T> query(String cql, Object... values);
 
 }

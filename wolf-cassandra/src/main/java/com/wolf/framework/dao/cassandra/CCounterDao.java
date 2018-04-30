@@ -19,4 +19,5 @@ public interface CCounterDao<T extends Entity> extends CDao<T> {
      * @return
      */
     public long increase(String columnName, long value, Object... keyValue);
+    
 }

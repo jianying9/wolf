@@ -49,10 +49,10 @@ public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implement
                     .append(" = ").append(columnDataMap).append(" + ? WHERE ");
             valueList.add(value);
             for (ColumnHandler ch : this.keyHandlerList) {
-                cqlBuilder.append(ch.getDataMap()).append(" = ?, ");
+                cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
             }
             valueList.addAll(Arrays.asList(keyValue));
-            cqlBuilder.setLength(cqlBuilder.length() - 2);
+            cqlBuilder.setLength(cqlBuilder.length() - 4);
             cqlBuilder.append(';');
             String updateCql = cqlBuilder.toString();
             //
