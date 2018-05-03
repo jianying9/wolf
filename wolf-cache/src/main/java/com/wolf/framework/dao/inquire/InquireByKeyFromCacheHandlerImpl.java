@@ -39,7 +39,7 @@ public final class InquireByKeyFromCacheHandlerImpl<T extends Entity> implements
         Element element;
         for (T t : tList) {
             element = new Element(t.getKeyValue(), t);
-            this.entityCache.put(element, true);
+            this.entityCache.put(element);
         }
     }
 

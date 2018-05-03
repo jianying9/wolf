@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -110,8 +109,7 @@ public class CassandraJUnitTest {
         try {
             rs = rsf.get();
             r = rs.one();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
         }
         if (r != null) {
             long num = r.getLong(0);
@@ -129,7 +127,7 @@ public class CassandraJUnitTest {
 //        }
         //
         ps = session.prepare("select tag from test.user where user_name = 'test';");
-        
+
         rsf = session.executeAsync(ps.bind().setFetchSize(10));
         try {
             rs = rsf.get();
