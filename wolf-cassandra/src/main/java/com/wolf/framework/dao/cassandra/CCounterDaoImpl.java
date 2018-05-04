@@ -43,7 +43,7 @@ public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implement
         if (columnHandler != null) {
             final String columnDataMap = columnHandler.getDataMap();
             StringBuilder cqlBuilder = new StringBuilder(128);
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
                     .append(this.table).append(" SET ").append(columnDataMap)
                     .append(" = ").append(columnDataMap).append(" + ? WHERE ");

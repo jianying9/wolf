@@ -20,9 +20,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String keyspace;
     //table name
     private final String table;
-    private final Map<String, String> setNames;
-    private final Map<String, String> listNames;
-    private final Map<String, String> mapNames;
     //key
     private final List<ColumnHandler> keyHandlerList;
     //column
@@ -42,9 +39,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
             String tableName,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
-            Map<String, String> setNames,
-            Map<String, String> listNames,
-            Map<String, String> mapNames,
             Class<T> clazz,
             CassandraAdminContext<T> cassandraAdminContext,
             boolean cache,
@@ -58,9 +52,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
         } else {
             this.columnHandlerList = columnHandlerList;
         }
-        this.setNames = setNames;
-        this.listNames = listNames;
-        this.mapNames = mapNames;
         this.clazz = clazz;
         this.cassandraAdminContext = cassandraAdminContext;
         this.cache = cache;
@@ -89,9 +80,6 @@ public final class CEntityDaoBuilder<T extends Entity> {
                 this.table,
                 this.keyHandlerList,
                 this.columnHandlerList,
-                this.setNames,
-                this.listNames,
-                this.mapNames,
                 this.clazz
         );
         CEntityDao<T> entityDao = CEntityDaoImpl;

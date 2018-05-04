@@ -132,8 +132,7 @@ public class CassandraJUnitTest {
         try {
             rs = rsf.get();
             r = rs.one();
-        } catch (InterruptedException ex) {
-        } catch (ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException ex) {
         }
         if (r != null) {
             Set<String> tags = r.getSet(0, String.class);

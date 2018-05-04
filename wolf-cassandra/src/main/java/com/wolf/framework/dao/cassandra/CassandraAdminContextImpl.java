@@ -28,8 +28,8 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
         return INSTANCE;
     }
 
-    private final Map<Class, CEntityDao<T>> cEntityDaoMap = new HashMap<>(2, 1);
-    private final Map<Class, CCounterDao<T>> cCounterDaoMap = new HashMap<>(2, 1);
+    private final Map<Class, CEntityDao<T>> cEntityDaoMap = new HashMap(2, 1);
+    private final Map<Class, CCounterDao<T>> cCounterDaoMap = new HashMap(2, 1);
 
     private final Session session;
 

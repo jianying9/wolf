@@ -1,6 +1,7 @@
 package com.wolf.framework.dao;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 /**
  *
@@ -62,6 +63,18 @@ public class ColumnHandlerImpl implements ColumnHandler {
             case "java.lang.String":
                 this.columnDataType = ColumnDataType.STRING;
                 this.defaultValue = defaultValue;
+                break;
+            case "java.util.List":
+                this.columnDataType = ColumnDataType.LIST;
+                this.defaultValue = Collections.EMPTY_LIST;
+                break;
+            case "java.util.Set":
+                this.columnDataType = ColumnDataType.SET;
+                this.defaultValue = Collections.EMPTY_SET;
+                break;
+            case "java.util.Map":
+                this.columnDataType = ColumnDataType.MAP;
+                this.defaultValue = Collections.EMPTY_MAP;
                 break;
             default:
                 throw new RuntimeException("Entity not support this type:" + type);

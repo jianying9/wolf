@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
-    private final List<Class<T>> cEntityClassList = new ArrayList<>();
+    private final List<Class<T>> cEntityClassList = new ArrayList();
     private CassandraAdminContext cassandraAdminContext;
     private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
 
@@ -95,9 +95,9 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
-                    List<ColumnHandler> keyHandlerList = new ArrayList<>(1);
+                    List<ColumnHandler> keyHandlerList = new ArrayList(1);
                     //column
-                    List<ColumnHandler> columnHandlerList = new ArrayList<>(0);
+                    List<ColumnHandler> columnHandlerList = new ArrayList(0);
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
@@ -133,7 +133,7 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     allColumnHandlerList.addAll(columnHandlerList);
                     this.entityInfoMap.put(clazz, allColumnHandlerList);
                     //
-                    CCounterDaoBuilder<T> entityDaoBuilder = new CCounterDaoBuilder<>(
+                    CCounterDaoBuilder<T> entityDaoBuilder = new CCounterDaoBuilder(
                             keyspace,
                             table,
                             keyHandlerList,

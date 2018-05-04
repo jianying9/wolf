@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import com.wolf.framework.dao.cassandra.annotation.CEntityConfig;
-import java.util.HashMap;
 import java.util.Map;
 import net.sf.ehcache.Cache;
 
@@ -30,7 +29,7 @@ import net.sf.ehcache.Cache;
 public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
-    private final List<Class<T>> cEntityClassList = new ArrayList<>();
+    private final List<Class<T>> cEntityClassList = new ArrayList();
     private CassandraAdminContext cassandraAdminContext;
     private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
     private Cache escache;
@@ -99,30 +98,12 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                     boolean cache = cDaoConfig.cache();
                     //
                     String dataMap;
-                    //set类型集合
-                    Map<String, String> setNames = new HashMap<>(2, 1);
-                    for (String name : cDaoConfig.sets()) {
-                        dataMap = this.getDefaultDataMap(name);
-                        setNames.put(name, dataMap);
-                    }
-                    //list类型集合
-                    Map<String, String> listNames = new HashMap<>(2, 1);
-                    for (String name : cDaoConfig.lists()) {
-                        dataMap = this.getDefaultDataMap(name);
-                        listNames.put(name, dataMap);
-                    }
-                    //map类型集合
-                    Map<String, String> mapNames = new HashMap<>(2, 1);
-                    for (String name : cDaoConfig.maps()) {
-                        dataMap = this.getDefaultDataMap(name);
-                        mapNames.put(name, dataMap);
-                    }
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
-                    List<ColumnHandler> keyHandlerList = new ArrayList<>(1);
+                    List<ColumnHandler> keyHandlerList = new ArrayList(1);
                     //column
-                    List<ColumnHandler> columnHandlerList = new ArrayList<>(0);
+                    List<ColumnHandler> columnHandlerList = new ArrayList(0);
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
@@ -158,14 +139,11 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                     allColumnHandlerList.addAll(columnHandlerList);
                     this.entityInfoMap.put(clazz, allColumnHandlerList);
                     //
-                    CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder<>(
+                    CEntityDaoBuilder<T> entityDaoBuilder = new CEntityDaoBuilder(
                             keyspace,
                             table,
                             keyHandlerList,
                             columnHandlerList,
-                            setNames,
-                            listNames,
-                            mapNames,
                             clazz,
                             this.cassandraAdminContext,
                             cache,
