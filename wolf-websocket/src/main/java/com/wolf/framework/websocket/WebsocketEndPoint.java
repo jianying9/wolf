@@ -39,7 +39,7 @@ public class WebsocketEndPoint implements Resource {
     public WebsocketEndPoint() {
         this.logger.info("WebsocketServer:WebsocketEndPoint start.....");
         this.sessionManager = new SessionManager();
-        this.expireTime = 1000 * 60;
+        this.expireTime = 1000 * 120;
         //注册推送服务
         ApplicationContext.CONTEXT.getPushContext().setPushHandler(this.sessionManager);
     }
