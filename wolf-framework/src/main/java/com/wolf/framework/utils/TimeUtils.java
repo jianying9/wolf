@@ -18,6 +18,7 @@ public final class TimeUtils {
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyyMMdd");
     public final static SimpleDateFormat FM_YY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat FM_YY_MM_DD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat FM_YY_MM_DD_HHMM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public final static SimpleDateFormat FM_HHMM = new SimpleDateFormat("HH:mm");
     public final static SimpleDateFormat FM_HH = new SimpleDateFormat("HH");
 
@@ -125,6 +126,11 @@ public final class TimeUtils {
     public static String convertMillisecondToYYYYMMDDHHmmSS(long milliseconds) {
         Date date = new Date(milliseconds);
         return TimeUtils.FM_YY_MM_DD_HHMMSS.format(date);
+    }
+
+    public static String convertMillisecondToYYYYMMDDHHmm(long milliseconds) {
+        Date date = new Date(milliseconds);
+        return TimeUtils.FM_YY_MM_DD_HHMM.format(date);
     }
 
     public static String convertMillisecondToYYYYMMDD(long milliseconds) {
