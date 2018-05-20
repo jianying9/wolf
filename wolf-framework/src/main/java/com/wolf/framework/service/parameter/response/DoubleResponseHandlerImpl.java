@@ -14,7 +14,6 @@ public final class DoubleResponseHandlerImpl implements ResponseHandler {
     public DoubleResponseHandlerImpl(String name) {
         this.name = name;
     }
-    
 
     @Override
     public String getName() {
@@ -28,11 +27,17 @@ public final class DoubleResponseHandlerImpl implements ResponseHandler {
 
     @Override
     public Object getResponseValue(Object value) {
-        if(Double.class.isInstance(value) == false) {
+        if (Double.class.isInstance(value) == false) {
             String errMsg = "response:" + this.name + "'s type is not Double.";
             throw new RuntimeException(errMsg);
         }
-        return value;
+        Object result = value;
+        //如果小数位为0,则转整形
+        Double d = (Double) value;
+        if (d % 1 == 0) {
+            result = d.longValue();
+        }
+        return result;
     }
-    
+
 }

@@ -68,7 +68,7 @@ public abstract class AbstractObjectRequestHandler implements RequestHandler {
             }
         }
         if (errorMsg.isEmpty() == false) {
-            errorMsg = this.name + "_" + errorParaName + errorMsg;
+            errorMsg = "." + errorParaName + errorMsg;
         }
         return errorMsg;
     }
@@ -114,7 +114,7 @@ public abstract class AbstractObjectRequestHandler implements RequestHandler {
             }
         }
         if (errorMsg.isEmpty() == false) {
-            errorMsg = this.name + "_" + errorParaName + errorMsg;
+            errorMsg = "." + errorParaName + errorMsg;
         }
         return errorMsg;
     }

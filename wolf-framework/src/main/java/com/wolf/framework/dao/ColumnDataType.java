@@ -6,7 +6,6 @@ package com.wolf.framework.dao;
  * @author aladdin
  */
 public enum ColumnDataType {
-
     
     LONG,
     
@@ -16,5 +15,12 @@ public enum ColumnDataType {
     
     STRING,
     
-    BOOLEAN;
+    BOOLEAN,
+    
+    LIST,
+    
+    SET,
+    
+    MAP;
+    
 }

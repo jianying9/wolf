@@ -1,4 +1,4 @@
-package com.wolf.framework.comet;
+package com.wolf.framework.push;
 
 /**
  *

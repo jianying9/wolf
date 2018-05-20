@@ -35,6 +35,7 @@ import java.util.UUID;
         },
         responseConfigs = {
             @ResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, filterTypes = {}, desc = ""),
+            @ResponseConfig(name = "group", dataType = ResponseDataType.STRING, filterTypes = {}, desc = ""),
             @ResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = ""),
             @ResponseConfig(name = "page", dataType = ResponseDataType.BOOLEAN, desc = ""),
             @ResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
@@ -91,6 +92,7 @@ public class InfoServiceImpl implements Service {
             //
             Map<String, Object> dataMap = new HashMap<>(8, 1);
             dataMap.put("routeName", serviceContext.route());
+            dataMap.put("group", serviceContext.group());
             dataMap.put("validateSession", serviceContext.validateSession());
             dataMap.put("desc", serviceContext.desc());
             dataMap.put("requestArray", requestMapList);

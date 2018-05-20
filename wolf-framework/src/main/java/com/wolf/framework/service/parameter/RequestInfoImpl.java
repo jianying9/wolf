@@ -20,15 +20,15 @@ public class RequestInfoImpl implements RequestInfo {
     private final String desc;
     private final List<RequestInfo> childList;
     
-    public RequestInfoImpl(RequestInfo parentRequestInfo, FourRequestConfig fourRequestConfig) {
-        this.name = fourRequestConfig.name();
-        this.required = fourRequestConfig.required();
-        this.ignoreEmpty = fourRequestConfig.ignoreEmpty();
-        this.dataType = fourRequestConfig.dataType();
-        this.max = fourRequestConfig.max();
-        this.min = fourRequestConfig.min();
-        this.text = fourRequestConfig.text();
-        this.desc = fourRequestConfig.desc();
+    public RequestInfoImpl(RequestInfo parentRequestInfo, FourthRequestConfig fourthRequestConfig) {
+        this.name = fourthRequestConfig.name();
+        this.required = fourthRequestConfig.required();
+        this.ignoreEmpty = fourthRequestConfig.ignoreEmpty();
+        this.dataType = fourthRequestConfig.dataType();
+        this.max = fourthRequestConfig.max();
+        this.min = fourthRequestConfig.min();
+        this.text = fourthRequestConfig.text();
+        this.desc = fourthRequestConfig.desc();
         this.childList = Collections.EMPTY_LIST;
     }
     
@@ -42,10 +42,10 @@ public class RequestInfoImpl implements RequestInfo {
         this.text = thirdRequestConfig.text();
         this.desc = thirdRequestConfig.desc();
         //
-        FourRequestConfig[] fourRequestConfigs = thirdRequestConfig.fourRequestConfigs();
+        FourthRequestConfig[] fourRequestConfigs = thirdRequestConfig.fourthRequestConfigs();
         this.childList = new ArrayList(fourRequestConfigs.length);
         RequestInfo childRequestInfo;
-        for (FourRequestConfig fourRequestConfig : fourRequestConfigs) {
+        for (FourthRequestConfig fourRequestConfig : fourRequestConfigs) {
             childRequestInfo = new RequestInfoImpl(this, fourRequestConfig);
             this.childList.add(childRequestInfo);
         }

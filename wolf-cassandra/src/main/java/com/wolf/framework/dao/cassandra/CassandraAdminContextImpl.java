@@ -6,6 +6,7 @@ import com.datastax.driver.core.Session;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.Resource;
 import com.wolf.framework.dao.Entity;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,20 +16,20 @@ import java.util.Map;
  * @param <T>
  */
 public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdminContext<T> {
-    
+
     private static CassandraAdminContextImpl INSTANCE = null;
-    
+
     public static CassandraAdminContextImpl getInstance(ApplicationContext applicationContext) {
-        synchronized(CassandraAdminContextImpl.class) {
-            if(INSTANCE == null) {
+        synchronized (CassandraAdminContextImpl.class) {
+            if (INSTANCE == null) {
                 INSTANCE = new CassandraAdminContextImpl(applicationContext);
             }
         }
         return INSTANCE;
     }
 
-    private final Map<Class, CEntityDao<T>> cEntityDaoMap = new HashMap<>(2, 1);
-    private final Map<Class, CCounterDao<T>> cCounterDaoMap = new HashMap<>(2, 1);
+    private final Map<Class, CEntityDao<T>> cEntityDaoMap = new HashMap(2, 1);
+    private final Map<Class, CCounterDao<T>> cCounterDaoMap = new HashMap(2, 1);
 
     private final Session session;
 
@@ -40,7 +41,7 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
         final String password = applicationContext.getParameter(CassandraConfig.CASSANDRA_PASSWORD);
         this.cluster = Cluster.builder()
                 .addContactPoint(point)
-                .withCredentials(userName, password) 
+                .withCredentials(userName, password)
                 .build();
         this.cluster.getConfiguration()
                 .getProtocolOptions()
@@ -49,7 +50,7 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
         Resource resource = new CassandraResourceImpl(this.session, this.cluster);
         applicationContext.addResource(resource);
     }
-    
+
     @Override
     public Session getSession() {
         return this.session;
@@ -85,5 +86,15 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
     @Override
     public CCounterDao<T> getCCounterDao(Class<T> clazz) {
         return this.cCounterDaoMap.get(clazz);
+    }
+
+    @Override
+    public Map<Class, CEntityDao<T>> getCEntityDao() {
+        return Collections.unmodifiableMap(this.cEntityDaoMap);
+    }
+
+    @Override
+    public Map<Class, CCounterDao<T>> getCCounterDao() {
+        return Collections.unmodifiableMap(this.cCounterDaoMap);
     }
 }

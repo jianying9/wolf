@@ -24,12 +24,12 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
     public PushResponseImpl(PushHandler pushHandler) {
         this.pushHandler = pushHandler;
     }
-    
+
     @Override
     public String getPushId() {
         return this.pushId;
     }
-    
+
     @Override
     public void setPushId(String pushId) {
         this.pushId = pushId;
@@ -69,7 +69,7 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
 
     @Override
     public void setData(String name, Object value) {
-        Map<String, Object> newDataMap = new HashMap<>(2, 1);
+        Map<String, Object> newDataMap = new HashMap(2, 1);
         newDataMap.put(name, value);
         //检测并过滤响应参数
         this.dataMap = this.checkAndFilterDataMap(newDataMap);
@@ -91,5 +91,15 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         }
         return responseMsg;
     }
-    
+
+    @Override
+    public String getRoute() {
+        return this.pushHandler.getRoute();
+    }
+
+    @Override
+    public Map<String, Object> getDataMap() {
+        return this.dataMap;
+    }
+
 }

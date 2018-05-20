@@ -35,7 +35,7 @@ public final class LongArrayResponseHandlerImpl implements ResponseHandler {
         } else {
             List<Object> objectList = (List<Object>) value;
             for (Object object : objectList) {
-                if(Long.class.isInstance(object) == false) {
+                if(Long.class.isInstance(object) == false && Integer.class.isInstance(object) == false) {
                     isLongArray = false;
                     break;
                 }

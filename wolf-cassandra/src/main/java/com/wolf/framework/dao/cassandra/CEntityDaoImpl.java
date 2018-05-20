@@ -6,7 +6,6 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
@@ -26,11 +25,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements CEntityDao<T> {
 
-    private final PreparedStatement insertPs;
-    private final PreparedStatement countPs;
-    private final Map<String, String> setNames;
-    private final Map<String, String> listNames;
-    private final Map<String, String> mapNames;
+    private final String countCql;
 
     public CEntityDaoImpl(
             Session session,
@@ -38,55 +33,20 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             String table,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
-            Map<String, String> setNames,
-            Map<String, String> listNames,
-            Map<String, String> mapNames,
             Class<T> clazz) {
         super(session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
-        this.setNames = setNames;
-        this.listNames = listNames;
-        this.mapNames = mapNames;
         StringBuilder cqlBuilder = new StringBuilder(128);
-        // insert
-        cqlBuilder.append("INSERT INTO ").append(this.keyspace).append('.')
-                .append(this.table).append('(');
-        for (ColumnHandler ch : this.keyHandlerList) {
-            cqlBuilder.append(ch.getDataMap()).append(", ");
-        }
-        for (ColumnHandler ch : this.columnHandlerList) {
-            cqlBuilder.append(ch.getDataMap()).append(", ");
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(") values (");
-        long num = this.columnHandlerList.size() + this.keyHandlerList.size();
-        while (num > 0) {
-            cqlBuilder.append("?, ");
-            num--;
-        }
-        cqlBuilder.setLength(cqlBuilder.length() - 2);
-        cqlBuilder.append(");");
-        String insertCql = cqlBuilder.toString();
-        cqlBuilder.setLength(0);
-        try {
-            this.insertPs = this.prepare(insertCql);
-        } catch (InvalidQueryException e) {
-            this.logger.error("{} insertCql:{}", this.table, insertCql);
-            throw new RuntimeException(e);
-        }
-        
-        this.logger.debug("{} insertCql:{}", this.table, insertCql);
         //count
+        cqlBuilder.setLength(0);
         cqlBuilder.append("SELECT COUNT(*) FROM ").append(this.keyspace)
                 .append('.').append(this.table).append(';');
-        String countCql = cqlBuilder.toString();
-        cqlBuilder.setLength(0);
-        this.countPs = this.prepare(countCql);
-        this.logger.debug("{} countCql:{}", this.table, countCql);
+        this.countCql = cqlBuilder.toString();
+        this.logger.debug("{} countCql:{}", this.table, this.countCql);
     }
 
     @Override
     public Object[] insert(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -104,7 +64,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             valueList.add(value);
         }
         Object[] values = valueList.toArray();
-        ResultSetFuture rsf = this.executeAsync(this.insertPs.bind(values));
+        PreparedStatement ps = this.cachePrepare(this.insertCql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
         try {
             rsf.get();
         } catch (InterruptedException | ExecutionException ex) {
@@ -123,7 +84,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     public void batchInsert(List<Map<String, Object>> entityMapList) {
         if (entityMapList.isEmpty() == false) {
             Object value;
-            List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+            List<Object> valueList = new ArrayList(this.columnHandlerList.size() + this.keyHandlerList.size());
+            PreparedStatement ps = this.cachePrepare(this.insertCql);
             BatchStatement batch = new BatchStatement();
             boolean canInsert;
             Object[] values;
@@ -147,7 +109,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
                         valueList.add(value);
                     }
                     values = valueList.toArray();
-                    batch.add(this.insertPs.bind(values));
+                    batch.add(ps.bind(values));
                 }
             }
             ResultSetFuture rsf = this.executeAsync(batch);
@@ -161,7 +123,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public Object[] update(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -213,7 +175,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         if (entityMapList.isEmpty() == false) {
             Object value;
             Object[] values;
-            List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.columnHandlerList.size() + 1);
             StringBuilder cqlBuilder = new StringBuilder(128);
             BatchStatement batch = new BatchStatement();
             boolean canUpdate;
@@ -259,10 +221,10 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
         }
     }
-    
+
     @Override
     public Object[] updateOrInsert(Map<String, Object> entityMap) {
-        List<Object> valueList = new ArrayList<>(this.columnHandlerList.size() + this.keyHandlerList.size());
+        List<Object> valueList = new ArrayList(this.columnHandlerList.size() + this.keyHandlerList.size());
         Object value;
         for (ColumnHandler ch : this.keyHandlerList) {
             value = entityMap.get(ch.getColumnName());
@@ -319,8 +281,9 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     public void batchDelete(List<Object[]> keyValues) {
         if (keyValues.isEmpty() == false) {
             BatchStatement batch = new BatchStatement();
+            PreparedStatement ps = this.cachePrepare(this.deleteCql);
             for (Object[] keyValue : keyValues) {
-                batch.add(this.deletePs.bind(keyValue));
+                batch.add(ps.bind(keyValue));
             }
             ResultSetFuture rsf = this.executeAsync(batch);
             try {
@@ -334,7 +297,8 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public long count() {
         long result = 0;
-        ResultSetFuture rsf = this.executeAsync(this.countPs.bind());
+        PreparedStatement ps = this.cachePrepare(this.countCql);
+        ResultSetFuture rsf = this.executeAsync(ps.bind());
         ResultSet rs;
         Row r = null;
         try {
@@ -363,42 +327,23 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     }
 
     @Override
-    public List<T> query(String cql, Object... values) {
-        List<T> resultList = Collections.EMPTY_LIST;
-        PreparedStatement ps = this.cachePrepare(cql);
-        ResultSetFuture rsf = this.executeAsync(ps.bind(values));
-        ResultSet rs;
-        try {
-            rs = rsf.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException(ex);
-        }
-        List<Row> rList = rs.all();
-        if (rList.isEmpty() == false) {
-            resultList = new ArrayList<>(rList.size());
-            Map<String, Object> map;
-            T t;
-            for (Row r : rList) {
-                map = this.parseRow(r);
-                t = this.parseMap(map);
-                resultList.add(t);
-            }
-        }
-        return resultList;
-    }
-
-    @Override
     public <S extends Object> void addSet(String columnName, S columnValue, Object... keyValue) {
-        Set<S> set = new HashSet<>(2, 1);
+        Set<S> set = new HashSet(2, 1);
         set.add(columnValue);
         this.addSet(columnName, set, keyValue);
     }
 
     @Override
     public <S extends Object> void addSet(String columnName, Set<S> columnValues, Object... keyValue) {
-        String dataMap = this.setNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(columnValues);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -422,16 +367,22 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <S extends Object> void removeSet(String columnName, S columnValue, Object... keyValue) {
-        Set<S> set = new HashSet<>(2, 1);
+        Set<S> set = new HashSet(2, 1);
         set.add(columnValue);
         this.removeSet(columnName, set, keyValue);
     }
 
     @Override
     public <S extends Object> void removeSet(String columnName, Set<S> columnValues, Object... keyValue) {
-        String dataMap = this.setNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(columnValues);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -455,7 +406,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public void clearSet(String columnName, Object... keyValue) {
-        String dataMap = this.setNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
@@ -479,7 +436,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public <S extends Object> Set<S> getSet(String columnName, Class<S> type, Object... keyValue) {
         Set<S> result = Collections.EMPTY_SET;
-        String dataMap = this.setNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
@@ -507,18 +470,37 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
         return result;
     }
 
+    private String createGetCollectionCql(String columnName) {
+        StringBuilder cqlBuilder = new StringBuilder(128);
+        cqlBuilder.append("SELECT ").append(columnName).append(" FROM ")
+                .append(this.keyspace).append('.').append(this.table)
+                .append(" WHERE ");
+        for (ColumnHandler ch : this.keyHandlerList) {
+            cqlBuilder.append(ch.getDataMap()).append(" = ? AND ");
+        }
+        cqlBuilder.setLength(cqlBuilder.length() - 4);
+        cqlBuilder.append(";");
+        return cqlBuilder.toString();
+    }
+
     @Override
     public <L extends Object> void addList(String columnName, L columnValue, Object... keyValue) {
-        List<L> list = new ArrayList<>(1);
+        List<L> list = new ArrayList(1);
         list.add(columnValue);
         this.addList(columnName, list, keyValue);
     }
 
     @Override
     public <L extends Object> void addList(String columnName, List<L> columnValues, Object... keyValue) {
-        String dataMap = this.listNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(columnValues);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -542,16 +524,22 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <L extends Object> void addFirstList(String columnName, L columnValue, Object... keyValue) {
-        List<L> list = new ArrayList<>(1);
+        List<L> list = new ArrayList(1);
         list.add(columnValue);
         this.addFirstList(columnName, list, keyValue);
     }
 
     @Override
     public <L extends Object> void addFirstList(String columnName, List<L> columnValues, Object... keyValue) {
-        String dataMap = this.listNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(columnValues);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -575,16 +563,22 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <L extends Object> void removeList(String columnName, L columnValue, Object... keyValue) {
-        List<L> list = new ArrayList<>(1);
+        List<L> list = new ArrayList(1);
         list.add(columnValue);
         this.removeList(columnName, list, keyValue);
     }
 
     @Override
     public <L extends Object> void removeList(String columnName, List<L> columnValues, Object... keyValue) {
-        String dataMap = this.listNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(columnValues);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -608,7 +602,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public void clearList(String columnName, Object... keyValue) {
-        String dataMap = this.listNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
@@ -632,7 +632,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public <L extends Object> List<L> getList(String columnName, Class<L> type, Object... keyValue) {
         List<L> result = Collections.EMPTY_LIST;
-        String dataMap = this.listNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")
@@ -655,7 +661,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             }
             if (r != null) {
                 List<L> list = r.getList(0, type);
-                result = new ArrayList<>(list.size());
+                result = new ArrayList(list.size());
                 result.addAll(list);
             }
         }
@@ -664,16 +670,22 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <K extends Object, V extends Object> void addMap(String columnName, K mapKeyValue, V mapValue, Object... keyValue) {
-        Map<K, V> map = new HashMap<>(2, 1);
+        Map<K, V> map = new HashMap(2, 1);
         map.put(mapKeyValue, mapValue);
         this.addMap(columnName, map, keyValue);
     }
 
     @Override
     public <K extends Object, V extends Object> void addMap(String columnName, Map<K, V> maps, Object... keyValue) {
-        String dataMap = this.mapNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(maps);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -697,9 +709,15 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <K extends Object, V extends Object> void removeMap(String columnName, K mapKeyValue, Object... keyValue) {
-        String dataMap = this.mapNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             valueList.add(mapKeyValue);
             valueList.addAll(Arrays.asList(keyValue));
             StringBuilder cqlBuilder = new StringBuilder(128);
@@ -722,7 +740,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public <K extends Object, V extends Object> void removeMap(String columnName, List<K> mapKeyValues, Object... keyValue) {
-        String dataMap = this.mapNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("DELETE ").append(dataMap).append("[?] FROM ")
@@ -734,7 +758,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             cqlBuilder.append(";");
             PreparedStatement ps = this.cachePrepare(cqlBuilder.toString());
             BatchStatement batch = new BatchStatement();
-            List<Object> valueList = new ArrayList<>(this.keyHandlerList.size() + 1);
+            List<Object> valueList = new ArrayList(this.keyHandlerList.size() + 1);
             for (K mapKeyValue : mapKeyValues) {
                 valueList.add(mapKeyValue);
                 valueList.addAll(Arrays.asList(keyValue));
@@ -752,7 +776,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
 
     @Override
     public void clearMap(String columnName, Object... keyValue) {
-        String dataMap = this.mapNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("UPDATE ").append(this.keyspace).append('.')
@@ -776,7 +806,13 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
     @Override
     public <K extends Object, V extends Object> Map<K, V> getMap(String columnName, Class<K> keyType, Class<V> valueType, Object... keyValue) {
         Map<K, V> result = Collections.EMPTY_MAP;
-        String dataMap = this.mapNames.get(columnName);
+        String dataMap = null;
+        for (ColumnHandler ch : this.columnHandlerList) {
+            if (ch.getColumnName().equals(columnName)) {
+                dataMap = ch.getDataMap();
+                break;
+            }
+        }
         if (dataMap != null) {
             StringBuilder cqlBuilder = new StringBuilder(128);
             cqlBuilder.append("SELECT ").append(dataMap).append(" FROM ")

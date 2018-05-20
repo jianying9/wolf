@@ -16,12 +16,7 @@ public class RequestImpl implements WorkerRequest {
 
     public RequestImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
-        this.parameterMap = new HashMap<>(8, 1);
-    }
-
-    @Override
-    public Map<String, Object> getValueMap() {
-        return this.parameterMap;
+        this.parameterMap = new HashMap(8, 1);
     }
 
     @Override
@@ -39,8 +34,7 @@ public class RequestImpl implements WorkerRequest {
         this.workerContext.removeSession();
     }
 
-    @Override
-    public Object getValue(String name) {
+    private Object getValue(String name) {
         return this.parameterMap.get(name);
     }
 
@@ -48,28 +42,48 @@ public class RequestImpl implements WorkerRequest {
     public void putParameter(String name, Object value) {
         this.parameterMap.put(name, value);
     }
-    
+
     @Override
     public Long getLongValue(String name) {
         Object value = this.getValue(name);
-        return (Long) value;
+        Long result = null;
+        if (Long.class.isInstance(value)) {
+            result = (Long) value;
+        } else if (Integer.class.isInstance(value)) {
+            result = ((Integer) value).longValue();
+        } else if (String.class.isInstance(value)) {
+            result = Long.valueOf((String) value);
+        }
+        return result;
     }
 
     @Override
     public Boolean getBooleanValue(String name) {
         Object value = this.getValue(name);
-        return (Boolean) value;
+        Boolean result = null;
+        if (Boolean.class.isInstance(value)) {
+            result = (Boolean) value;
+        } else if (String.class.isInstance(value)) {
+            result = Boolean.valueOf((String) value);
+        }
+        return result;
     }
 
     @Override
     public Double getDoubleValue(String name) {
         Object value = this.getValue(name);
-        if(value != null && Long.class.isInstance(value)) {
+        Double result = null;
+        if (Long.class.isInstance(value)) {
             Long l = (Long) value;
-            Double newValue = l.doubleValue();
-            value = newValue;
+            result = l.doubleValue();
+        } else if (Integer.class.isInstance(value)) {
+            result = ((Integer) value).doubleValue();
+        } else if (Double.class.isInstance(value)) {
+            result = (Double) value;
+        } else if (String.class.isInstance(value)) {
+            result = Double.valueOf((String) value);
         }
-        return (Double) value;
+        return result;
     }
 
     @Override
@@ -105,24 +119,47 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public Long getLongValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        return (Long) value;
+        Long result = null;
+        if (value != null) {
+            if (Long.class.isInstance(value)) {
+                result = (Long) value;
+            } else if (Integer.class.isInstance(value)) {
+                result = ((Integer) value).longValue();
+            } else if (String.class.isInstance(value)) {
+                result = Long.parseLong((String) value);
+            }
+        }
+        return result;
     }
 
     @Override
     public Boolean getBooleanValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        return (Boolean) value;
+        Boolean result = null;
+        if (Boolean.class.isInstance(value)) {
+            result = (Boolean) value;
+        } else if (String.class.isInstance(value)) {
+            result = Boolean.parseBoolean((String) value);
+        }
+        return result;
     }
 
     @Override
     public Double getDoubleValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
-        if(value != null && Long.class.isInstance(value)) {
-            Long l = (Long) value;
-            Double newValue = l.doubleValue();
-            value = newValue;
+        Double result = null;
+        if (value != null) {
+            if (Double.class.isInstance(value)) {
+                result = (Double) value;
+            } else if (Long.class.isInstance(value)) {
+                result = ((Long) value).doubleValue();
+            } else if (Integer.class.isInstance(value)) {
+                result = ((Integer) value).doubleValue();
+            } else if (String.class.isInstance(value)) {
+                result = Double.parseDouble((String) value);
+            }
         }
-        return (Double) value;
+        return result;
     }
 
     @Override

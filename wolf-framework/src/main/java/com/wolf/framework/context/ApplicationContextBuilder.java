@@ -1,5 +1,6 @@
 package com.wolf.framework.context;
 
+import com.wolf.framework.cache.DefaultCacheConfiguration;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
@@ -44,6 +45,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import java.util.HashMap;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -54,13 +58,13 @@ import java.util.HashMap;
 public class ApplicationContextBuilder<T extends Entity> {
 
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    protected final List<Class<T>> rEntityClassList = new ArrayList<>(0);
-    protected final List<Class<Service>> serviceClassList = new ArrayList<>(0);
-    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList<>(0);
-    protected final List<Class<Local>> localServiceClassList = new ArrayList<>(0);
-    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList<>(0);
-    protected final List<Class<?>> serviceExtendClassList = new ArrayList<>(0);
-    protected final List<Class<?>> servicePushClassList = new ArrayList<>(0);
+    protected final List<Class<T>> rEntityClassList = new ArrayList(0);
+    protected final List<Class<Service>> serviceClassList = new ArrayList(0);
+    protected final List<Class<Interceptor>> interceptorClassList = new ArrayList(0);
+    protected final List<Class<Local>> localServiceClassList = new ArrayList(0);
+    protected final List<DaoConfigBuilder> daoConfigBuilderList = new ArrayList(0);
+    protected final List<Class<?>> serviceExtendClassList = new ArrayList(0);
+    protected final List<Class<?>> servicePushClassList = new ArrayList(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
 
@@ -106,10 +110,16 @@ public class ApplicationContextBuilder<T extends Entity> {
             compileModel = FrameworkConfig.SERVER;
         }
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        List<String> packageNameList = new ArrayList<>();
+        List<String> packageNameList = new ArrayList();
+        //初始化缓存管理器
+        CacheConfiguration cacheConfiguration = DefaultCacheConfiguration.getDefault();
+        CacheManager cacheManager = new CacheManager();
+        Cache cache = new Cache(cacheConfiguration);
+        cacheManager.addCache(cache);
+        ApplicationContext.CONTEXT.setCache(cache);
         //动态查找需要搜索的dao注解创建对象
         //实体信息存储对象
-        final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap<>(2, 1);
+        final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap(2, 1);
         this.logger.info("Finding dao annotation...");
         packageNameList.add("com.wolf.framework.dao");
         List<String> classNameList = new ClassParser().findClass(classloader, packageNameList);
@@ -133,7 +143,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         //查找注解类
         this.logger.info("Finding annotation...");
         String packages = this.getParameter(FrameworkConfig.ANNOTATION_SCAN_PACKAGES);
-        packageNameList = new ArrayList<>();
+        packageNameList = new ArrayList();
         if (packages != null) {
             String[] packageNames = packages.split(",");
             packageNameList.addAll(Arrays.asList(packageNames));
@@ -178,7 +188,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         //解析LocalService
         this.logger.debug("parsing annotation LocalServiceConfig...");
-        final LocalServiceContext localServiceContext = new LocalServiceContextImpl();
+        final LocalServiceContext localServiceContext = LocalServiceContextImpl.getInstance();
         final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContext);
         for (Class<Local> clazzl : this.localServiceClassList) {
             localServiceBuilder.build(clazzl);

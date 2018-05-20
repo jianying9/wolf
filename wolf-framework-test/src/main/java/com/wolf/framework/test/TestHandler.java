@@ -42,7 +42,7 @@ public final class TestHandler {
             result = null;
         } else {
             LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
-            workerContext.initParameter(parameterMap);
+            workerContext.initLocalParameter(parameterMap);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
         }
@@ -58,7 +58,7 @@ public final class TestHandler {
             result = null;
         } else {
             LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
-            workerContext.initParameter(json);
+            workerContext.initWebsocketParameter(json);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
         }

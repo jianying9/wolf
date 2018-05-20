@@ -9,6 +9,8 @@ public class FrameworkConfig {
     //配置文件
     public final static String CONFIG_FILE = "server-config.json";
     //----------------------------------------------------------
+    //打包时间
+    public final static String BUILD_TIMESTAMP = "build.timestamp";
     //运行模式
     public final static String COMPILE_MODEL = "compile.model";
     //服务器模式
@@ -47,4 +49,6 @@ public class FrameworkConfig {
     public final static String REDIS_MIN_POOL_SIZE = "redis.min.pool.size";
     //http长轮询超时时间(毫秒)
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
+    //http referer
+    public final static String HTTP_REFERER = "http.referer";
 }

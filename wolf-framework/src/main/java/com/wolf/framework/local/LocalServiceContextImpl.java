@@ -11,10 +11,21 @@ import java.util.Map;
  */
 public final class LocalServiceContextImpl implements LocalServiceContext {
 
+    private static LocalServiceContextImpl INSTANCE = null;
+
+    public static LocalServiceContextImpl getInstance() {
+        synchronized (LocalServiceContextImpl.class) {
+            if (INSTANCE == null) {
+                INSTANCE = new LocalServiceContextImpl();
+            }
+        }
+        return INSTANCE;
+    }
+
     private final Map<Class<? extends Local>, Local> localServiceMap;
 
-    public LocalServiceContextImpl() {
-        this.localServiceMap = new HashMap<>(8, 1);
+    private LocalServiceContextImpl() {
+        this.localServiceMap = new HashMap(8, 1);
     }
 
     @Override

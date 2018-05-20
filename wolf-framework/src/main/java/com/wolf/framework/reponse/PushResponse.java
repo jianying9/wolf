@@ -14,6 +14,8 @@ public interface PushResponse<T extends Entity> {
     
     public void setData(String name, Object value);
     
+    public Map<String, Object> getDataMap();
+    
     public void setEntity(T t);
     
     public String getPushId();
@@ -21,4 +23,8 @@ public interface PushResponse<T extends Entity> {
     public void setPushId(String pushId);
     
     public String getPushMessage();
+    
+    public String getRoute();
+    
+    
 }

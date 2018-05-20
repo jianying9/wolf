@@ -6,6 +6,7 @@ import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import net.sf.ehcache.Cache;
 
 /**
  * 实体数据访问对象创建类
@@ -19,15 +20,16 @@ public final class CEntityDaoBuilder<T extends Entity> {
     private final String keyspace;
     //table name
     private final String table;
-    private final Map<String, String> setNames;
-    private final Map<String, String> listNames;
-    private final Map<String, String> mapNames;
     //key
     private final List<ColumnHandler> keyHandlerList;
     //column
     private final List<ColumnHandler> columnHandlerList;
     //实体class
     private final Class<T> clazz;
+
+    private final boolean cache;
+
+    private final Cache escache;
     //
     private final CassandraAdminContext<T> cassandraAdminContext;
 
@@ -37,24 +39,23 @@ public final class CEntityDaoBuilder<T extends Entity> {
             String tableName,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
-            Map<String, String> setNames,
-            Map<String, String> listNames,
-            Map<String, String> mapNames,
             Class<T> clazz,
-            CassandraAdminContext<T> cassandraAdminContext) {
+            CassandraAdminContext<T> cassandraAdminContext,
+            boolean cache,
+            Cache escache
+    ) {
         this.keyspace = keyspace;
         this.table = tableName;
         this.keyHandlerList = keyHandlerList;
         if (columnHandlerList == null) {
-            this.columnHandlerList = new ArrayList<>(0);
+            this.columnHandlerList = new ArrayList(0);
         } else {
             this.columnHandlerList = columnHandlerList;
         }
-        this.setNames = setNames;
-        this.listNames = listNames;
-        this.mapNames = mapNames;
         this.clazz = clazz;
         this.cassandraAdminContext = cassandraAdminContext;
+        this.cache = cache;
+        this.escache = escache;
     }
 
     public CEntityDao<T> build() {
@@ -70,23 +71,22 @@ public final class CEntityDaoBuilder<T extends Entity> {
         if (this.keyHandlerList.isEmpty()) {
             throw new RuntimeException("Error when building CEntityDao. Cause: key is empty");
         }
-        if (this.columnHandlerList.isEmpty()) {
-            throw new RuntimeException("Error when building CEntityDao. Cause: column is empty");
-        }
         //session
         final Session session = this.cassandraAdminContext.getSession();
         //
-        CEntityDao<T> entityDao = new CEntityDaoImpl(
+        CEntityDaoImpl<T> CEntityDaoImpl = new CEntityDaoImpl(
                 session,
                 this.keyspace,
                 this.table,
                 this.keyHandlerList,
                 this.columnHandlerList,
-                this.setNames,
-                this.listNames,
-                this.mapNames,
                 this.clazz
         );
+        CEntityDao<T> entityDao = CEntityDaoImpl;
+        if (this.cache && this.escache != null) {
+            //启用缓存
+            entityDao = new CEntityCacheDaoImpl(this.escache, CEntityDaoImpl);
+        }
         return entityDao;
     }
 }

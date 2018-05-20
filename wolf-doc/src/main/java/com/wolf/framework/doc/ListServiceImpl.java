@@ -30,6 +30,7 @@ import java.util.Set;
             @ResponseConfig(name = "serviceArray", dataType = ResponseDataType.OBJECT_ARRAY, desc = "",
                     secondResponseConfigs = {
                         @SecondResponseConfig(name = "routeName", dataType = ResponseDataType.STRING, desc = ""),
+                        @SecondResponseConfig(name = "group", dataType = ResponseDataType.STRING, desc = ""),
                         @SecondResponseConfig(name = "validateSession", dataType = ResponseDataType.BOOLEAN, desc = ""),
                         @SecondResponseConfig(name = "hasAsyncResponse", dataType = ResponseDataType.BOOLEAN, desc = ""),
                         @SecondResponseConfig(name = "desc", dataType = ResponseDataType.STRING, desc = "")
@@ -62,6 +63,7 @@ public class ListServiceImpl implements Service {
             serviceContext = serviceWorker.getServiceContext();
             resultMap = new HashMap<>(4, 1);
             resultMap.put("routeName", serviceContext.route());
+            resultMap.put("group", serviceContext.group());
             resultMap.put("desc", serviceContext.desc());
             resultMap.put("validateSession", serviceContext.validateSession());
             resultMap.put("hasAsyncResponse", serviceContext.hasAsyncResponse());

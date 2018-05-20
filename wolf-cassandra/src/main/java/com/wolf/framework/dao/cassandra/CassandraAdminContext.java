@@ -2,6 +2,7 @@ package com.wolf.framework.dao.cassandra;
 
 import com.datastax.driver.core.Session;
 import com.wolf.framework.dao.Entity;
+import java.util.Map;
 
 /**
  *
@@ -14,9 +15,13 @@ public interface CassandraAdminContext<T extends Entity> {
     
     public CEntityDao<T> getCEntityDao(final Class<T> clazz);
     
+    public Map<Class, CEntityDao<T>> getCEntityDao();
+    
     public void putCCounterDao(final Class<T> clazz, final CCounterDao<T> cCounterDao, String keyspace, String table);
     
     public CCounterDao<T> getCCounterDao(final Class<T> clazz);
+    
+    public Map<Class, CCounterDao<T>> getCCounterDao();
     
     public Session getSession();
 }

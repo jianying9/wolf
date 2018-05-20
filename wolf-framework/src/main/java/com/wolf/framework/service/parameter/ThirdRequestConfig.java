@@ -68,5 +68,5 @@ public @interface ThirdRequestConfig {
      * 第四级参数
      * @return 
      */
-    public FourRequestConfig[] fourRequestConfigs() default {};
+    public FourthRequestConfig[] fourthRequestConfigs() default {};
 }

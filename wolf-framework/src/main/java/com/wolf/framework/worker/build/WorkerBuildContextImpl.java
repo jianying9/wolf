@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class WorkerBuildContextImpl implements WorkerBuildContext {
 
-    private final Map<String, String> existClassMap = new HashMap<>(1024);
+    private final Map<String, String> existClassMap = new HashMap(1024);
     private final Injecter injecter;
     private final ApplicationContext applicationContext;
     private final List<Interceptor> interceptorList;
@@ -58,7 +58,7 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
             Injecter injecter,
             InterceptorContext interceptorContext,
             ApplicationContext applicationContext) {
-        this.serviceWorkerMap = new HashMap<>(2, 1);
+        this.serviceWorkerMap = new HashMap(2, 1);
         this.serviceExtendContext = serviceExtendContext;
         this.servicePushContext = servicePushContext;
         this.injecter = injecter;

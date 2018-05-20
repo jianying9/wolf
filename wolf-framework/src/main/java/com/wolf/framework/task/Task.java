@@ -15,7 +15,7 @@ public abstract class Task implements Runnable {
         try {
             this.execute();
         } catch (RuntimeException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 }

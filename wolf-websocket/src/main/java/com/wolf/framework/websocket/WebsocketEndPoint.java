@@ -39,9 +39,9 @@ public class WebsocketEndPoint implements Resource {
     public WebsocketEndPoint() {
         this.logger.info("WebsocketServer:WebsocketEndPoint start.....");
         this.sessionManager = new SessionManager();
-        this.expireTime = 1000 * 60;
+        this.expireTime = 1000 * 120;
         //注册推送服务
-        ApplicationContext.CONTEXT.getCometContext().addCometHandler(this.sessionManager);
+        ApplicationContext.CONTEXT.getPushContext().setPushHandler(this.sessionManager);
     }
 
     public SessionManager getSessionManager() {
@@ -61,7 +61,7 @@ public class WebsocketEndPoint implements Resource {
             } else {
                 //创建消息对象并执行服务
                 WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker);
-                workerContext.initParameter(text);
+                workerContext.initWebsocketParameter(text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
                 responseMesssage = workerContext.getWorkerResponse().getResponseMessage();
@@ -85,14 +85,15 @@ public class WebsocketEndPoint implements Resource {
                 session.close();
             } catch (IOException ex) {
             }
-        }
-        long lastTime = (Long) l;
-        if (System.currentTimeMillis() - lastTime > this.expireTime) {
-            //心跳超时，关闭接口
-            try {
-                session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
-                session.close();
-            } catch (IOException ex) {
+        } else {
+            long lastTime = (Long) l;
+            if (System.currentTimeMillis() - lastTime > this.expireTime) {
+                //心跳超时，关闭接口
+                try {
+                    session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
+                    session.close();
+                } catch (IOException ex) {
+                }
             }
         }
     }
@@ -133,9 +134,9 @@ public class WebsocketEndPoint implements Resource {
     @OnClose
     public void onClose(Session session) {
         String sid = "no sid";
-        Object o = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
-        if (o != null) {
-            sid = Long.toString((Long) o);
+        Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
+        if (s != null) {
+            sid = (String) s;
             this.sessionManager.remove(sid);
         }
         this.logger.debug("wobsocket-on close:{}", sid);
@@ -162,7 +163,7 @@ public class WebsocketEndPoint implements Resource {
     public static class WebsocketServerConfigurator extends ServerEndpointConfig.Configurator {
 
         public static final WebsocketEndPoint END_POINT = new WebsocketEndPoint();
-        
+
         static {
             ApplicationContext.CONTEXT.addResource(END_POINT);
         }
