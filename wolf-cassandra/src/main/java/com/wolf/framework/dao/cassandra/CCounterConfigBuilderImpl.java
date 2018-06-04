@@ -90,8 +90,11 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     //表空间
                     String keyspace = cDaoConfig.keyspace();
                     //如果表空间为空,则取默认的表空间
-                    if(keyspace.isEmpty()) {
-                        keyspace = this.cassandraAdminContext.getDefaultKeyspace();
+                    String defaultKeyspace = this.cassandraAdminContext.getDefaultKeyspace();
+                    if (keyspace.isEmpty()) {
+                        keyspace = defaultKeyspace;
+                    } else {
+                        keyspace = keyspace.replace("${default}", defaultKeyspace);
                     }
                     final String table = cDaoConfig.table();
                     String dataMap;

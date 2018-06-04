@@ -146,6 +146,7 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     }
 
     protected final PreparedStatement cachePrepare(String cql) {
+        cql = cql.replace("${default}", this.keyspace);
         PreparedStatement ps = this.psCacheMap.get(cql);
         if (ps == null) {
             ps = this.session.prepare(cql);
