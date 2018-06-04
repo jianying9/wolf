@@ -35,7 +35,15 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
 
     private final Cluster cluster;
 
+    private final String defaultKeyspace;
+
     private CassandraAdminContextImpl(ApplicationContext applicationContext) {
+        final String keyspace = applicationContext.getParameter(CassandraConfig.CASSANDRA_DEFAULT_KEYPSACE);
+        this.defaultKeyspace = keyspace;
+        if (this.defaultKeyspace == null || this.defaultKeyspace.isEmpty()) {
+            throw new RuntimeException("Error init Cassandra. Cause: default keyspace is empty ");
+        }
+        //
         final String point = applicationContext.getParameter(CassandraConfig.CASSANDRA_CONTACT_POINT);
         final String userName = applicationContext.getParameter(CassandraConfig.CASSANDRA_USERNAME);
         final String password = applicationContext.getParameter(CassandraConfig.CASSANDRA_PASSWORD);
@@ -54,6 +62,11 @@ public class CassandraAdminContextImpl<T extends Entity> implements CassandraAdm
     @Override
     public Session getSession() {
         return this.session;
+    }
+
+    @Override
+    public String getDefaultKeyspace() {
+        return this.defaultKeyspace;
     }
 
     @Override

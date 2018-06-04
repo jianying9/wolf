@@ -18,7 +18,7 @@ public @interface CCounterConfig{
      * 表空间
      * @return 
      */
-    public String keyspace();
+    public String keyspace() default "";
 
     /**
      * 表
