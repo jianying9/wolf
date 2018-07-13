@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
@@ -62,7 +61,9 @@ public final class ObjectArrayResponseHandlerImpl implements ResponseHandler {
                         if (paraValue != null) {
                             responseParameterHandler = this.responseHandlerMap.get(paraName);
                             paraValue = responseParameterHandler.getResponseValue(paraValue);
-                            resultObj.put(paraName, paraValue);
+                            if(paraValue != null) {
+                                resultObj.put(paraName, paraValue);
+                            }
                         }
                     }
                     //

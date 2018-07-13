@@ -49,7 +49,9 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
                 if (paraValue != null) {
                     responseParameterHandler = parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    resultMap.put(paraName, paraValue);
+                    if(paraValue != null) {
+                        resultMap.put(paraName, paraValue);
+                    }
                 }
             }
         }

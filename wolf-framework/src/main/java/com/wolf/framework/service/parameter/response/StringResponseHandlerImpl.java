@@ -33,10 +33,10 @@ public final class StringResponseHandlerImpl implements ResponseHandler {
 
     @Override
     public Object getResponseValue(Object value) {
-        String result = "";
+        String result = null;
         if (String.class.isInstance(value)) {
             result = (String) value;
-            if (this.filters != null) {
+            if (result.isEmpty() == false && this.filters != null) {
                 for (Filter filter : filters) {
                     result = filter.doFilter(result);
                 }

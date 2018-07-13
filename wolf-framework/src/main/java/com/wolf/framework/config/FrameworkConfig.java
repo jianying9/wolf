@@ -51,4 +51,6 @@ public class FrameworkConfig {
     public final static String ASYNC_PUSH_TIMEOUT = "async.push.timeout";
     //http referer
     public final static String HTTP_REFERER = "http.referer";
+    //
+    public final static String HTTP_COMET = "http.comet";
 }

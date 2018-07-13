@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 @WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/http/api/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
-    private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTP);
     private final Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
     private final Map<String, MessageCache> messageCacheMap = new HashMap(32, 1);
@@ -42,6 +41,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     private long asyncTimeOut = 60000;
     private long lastCheckTime = 0;
     private String referer = "";
+    private boolean canComet = false;
 
     @Override
     public void init() throws ServletException {
@@ -58,7 +58,13 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             this.referer = httpReferer;
         }
         //注册推送服务
-        ApplicationContext.CONTEXT.getPushContext().setCometHandler(this);
+        String comet = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.HTTP_COMET);
+        if (comet != null) {
+            this.canComet = Boolean.valueOf(comet);
+        }
+        if (this.canComet) {
+            ApplicationContext.CONTEXT.getPushContext().setCometHandler(this);
+        }
     }
 
     /**
@@ -100,7 +106,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             if (serviceWorker == null) {
                 //route不存在,判断是否为comet请求
                 String comet = parameterMap.get("comet");
-                if (comet != null && comet.equals("start")) {
+                if (comet != null && comet.equals("start") && this.canComet) {
                     //该请求为一个长轮询推送请求
                     String sid = parameterMap.get("sid");
                     if (sid != null) {
