@@ -159,6 +159,8 @@ public abstract class AbstractWorkContext implements WorkerContext {
         //读取公共数据
         //callback
         this.callback = parameterMap.get("callback");
+        //
+        this.md5 = parameterMap.get("md5");
         if (json != null && json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
