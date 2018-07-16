@@ -140,8 +140,13 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         if (callback != null) {
             responseMap.put("callback", callback);
         }
+        boolean pretty = this.workerContext.isPretty();
         try {
-            responseMsg = mapper.writeValueAsString(responseMap);
+            if (pretty) {
+                responseMsg = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+            } else {
+                responseMsg = mapper.writeValueAsString(responseMap);
+            }
         } catch (IOException ex) {
         }
         return responseMsg;

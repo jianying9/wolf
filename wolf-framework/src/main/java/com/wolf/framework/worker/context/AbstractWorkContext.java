@@ -7,6 +7,7 @@ import com.wolf.framework.reponse.ResponseImpl;
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.RequestImpl;
 import com.wolf.framework.request.WorkerRequest;
+import com.wolf.framework.utils.MapUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     private final String route;
     private String callback = null;
     private String md5 = null;
+    private boolean pretty = false;
     private final ServiceWorker serviceWorker;
     private final WorkerRequest request;
     private final WorkerResponse response;
@@ -46,6 +48,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     public void initLocalParameter(Map<String, Object> parameterMap) {
+        //
+        Boolean prettyObj = MapUtils.getBooleanValue(parameterMap, "pretty");
+        if (prettyObj != null) {
+            this.pretty = prettyObj;
+        }
         this.parameterMap = parameterMap;
     }
 
@@ -127,6 +134,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 if (globalNode != null) {
                     this.md5 = globalNode.getTextValue();
                 }
+                //
+                globalNode = rootNode.get("pretty");
+                if (globalNode != null) {
+                    this.pretty = globalNode.getBooleanValue();
+                }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
                 if (paramNode == null || paramNode.isNull()) {
@@ -161,6 +173,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
         this.callback = parameterMap.get("callback");
         //
         this.md5 = parameterMap.get("md5");
+        //
+        String prettyStr = parameterMap.get("pretty");
+        if (prettyStr != null && prettyStr.toLowerCase().equals("true")) {
+            this.pretty = true;
+        }
         if (json != null && json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -190,13 +207,13 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 }
             }
         }
-        if(this.parameterMap == null) {
+        if (this.parameterMap == null) {
             this.parameterMap = new HashMap(parameterMap.size(), 1);
         }
         //两类参数合并
         Set<Entry<String, String>> entrySet = parameterMap.entrySet();
         for (Entry<String, String> entry : entrySet) {
-            if(this.parameterMap.containsKey(entry.getKey()) == false) {
+            if (this.parameterMap.containsKey(entry.getKey()) == false) {
                 this.parameterMap.put(entry.getKey(), entry.getValue());
             }
         }
@@ -245,6 +262,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
     @Override
     public String getMd5() {
         return md5;
+    }
+
+    @Override
+    public boolean isPretty() {
+        return pretty;
     }
 
 }
