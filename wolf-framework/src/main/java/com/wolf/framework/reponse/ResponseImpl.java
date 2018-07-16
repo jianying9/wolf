@@ -177,7 +177,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
                 if (paraValue != null) {
                     responseParameterHandler = parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    if(paraValue != null) {
+                    if (paraValue != null) {
                         resultMap.put(paraName, paraValue);
                     }
                 }
