@@ -104,7 +104,9 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         Map<String, Object> responseMap = new HashMap(8, 1);
         //核心返回数据
         responseMap.put("code", this.code);
-        responseMap.put("msg", this.msg);
+        if (this.msg.isEmpty() == false) {
+            responseMap.put("msg", this.msg);
+        }
         responseMap.put("route", this.workerContext.getRoute());
         responseMap.put("data", this.dataMap);
         //md5判断本次返回数据是否没有变化

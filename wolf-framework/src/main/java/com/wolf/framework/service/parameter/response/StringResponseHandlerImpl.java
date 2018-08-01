@@ -33,7 +33,7 @@ public final class StringResponseHandlerImpl implements ResponseHandler {
 
     @Override
     public Object getResponseValue(Object value) {
-        String result = "";
+        String result = null;
         if (String.class.isInstance(value)) {
             String text = (String) value;
             if (text.isEmpty() == false) {
