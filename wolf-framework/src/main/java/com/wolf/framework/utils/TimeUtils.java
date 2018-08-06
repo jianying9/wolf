@@ -138,6 +138,11 @@ public final class TimeUtils {
         return TimeUtils.FM_YY_MM_DD.format(date);
     }
 
+    public static String convertMillisecondToHHmm(long milliseconds) {
+        Date date = new Date(milliseconds);
+        return TimeUtils.FM_HHMM.format(date);
+    }
+
     public static long convertYYYYMMDDToMillisecond(String dateStr) {
         long result = 0;
         try {
