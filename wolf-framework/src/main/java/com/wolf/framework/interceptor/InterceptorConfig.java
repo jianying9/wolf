@@ -14,5 +14,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface InterceptorConfig {
 
-    public int index() default 0;
 }
