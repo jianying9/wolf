@@ -22,7 +22,7 @@ public @interface ServiceConfig {
      * @return route
      */
     public String route();
-    
+
     /**
      * 分组
      *
@@ -38,15 +38,23 @@ public @interface ServiceConfig {
     public RequestConfig[] requestConfigs() default {};
 
     /**
+     * 是否响应
+     *
+     * @return
+     */
+    public boolean response() default true;
+
+    /**
      * 返回的参数
      *
      * @return String[]
      */
     public ResponseConfig[] responseConfigs() default {};
-    
+
     /**
      * 推送配置
-     * @return 
+     *
+     * @return
      */
     public String[] pushRoutes() default {};
 

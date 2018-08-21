@@ -37,6 +37,8 @@ public interface ServiceContext {
     
     public Map<String, RequestHandler> requestParameterHandlerMap();
     
+    public boolean isResponse();
+    
     public String[] returnParameter();
     
     public Map<String, ResponseHandler> responseParameterHandlerMap();

@@ -43,6 +43,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final SessionHandleType sessionHandleType;
     private final String[] requiredParameter;
     private final String[] unrequiredParameter;
+    private final boolean response;
     private final String[] returnParameter;
     private final Map<String, RequestHandler> requestParameterHandlerMap;
     private final Map<String, ResponseHandler> responseParameterHandlerMap;
@@ -155,6 +156,7 @@ public class ServiceContextImpl implements ServiceContext {
         this.validateSession = serviceConfig.validateSession();
         this.validateSecurity = serviceConfig.validateSecurity();
         this.responseCodes = serviceConfig.responseCodes();
+        this.response = serviceConfig.response();
         final ServiceExtendContext serviceExtendContext = workerBuildContext.getServiceExtendContext();
         //
         List<RequestInfo> requestInfoResultList = new ArrayList(serviceConfig.requestConfigs().length);
@@ -331,6 +333,11 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public List<RequestInfo> requestConfigs() {
         return this.requestInfoList;
+    }
+    
+    @Override
+    public boolean isResponse() {
+        return this.response;
     }
 
     @Override

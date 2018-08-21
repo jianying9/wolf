@@ -69,12 +69,14 @@ public class WebsocketEndPoint implements Resource {
         } else {
             responseMesssage = "{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}";
         }
-        if (isAsync) {
-            session.getAsyncRemote().sendText(responseMesssage);
-        } else {
-            try {
-                session.getBasicRemote().sendText(responseMesssage);
-            } catch (IOException ex) {
+        if (responseMesssage.isEmpty() == false) {
+            if (isAsync) {
+                session.getAsyncRemote().sendText(responseMesssage);
+            } else {
+                try {
+                    session.getBasicRemote().sendText(responseMesssage);
+                } catch (IOException ex) {
+                }
             }
         }
         this.logger.debug("wobsocket-send message:{}", responseMesssage);
