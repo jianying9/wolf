@@ -32,6 +32,8 @@ public interface Response<T extends Entity> {
     
     public void setDataMap(Map<String, Object> dataMap);
     
+    public Map<String, Object> getDataMap();
+    
     public void setData(String name, Object value);
     
     public void setEntity(T t);

@@ -226,4 +226,9 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
         return pushResponse;
     }
 
+    @Override
+    public Map<String, Object> getDataMap() {
+        return this.dataMap;
+    }
+
 }
