@@ -36,6 +36,8 @@ public interface Response<T extends Entity> {
     
     public void setData(String name, Object value);
     
+    public void setResponseText(String text);
+    
     public void setEntity(T t);
     
     public PushResponse getPushResponse(String route);

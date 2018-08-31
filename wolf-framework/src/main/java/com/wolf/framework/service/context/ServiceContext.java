@@ -49,6 +49,8 @@ public interface ServiceContext {
     
     public ResponseCode[] responseCodes();
     
+    public boolean isResponseText();
+    
     public List<PushInfo> pushConfigs();
     
     public Map<String, PushHandler> pushHandlerMap();

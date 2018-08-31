@@ -100,4 +100,11 @@ public @interface ServiceConfig {
      */
     public ResponseCode[] responseCodes() default {};
 
+    /**
+     * 直接响应文本
+     *
+     * @return
+     */
+    public boolean responseText() default false;
+
 }
