@@ -5,6 +5,8 @@ import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
@@ -101,7 +103,6 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 value = StringUtils.trim(value);
                 parameterMap.put(name, value);
             }
-            this.logger.debug("http:on message:{}:{}", route, parameterMap);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //route不存在,判断是否为comet请求
@@ -156,7 +157,9 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 serviceWorker.doWork(workerContext);
                 String result = workerContext.getWorkerResponse().getResponseMessage();
                 HttpUtils.toWrite(request, response, result);
-                this.logger.debug("http send message:{}", result);
+                //
+                AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                accessLogger.log(route, sid, param, result);
             }
         }
         //每个5分钟触发检查缓存消息过时的
@@ -232,22 +235,23 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     @Override
-    public boolean asyncPush(String sid, String message) {
-        return this.push(sid, message);
+    public boolean asyncPush(String sid, String route, String message) {
+        return this.push(sid, route, message);
     }
 
     @Override
-    public boolean push(String sid, String message) {
+    public boolean push(String sid, String route, String message) {
         boolean result = false;
         //同sid冲突检测
+        //
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
-            this.logger.debug("async-servlet push message:{},{}", sid, message);
             result = true;
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
-            this.logger.debug("http push message:{}", message);
             this.asyncContextMap.remove(sid);
+            accessLogger.log(route, sid, "", message);
         } else {
             synchronized (this) {
                 MessageCache messageCache = this.messageCacheMap.get(sid);
@@ -257,7 +261,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
                 messageCache.offer(message);
             }
-            this.logger.debug("async-servlet cache message:sid :{}", sid);
+            accessLogger.log(sid, "http", "cache");
         }
         return result;
     }
@@ -296,11 +300,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     public void saveNewSession(String sid) {
-        this.logger.debug("async-servlet add session:{}", sid);
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "http", "add");
     }
 
     public void removeSession(String sid) {
-        this.logger.debug("async-servlet remove session:{}", sid);
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
             String stopMessage = "{\"comet\":\"stop\"}";
@@ -308,5 +312,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             ctx.complete();
             this.asyncContextMap.remove(sid);
         }
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "http", "remove");
     }
 }

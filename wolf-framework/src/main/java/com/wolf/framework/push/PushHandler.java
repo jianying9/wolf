@@ -8,7 +8,7 @@ public interface PushHandler {
 
     public boolean contains(String sid);
 
-    public boolean push(String sid, String message);
+    public boolean push(String sid, String route, String message);
 
-    public boolean asyncPush(String sid, String message);
+    public boolean asyncPush(String sid, String route, String message);
 }

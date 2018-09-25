@@ -29,25 +29,25 @@ public final class PushContextImpl implements PushContext {
     }
 
     @Override
-    public boolean push(String sid, String message) {
+    public boolean push(String sid, String route, String message) {
         boolean result = false;
         if (this.pushHandler != null) {
-            result = this.pushHandler.push(sid, message);
+            result = this.pushHandler.push(sid, route, message);
         }
         if (this.cometHandler != null) {
-            this.cometHandler.push(sid, message);
+            this.cometHandler.push(sid, route, message);
         }
         return result;
     }
 
     @Override
-    public boolean asyncPush(String sid, String message) {
+    public boolean asyncPush(String sid, String route, String message) {
         boolean result = false;
         if (this.pushHandler != null) {
-            result = this.pushHandler.asyncPush(sid, message);
+            result = this.pushHandler.asyncPush(sid, route, message);
         }
         if (this.cometHandler != null) {
-            this.cometHandler.asyncPush(sid, message);
+            this.cometHandler.asyncPush(sid, route, message);
         }
         return result;
     }

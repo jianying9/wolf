@@ -4,11 +4,15 @@ import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
+import java.io.IOException;
 import java.util.Map;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 /**
@@ -45,10 +49,19 @@ public final class TestHandler {
             workerContext.initLocalParameter(parameterMap);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
+            //
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writeValueAsString(parameterMap);
+            } catch (IOException ex) {
+            }
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, json, result.getResponseMessage());
         }
         return result;
     }
-    
+
     public Response execute(String route, String json) {
         Response result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
@@ -61,6 +74,9 @@ public final class TestHandler {
             workerContext.initWebsocketParameter(json);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
+            //
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, json, result.getResponseMessage());
         }
         return result;
     }
