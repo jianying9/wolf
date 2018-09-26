@@ -27,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 /**
@@ -158,6 +159,10 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 String result = workerContext.getWorkerResponse().getResponseMessage();
                 HttpUtils.toWrite(request, response, result);
                 //
+                if (param == null || param.isEmpty()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    param = mapper.writeValueAsString(parameterMap);
+                }
                 AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
                 accessLogger.log(route, sid, param, result);
             }
