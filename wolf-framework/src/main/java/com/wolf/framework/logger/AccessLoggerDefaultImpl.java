@@ -13,7 +13,7 @@ public final class AccessLoggerDefaultImpl implements AccessLogger {
 
     @Override
     public void log(String route, String sid, String request, String response) {
-        this.logger.info("sid:{}", sid);
+        this.logger.info("sid:{},route:{}", sid, route);
         this.logger.info("request:{}", request);
         this.logger.info("response:{}", response);
     }
