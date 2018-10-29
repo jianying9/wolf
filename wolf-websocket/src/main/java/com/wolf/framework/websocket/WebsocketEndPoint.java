@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 public class WebsocketEndPoint implements Resource {
 
     private final SessionManager sessionManager;
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/\\d]+)(?:\")");
     private final long expireTime;
 

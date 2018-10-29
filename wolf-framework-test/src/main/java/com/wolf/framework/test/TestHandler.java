@@ -38,6 +38,7 @@ public final class TestHandler {
     }
 
     public Response execute(String route, Map<String, Object> parameterMap) {
+        parameterMap.put("pretty", true);
         Response result;
         ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
         if (serviceWorker == null) {

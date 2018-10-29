@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 @WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/http/api/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTP);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
     private final Map<String, MessageCache> messageCacheMap = new HashMap(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
