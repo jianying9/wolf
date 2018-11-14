@@ -168,4 +168,16 @@ public final class TimeUtils {
         }
         return result;
     }
+
+    public static Date convertYYYY_MM_DD(String dateStr) {
+        Date date = null;
+        try {
+            date = TimeUtils.FM_YY_MM_DD.parse(dateStr);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        if (date == null) {
+            date = new Date();
+        }
+        return date;
+    }
 }
