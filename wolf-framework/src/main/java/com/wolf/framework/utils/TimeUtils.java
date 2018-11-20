@@ -95,7 +95,12 @@ public final class TimeUtils {
     }
 
     public static String getDateFotmatHHmm() {
-        Date currentTime = new Date();
+        Date currentTime = new Date(); 
+        return TimeUtils.FM_HHMM.format(currentTime);
+    }
+
+    public static String getDateFotmatHHmm(long time) {
+        Date currentTime = new Date(time);
         return TimeUtils.FM_HHMM.format(currentTime);
     }
 
@@ -174,9 +179,6 @@ public final class TimeUtils {
         try {
             date = TimeUtils.FM_YY_MM_DD.parse(dateStr);
         } catch (ParseException | NumberFormatException e) {
-        }
-        if (date == null) {
-            date = new Date();
         }
         return date;
     }
