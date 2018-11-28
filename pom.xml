@@ -21,6 +21,12 @@
             <name>local internal maven repository</name>
             <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
         </repository>
+        <repository>
+            <!--maven第三方release库--> 
+            <id>local.maven.com-release</id>
+            <name>local internal maven repository</name>
+            <url>http://139.224.54.3:8081/nexus/content/repositories/releases</url>
+        </repository>
     </repositories>
 
     <!--远程插件资源库地址-->
@@ -170,6 +176,21 @@
                 <version>1.1.1.6</version>
                 <type>jar</type>
             </dependency>
+            <dependency>
+                <groupId>cn.teaey.apns4j</groupId>
+                <artifactId>apns4j</artifactId>
+                <version>1.1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.4.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiaomi</groupId>
+                <artifactId>mi-push-server</artifactId>
+                <version>2.2.19</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -235,5 +256,7 @@
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->
+        <module>wolf-push</module>
+        <module>wolf-http</module>
     </modules>
 </project>

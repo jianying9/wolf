@@ -148,6 +148,8 @@ public class ApplicationContextBuilder<T extends Entity> {
             String[] packageNames = packages.split(",");
             packageNameList.addAll(Arrays.asList(packageNames));
         }
+        //其它module
+        packageNameList.add("com.wolf.thirdparty");
         //如果是开发模式,则加入接口文档接口
         if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
             packageNameList.add("com.wolf.framework.doc");

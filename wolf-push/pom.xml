@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.wolf</groupId>
+        <artifactId>wolf</artifactId>
+        <version>5.5-SNAPSHOT</version>
+    </parent>
+    <artifactId>wolf-push</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.wolf</groupId>
+            <artifactId>wolf-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wolf</groupId>
+            <artifactId>wolf-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.teaey.apns4j</groupId> 
+            <artifactId>apns4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.xiaomi</groupId>
+            <artifactId>mi-push-server</artifactId>
+        </dependency>
+    </dependencies>
+</project>
