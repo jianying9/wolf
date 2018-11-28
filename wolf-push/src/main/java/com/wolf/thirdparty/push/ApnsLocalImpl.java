@@ -58,7 +58,7 @@ public class ApnsLocalImpl implements ApnsLocal, Resource {
                 //
                 this.apnsChannel = apnsChannelFactory.newChannel();
             } else {
-                System.out.println("unit模式不初始化sms");
+                System.out.println("unit模式不初始apns");
             }
             ApplicationContext.CONTEXT.addResource(this);
         }
