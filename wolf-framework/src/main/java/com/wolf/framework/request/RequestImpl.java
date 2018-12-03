@@ -89,7 +89,23 @@ public class RequestImpl implements WorkerRequest {
     @Override
     public String getStringValue(String name) {
         Object value = this.getValue(name);
-        return (String) value;
+        String v = null;
+        if (String.class.isInstance(value)) {
+            v = (String) value;
+        } else if (Integer.class.isInstance(value)) {
+            Integer i = (Integer) value;
+            v = i.toString();
+        } else if (Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            v = l.toString();
+        } else if (Boolean.class.isInstance(value)) {
+            Boolean b = (Boolean) value;
+            v = b.toString();
+        } else if (Double.class.isInstance(value)) {
+            Double d = (Double) value;
+            v = d.toString();
+        }
+        return v;
     }
 
     @Override

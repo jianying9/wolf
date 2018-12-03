@@ -32,11 +32,24 @@ public final class StringRequestHandlerImpl implements RequestHandler {
     @Override
     public String validate(Object value) {
         String msg = this.errorInfo;
+        String v = "";
         if (String.class.isInstance(value)) {
-            String v = (String) value;
-            if (v.length() <= this.max || v.length() >= this.min) {
-                msg = "";
-            }
+            v = (String) value;
+        } else if (Integer.class.isInstance(value)) {
+            Integer i = (Integer) value;
+            v = i.toString();
+        } else if (Long.class.isInstance(value)) {
+            Long l = (Long) value;
+            v = l.toString();
+        } else if (Boolean.class.isInstance(value)) {
+            Boolean b = (Boolean) value;
+            v = b.toString();
+        } else if (Double.class.isInstance(value)) {
+            Double d = (Double) value;
+            v = d.toString();
+        }
+        if (v.length() <= this.max || v.length() >= this.min) {
+            msg = "";
         }
         return msg;
     }
