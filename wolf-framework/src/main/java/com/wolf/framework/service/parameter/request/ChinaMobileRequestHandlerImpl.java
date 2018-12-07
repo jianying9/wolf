@@ -9,8 +9,8 @@ import com.wolf.framework.service.parameter.RequestHandler;
  * @author aladdin
  */
 public final class ChinaMobileRequestHandlerImpl extends AbstractRegexRequestHandler implements RequestHandler {
-    
+
     public ChinaMobileRequestHandlerImpl(final String name, boolean ignoreEmpty) {
-        super(name, RequestDataType.CHINA_MOBILE, "^1[345789]{1}\\d{9}\\d?$", " must be china mobile", ignoreEmpty);
+        super(name, RequestDataType.CHINA_MOBILE, "^1\\d{10}\\d?$", " must be china mobile", ignoreEmpty);
     }
 }
