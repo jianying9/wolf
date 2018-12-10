@@ -85,12 +85,14 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     @Override
     public final void setCode(String code) {
+        this.code = code;
         String codeDesc = this.customCodeMap.get(code);
         if (codeDesc != null) {
             this.code = code;
             this.msg = codeDesc;
         } else {
             this.code = ResponseCodeConfig.UNKNOWN;
+            this.msg = code;
         }
     }
 
