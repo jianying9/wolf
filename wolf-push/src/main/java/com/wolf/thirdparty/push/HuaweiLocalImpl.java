@@ -29,7 +29,7 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.XIAOMI);
 
-    private final String defaultChannelName = "defaultChannel";
+    private String defaultChannelName = "defaultChannel";
 
     private final String tokenUrl = "https://login.cloud.huawei.com/oauth2/v2/token"; //获取认证Token的URL
 
@@ -60,6 +60,12 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
         if (value != null) {
             packageName = value;
         }
+        //
+        value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.DEFAULT_CHANNEL_NAME);
+        if (value != null) {
+            defaultChannelName = value;
+        }
+        //
         HuaweiChannel huaweiChannel = new HuaweiChannel(this.defaultChannelName, appId, appSecret, packageName);
         this.channelMap.put(this.defaultChannelName, huaweiChannel);
         //

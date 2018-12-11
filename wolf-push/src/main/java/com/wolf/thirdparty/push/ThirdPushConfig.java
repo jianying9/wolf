@@ -6,6 +6,8 @@ package com.wolf.thirdparty.push;
  */
 public class ThirdPushConfig {
 
+    public final static String DEFAULT_CHANNEL_NAME = "default.channel.name";
+
     public final static String XIAOMI_PACKAGE_NAME = "xiaomi.package.name";
     //
     public final static String XIAOMI_APP_SECRET = "xiaomi.app.secret";

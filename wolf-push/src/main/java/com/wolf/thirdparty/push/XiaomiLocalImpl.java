@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 @LocalServiceConfig
 public class XiaomiLocalImpl implements XiaomiLocal, Resource {
 
-    private final String defaultChannelName = "defaultChannel";
+    private String defaultChannelName = "defaultChannel";
 
     private final Map<String, XiaomiChannel> channelMap = new HashMap(4, 1);
 
@@ -42,6 +42,12 @@ public class XiaomiLocalImpl implements XiaomiLocal, Resource {
         if (value != null) {
             packageName = value;
         }
+        //
+        value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.DEFAULT_CHANNEL_NAME);
+        if (value != null) {
+            defaultChannelName = value;
+        }
+        //
         XiaomiChannel xiaomiChannel = new XiaomiChannel(this.defaultChannelName, appSecret, packageName);
         this.channelMap.put(this.defaultChannelName, xiaomiChannel);
         //启用小米正式环境推送

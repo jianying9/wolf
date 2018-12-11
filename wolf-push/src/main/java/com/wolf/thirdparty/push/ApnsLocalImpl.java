@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 public class ApnsLocalImpl implements ApnsLocal, Resource {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.APNS);
-    private final String defaultChannelName = "defaultChannel";
+    private String defaultChannelName = "defaultChannel";
     private final Map<String, ApnsChannel> channelMap = new HashMap(4, 1);
 
     @Override
@@ -40,6 +40,11 @@ public class ApnsLocalImpl implements ApnsLocal, Resource {
         value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.APNS_PASSWORD);
         if (value != null) {
             apnsPassword = value;
+        }
+        //
+        value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.DEFAULT_CHANNEL_NAME);
+        if (value != null) {
+            defaultChannelName = value;
         }
         if (apnsFileName.isEmpty() == false && apnsPassword.isEmpty() == false) {
             ApnsGateway apnsGateway = ApnsGateway.PRODUCTION;
