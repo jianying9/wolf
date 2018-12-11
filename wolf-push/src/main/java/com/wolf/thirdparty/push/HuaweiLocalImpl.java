@@ -27,39 +27,42 @@ import org.slf4j.Logger;
 @LocalServiceConfig
 public class HuaweiLocalImpl implements HuaweiLocal, Resource {
 
-    private String appId = "";
-    private String appSecret = "";
-    private String packageName = "";
-
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.XIAOMI);
+
+    private final String defaultChannelName = "defaultChannel";
 
     private final String tokenUrl = "https://login.cloud.huawei.com/oauth2/v2/token"; //获取认证Token的URL
 
     private final String apiUrl = "https://api.push.hicloud.com/pushsend.do"; //应用级消息下发API 
 
-    //
-    private String accessToken = null;
-    private long tokenExpiredTime = 0;
+    private final Map<String, HuaweiChannel> channelMap = new HashMap(4, 1);
 
+    //
     @InjectLocalService
     private HttpLocal httpLocal;
 
     @Override
     public void init() {
+        String appId = "";
         String value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.HUAWEI_APP_ID);
         if (value != null) {
-            this.appId = value;
+            appId = value;
         }
         //
+        String appSecret = "";
         value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.HUAWEI_APP_SECRET);
         if (value != null) {
-            this.appSecret = value;
+            appSecret = value;
         }
         //
+        String packageName = "";
         value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.HUAWEI_PACKAGE_NAME);
         if (value != null) {
-            this.packageName = value;
+            packageName = value;
         }
+        HuaweiChannel huaweiChannel = new HuaweiChannel(this.defaultChannelName, appId, appSecret, packageName);
+        this.channelMap.put(this.defaultChannelName, huaweiChannel);
+        //
         String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
         if (compileModel.equals(FrameworkConfig.UNIT_TEST) == false) {
             //启动更新一次token
@@ -75,12 +78,17 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
 
     @Override
     public void updateAccessToken() {
-        if (this.appId.isEmpty() == false && this.appSecret.isEmpty() == false && this.packageName.isEmpty() == false) {
+        this.updateAccessToken(this.defaultChannelName);
+    }
+
+    private void updateAccessToken(String channelName) {
+        HuaweiChannel huaweiChannel = this.channelMap.get(channelName);
+        if (huaweiChannel != null) {
             //获取token
             Map<String, String> paramterMap = new HashMap(4, 1);
             paramterMap.put("grant_type", "client_credentials");
-            paramterMap.put("client_secret", this.appSecret);
-            paramterMap.put("client_id", this.appId);
+            paramterMap.put("client_secret", huaweiChannel.getAppSecret());
+            paramterMap.put("client_id", huaweiChannel.getAppId());
             //
             Map<String, String> headerMap = new HashMap(2, 1);
             headerMap.put("Content-Type", "application/x-www-form-urlencoded");
@@ -99,18 +107,17 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
             if (rootNode != null) {
                 JsonNode accessTokenNode = rootNode.get("access_token");
                 if (accessTokenNode != null) {
-                    this.accessToken = accessTokenNode.getTextValue();
+                    String accessToken = accessTokenNode.getTextValue();
                     //
                     JsonNode expiresInNode = rootNode.get("expires_in");
                     long expiresIn = expiresInNode.getLongValue();
-                    this.tokenExpiredTime = System.currentTimeMillis() + expiresIn * 900l;
-                    this.logger.info("huawei update accesstoken success:{},{}", this.accessToken, Long.toString(this.tokenExpiredTime));
+                    long tokenExpiredTime = System.currentTimeMillis() + expiresIn * 900l;
+                    huaweiChannel.update(accessToken, tokenExpiredTime);
+                    this.logger.info("huawei update accesstoken success:{},{}", channelName, accessToken);
                 } else {
                     this.logger.error("huawei update accesstoken error:{}", json);
                 }
             }
-        } else {
-            this.logger.error("huawei推送配置缺少appId,appSecret和packageName");
         }
     }
 
@@ -131,12 +138,25 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
     }
 
     @Override
+    public void add(HuaweiChannel huaweiChannel) {
+        this.channelMap.put(huaweiChannel.getName(), huaweiChannel);
+    }
+
+    @Override
     public void push(String deviceToken, ThirdPushMessage thirdPushMessage) {
-        if (this.appId.isEmpty() == false && this.appSecret.isEmpty() == false && this.packageName.isEmpty() == false) {
+        this.push(this.defaultChannelName, deviceToken, thirdPushMessage);
+    }
+
+    @Override
+    public void push(String channelName, String deviceToken, ThirdPushMessage thirdPushMessage) {
+        HuaweiChannel huaweiChannel = this.channelMap.get(channelName);
+        if (huaweiChannel != null) {
             long currentTime = System.currentTimeMillis();
-            if (this.accessToken.isEmpty() || this.tokenExpiredTime < currentTime) {
+            String accessToken = huaweiChannel.getAccessToken();
+            long tokenExpiredTime = huaweiChannel.getTokenExpiredTime();
+            if (accessToken.isEmpty() || tokenExpiredTime < currentTime) {
                 //如果accessToken失效,马上刷新
-                this.updateAccessToken();
+                this.updateAccessToken(channelName);
             }
             //
             if (thirdPushMessage.isValid()) {
@@ -148,7 +168,7 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                 bodyMap.put("content", content);
                 //action param消息
                 Map<String, Object> paramMap = new HashMap(2, 1);
-                paramMap.put("appPkgName", this.packageName);
+                paramMap.put("appPkgName", huaweiChannel.getPackageName());
                 //action消息
                 Map<String, Object> actionMap = new HashMap(2, 1);
                 long actionType = 3;
@@ -195,7 +215,7 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                 if (payload.isEmpty() == false) {
                     //开始构造http消息
                     Map<String, String> paramterMap = new HashMap(4, 1);
-                    paramterMap.put("access_token", this.accessToken);
+                    paramterMap.put("access_token", huaweiChannel.getAccessToken());
                     //
                     long nspTs = System.currentTimeMillis() / 1000l;
                     paramterMap.put("nsp_ts", Long.toString(nspTs));
@@ -210,7 +230,7 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                     Map<String, String> headerMap = new HashMap(2, 1);
                     headerMap.put("Content-Type", "application/x-www-form-urlencoded");
                     //
-                    String nsp_ctx = "{\"ver\":\"1\", \"appId\":\"" + this.appId + "\"}";
+                    String nsp_ctx = "{\"ver\":\"1\", \"appId\":\"" + huaweiChannel.getAppId() + "\"}";
                     try {
                         nsp_ctx = URLEncoder.encode(nsp_ctx, "utf-8");
                     } catch (UnsupportedEncodingException ex) {

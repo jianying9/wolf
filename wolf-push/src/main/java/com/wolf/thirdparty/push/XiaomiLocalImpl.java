@@ -10,6 +10,7 @@ import com.xiaomi.xmpush.server.Message;
 import com.xiaomi.xmpush.server.Result;
 import com.xiaomi.xmpush.server.Sender;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.json.simple.parser.ParseException;
@@ -22,23 +23,27 @@ import org.slf4j.Logger;
 @LocalServiceConfig
 public class XiaomiLocalImpl implements XiaomiLocal, Resource {
 
-    private String appSecret = "";
+    private final String defaultChannelName = "defaultChannel";
 
-    private String packageName = "";
+    private final Map<String, XiaomiChannel> channelMap = new HashMap(4, 1);
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.XIAOMI);
 
     @Override
     public void init() {
+        String appSecret = "";
         String value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.XIAOMI_APP_SECRET);
         if (value != null) {
-            this.appSecret = value;
+            appSecret = value;
         }
         //
+        String packageName = "";
         value = ApplicationContext.CONTEXT.getParameter(ThirdPushConfig.XIAOMI_PACKAGE_NAME);
         if (value != null) {
-            this.packageName = value;
+            packageName = value;
         }
+        XiaomiChannel xiaomiChannel = new XiaomiChannel(this.defaultChannelName, appSecret, packageName);
+        this.channelMap.put(this.defaultChannelName, xiaomiChannel);
         //启用小米正式环境推送
         Constants.useOfficial();
     }
@@ -64,9 +69,20 @@ public class XiaomiLocalImpl implements XiaomiLocal, Resource {
     }
 
     @Override
+    public void add(XiaomiChannel xiaomiChannel) {
+        this.channelMap.put(xiaomiChannel.getName(), xiaomiChannel);
+    }
+
+    @Override
     public void push(String deviceToken, ThirdPushMessage thirdPushMessage) {
+        this.push(defaultChannelName, deviceToken, thirdPushMessage);
+    }
+
+    @Override
+    public void push(String channelName, String deviceToken, ThirdPushMessage thirdPushMessage) {
         if (thirdPushMessage.isValid()) {
-            if (this.appSecret.isEmpty() == false && this.packageName.isEmpty() == false) {
+            XiaomiChannel xiaomiChannel = this.channelMap.get(channelName);
+            if (xiaomiChannel != null) {
                 Message.Builder builder = new Message.Builder();
                 String title = thirdPushMessage.getTitle();
                 String content = thirdPushMessage.getContent();
@@ -93,10 +109,10 @@ public class XiaomiLocalImpl implements XiaomiLocal, Resource {
                 //通知分组id
                 builder.notifyId(thirdPushMessage.getNotifyId());
                 //包名
-                builder.restrictedPackageName(this.packageName);
+                builder.restrictedPackageName(xiaomiChannel.getPackageName());
                 //
                 Message message = builder.build();
-                Sender sender = new Sender(this.appSecret);
+                Sender sender = new Sender(xiaomiChannel.getAppSecret());
                 try {
                     Result result;
                     if (deviceToken.length() > 13) {
