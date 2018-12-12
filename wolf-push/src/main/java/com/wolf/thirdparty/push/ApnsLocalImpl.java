@@ -82,19 +82,17 @@ public class ApnsLocalImpl implements ApnsLocal, Resource {
     }
 
     @Override
-    public void add(String channelName, String apnsFileName, String apnsPassword) {
-        if (apnsFileName.isEmpty() == false && apnsPassword.isEmpty() == false && this.channelMap.containsKey(channelName) == false) {
+    public void add(String channelName, String apnsSecretPath, String apnsSecretPassword) {
+        if (apnsSecretPath.isEmpty() == false && apnsSecretPassword.isEmpty() == false && this.channelMap.containsKey(channelName) == false) {
             //获取apns信息文件
             ApnsGateway apnsGateway = ApnsGateway.PRODUCTION;
             String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
             if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
                 apnsGateway = ApnsGateway.DEVELOPMENT;
             }
-            ClassLoader classLoader = getClass().getClassLoader();
-            URL url = classLoader.getResource(apnsFileName);
             ApnsChannelFactory apnsChannelFactory = Apns4j.newChannelFactoryBuilder()
-                    .keyStoreMeta(url.getPath())
-                    .keyStorePwd(apnsPassword)
+                    .keyStoreMeta(apnsSecretPath)
+                    .keyStorePwd(apnsSecretPassword)
                     .apnsGateway(apnsGateway)
                     .build();
             //

@@ -9,7 +9,7 @@ import com.wolf.framework.local.Local;
  */
 public interface ApnsLocal extends Local {
     
-    public void add(String channelName, String apnsFileName, String apnsPassword);
+    public void add(String channelName, String apnsSecretPath, String apnsSecretPassword);
 
     public void push(String deviceToken, ThirdPushMessage thirdPushMessage);
     
