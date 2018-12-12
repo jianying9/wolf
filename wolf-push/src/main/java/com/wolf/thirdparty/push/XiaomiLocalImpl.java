@@ -48,8 +48,10 @@ public class XiaomiLocalImpl implements XiaomiLocal, Resource {
             defaultChannelName = value;
         }
         //
-        XiaomiChannel xiaomiChannel = new XiaomiChannel(this.defaultChannelName, appSecret, packageName);
-        this.channelMap.put(this.defaultChannelName, xiaomiChannel);
+        if (appSecret.isEmpty() == false && packageName.isEmpty() == false) {
+            XiaomiChannel xiaomiChannel = new XiaomiChannel(this.defaultChannelName, appSecret, packageName);
+            this.channelMap.put(this.defaultChannelName, xiaomiChannel);
+        }
         //启用小米正式环境推送
         Constants.useOfficial();
     }

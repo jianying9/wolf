@@ -66,8 +66,10 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
             defaultChannelName = value;
         }
         //
-        HuaweiChannel huaweiChannel = new HuaweiChannel(this.defaultChannelName, appId, appSecret, packageName);
-        this.channelMap.put(this.defaultChannelName, huaweiChannel);
+        if (appId.isEmpty() == false && appSecret.isEmpty() == false && packageName.isEmpty() == false) {
+            HuaweiChannel huaweiChannel = new HuaweiChannel(this.defaultChannelName, appId, appSecret, packageName);
+            this.channelMap.put(this.defaultChannelName, huaweiChannel);
+        }
         //
         String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
         if (compileModel.equals(FrameworkConfig.UNIT_TEST) == false) {
