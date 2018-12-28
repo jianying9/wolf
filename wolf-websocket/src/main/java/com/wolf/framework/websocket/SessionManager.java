@@ -41,7 +41,7 @@ public class SessionManager implements PushHandler {
             result = true;
             session.getAsyncRemote().sendText(message);
             AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-            accessLogger.log(route, sid, "", message);
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }
@@ -57,7 +57,7 @@ public class SessionManager implements PushHandler {
             } catch (IOException ex) {
             }
             AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-            accessLogger.log(route, sid, "", message);
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }

@@ -12,10 +12,8 @@ public final class AccessLoggerDefaultImpl implements AccessLogger {
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.ACCESS);
 
     @Override
-    public void log(String route, String sid, String request, String response) {
-        this.logger.info("sid:{},route:{}", sid, route);
-        this.logger.info("request:{}", request);
-        this.logger.info("response:{}", response);
+    public void log(String route, String sid, String request, String response, long time) {
+        this.logger.info("sid:{} route:{} time:{} request:{} response:{}", sid, route, time, request, response);
     }
 
     @Override

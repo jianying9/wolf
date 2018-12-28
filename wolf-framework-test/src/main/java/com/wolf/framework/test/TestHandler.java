@@ -46,6 +46,7 @@ public final class TestHandler {
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
+            long start = System.currentTimeMillis();
             LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
             workerContext.initLocalParameter(parameterMap);
             serviceWorker.doWork(workerContext);
@@ -57,8 +58,9 @@ public final class TestHandler {
                 json = mapper.writeValueAsString(parameterMap);
             } catch (IOException ex) {
             }
+            long time = System.currentTimeMillis() - start;
             AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-            accessLogger.log(route, sid, json, result.getResponseMessage());
+            accessLogger.log(route, sid, json, result.getResponseMessage(), time);
         }
         return result;
     }
@@ -71,13 +73,15 @@ public final class TestHandler {
             logger.error("timer:Can not find route:".concat(route));
             result = null;
         } else {
+            long start = System.currentTimeMillis();
             LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(this.sid, route, serviceWorker);
             workerContext.initWebsocketParameter(json);
             serviceWorker.doWork(workerContext);
             result = workerContext.getWorkerResponse();
             //
+            long time = System.currentTimeMillis() - start;
             AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-            accessLogger.log(route, sid, json, result.getResponseMessage());
+            accessLogger.log(route, sid, json, result.getResponseMessage(), time);
         }
         return result;
     }

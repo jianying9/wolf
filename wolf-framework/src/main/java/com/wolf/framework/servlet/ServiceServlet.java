@@ -151,6 +151,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
             } else {
                 //route存在
+                long start = System.currentTimeMillis();
                 String sid = parameterMap.get("sid");
                 ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
                 String param = parameterMap.get("_json");
@@ -163,8 +164,9 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                     ObjectMapper mapper = new ObjectMapper();
                     param = mapper.writeValueAsString(parameterMap);
                 }
+                long time = System.currentTimeMillis() - start;
                 AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-                accessLogger.log(route, sid, param, result);
+                accessLogger.log(route, sid, param, result, time);
             }
         }
         //每个5分钟触发检查缓存消息过时的
@@ -256,7 +258,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
             this.asyncContextMap.remove(sid);
-            accessLogger.log(route, sid, "", message);
+            accessLogger.log(route, sid, "", message, -1);
         } else {
             synchronized (this) {
                 MessageCache messageCache = this.messageCacheMap.get(sid);

@@ -95,7 +95,7 @@ public final class TimeUtils {
     }
 
     public static String getDateFotmatHHmm() {
-        Date currentTime = new Date(); 
+        Date currentTime = new Date();
         return TimeUtils.FM_HHMM.format(currentTime);
     }
 

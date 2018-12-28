@@ -51,6 +51,7 @@ public class WebsocketEndPoint implements Resource {
     }
 
     private void exec(String text, Session session, boolean isAsync) {
+        long start = System.currentTimeMillis();
         Matcher matcher = this.routePattern.matcher(text);
         String responseMesssage;
         String sid = "";
@@ -83,8 +84,9 @@ public class WebsocketEndPoint implements Resource {
                 }
             }
         }
+        long time = System.currentTimeMillis() - start;
         AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-        accessLogger.log(route, sid, text, responseMesssage);
+        accessLogger.log(route, sid, text, responseMesssage, time);
         //
         Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
         Object l = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
