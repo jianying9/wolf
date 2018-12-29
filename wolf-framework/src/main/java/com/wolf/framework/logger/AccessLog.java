@@ -41,7 +41,7 @@ public final class AccessLog {
         this.time = time;
         this.createTime = createTime;
     }
-    
+
     public AccessLog(String route, String sid, String request, String response, long createTime) {
         this.route = route;
         //
@@ -99,6 +99,10 @@ public final class AccessLog {
 
     public String getOperate() {
         return operate;
+    }
+
+    public long getTime() {
+        return time;
     }
 
     public long getCreateTime() {
