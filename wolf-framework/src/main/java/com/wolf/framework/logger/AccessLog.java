@@ -18,8 +18,30 @@ public final class AccessLog {
 
     private final String operate;
 
+    private final long time;
+
     private final long createTime;
 
+    public AccessLog(String route, String sid, String request, String response, long time, long createTime) {
+        this.route = route;
+        //
+        if (sid == null) {
+            sid = "";
+        }
+        this.sid = sid;
+        //
+        if (request == null) {
+            request = "";
+        }
+        this.request = request;
+        //
+        this.response = response;
+        this.operate = "";
+        this.type = "service";
+        this.time = time;
+        this.createTime = createTime;
+    }
+    
     public AccessLog(String route, String sid, String request, String response, long createTime) {
         this.route = route;
         //
@@ -36,6 +58,7 @@ public final class AccessLog {
         this.response = response;
         this.operate = "";
         this.type = "service";
+        this.time = 0;
         this.createTime = createTime;
     }
 
@@ -50,6 +73,7 @@ public final class AccessLog {
         this.response = "";
         this.operate = operate;
         this.type = type;
+        this.time = 0;
         this.createTime = createTime;
     }
 
