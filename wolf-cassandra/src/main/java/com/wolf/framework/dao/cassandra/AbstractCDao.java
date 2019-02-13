@@ -143,6 +143,42 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         return dataType;
     }
 
+    private void checkNewColumn(String result) {
+        String columnName = result.replace("Undefined name ", "").replace(" in selection clause", "");
+        for (ColumnHandler columnHandler : this.columnHandlerList) {
+            if (columnHandler.getDataMap().equals(columnName)) {
+                StringBuilder sb = new StringBuilder();
+                String parameterDataType;
+                String dataType;
+                switch (columnHandler.getColumnDataType()) {
+                    case LIST:
+                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                        dataType = "list<" + parameterDataType + ">";
+                        break;
+                    case SET:
+                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                        dataType = "set<" + parameterDataType + ">";
+                        break;
+                    case MAP:
+                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                        dataType = "map<" + parameterDataType + ",";
+                        parameterDataType = this.getBasicDataType(columnHandler.getSecondParameterDataType());
+                        dataType = dataType + parameterDataType + ">";
+                        break;
+                    default:
+                        dataType = this.getBasicDataType(columnHandler.getColumnDataType());
+                }
+                sb.append("alter table ").append(this.keyspace).append(".").append(this.table)
+                        .append(" add ").append(columnName).append(" ").append(dataType).append(";");
+                System.out.println(sb.toString());
+                this.session.execute(sb.toString());
+                break;
+            }
+        }
+        //重新检测
+        this.check();
+    }
+
     @Override
     public String check() {
         String result = "";
@@ -190,6 +226,8 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
                 sb.append("));");
                 System.out.println(sb.toString());
                 this.session.execute(sb.toString());
+            } else if (result.contains("Undefined name")) {
+                this.checkNewColumn(result);
             } else {
                 result = "cassandra[" + this.keyspace + "." + this.table + "]:" + e.getMessage();
                 System.err.println(result);
