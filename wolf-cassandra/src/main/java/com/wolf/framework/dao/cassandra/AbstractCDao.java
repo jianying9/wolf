@@ -8,6 +8,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.dao.ColumnDataType;
 import com.wolf.framework.dao.ColumnHandler;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
@@ -118,14 +119,81 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         return table;
     }
 
+    private String getBasicDataType(ColumnDataType columnDataType) {
+        String dataType;
+        switch (columnDataType) {
+            case LONG:
+                dataType = "bigint";
+                break;
+            case INT:
+                dataType = "int";
+                break;
+            case DOUBLE:
+                dataType = "double";
+                break;
+            case STRING:
+                dataType = "text";
+                break;
+            case BOOLEAN:
+                dataType = "boolean";
+                break;
+            default:
+                dataType = "unknown";
+        }
+        return dataType;
+    }
+
     @Override
     public String check() {
         String result = "";
         try {
             this.session.prepare(this.inquireBuyKeyCql);
         } catch (InvalidQueryException e) {
-            result = "cassandra[" + this.table + "]:" + e.getMessage();
-            System.err.println(result);
+            result = e.getMessage();
+            if (result.contains("unconfigured columnfamily")) {
+                //自动创建表
+                StringBuilder sb = new StringBuilder();
+                String dataType;
+                sb.append("create table ").append(this.keyspace).append(".").append(this.table).append(" (");
+                List<ColumnHandler> allList = new ArrayList();
+                allList.addAll(this.keyHandlerList);
+                allList.addAll(this.columnHandlerList);
+                String parameterDataType;
+                for (ColumnHandler columnHandler : allList) {
+                    sb.append(columnHandler.getDataMap());
+                    switch (columnHandler.getColumnDataType()) {
+                        case LIST:
+                            parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                            dataType = "list<" + parameterDataType + ">";
+                            break;
+                        case SET:
+                            parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                            dataType = "set<" + parameterDataType + ">";
+                            break;
+                        case MAP:
+                            parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                            dataType = "map<" + parameterDataType + ",";
+                            parameterDataType = this.getBasicDataType(columnHandler.getSecondParameterDataType());
+                            dataType = dataType + parameterDataType + ">";
+                            break;
+                        default:
+                            dataType = this.getBasicDataType(columnHandler.getColumnDataType());
+                    }
+                    sb.append(" ").append(dataType).append(",");
+                }
+                //处理主键
+                sb.append(" primary key(");
+                for (ColumnHandler columnHandler : this.keyHandlerList) {
+                    sb.append(columnHandler.getDataMap()).append(",");
+                }
+                sb.setLength(sb.length() - 1);
+                sb.append("));");
+                System.out.println(sb.toString());
+                this.session.execute(sb.toString());
+            } else {
+                result = "cassandra[" + this.keyspace + "." + this.table + "]:" + e.getMessage();
+                System.err.println(result);
+            }
         }
         return result;
     }
