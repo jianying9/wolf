@@ -37,16 +37,19 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
     private final String inquireBuyKeyCql;
     protected final String deleteCql;
     protected final String insertCql;
+    private final boolean counter;
 
     private final Map<String, PreparedStatement> psCacheMap = new HashMap(2, 1);
 
     public AbstractCDao(
+            boolean counter,
             Session session,
             String keyspace,
             String table,
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
             Class<T> clazz) {
+        this.counter = counter;
         this.session = session;
         this.keyspace = keyspace;
         this.table = table;
@@ -145,58 +148,23 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
 
     private void checkNewColumn(String result) {
         String columnName = result.replace("Undefined name ", "").replace(" in selection clause", "");
-        for (ColumnHandler columnHandler : this.columnHandlerList) {
-            if (columnHandler.getDataMap().equals(columnName)) {
-                StringBuilder sb = new StringBuilder();
-                String parameterDataType;
-                String dataType;
-                switch (columnHandler.getColumnDataType()) {
-                    case LIST:
-                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
-                        dataType = "list<" + parameterDataType + ">";
-                        break;
-                    case SET:
-                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
-                        dataType = "set<" + parameterDataType + ">";
-                        break;
-                    case MAP:
-                        parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
-                        dataType = "map<" + parameterDataType + ",";
-                        parameterDataType = this.getBasicDataType(columnHandler.getSecondParameterDataType());
-                        dataType = dataType + parameterDataType + ">";
-                        break;
-                    default:
-                        dataType = this.getBasicDataType(columnHandler.getColumnDataType());
+        if (this.counter) {
+            for (ColumnHandler columnHandler : this.columnHandlerList) {
+                if (columnHandler.getDataMap().equals(columnName)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("alter table ").append(this.keyspace).append(".").append(this.table)
+                            .append(" add ").append(columnName).append(" ").append("counter").append(";");
+                    System.out.println(sb.toString());
+                    this.session.execute(sb.toString());
+                    break;
                 }
-                sb.append("alter table ").append(this.keyspace).append(".").append(this.table)
-                        .append(" add ").append(columnName).append(" ").append(dataType).append(";");
-                System.out.println(sb.toString());
-                this.session.execute(sb.toString());
-                break;
             }
-        }
-        //重新检测
-        this.check();
-    }
-
-    @Override
-    public String check() {
-        String result = "";
-        try {
-            this.session.prepare(this.inquireBuyKeyCql);
-        } catch (InvalidQueryException e) {
-            result = e.getMessage();
-            if (result.contains("unconfigured columnfamily")) {
-                //自动创建表
-                StringBuilder sb = new StringBuilder();
-                String dataType;
-                sb.append("create table ").append(this.keyspace).append(".").append(this.table).append(" (");
-                List<ColumnHandler> allList = new ArrayList();
-                allList.addAll(this.keyHandlerList);
-                allList.addAll(this.columnHandlerList);
-                String parameterDataType;
-                for (ColumnHandler columnHandler : allList) {
-                    sb.append(columnHandler.getDataMap());
+        } else {
+            for (ColumnHandler columnHandler : this.columnHandlerList) {
+                if (columnHandler.getDataMap().equals(columnName)) {
+                    StringBuilder sb = new StringBuilder();
+                    String parameterDataType;
+                    String dataType;
                     switch (columnHandler.getColumnDataType()) {
                         case LIST:
                             parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
@@ -215,22 +183,104 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
                         default:
                             dataType = this.getBasicDataType(columnHandler.getColumnDataType());
                     }
-                    sb.append(" ").append(dataType).append(",");
+                    sb.append("alter table ").append(this.keyspace).append(".").append(this.table)
+                            .append(" add ").append(columnName).append(" ").append(dataType).append(";");
+                    System.out.println(sb.toString());
+                    this.session.execute(sb.toString());
+                    break;
                 }
-                //处理主键
-                sb.append(" primary key(");
-                for (ColumnHandler columnHandler : this.keyHandlerList) {
-                    sb.append(columnHandler.getDataMap()).append(",");
+            }
+        }
+        //重新检测
+        this.check();
+    }
+
+    @Override
+    public String check() {
+        String result = "";
+        try {
+            this.session.prepare(this.inquireBuyKeyCql);
+        } catch (InvalidQueryException e) {
+            result = e.getMessage();
+            if (this.counter == false) {
+                //普通表
+                if (result.contains("unconfigured columnfamily")) {
+                    //自动创建表
+                    StringBuilder sb = new StringBuilder();
+                    String dataType;
+                    sb.append("create table ").append(this.keyspace).append(".").append(this.table).append(" (");
+                    List<ColumnHandler> allList = new ArrayList();
+                    allList.addAll(this.keyHandlerList);
+                    allList.addAll(this.columnHandlerList);
+                    String parameterDataType;
+                    for (ColumnHandler columnHandler : allList) {
+                        sb.append(columnHandler.getDataMap());
+                        switch (columnHandler.getColumnDataType()) {
+                            case LIST:
+                                parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                                dataType = "list<" + parameterDataType + ">";
+                                break;
+                            case SET:
+                                parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                                dataType = "set<" + parameterDataType + ">";
+                                break;
+                            case MAP:
+                                parameterDataType = this.getBasicDataType(columnHandler.getFirstParameterDataType());
+                                dataType = "map<" + parameterDataType + ",";
+                                parameterDataType = this.getBasicDataType(columnHandler.getSecondParameterDataType());
+                                dataType = dataType + parameterDataType + ">";
+                                break;
+                            default:
+                                dataType = this.getBasicDataType(columnHandler.getColumnDataType());
+                        }
+                        sb.append(" ").append(dataType).append(",");
+                    }
+                    //处理主键
+                    sb.append(" primary key(");
+                    for (ColumnHandler columnHandler : this.keyHandlerList) {
+                        sb.append(columnHandler.getDataMap()).append(",");
+                    }
+                    sb.setLength(sb.length() - 1);
+                    sb.append("));");
+                    System.out.println(sb.toString());
+                    this.session.execute(sb.toString());
+                } else if (result.contains("Undefined name")) {
+                    this.checkNewColumn(result);
+                } else {
+                    result = "cassandra[" + this.keyspace + "." + this.table + "]:" + e.getMessage();
+                    System.err.println(result);
                 }
-                sb.setLength(sb.length() - 1);
-                sb.append("));");
-                System.out.println(sb.toString());
-                this.session.execute(sb.toString());
-            } else if (result.contains("Undefined name")) {
-                this.checkNewColumn(result);
-            } else {
-                result = "cassandra[" + this.keyspace + "." + this.table + "]:" + e.getMessage();
-                System.err.println(result);
+            } else //计数表
+            {
+                if (result.contains("unconfigured columnfamily")) {
+                    //自动创建表
+                    StringBuilder sb = new StringBuilder();
+                    String dataType;
+                    sb.append("create table ").append(this.keyspace).append(".").append(this.table).append(" (");
+                    for (ColumnHandler columnHandler : keyHandlerList) {
+                        sb.append(columnHandler.getDataMap());
+                        dataType = this.getBasicDataType(columnHandler.getColumnDataType());
+                        sb.append(" ").append(dataType).append(",");
+                    }
+                    for (ColumnHandler columnHandler : columnHandlerList) {
+                        sb.append(columnHandler.getDataMap());
+                        sb.append(" ").append("counter").append(",");
+                    }
+                    //处理主键
+                    sb.append(" primary key(");
+                    for (ColumnHandler columnHandler : this.keyHandlerList) {
+                        sb.append(columnHandler.getDataMap()).append(",");
+                    }
+                    sb.setLength(sb.length() - 1);
+                    sb.append("));");
+                    System.out.println(sb.toString());
+                    this.session.execute(sb.toString());
+                } else if (result.contains("Undefined name")) {
+                    this.checkNewColumn(result);
+                } else {
+                    result = "cassandra[" + this.keyspace + "." + this.table + "]:" + e.getMessage();
+                    System.err.println(result);
+                }
             }
         }
         return result;
