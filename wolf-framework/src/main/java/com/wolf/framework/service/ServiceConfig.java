@@ -31,6 +31,13 @@ public @interface ServiceConfig {
     public String group() default "default";
 
     /**
+     * 是否保存日志
+     *
+     * @return
+     */
+    public boolean saveLog() default true;
+
+    /**
      * 请求的参数
      *
      * @return String[]

@@ -164,9 +164,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                     ObjectMapper mapper = new ObjectMapper();
                     param = mapper.writeValueAsString(parameterMap);
                 }
-                long time = System.currentTimeMillis() - start;
-                AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-                accessLogger.log(route, sid, param, result, time);
+                if (serviceWorker.getServiceContext().isSaveLog()) {
+                    long time = System.currentTimeMillis() - start;
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                    accessLogger.log(route, sid, param, result, time);
+                }
             }
         }
         //每个5分钟触发检查缓存消息过时的

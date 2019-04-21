@@ -54,6 +54,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final ResponseCode[] responseCodes;
     private final List<PushInfo> pushInfoList;
     private final boolean hasAsyncResponse;
+    private final boolean saveLog;
 
     /**
      * 保留字段集合
@@ -273,6 +274,8 @@ public class ServiceContextImpl implements ServiceContext {
         }
         this.returnParameter = returnNames;
         this.responseParameterHandlerMap = returnParameterMap;
+        //
+        this.saveLog = serviceConfig.saveLog();
     }
 
     @Override
@@ -379,4 +382,10 @@ public class ServiceContextImpl implements ServiceContext {
     public String group() {
         return this.group;
     }
+
+    @Override
+    public boolean isSaveLog() {
+        return saveLog;
+    }
+
 }

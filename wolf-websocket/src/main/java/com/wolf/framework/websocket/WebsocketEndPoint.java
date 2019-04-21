@@ -70,6 +70,12 @@ public class WebsocketEndPoint implements Resource {
                 //返回消息
                 responseMesssage = workerContext.getWorkerResponse().getResponseMessage();
                 sid = workerContext.getSessionId();
+                //
+                if (serviceWorker.getServiceContext().isSaveLog()) {
+                    long time = System.currentTimeMillis() - start;
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                    accessLogger.log(route, sid, text, responseMesssage, time);
+                }
             }
         } else {
             responseMesssage = "{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}";
@@ -84,9 +90,6 @@ public class WebsocketEndPoint implements Resource {
                 }
             }
         }
-        long time = System.currentTimeMillis() - start;
-        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-        accessLogger.log(route, sid, text, responseMesssage, time);
         //
         Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
         Object l = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
@@ -102,6 +105,7 @@ public class WebsocketEndPoint implements Resource {
                 try {
                     session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
                     session.close();
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
                     accessLogger.log(sid, "wobsocket", ResponseCodeConfig.TIMEOUT);
                 } catch (IOException ex) {
                 }
