@@ -14,49 +14,12 @@ public class ColumnHandlerImpl implements ColumnHandler {
     private final String columnName;
     private final String dataMap;
     private final ColumnType columnType;
-    private final ColumnDataType columnDataType;
+    protected final ColumnDataType columnDataType;
     private ColumnDataType firstParameterDataType = null;
     private ColumnDataType secondParameterDataType = null;
-    private final Field field;
+    protected final Field field;
     private final String desc;
     private final Object defaultValue;
-
-    private ColumnDataType getColumnDataType(String type) {
-        ColumnDataType dataType;
-        switch (type) {
-            case "long":
-            case "java.lang.Long":
-                dataType = ColumnDataType.LONG;
-                break;
-            case "int":
-            case "java.lang.Integer":
-                dataType = ColumnDataType.INT;
-                break;
-            case "boolean":
-            case "java.lang.Boolean":
-                dataType = ColumnDataType.BOOLEAN;
-                break;
-            case "double":
-            case "java.lang.Double":
-                dataType = ColumnDataType.DOUBLE;
-                break;
-            case "java.lang.String":
-                dataType = ColumnDataType.STRING;
-                break;
-            case "java.util.List":
-                dataType = ColumnDataType.LIST;
-                break;
-            case "java.util.Set":
-                dataType = ColumnDataType.SET;
-                break;
-            case "java.util.Map":
-                dataType = ColumnDataType.MAP;
-                break;
-            default:
-                throw new RuntimeException("Entity not support this type:" + type);
-        }
-        return dataType;
-    }
 
     public ColumnHandlerImpl(String columnName, String dataMap, Field field, ColumnType columnType, String desc, String defaultValue) {
         this.columnName = columnName;
@@ -64,7 +27,7 @@ public class ColumnHandlerImpl implements ColumnHandler {
         this.columnType = columnType;
         this.field = field;
         String type = this.field.getType().getName();
-        this.columnDataType = this.getColumnDataType(type);
+        this.columnDataType = FieldUtils.getColumnDataType(type);
         switch (this.columnDataType) {
             case LONG:
                 if (defaultValue.isEmpty()) {
@@ -101,20 +64,20 @@ public class ColumnHandlerImpl implements ColumnHandler {
                 this.defaultValue = Collections.EMPTY_LIST;
                 ParameterizedType listGenericType = (ParameterizedType) this.field.getGenericType();
                 Type[] listActualTypeArguments = listGenericType.getActualTypeArguments();
-                this.firstParameterDataType = this.getColumnDataType(listActualTypeArguments[0].getTypeName());
+                this.firstParameterDataType = FieldUtils.getColumnDataType(listActualTypeArguments[0].getTypeName());
                 break;
             case SET:
                 this.defaultValue = Collections.EMPTY_SET;
                 ParameterizedType setGenericType = (ParameterizedType) this.field.getGenericType();
                 Type[] setActualTypeArguments = setGenericType.getActualTypeArguments();
-                this.firstParameterDataType = this.getColumnDataType(setActualTypeArguments[0].getTypeName());
+                this.firstParameterDataType = FieldUtils.getColumnDataType(setActualTypeArguments[0].getTypeName());
                 break;
             case MAP:
                 this.defaultValue = Collections.EMPTY_MAP;
                 ParameterizedType mapGenericType = (ParameterizedType) this.field.getGenericType();
                 Type[] mapActualTypeArguments = mapGenericType.getActualTypeArguments();
-                this.firstParameterDataType = this.getColumnDataType(mapActualTypeArguments[0].getTypeName());
-                this.secondParameterDataType = this.getColumnDataType(mapActualTypeArguments[1].getTypeName());
+                this.firstParameterDataType = FieldUtils.getColumnDataType(mapActualTypeArguments[0].getTypeName());
+                this.secondParameterDataType = FieldUtils.getColumnDataType(mapActualTypeArguments[1].getTypeName());
                 break;
             default:
                 throw new RuntimeException("Entity not support this type:" + type);
