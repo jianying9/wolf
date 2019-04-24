@@ -4,6 +4,7 @@ import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.dao.elasticsearch.annotation.EsColumnConfig;
 import com.wolf.framework.dao.elasticsearch.annotation.EsEntityConfig;
+import com.wolf.framework.dao.elasticsearch.annotation.EsVersionConfig;
 import java.util.List;
 
 /**
@@ -33,6 +34,9 @@ public class EsTestEntity implements Entity {
     @EsColumnConfig(desc = "")
     private List<String> voteIdList;
 
+    @EsVersionConfig
+    private long v;
+
     public long getShowId() {
         return showId;
     }
@@ -55,6 +59,10 @@ public class EsTestEntity implements Entity {
 
     public List<String> getVoteIdList() {
         return voteIdList;
+    }
+
+    public long getV() {
+        return v;
     }
 
 }

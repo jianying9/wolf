@@ -14,6 +14,8 @@ public interface Response<T extends Entity> {
     
     public void setCode(String code);
     
+    public void setCode(String code, String desc);
+    
     public void success();
     
     public void exception();

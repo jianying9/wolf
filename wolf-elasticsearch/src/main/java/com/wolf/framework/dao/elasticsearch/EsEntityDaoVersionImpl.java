@@ -1,6 +1,7 @@
 package com.wolf.framework.dao.elasticsearch;
 
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.exception.ResponseCodeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,9 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -21,16 +24,20 @@ import org.elasticsearch.search.sort.SortBuilder;
  * @author jianying9
  * @param <T>
  */
-public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T> {
+public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T> {
 
-    public EsEntityDaoImpl(
+    protected final EsColumnHandler versionHandler;
+
+    public EsEntityDaoVersionImpl(
             TransportClient transportClient,
             String index,
             String type,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
+            EsColumnHandler versionHandler,
             Class<T> clazz) {
         super(transportClient, index, type, keyHandler, columnHandlerList, clazz);
+        this.versionHandler = versionHandler;
     }
 
     @Override
@@ -39,6 +46,8 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
         }
+        //移除version
+        entityMap.remove(this.versionHandler.getColumnName());
         String id = this.getKeyValue(keyValue);
         this.transportClient.prepareIndex(index, type, id).setSource(entityMap).get();
         //
@@ -57,6 +66,8 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             if (keyValue == null) {
                 throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
             }
+            //移除version
+            entityMap.remove(this.versionHandler.getColumnName());
             id = this.getKeyValue(keyValue);
             indexRequest = this.transportClient.prepareIndex(index, type, id).setSource(entityMap).request();
             bulkRequestBuilder.add(indexRequest);
@@ -66,14 +77,42 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         this.refresh();
     }
 
+    private long parseVersion(Object value) {
+        long result = 0;
+        if (Long.class.isInstance(value)) {
+            result = (Long) value;
+        } else if (Integer.class.isInstance(value)) {
+            result = ((Integer) value).longValue();
+        } else if (String.class.isInstance(value)) {
+            result = Long.parseLong((String) value);
+        }
+        return result;
+    }
+
     @Override
     public String update(Map<String, Object> entityMap) {
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
         }
+        Object versionValue = entityMap.get(this.versionHandler.getColumnName());
+        if (versionValue == null) {
+            throw new RuntimeException("Can not find versionValue when update:" + entityMap.toString());
+        }
+        entityMap.remove(this.versionHandler.getColumnName());
+        long version = this.parseVersion(versionValue);
         String id = this.getKeyValue(keyValue);
-        this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).get();
+        UpdateRequestBuilder updateRequestBuilder = this.transportClient.prepareUpdate(index, type, id)
+                .setDoc(entityMap)
+                .setVersion(version);
+        try {
+            updateRequestBuilder.get();
+        } catch (VersionConflictEngineException e) {
+            logger.error("elasticsearch version exception", e);
+            ResponseCodeException rce = new ResponseCodeException("data_expire");
+            rce.setDesc("数据已过期,请刷新");
+            throw rce;
+        }
         //
         this.refresh();
         return id;
@@ -85,16 +124,35 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         String id;
         UpdateRequest updateRequest;
         Object keyValue;
+        Object versionValue;
+        long version;
         for (Map<String, Object> entityMap : entityMapList) {
             keyValue = entityMap.get(this.keyHandler.getColumnName());
             if (keyValue == null) {
                 throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
             }
+            versionValue = entityMap.get(this.versionHandler.getColumnName());
+            if (versionValue == null) {
+                throw new RuntimeException("Can not find versionValue when update:" + entityMap.toString());
+            }
+            entityMap.remove(this.versionHandler.getColumnName());
+            version = this.parseVersion(versionValue);
             id = this.getKeyValue(keyValue);
-            updateRequest = this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).request();
+            updateRequest = this.transportClient.prepareUpdate(index, type, id)
+                    .setDoc(entityMap)
+                    .setVersion(version)
+                    .request();
+
             bulkRequestBuilder.add(updateRequest);
         }
-        bulkRequestBuilder.get();
+        try {
+            bulkRequestBuilder.get();
+        } catch (VersionConflictEngineException e) {
+            logger.error("elasticsearch version exception", e);
+            ResponseCodeException rce = new ResponseCodeException("data_expire");
+            rce.setDesc("数据已过期,请刷新");
+            throw rce;
+        }
         //
         this.refresh();
     }
@@ -106,6 +164,8 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         GetResponse getResponse = this.transportClient.prepareGet(index, type, id).get();
         if (getResponse != null && getResponse.isExists()) {
             Map<String, Object> entityMap = getResponse.getSourceAsMap();
+            //读取version
+            entityMap.put(this.versionHandler.getColumnName(), getResponse.getVersion());
             t = this.parseMap(entityMap);
         }
         return t;
@@ -128,7 +188,8 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
                 .setTypes(type)
                 .setFrom(from)
                 .setSize(size)
-                .setQuery(queryBuilder);
+                .setQuery(queryBuilder)
+                .setVersion(true);
         if (sort != null) {
             searchRequestBuilder.addSort(sort);
         }
@@ -140,6 +201,8 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         T t;
         for (SearchHit searchHit : searchHitArray) {
             entityMap = searchHit.getSourceAsMap();
+            //读取version
+            entityMap.put(this.versionHandler.getColumnName(), searchHit.getVersion());
             t = this.parseMap(entityMap);
             tList.add(t);
         }

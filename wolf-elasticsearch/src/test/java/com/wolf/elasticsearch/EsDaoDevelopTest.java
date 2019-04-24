@@ -22,9 +22,9 @@ import org.junit.Test;
  * @author jianying9
  */
 public class EsDaoDevelopTest {
-
+    
     protected static TestHandler testHandler;
-
+    
     static {
         Map<String, String> parameterMap = new HashMap(8, 1);
         parameterMap.put(FrameworkConfig.BUILD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
@@ -36,28 +36,28 @@ public class EsDaoDevelopTest {
         //
         testHandler = new TestHandler(parameterMap);
     }
-
+    
     public EsDaoDevelopTest() {
     }
-
+    
     @BeforeClass
     public static void setUpClass() {
     }
-
+    
     @AfterClass
     public static void tearDownClass() {
     }
-
+    
     @Before
     public void setUp() {
     }
-
+    
     @After
     public void tearDown() {
     }
 
     //
-    @Test
+//    @Test
     public void check() {
         EsAdminContextImpl ctx = EsAdminContextImpl.getInstance(ApplicationContext.CONTEXT);
         EsEntityDao<EsTestEntity> esTestEntityDao = ctx.getEsEntityDao(EsTestEntity.class);
@@ -79,10 +79,30 @@ public class EsDaoDevelopTest {
 //        esTestEntityDao.delete(2);
         EsTestEntity esTestEntity = esTestEntityDao.inquireByKey(2);
         System.out.println(esTestEntity.getVoteIdList());
-
+        
         List<EsTestEntity> esTestEntityList = esTestEntityDao.search(QueryBuilders.boolQuery());
         for (EsTestEntity etEntity : esTestEntityList) {
             System.out.println(etEntity.getShowId());
         }
     }
+    
+    @Test
+    public void update() {
+        EsAdminContextImpl ctx = EsAdminContextImpl.getInstance(ApplicationContext.CONTEXT);
+        EsEntityDao<EsTestEntity> esTestEntityDao = ctx.getEsEntityDao(EsTestEntity.class);
+        //
+        List<Map<String, Object>> mapList = new ArrayList();
+        Map<String, Object> map = new HashMap();
+//
+        List<String> voteIdList = new ArrayList();
+        voteIdList.add("1");
+        voteIdList.add("4");
+        voteIdList.add("7");
+        map.put("showId", 3);
+        map.put("v", 13);
+        map.put("voteIdList", voteIdList);
+        mapList.add(map);
+        esTestEntityDao.batchUpdate(mapList);
+    }
+    
 }

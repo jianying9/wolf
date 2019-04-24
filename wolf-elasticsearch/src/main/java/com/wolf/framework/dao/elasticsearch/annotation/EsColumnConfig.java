@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * 用于描述entity中各个field的信息
  *
- * @author aladdin
+ * @author jianying9
  */
 @Target(value = {ElementType.FIELD})
 @Retention(value = RetentionPolicy.RUNTIME)

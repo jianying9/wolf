@@ -19,6 +19,8 @@ public final class EsEntityDaoBuilder<T extends Entity> {
     private final String type;
     //key
     private final EsColumnHandler keyHandler;
+    //version
+    private final EsColumnHandler versionHandler;
     //column
     private final List<EsColumnHandler> columnHandlerList;
     //实体class
@@ -31,6 +33,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
             String tableName,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
+            EsColumnHandler versionHandler,
             Class<T> clazz,
             EsAdminContext<T> esAdminContext
     ) {
@@ -41,6 +44,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
         } else {
             this.columnHandlerList = columnHandlerList;
         }
+        this.versionHandler = versionHandler;
         this.clazz = clazz;
         this.esAdminContext = esAdminContext;
         this.index = esAdminContext.getIndex(type);
@@ -61,15 +65,27 @@ public final class EsEntityDaoBuilder<T extends Entity> {
         }
         TransportClient transportClient = this.esAdminContext.getTransportClient();
         //
-        EsEntityDaoImpl<T> esEntityDaoImpl = new EsEntityDaoImpl(
-                transportClient,
-                this.index,
-                this.type,
-                this.keyHandler,
-                this.columnHandlerList,
-                this.clazz
-        );
-        EsEntityDao<T> entityDao = esEntityDaoImpl;
+        EsEntityDao<T> entityDao;
+        if (this.versionHandler == null) {
+            entityDao = new EsEntityDaoImpl(
+                    transportClient,
+                    this.index,
+                    this.type,
+                    this.keyHandler,
+                    this.columnHandlerList,
+                    this.clazz
+            );
+        } else {
+            entityDao = new EsEntityDaoVersionImpl(
+                    transportClient,
+                    this.index,
+                    this.type,
+                    this.keyHandler,
+                    this.columnHandlerList,
+                    this.versionHandler,
+                    this.clazz
+            );
+        }
         return entityDao;
     }
 }

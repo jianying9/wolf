@@ -2,12 +2,13 @@ package com.wolf.framework.dao.elasticsearch;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.dao.ColumnDataType;
 import com.wolf.framework.dao.ColumnHandler;
-import com.wolf.framework.dao.ColumnHandlerImpl;
 import com.wolf.framework.dao.ColumnType;
 import com.wolf.framework.dao.DaoConfig;
 import com.wolf.framework.dao.DaoConfigBuilder;
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.dao.FieldUtils;
 import com.wolf.framework.dao.elasticsearch.annotation.EsColumnConfig;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.logger.LogFactory;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import com.wolf.framework.dao.elasticsearch.annotation.EsEntityConfig;
+import com.wolf.framework.dao.elasticsearch.annotation.EsVersionConfig;
 import java.util.Map;
 
 /**
@@ -79,6 +81,8 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
                     EsColumnHandler keyHandler = null;
+                    //
+                    EsColumnHandler versionHandler = null;
                     //column
                     List<ColumnHandler> columnHandlerList = new ArrayList(0);
                     EsColumnHandler columnHandler;
@@ -86,7 +90,6 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     String fieldName;
                     EsColumnConfig esColumnConfig;
                     ColumnType columnType;
-                    boolean analyzer;
                     for (Field field : fieldTemp) {
                         modifier = field.getModifiers();
                         if (Modifier.isStatic(modifier) == false) {
@@ -102,6 +105,15 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                                     columnHandler = new EsColumnHandlerImpl(esColumnConfig.analyzer(), fieldName, fieldName, field, columnType, esColumnConfig.desc(), esColumnConfig.defaultValue());
                                     columnHandlerList.add(columnHandler);
                                 }
+                            } else if (field.isAnnotationPresent(EsVersionConfig.class)) {
+                                String type = field.getType().getName();
+                                ColumnDataType columnDataType = FieldUtils.getColumnDataType(type);
+                                if (columnDataType.equals(ColumnDataType.LONG)) {
+                                    versionHandler = new EsColumnHandlerImpl(fieldName, fieldName, field, ColumnType.COLUMN, "", "");
+                                } else {
+                                    this.logger.error("--parse EsEntityDao {} EsVersionConfig field must be long--", clazz.getName());
+                                    throw new RuntimeException("Error when building EsEntityDao. Cause: EsVersionConfig field must be long");
+                                }
                             }
                         }
                     }
@@ -116,6 +128,7 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                                 table,
                                 keyHandler,
                                 columnHandlerList,
+                                versionHandler,
                                 clazz,
                                 this.esAdminContext
                         );
