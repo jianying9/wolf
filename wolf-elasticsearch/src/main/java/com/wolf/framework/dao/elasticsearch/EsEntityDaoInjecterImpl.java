@@ -4,6 +4,8 @@ import com.wolf.framework.injecter.AbstractInjecter;
 import com.wolf.framework.injecter.Injecter;
 import java.lang.reflect.Field;
 import com.wolf.framework.dao.elasticsearch.annotation.InjectEsEntityDao;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  *
@@ -24,8 +26,10 @@ public class EsEntityDaoInjecterImpl extends AbstractInjecter<InjectEsEntityDao>
 
     @Override
     protected Class<?> getObjectKey(Field field) {
-        InjectEsEntityDao dao = field.getAnnotation(InjectEsEntityDao.class);
-        return dao.clazz();
+        ParameterizedType listGenericType = (ParameterizedType) field.getGenericType();
+        Type[] listActualTypeArguments = listGenericType.getActualTypeArguments();
+        Class<?> clz = (Class<?>) listActualTypeArguments[0];
+        return clz;
     }
 
     @Override
