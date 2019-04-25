@@ -28,6 +28,8 @@ public class EsCheckDevelopTest {
         parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.wolf.elasticsearch");
         //
         parameterMap.put(EsConfig.ELASTICSEARCH_HOST, "106.15.34.48");
+        parameterMap.put(EsConfig.ELASTICSEARCH_DATABASE, "");
+        parameterMap.put(EsConfig.ELASTICSEARCH_CLUSTER_NAME, "xzlm-application");
         //
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.UNIT_TEST);
         //

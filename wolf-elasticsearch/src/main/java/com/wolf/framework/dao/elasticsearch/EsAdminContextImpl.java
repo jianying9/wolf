@@ -42,13 +42,31 @@ public class EsAdminContextImpl<T extends Entity> implements EsAdminContext<T> {
         //获取elasticsearch host
         String searchHost = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_HOST);
         this.host = searchHost;
+        //
+        String database = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_DATABASE);
+        if (database == null) {
+            database = "";
+        }
+        String clusterName = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_CLUSTER_NAME);
+        if (clusterName == null) {
+            clusterName = "";
+        }
         //获取前缀
         String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
         compileModel = compileModel.toLowerCase();
-        this.prefix = compileModel;
+        if (database.isEmpty() == false) {
+            this.prefix = database + "_" + compileModel;
+        } else {
+            this.prefix = compileModel;
+        }
+        //
+        Settings settings = Settings.EMPTY;
+        if (clusterName.isEmpty() == false) {
+            settings = Settings.builder().put("cluster.name", clusterName).build();
+        }
         try {
             System.setProperty("es.set.netty.runtime.available.processors", "false");
-            this.transportClient = new PreBuiltTransportClient(Settings.EMPTY)
+            this.transportClient = new PreBuiltTransportClient(settings)
                     .addTransportAddress(new TransportAddress(InetAddress.getByName(this.host), this.port));
         } catch (UnknownHostException ex) {
             System.err.println("elasticsearch 初始化异常");

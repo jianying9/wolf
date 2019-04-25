@@ -22,36 +22,38 @@ import org.junit.Test;
  * @author jianying9
  */
 public class EsDaoDevelopTest {
-    
+
     protected static TestHandler testHandler;
-    
+
     static {
         Map<String, String> parameterMap = new HashMap(8, 1);
         parameterMap.put(FrameworkConfig.BUILD_TIMESTAMP, Long.toString(System.currentTimeMillis()));
         parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.wolf.elasticsearch");
         //
         parameterMap.put(EsConfig.ELASTICSEARCH_HOST, "106.15.34.48");
+        parameterMap.put(EsConfig.ELASTICSEARCH_DATABASE, "");
+        parameterMap.put(EsConfig.ELASTICSEARCH_CLUSTER_NAME, "xzlm-application");
         //
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.UNIT_TEST);
         //
         testHandler = new TestHandler(parameterMap);
     }
-    
+
     public EsDaoDevelopTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -79,13 +81,13 @@ public class EsDaoDevelopTest {
 //        esTestEntityDao.delete(2);
         EsTestEntity esTestEntity = esTestEntityDao.inquireByKey(2);
         System.out.println(esTestEntity.getVoteIdList());
-        
+
         List<EsTestEntity> esTestEntityList = esTestEntityDao.search(QueryBuilders.boolQuery());
         for (EsTestEntity etEntity : esTestEntityList) {
             System.out.println(etEntity.getShowId());
         }
     }
-    
+
     @Test
     public void update() {
         EsAdminContextImpl ctx = EsAdminContextImpl.getInstance(ApplicationContext.CONTEXT);
@@ -104,5 +106,5 @@ public class EsDaoDevelopTest {
         mapList.add(map);
         esTestEntityDao.batchUpdate(mapList);
     }
-    
+
 }
