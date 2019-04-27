@@ -188,8 +188,10 @@ public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDa
                 .setTypes(type)
                 .setFrom(from)
                 .setSize(size)
-                .setQuery(queryBuilder)
                 .setVersion(true);
+        if (queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
         if (sort != null) {
             searchRequestBuilder.addSort(sort);
         }

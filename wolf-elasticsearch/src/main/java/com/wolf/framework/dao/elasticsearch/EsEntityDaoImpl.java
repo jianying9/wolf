@@ -22,7 +22,7 @@ import org.elasticsearch.search.sort.SortBuilder;
  * @param <T>
  */
 public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T> {
-
+    
     public EsEntityDaoImpl(
             TransportClient transportClient,
             String index,
@@ -32,7 +32,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             Class<T> clazz) {
         super(transportClient, index, type, keyHandler, columnHandlerList, clazz);
     }
-
+    
     @Override
     public String insert(Map<String, Object> entityMap) {
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
@@ -45,7 +45,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         this.refresh();
         return id;
     }
-
+    
     @Override
     public void batchInsert(List<Map<String, Object>> entityMapList) {
         BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
@@ -65,7 +65,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         //
         this.refresh();
     }
-
+    
     @Override
     public String update(Map<String, Object> entityMap) {
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
@@ -78,7 +78,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         this.refresh();
         return id;
     }
-
+    
     @Override
     public void batchUpdate(List<Map<String, Object>> entityMapList) {
         BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
@@ -98,7 +98,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         //
         this.refresh();
     }
-
+    
     @Override
     public T inquireByKey(Object keyValue) {
         T t = null;
@@ -128,7 +128,10 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
                 .setTypes(type)
                 .setFrom(from)
                 .setSize(size)
-                .setQuery(queryBuilder);
+                .setVersion(false);
+        if (queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
         if (sort != null) {
             searchRequestBuilder.addSort(sort);
         }
@@ -145,5 +148,5 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         }
         return tList;
     }
-
+    
 }

@@ -5,7 +5,6 @@ import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.dao.ColumnHandler;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +14,9 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.slf4j.Logger;
 
@@ -151,6 +146,16 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
     @Override
     public final List<T> search(QueryBuilder queryBuilder, int from, int size) {
         return this.search(queryBuilder, null, from, size);
+    }
+
+    @Override
+    public final List<T> search(SortBuilder sort, int from, int size) {
+        return this.search(null, sort, from, size);
+    }
+
+    @Override
+    public final List<T> search(int from, int size) {
+        return this.search(null, null, from, size);
     }
 
     /**
