@@ -189,6 +189,7 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
         //创建index
         IndicesExistsResponse indicesExistsResponse = this.transportClient.admin().indices().prepareExists(this.index).get();
         if (indicesExistsResponse.isExists() == false) {
+            System.out.println("创建index:" + this.index);
             transportClient.admin().indices().prepareCreate(this.index).get();
         }
         //
@@ -218,6 +219,8 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
             json = mapper.writeValueAsString(indexMap);
         } catch (IOException ex) {
         }
+        System.out.println("更新type:" + this.type);
+        System.out.println(json);
         PutMappingResponse response = this.transportClient.admin().indices().preparePutMapping(index)
                 .setType(this.type)
                 .setSource(json, XContentType.JSON)
