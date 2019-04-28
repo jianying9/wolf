@@ -3,7 +3,9 @@ package com.wolf.framework.dao;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -130,6 +132,25 @@ public class ColumnHandlerImpl implements ColumnHandler {
 
     @Override
     public void setFieldValue(Object object, Object value) {
+        //如果是集合,并且是long型,则需要判断转换
+        if (this.columnDataType.equals(ColumnDataType.LIST) && this.firstParameterDataType != null && this.firstParameterDataType.equals(ColumnDataType.LONG)) {
+            List list = (List) value;
+            if (list.isEmpty() == false) {
+                Object o = list.get(0);
+                if (Integer.class.isInstance(o)) {
+                    //需要转换
+                    List<Long> valueList = new ArrayList();
+                    int v;
+                    long l;
+                    for (Object objValue : list) {
+                        v = (Integer) objValue;
+                        l = v;
+                        valueList.add(l);
+                    }
+                    value = valueList;
+                }
+            }
+        }
         try {
             this.field.setAccessible(true);
             this.field.set(object, value);
