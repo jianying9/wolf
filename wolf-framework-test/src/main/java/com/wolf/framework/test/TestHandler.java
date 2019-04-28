@@ -26,7 +26,6 @@ public final class TestHandler {
     public TestHandler(Map<String, String> parameterMap) {
         synchronized (TestHandler.class) {
             if (ApplicationContext.CONTEXT.isReady() == false) {
-                parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.UNIT_TEST);
                 ApplicationContextBuilder applicationContextBuilder = new ApplicationContextBuilder(parameterMap);
                 applicationContextBuilder.build();
             }
