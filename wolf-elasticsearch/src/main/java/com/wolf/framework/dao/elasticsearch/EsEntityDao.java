@@ -15,6 +15,10 @@ import org.elasticsearch.search.sort.SortBuilder;
  */
 public interface EsEntityDao<T extends Entity> extends Dao {
 
+    public String getIndex();
+
+    public String getType();
+
     /**
      * 判断主键是否存在
      *
@@ -49,7 +53,7 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size);
-    
+
     /**
      *
      * @param sort
@@ -58,7 +62,7 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(SortBuilder sort, int from, int size);
-    
+
     /**
      *
      * @param from
@@ -73,7 +77,7 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(QueryBuilder queryBuilder);
-    
+
     /**
      * 删除
      *

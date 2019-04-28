@@ -75,6 +75,16 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
     }
 
     @Override
+    public String getIndex() {
+        return index;
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
     public final T insertAndInquire(Map<String, Object> entityMap) {
         String id = this.insert(entityMap);
         return this.inquireByKey(id);
