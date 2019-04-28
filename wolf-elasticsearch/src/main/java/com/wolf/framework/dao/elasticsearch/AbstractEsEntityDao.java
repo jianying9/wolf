@@ -138,6 +138,9 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
                 keyHandler.setFieldValue(t, value);
                 for (ColumnHandler column : this.columnHandlerList) {
                     value = entityMap.get(column.getColumnName());
+                    if (value == null) {
+                        value = column.getDefaultValue();
+                    }
                     column.setFieldValue(t, value);
                 }
             } catch (InstantiationException | IllegalAccessException ex) {
