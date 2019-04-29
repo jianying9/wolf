@@ -100,6 +100,7 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
     public final void delete(Object keyValue) {
         String id = this.getKeyValue(keyValue);
         this.transportClient.prepareDelete(index, type, id).get();
+        this.refresh();
     }
 
     @Override
