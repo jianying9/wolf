@@ -26,6 +26,8 @@ public enum ResponseDataType {
     EMAIL,
     //布尔
     BOOLEAN,
+    //
+    JSON_OBJECT,
     //json对象
     OBJECT,
     //json数组
