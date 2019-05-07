@@ -165,7 +165,11 @@ public class ApplicationContextBuilder<T extends Entity> {
         //初始化任务处理对象
         this.logger.info("Start task executer...");
         TaskExecutor taskExecutor;
-        if (compileModel.equals(FrameworkConfig.UNIT_TEST)) {
+        String taskSync = this.getParameter(FrameworkConfig.TASK_SYNC);
+        if (taskSync == null) {
+            taskSync = "false";
+        }
+        if (taskSync.equals("true")) {
             taskExecutor = new TaskExecutorUnitTestImpl();
         } else {
             int corePoolSize;

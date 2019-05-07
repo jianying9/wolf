@@ -26,6 +26,9 @@ public class FrameworkConfig {
     public final static String TASK_CORE_POOL_SIZE = "task.core.pool.size";
     //任务线程最大连接数量
     public final static String TASK_MAX_POOL_SIZE = "task.max.pool.size";
+    //
+    public final static String TASK_SYNC = "task.sync";
+
     //derby数据源初始化方式:JNDI,EMBEDDED,REMOTE
     public final static String DERBY_TYPE = "derby.type";
     public final static String JNDI = "JNDI";
