@@ -9,6 +9,19 @@ import java.util.Map;
  */
 public final class MapUtils {
 
+    public static Integer getIntValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        Integer result = null;
+        if (value != null) {
+            if (Integer.class.isInstance(value)) {
+                result = (Integer) value;
+            } else if (String.class.isInstance(value)) {
+                result = Integer.parseInt((String) value);
+            }
+        }
+        return result;
+    }
+
     public static Long getLongValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
         Long result = null;
