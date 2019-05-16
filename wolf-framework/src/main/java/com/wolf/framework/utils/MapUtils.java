@@ -10,6 +10,7 @@ import java.util.Map;
 public final class MapUtils {
 
     public static Integer getIntValue(Map<String, Object> object, String name) {
+        System.out.println(name);
         Object value = object.get(name);
         Integer result = null;
         if (value != null) {
