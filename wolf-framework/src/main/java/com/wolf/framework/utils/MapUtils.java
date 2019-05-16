@@ -15,6 +15,7 @@ public final class MapUtils {
         System.out.println(value);
         Integer result = null;
         if (value != null) {
+            System.out.println(value.getClass());
             if (Integer.class.isInstance(value)) {
                 result = (Integer) value;
                 System.out.println("1:" + result);
