@@ -10,21 +10,19 @@ import java.util.Map;
 public final class MapUtils {
 
     public static Integer getIntValue(Map<String, Object> object, String name) {
-        System.out.println(name);
         Object value = object.get(name);
-        System.out.println(value);
         Integer result = null;
         if (value != null) {
             System.out.println(value.getClass());
             if (Integer.class.isInstance(value)) {
                 result = (Integer) value;
-                System.out.println("1:" + result);
             } else if (String.class.isInstance(value)) {
                 result = Integer.parseInt((String) value);
-                System.out.println("2:" + result);
+            } else if (Long.class.isInstance(value)) {
+                Long l = (Long) value;
+                result = l.intValue();
             }
         }
-        System.out.println("3" + result);
         return result;
     }
 
