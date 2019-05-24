@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -235,7 +235,7 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
         }
         System.out.println("更新type:" + this.type);
         System.out.println(json);
-        PutMappingResponse response = this.transportClient.admin().indices().preparePutMapping(index)
+        AcknowledgedResponse response = this.transportClient.admin().indices().preparePutMapping(index)
                 .setType(this.type)
                 .setSource(json, XContentType.JSON)
                 .get();
