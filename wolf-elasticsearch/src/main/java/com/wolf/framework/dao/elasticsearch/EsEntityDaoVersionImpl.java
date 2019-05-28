@@ -181,9 +181,6 @@ public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDa
      */
     @Override
     public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size) {
-        if (size >= 100) {
-            size = 100;
-        }
         SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
                 .setTypes(type)
                 .setFrom(from)
@@ -194,6 +191,37 @@ public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDa
         }
         if (sort != null) {
             searchRequestBuilder.addSort(sort);
+        }
+        SearchResponse response = searchRequestBuilder.get();
+        SearchHits searchHits = response.getHits();
+        SearchHit[] searchHitArray = searchHits.getHits();
+        List<T> tList = new ArrayList(searchHitArray.length);
+        Map<String, Object> entityMap;
+        T t;
+        for (SearchHit searchHit : searchHitArray) {
+            entityMap = searchHit.getSourceAsMap();
+            //读取version
+            entityMap.put(this.versionHandler.getColumnName(), searchHit.getVersion());
+            t = this.parseMap(entityMap);
+            tList.add(t);
+        }
+        return tList;
+    }
+
+    @Override
+    public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size) {
+        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
+                .setTypes(type)
+                .setFrom(from)
+                .setSize(size)
+                .setVersion(true);
+        if (queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
+        if (sortList != null) {
+            for (SortBuilder sortBuilder : sortList) {
+                searchRequestBuilder.addSort(sortBuilder);
+            }
         }
         SearchResponse response = searchRequestBuilder.get();
         SearchHits searchHits = response.getHits();

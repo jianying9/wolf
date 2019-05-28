@@ -159,7 +159,8 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
      */
     @Override
     public final List<T> search(QueryBuilder queryBuilder, int from, int size) {
-        return this.search(queryBuilder, null, from, size);
+        SortBuilder sort = null;
+        return this.search(queryBuilder, sort, from, size);
     }
 
     @Override
@@ -169,7 +170,8 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
 
     @Override
     public final List<T> search(int from, int size) {
-        return this.search(null, null, from, size);
+        SortBuilder sort = null;
+        return this.search(null, sort, from, size);
     }
 
     /**
@@ -181,7 +183,8 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
     public final List<T> search(QueryBuilder queryBuilder) {
         int size = 100;
         int from = 0;
-        return this.search(queryBuilder, null, from, size);
+        SortBuilder sort = null;
+        return this.search(queryBuilder, sort, from, size);
     }
 
     protected final Map<String, Object> getFieldMap(EsColumnHandler esColumnHandler) {

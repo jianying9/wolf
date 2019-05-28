@@ -53,6 +53,16 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size);
+    
+    /**
+     *
+     * @param queryBuilder
+     * @param sortList
+     * @param from
+     * @param size
+     * @return
+     */
+    public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size);
 
     /**
      *

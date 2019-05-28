@@ -146,4 +146,33 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         return tList;
     }
 
+    @Override
+    public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size) {
+        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
+                .setTypes(type)
+                .setFrom(from)
+                .setSize(size)
+                .setVersion(false);
+        if (queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
+        if (sortList != null) {
+            for (SortBuilder sortBuilder : sortList) {
+                searchRequestBuilder.addSort(sortBuilder);
+            }
+        }
+        SearchResponse response = searchRequestBuilder.get();
+        SearchHits searchHits = response.getHits();
+        SearchHit[] searchHitArray = searchHits.getHits();
+        List<T> tList = new ArrayList(searchHitArray.length);
+        Map<String, Object> entityMap;
+        T t;
+        for (SearchHit searchHit : searchHitArray) {
+            entityMap = searchHit.getSourceAsMap();
+            t = this.parseMap(entityMap);
+            tList.add(t);
+        }
+        return tList;
+    }
+
 }
