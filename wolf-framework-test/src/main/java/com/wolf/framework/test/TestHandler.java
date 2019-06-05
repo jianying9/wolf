@@ -1,10 +1,10 @@
 package com.wolf.framework.test;
 
-import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
 import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerDefaultImpl;
 import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.reponse.Response;
@@ -58,7 +58,7 @@ public final class TestHandler {
             } catch (IOException ex) {
             }
             long time = System.currentTimeMillis() - start;
-            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            AccessLogger accessLogger = new AccessLoggerDefaultImpl();
             accessLogger.log(route, sid, json, result.getResponseMessage(), time);
         }
         return result;
