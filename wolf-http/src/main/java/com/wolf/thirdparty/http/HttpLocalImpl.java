@@ -4,14 +4,19 @@ import com.wolf.framework.local.LocalServiceConfig;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 /**
  *
@@ -96,18 +101,17 @@ public class HttpLocalImpl implements HttpLocal {
             //
             String key;
             String value;
-            StringBuilder sbBody = new StringBuilder(100);
+            List<NameValuePair> urlParameterList = new ArrayList(parameterMap.size());
             for (Map.Entry<String, String> query : parameterMap.entrySet()) {
                 key = query.getKey();
                 value = query.getValue();
                 if (value != null && value.isEmpty() == false) {
-                    value = URLEncoder.encode(value, "utf-8");
-                    sbBody.append(key).append("=").append(value).append("&");
+                    urlParameterList.add(new BasicNameValuePair(key, value));
                 }
             }
-            String body = sbBody.toString();
             //
-            request.setEntity(new StringEntity(body));
+            HttpEntity postBodyEntity = new UrlEncodedFormEntity(urlParameterList);
+            request.setEntity(postBodyEntity);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
         } catch (IOException ex) {
