@@ -232,7 +232,6 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                     //
                     String deviceTokenList = "[\"" + deviceToken + "\"]";
                     paramterMap.put("device_token_list", deviceTokenList);
-                    //
                     paramterMap.put("payload", payload);
                     //
                     Map<String, String> headerMap = new HashMap(2, 1);
@@ -240,7 +239,7 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                     //
                     String nsp_ctx = "{\"ver\":\"1\", \"appId\":\"" + huaweiChannel.getAppId() + "\"}";
                     try {
-                        nsp_ctx = URLEncoder.encode(nsp_ctx, "utf-8");
+                        nsp_ctx = URLEncoder.encode(nsp_ctx, "UTF-8");
                     } catch (UnsupportedEncodingException ex) {
                     }
 

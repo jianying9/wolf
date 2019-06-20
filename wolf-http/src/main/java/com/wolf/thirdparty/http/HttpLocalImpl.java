@@ -110,7 +110,7 @@ public class HttpLocalImpl implements HttpLocal {
                 }
             }
             //
-            HttpEntity postBodyEntity = new UrlEncodedFormEntity(urlParameterList);
+            HttpEntity postBodyEntity = new UrlEncodedFormEntity(urlParameterList, "UTF-8");
             request.setEntity(postBodyEntity);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
