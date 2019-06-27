@@ -6,7 +6,7 @@ package com.wolf.framework.service.parameter;
  * @author jianying9
  */
 public enum ResponseDataType {
-    
+
     EXTEND,
     //
     LONG,
@@ -28,6 +28,8 @@ public enum ResponseDataType {
     BOOLEAN,
     //
     JSON_OBJECT,
+    //
+    JSON_ARRAY,
     //json对象
     OBJECT,
     //json数组

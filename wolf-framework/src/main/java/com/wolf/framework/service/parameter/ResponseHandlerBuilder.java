@@ -6,6 +6,7 @@ import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterType;
 import com.wolf.framework.service.parameter.response.BooleanResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.DoubleResponseHandlerImpl;
+import com.wolf.framework.service.parameter.response.JsonArrayResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.JsonObjectResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.LongArrayResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.LongResponseHandlerImpl;
@@ -107,6 +108,9 @@ public class ResponseHandlerBuilder {
                 break;
             case JSON_OBJECT:
                 responseHandler = new JsonObjectResponseHandlerImpl(fieldName);
+                break;
+            case JSON_ARRAY:
+                responseHandler = new JsonArrayResponseHandlerImpl(fieldName);
                 break;
             case OBJECT:
                 List<ResponseInfo> childResponseInfoList = this.responseInfo.getChildList();

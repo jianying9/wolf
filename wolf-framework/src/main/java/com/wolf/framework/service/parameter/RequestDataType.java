@@ -30,6 +30,8 @@ public enum RequestDataType {
     //
     JSON_OBJECT,
     //
+    JSON_ARRAY,
+    //
     OBJECT,
     //
     OBJECT_ARRAY,
