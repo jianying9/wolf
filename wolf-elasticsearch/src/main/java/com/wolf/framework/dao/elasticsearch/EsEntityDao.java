@@ -4,6 +4,7 @@ import com.wolf.framework.dao.Dao;
 import com.wolf.framework.dao.Entity;
 import java.util.List;
 import java.util.Map;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 
@@ -53,7 +54,7 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size);
-    
+
     /**
      *
      * @param queryBuilder
@@ -80,6 +81,14 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public List<T> search(int from, int size);
+
+    /**
+     *
+     * @param from
+     * @param size
+     * @return
+     */
+    public SearchResponse searcResponse(QueryBuilder queryBuilder, int from, int size);
 
     /**
      *

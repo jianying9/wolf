@@ -239,4 +239,17 @@ public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDa
         return tList;
     }
 
+    @Override
+    public SearchResponse searcResponse(QueryBuilder queryBuilder, int from, int size) {
+        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
+                .setTypes(type)
+                .setFrom(from)
+                .setSize(size)
+                .setVersion(true);
+        if (queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
+        return searchRequestBuilder.get();
+    }
+
 }

@@ -147,6 +147,19 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
     }
 
     @Override
+    public SearchResponse searcResponse(QueryBuilder queryBuilder, int from, int size) {
+        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
+                .setTypes(type)
+                .setFrom(from)
+                .setSize(size)
+                .setVersion(false);
+        if(queryBuilder != null) {
+            searchRequestBuilder.setQuery(queryBuilder);
+        }
+        return searchRequestBuilder.get();
+    }
+
+    @Override
     public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size) {
         SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
                 .setTypes(type)
