@@ -31,13 +31,14 @@ public final class EsEntityDaoBuilder<T extends Entity> {
     //
     public EsEntityDaoBuilder(
             String tableName,
+            String type,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
             EsColumnHandler versionHandler,
             Class<T> clazz,
             EsAdminContext<T> esAdminContext
     ) {
-        this.type = tableName;
+        this.type = type;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
             this.columnHandlerList = new ArrayList(0);
@@ -47,7 +48,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
         this.versionHandler = versionHandler;
         this.clazz = clazz;
         this.esAdminContext = esAdminContext;
-        this.index = esAdminContext.getIndex(type);
+        this.index = esAdminContext.getIndex(tableName);
     }
 
     public EsEntityDao<T> build() {

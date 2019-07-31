@@ -22,6 +22,13 @@ public @interface EsEntityConfig {
     public String table();
 
     /**
+     * 类型,默认与table相同
+     *
+     * @return
+     */
+    public String type() default "";
+
+    /**
      * 缓存
      *
      * @return

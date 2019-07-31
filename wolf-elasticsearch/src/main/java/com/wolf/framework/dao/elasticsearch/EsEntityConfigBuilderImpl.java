@@ -76,6 +76,10 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     final EsEntityConfig esDaoConfig = clazz.getAnnotation(EsEntityConfig.class);
                     //表
                     final String table = esDaoConfig.table();
+                    String type = esDaoConfig.type();
+                    if (type.isEmpty()) {
+                        type = table;
+                    }
                     //
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
@@ -106,8 +110,8 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                                     columnHandlerList.add(columnHandler);
                                 }
                             } else if (field.isAnnotationPresent(EsVersionConfig.class)) {
-                                String type = field.getType().getName();
-                                ColumnDataType columnDataType = FieldUtils.getColumnDataType(type);
+                                String fieldType = field.getType().getName();
+                                ColumnDataType columnDataType = FieldUtils.getColumnDataType(fieldType);
                                 if (columnDataType.equals(ColumnDataType.LONG)) {
                                     versionHandler = new EsColumnHandlerImpl(fieldName, fieldName, field, ColumnType.COLUMN, "", "");
                                 } else {
@@ -126,6 +130,7 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                         //
                         EsEntityDaoBuilder<T> entityDaoBuilder = new EsEntityDaoBuilder(
                                 table,
+                                type,
                                 keyHandler,
                                 columnHandlerList,
                                 versionHandler,

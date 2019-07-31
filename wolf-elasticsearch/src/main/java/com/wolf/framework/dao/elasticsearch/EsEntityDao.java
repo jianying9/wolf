@@ -84,6 +84,7 @@ public interface EsEntityDao<T extends Entity> extends Dao {
 
     /**
      *
+     * @param queryBuilder
      * @param from
      * @param size
      * @return
