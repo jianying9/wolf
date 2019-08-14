@@ -19,6 +19,8 @@ public class FrameworkConfig {
     public final static String DEVELOPMENT = "DEVELOPMENT";
     //单元测试模式
     public final static String UNIT_TEST = "UNIT_TEST";
+    //
+    public final static String OSS_TEST = "oss.test";
     //----------------------------------------------------------
     //扫描注解包名集合
     public final static String ANNOTATION_SCAN_PACKAGES = "annotation.scan.packages";
