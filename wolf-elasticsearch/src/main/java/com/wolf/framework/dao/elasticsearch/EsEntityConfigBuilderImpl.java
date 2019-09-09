@@ -77,6 +77,7 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     //表
                     final String table = esDaoConfig.table();
                     String type = esDaoConfig.type();
+                    final boolean multiCompile = esDaoConfig.multiComplie();
                     if (type.isEmpty()) {
                         type = table;
                     }
@@ -131,6 +132,7 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                         EsEntityDaoBuilder<T> entityDaoBuilder = new EsEntityDaoBuilder(
                                 table,
                                 type,
+                                multiCompile,
                                 keyHandler,
                                 columnHandlerList,
                                 versionHandler,
@@ -138,7 +140,7 @@ public class EsEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                                 this.esAdminContext
                         );
                         EsEntityDao<T> entityDao = entityDaoBuilder.build();
-                        this.esAdminContext.putEsEntityDao(clazz, entityDao, table);
+                        this.esAdminContext.putEsEntityDao(clazz, entityDao, multiCompile, table);
                         this.logger.debug("--parse EsEntityDao {} finished--", clazz.getName());
                     } else {
                         this.logger.error("--parse EsEntityDao {} missing key column--", clazz.getName());

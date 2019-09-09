@@ -11,14 +11,14 @@ import org.elasticsearch.client.transport.TransportClient;
  */
 public interface EsAdminContext<T extends Entity> {
 
-    public void putEsEntityDao(final Class<T> clazz, final EsEntityDao<T> esEntityDao, String table);
+    public void putEsEntityDao(final Class<T> clazz, final EsEntityDao<T> esEntityDao, boolean multiCompile, String table);
 
     public EsEntityDao<T> getEsEntityDao(final Class<T> clazz);
 
     public Map<Class, EsEntityDao<T>> getEsEntityDao();
 
     public TransportClient getTransportClient();
-    
-    public String getIndex(String type);
+
+    public String getIndex(boolean multiCompile, String type);
 
 }

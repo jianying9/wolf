@@ -17,6 +17,8 @@ public final class EsEntityDaoBuilder<T extends Entity> {
     private final String index;
     //table name
     private final String type;
+    
+    private final boolean multiCompile;
     //key
     private final EsColumnHandler keyHandler;
     //version
@@ -32,6 +34,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
     public EsEntityDaoBuilder(
             String tableName,
             String type,
+            boolean multiCompile,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
             EsColumnHandler versionHandler,
@@ -39,6 +42,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
             EsAdminContext<T> esAdminContext
     ) {
         this.type = type;
+        this.multiCompile = multiCompile;
         this.keyHandler = keyHandler;
         if (columnHandlerList == null) {
             this.columnHandlerList = new ArrayList(0);
@@ -48,7 +52,7 @@ public final class EsEntityDaoBuilder<T extends Entity> {
         this.versionHandler = versionHandler;
         this.clazz = clazz;
         this.esAdminContext = esAdminContext;
-        this.index = esAdminContext.getIndex(tableName);
+        this.index = esAdminContext.getIndex(multiCompile, tableName);
     }
 
     public EsEntityDao<T> build() {

@@ -35,4 +35,11 @@ public @interface EsEntityConfig {
      */
     public boolean cache() default false;
 
+    /**
+     * 区分多环境
+     *
+     * @return
+     */
+    public boolean multiComplie() default true;
+
 }

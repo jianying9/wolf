@@ -153,7 +153,7 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
                 .setFrom(from)
                 .setSize(size)
                 .setVersion(false);
-        if(queryBuilder != null) {
+        if (queryBuilder != null) {
             searchRequestBuilder.setQuery(queryBuilder);
         }
         return searchRequestBuilder.get();

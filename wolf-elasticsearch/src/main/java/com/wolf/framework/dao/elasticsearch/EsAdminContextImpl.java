@@ -36,29 +36,26 @@ public class EsAdminContextImpl<T extends Entity> implements EsAdminContext<T> {
     private TransportClient transportClient = null;
     private final String host;
     private final int port = 9300;
-    private final String prefix;
+    private final String database;
+    private final String compileModel;
 
     private EsAdminContextImpl(ApplicationContext applicationContext) {
         //获取elasticsearch host
         String searchHost = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_HOST);
         this.host = searchHost;
         //
-        String database = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_DATABASE);
-        if (database == null) {
-            database = "";
+        String db = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_DATABASE);
+        if (db == null) {
+            db = "";
         }
+        this.database = db;
         String clusterName = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_CLUSTER_NAME);
         if (clusterName == null) {
             clusterName = "";
         }
         //获取前缀
-        String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
-        compileModel = compileModel.toLowerCase();
-        if (database.isEmpty() == false) {
-            this.prefix = database + "_" + compileModel;
-        } else {
-            this.prefix = compileModel;
-        }
+        String cm = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
+        this.compileModel = cm.toLowerCase();
         //
         Settings settings = Settings.EMPTY;
         if (clusterName.isEmpty() == false) {
@@ -76,10 +73,10 @@ public class EsAdminContextImpl<T extends Entity> implements EsAdminContext<T> {
     }
 
     @Override
-    public void putEsEntityDao(Class<T> clazz, EsEntityDao<T> esEntityDao, String type) {
+    public void putEsEntityDao(Class<T> clazz, EsEntityDao<T> esEntityDao, boolean multiCompile, String type) {
         if (this.esEntityDaoMap.containsKey(clazz)) {
             StringBuilder errBuilder = new StringBuilder(1024);
-            String index = this.getIndex(type);
+            String index = this.getIndex(multiCompile, type);
             errBuilder.append("Error putting EsEntityDao. Cause: index duplicated : ")
                     .append('(').append(index).append(")\n");
             throw new RuntimeException(errBuilder.toString());
@@ -103,8 +100,14 @@ public class EsAdminContextImpl<T extends Entity> implements EsAdminContext<T> {
     }
 
     @Override
-    public String getIndex(String type) {
-        return this.prefix + "_" + type;
+    public String getIndex(boolean multiCompile, String type) {
+        String index;
+        if (multiCompile) {
+            index = this.database + "_" + this.compileModel + "_" + type;
+        } else {
+            index = this.database + "_" + type;
+        }
+        return index;
     }
 
 }
