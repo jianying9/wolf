@@ -236,7 +236,7 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
             json = mapper.writeValueAsString(indexMap);
         } catch (IOException ex) {
         }
-        System.out.println("更新type:" + this.type);
+        System.out.println("更新index:" + this.index);
         System.out.println(json);
         AcknowledgedResponse response = this.transportClient.admin().indices().preparePutMapping(index)
                 .setType(this.type)
