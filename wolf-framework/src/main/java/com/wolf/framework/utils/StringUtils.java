@@ -36,12 +36,13 @@ public final class StringUtils {
      * @return
      */
     public static String trim(String value) {
+        value = value.replaceAll("&nbsp;", "");
         String result = "";
         int len = value.length();
         if (len > 0) {
             int st = 0;
-            int end = len;      /* avoid getfield opcode */
-            char[] val = value.toCharArray();    /* avoid getfield opcode */
+            int end = len;
+            char[] val = value.toCharArray();
             while ((st < end) && (val[st] == ' ' || val[st] == '　')) {
                 st++;
             }
