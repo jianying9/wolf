@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpEntity;
@@ -64,16 +65,28 @@ public class HttpLocalImpl implements HttpLocal {
         return this.doGet(host, path, parameterMap, null);
     }
 
+    private Map<String, String> initHeader() {
+        Map<String, String> headerMap = new HashMap();
+        headerMap.put("Accept", "application/json, text/javascript, */*; q=0.01");
+        headerMap.put("Accept-Encoding", "gzip, deflate");
+        headerMap.put("Accept-Language", "zh,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh-TW;q=0.6");
+        headerMap.put("Cache-Control", "no-cache");
+        headerMap.put("Connection", "keep-alive");
+        headerMap.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        headerMap.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36");
+        return headerMap;
+    }
+
     @Override
     public String doGet(String host, String path, Map<String, String> parameterMap, Map<String, String> headerMap) {
         String responseBody = "";
+        Map<String, String> initHeaderMap = this.initHeader();
+        initHeaderMap.putAll(headerMap);
         try {
             String url = this.buildUrl(host, path, parameterMap);
             HttpGet request = new HttpGet(url);
-            if (headerMap != null) {
-                for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                    request.setHeader(entry.getKey(), entry.getValue());
-                }
+            for (Map.Entry<String, String> entry : initHeaderMap.entrySet()) {
+                request.setHeader(entry.getKey(), entry.getValue());
             }
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
@@ -91,12 +104,12 @@ public class HttpLocalImpl implements HttpLocal {
     @Override
     public String doPost(String url, Map<String, String> parameterMap, Map<String, String> headerMap) {
         String responseBody = "";
+        Map<String, String> initHeaderMap = this.initHeader();
+        initHeaderMap.putAll(headerMap);
         try {
             HttpPost request = new HttpPost(url);
-            if (headerMap != null) {
-                for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                    request.setHeader(entry.getKey(), entry.getValue());
-                }
+            for (Map.Entry<String, String> entry : initHeaderMap.entrySet()) {
+                request.setHeader(entry.getKey(), entry.getValue());
             }
             //
             String key;
