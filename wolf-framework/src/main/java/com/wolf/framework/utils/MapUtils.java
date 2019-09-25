@@ -13,7 +13,6 @@ public final class MapUtils {
         Object value = object.get(name);
         Integer result = null;
         if (value != null) {
-            System.out.println(value.getClass());
             if (Integer.class.isInstance(value)) {
                 result = (Integer) value;
             } else if (String.class.isInstance(value)) {
@@ -21,6 +20,8 @@ public final class MapUtils {
             } else if (Long.class.isInstance(value)) {
                 Long l = (Long) value;
                 result = l.intValue();
+            } else if (Double.class.isInstance(value)) {
+                result = ((Double) value).intValue();
             }
         }
         return result;
@@ -34,6 +35,8 @@ public final class MapUtils {
                 result = (Long) value;
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).longValue();
+            } else if (Double.class.isInstance(value)) {
+                result = ((Double) value).longValue();
             } else if (String.class.isInstance(value)) {
                 result = Long.parseLong((String) value);
             }
