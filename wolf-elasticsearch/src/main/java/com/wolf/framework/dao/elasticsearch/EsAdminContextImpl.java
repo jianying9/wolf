@@ -12,6 +12,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 
 /**
  *
@@ -53,20 +54,58 @@ public class EsAdminContextImpl<T extends Entity> implements EsAdminContext<T> {
         if (clusterName == null) {
             clusterName = "";
         }
+        //
+        String user = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_USER);
+        if (user == null) {
+            user = "";
+        }
+        String passowrd = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_PASSWORD);
+        if (passowrd == null) {
+            passowrd = "";
+        }
         //获取前缀
         String cm = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
         this.compileModel = cm.toLowerCase();
         //
-        Settings settings = Settings.EMPTY;
+        Settings.Builder builder = Settings.builder();
         if (clusterName.isEmpty() == false) {
-            settings = Settings.builder().put("cluster.name", clusterName).build();
+            builder.put("cluster.name", clusterName);
+        }
+        //
+        boolean security = false;
+        if (user.isEmpty() == false && passowrd.isEmpty() == false) {
+            //有配置账号密码,则需要开启ssl模式访问
+            String sslKey = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_SSL_KEY);
+            if (sslKey == null) {
+                sslKey = "";
+            }
+            String sslCer = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_SSL_CERTIFICATE);
+            if (sslCer == null) {
+                sslCer = "";
+            }
+            String sslCa = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITIES);
+            if (sslCa == null) {
+                sslCa = "";
+            }
+            builder.put("xpack.security.user", user + ":" + passowrd)
+                    .put("xpack.ssl.key", sslKey)
+                    .put("xpack.ssl.certificate", sslCer)
+                    .put("xpack.ssl.certificate_authorities", sslCa)
+                    .put("xpack.ssl.verification_mode", "none")
+                    .put("xpack.security.transport.ssl.enabled", true);
+            security = true;
+        }
+        Settings settings = builder.build();
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
+        if (security) {
+            this.transportClient = new PreBuiltXPackTransportClient(settings);
+        } else {
+            this.transportClient = new PreBuiltTransportClient(settings);
         }
         try {
-            System.setProperty("es.set.netty.runtime.available.processors", "false");
-            this.transportClient = new PreBuiltTransportClient(settings)
-                    .addTransportAddress(new TransportAddress(InetAddress.getByName(this.host), this.port));
+            this.transportClient.addTransportAddress(new TransportAddress(InetAddress.getByName(this.host), this.port));
         } catch (UnknownHostException ex) {
-            System.err.println("elasticsearch 初始化异常");
+            System.err.println("elasticsearch添加节点异常");
         }
         EsResourceImpl esResourceImpl = new EsResourceImpl(this.transportClient);
         applicationContext.addResource(esResourceImpl);
