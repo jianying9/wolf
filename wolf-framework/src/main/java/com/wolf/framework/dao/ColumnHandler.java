@@ -19,7 +19,7 @@ public interface ColumnHandler {
     public Object getDefaultValue();
 
     public Object getFieldValue(Object object);
-
+    
     public void setFieldValue(Object object, Object value);
 
     public ColumnDataType getFirstParameterDataType();
