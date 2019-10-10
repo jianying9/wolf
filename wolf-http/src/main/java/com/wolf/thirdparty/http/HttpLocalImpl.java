@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class HttpLocalImpl implements HttpLocal {
 
     @Override
     public String doGet(String host, String path, Map<String, String> parameterMap) {
-        return this.doGet(host, path, parameterMap, null);
+        return this.doGet(host, path, parameterMap, Collections.EMPTY_MAP);
     }
 
     private Map<String, String> initHeader() {
