@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolf</groupId>
     <artifactId>wolf</artifactId>
-    <version>5.5-SNAPSHOT</version>
+    <version>5.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wolf</name>
   
@@ -29,13 +29,13 @@
             <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
-            <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
+            <url>http://tool.xiezhutech.com:8081/nexus/content/repositories/central</url>
         </repository>
         <repository>
             <!--maven第三方release库--> 
             <id>local.maven.com-release</id>
             <name>local internal maven repository</name>
-            <url>http://139.224.54.3:8081/nexus/content/repositories/releases</url>
+            <url>http://tool.xiezhutech.com:8081/nexus/content/repositories/releases</url>
         </repository>
     </repositories>
 
@@ -45,7 +45,7 @@
             <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
-            <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
+            <url>http://tool.xiezhutech.com:8081/nexus/content/repositories/central</url>
         </pluginRepository>
     </pluginRepositories>
     
@@ -54,7 +54,7 @@
         <repository>
             <id>local.maven.com-snapshots</id>
             <name>local snapshots maven repository</name>
-            <url>http://139.224.54.3:8081/nexus/content/repositories/snapshots</url>
+            <url>http://tool.xiezhutech.com:8081/nexus/content/repositories/snapshots</url>
         </repository>
     </distributionManagement>
     

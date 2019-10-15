@@ -20,8 +20,6 @@ public class EsConfig {
 
     public static final String ELASTICSEARCH_SSL_CERTIFICATE = "elasticsearch.ssl.certificate";
 
-    public static final String ELASTICSEARCH_SSL_VERIFICATION_MODE = "elasticsearch.ssl.verification.mode";
-
     public static final String ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITIES = "elasticsearch.ssl.certificate.authorities";
 
 }
