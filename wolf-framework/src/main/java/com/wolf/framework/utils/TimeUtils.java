@@ -14,14 +14,28 @@ public final class TimeUtils {
     /**
      * 日志对象
      */
+    public final static SimpleDateFormat FM_YYMM = new SimpleDateFormat("yyyyMM");
     public final static SimpleDateFormat FM_YYMMDD = new SimpleDateFormat("yyyyMMdd");
     public final static SimpleDateFormat FM_YY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
+    public final static SimpleDateFormat FM_YY_MM = new SimpleDateFormat("yyyy-MM");
     public final static SimpleDateFormat FM_YY_MM_DD_HHMMSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat FM_YY_MM_DD_HHMM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public final static SimpleDateFormat FM_HHMM = new SimpleDateFormat("HH:mm");
+    public final static SimpleDateFormat FM_HH = new SimpleDateFormat("HH");
 
     private TimeUtils() {
     }
-    
+
+    public static String getDateFotmatYYMM() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_YYMM.format(currentTime);
+    }
+
+    public static String getDateFotmatYY_MM() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_YY_MM.format(currentTime);
+    }
+
     /**
      * 获取当前时间yyyyMMdd
      *
@@ -31,13 +45,35 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YYMMDD.format(currentTime);
     }
-    
-    public static String getDateFotmatYYMMDD(long day) {
-        long milliseconds = System.currentTimeMillis() + 86400000 * day;
+
+    public static long getDateFotmatYYMMDD(long milliseconds) {
         Date currentTime = new Date(milliseconds);
-        return TimeUtils.FM_YYMMDD.format(currentTime);
+        String date = TimeUtils.FM_YYMMDD.format(currentTime);
+        return Long.parseLong(date);
     }
-    
+
+    public static long getYYMMDDnum(String dateStr) {
+        long result = 0;
+        try {
+            Date date = TimeUtils.FM_YY_MM_DD.parse(dateStr);
+            String newDateStr = TimeUtils.FM_YYMMDD.format(date);
+            result = Long.parseLong(newDateStr);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        return result;
+    }
+
+    public static String getYYMMDDstring(long dateNum) {
+        String result = "";
+        String dateStr = Long.toString(dateNum);
+        try {
+            Date date = TimeUtils.FM_YYMMDD.parse(dateStr);
+            result = TimeUtils.FM_YY_MM_DD.format(date);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        return result;
+    }
+
     /**
      * 获取当前时间yyyy-MM-dd
      *
@@ -57,10 +93,20 @@ public final class TimeUtils {
         Date currentTime = new Date();
         return TimeUtils.FM_YY_MM_DD_HHMMSS.format(currentTime);
     }
-    
+
     public static String getDateFotmatHHmm() {
         Date currentTime = new Date();
         return TimeUtils.FM_HHMM.format(currentTime);
+    }
+
+    public static String getDateFotmatHHmm(long time) {
+        Date currentTime = new Date(time);
+        return TimeUtils.FM_HHMM.format(currentTime);
+    }
+
+    public static String getDateFotmatHH() {
+        Date currentTime = new Date();
+        return TimeUtils.FM_HH.format(currentTime);
     }
 
     /**
@@ -93,11 +139,21 @@ public final class TimeUtils {
         return TimeUtils.FM_YY_MM_DD_HHMMSS.format(date);
     }
 
+    public static String convertMillisecondToYYYYMMDDHHmm(long milliseconds) {
+        Date date = new Date(milliseconds);
+        return TimeUtils.FM_YY_MM_DD_HHMM.format(date);
+    }
+
     public static String convertMillisecondToYYYYMMDD(long milliseconds) {
         Date date = new Date(milliseconds);
         return TimeUtils.FM_YY_MM_DD.format(date);
     }
-    
+
+    public static String convertMillisecondToHHmm(long milliseconds) {
+        Date date = new Date(milliseconds);
+        return TimeUtils.FM_HHMM.format(date);
+    }
+
     public static long convertYYYYMMDDToMillisecond(String dateStr) {
         long result = 0;
         try {
@@ -107,7 +163,7 @@ public final class TimeUtils {
         }
         return result;
     }
-    
+
     public static long convertYYYYMMDDHHmmSSToMillisecond(String dateStr) {
         long result = 0;
         try {
@@ -116,5 +172,14 @@ public final class TimeUtils {
         } catch (ParseException | NumberFormatException e) {
         }
         return result;
+    }
+
+    public static Date convertYYYY_MM_DD(String dateStr) {
+        Date date = null;
+        try {
+            date = TimeUtils.FM_YY_MM_DD.parse(dateStr);
+        } catch (ParseException | NumberFormatException e) {
+        }
+        return date;
     }
 }

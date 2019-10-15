@@ -7,8 +7,10 @@ package com.wolf.framework.service.parameter;
  */
 public enum ResponseDataType {
 
+    EXTEND,
+    //
     LONG,
-    
+    //
     DOUBLE,
     //DateTime {YYYY-MM-DD HH:MI,YYYY-MM-DD HH:MI:SS}
     DATE_TIME,
@@ -24,6 +26,10 @@ public enum ResponseDataType {
     EMAIL,
     //布尔
     BOOLEAN,
+    //
+    JSON_OBJECT,
+    //
+    JSON_ARRAY,
     //json对象
     OBJECT,
     //json数组

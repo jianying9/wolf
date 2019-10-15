@@ -9,7 +9,7 @@ import java.util.List;
  */
 public final class InjecterListImpl implements Injecter {
 
-    private final List<Injecter> injecterList = new ArrayList<>(10);
+    private final List<Injecter> injecterList = new ArrayList(10);
     
     public void addInjecter(Injecter injecter) {
         this.injecterList.add(injecter);

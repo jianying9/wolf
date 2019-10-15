@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.wolf</groupId>
         <artifactId>wolf</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.5-SNAPSHOT</version>
     </parent>
     <groupId>com.wolf</groupId>
     <artifactId>wolf-framework</artifactId>
@@ -28,6 +28,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
         </dependency>
 <!--        <dependency>
             <groupId>net.sf.ehcache</groupId>

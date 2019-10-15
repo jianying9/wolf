@@ -1,10 +1,12 @@
 package com.wolf.framework.servlet;
 
-import com.wolf.framework.comet.CometHandler;
+import com.wolf.framework.push.CometHandler;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.utils.HttpUtils;
 import com.wolf.framework.utils.StringUtils;
@@ -13,7 +15,10 @@ import com.wolf.framework.worker.context.ServletWorkerContextImpl;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
@@ -22,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 /**
@@ -31,11 +37,14 @@ import org.slf4j.Logger;
 @WebServlet(name = "server", loadOnStartup = 1, urlPatterns = {"/http/api/*"}, asyncSupported = true)
 public class ServiceServlet extends HttpServlet implements CometHandler {
 
-    private static final long serialVersionUID = -2251705966222970110L;
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
-    Map<String, AsyncContext> asyncContextMap = new HashMap<>(32, 1);
+    private final Map<String, AsyncContext> asyncContextMap = new HashMap(32, 1);
+    private final Map<String, MessageCache> messageCacheMap = new HashMap(32, 1);
     private final AsyncListener asyncListener = new AsyncPushListener();
     private long asyncTimeOut = 60000;
+    private long lastCheckTime = 0;
+    private String referer = "";
+    private boolean canComet = false;
 
     @Override
     public void init() throws ServletException {
@@ -47,8 +56,18 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             } catch (NumberFormatException e) {
             }
         }
+        String httpReferer = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.HTTP_REFERER);
+        if (httpReferer != null) {
+            this.referer = httpReferer;
+        }
         //注册推送服务
-        ApplicationContext.CONTEXT.getCometContext().addCometHandler(this);
+        String comet = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.HTTP_COMET);
+        if (comet != null) {
+            this.canComet = Boolean.valueOf(comet);
+        }
+        if (this.canComet) {
+            ApplicationContext.CONTEXT.getPushContext().setCometHandler(this);
+        }
     }
 
     /**
@@ -62,62 +81,125 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String result;
-        //读取参数
-        Enumeration<String> names = request.getParameterNames();
-        Map<String, Object> parameterMap = new HashMap<>(8, 1);
-        String name;
-        String value;
-        while (names.hasMoreElements()) {
-            name = names.nextElement();
-            value = request.getParameter(name);
-            value = StringUtils.trim(value);
-            parameterMap.put(name, value);
+        boolean validReferer = false;
+        if (this.referer != null && this.referer.isEmpty() == false) {
+            String r = request.getHeader("Referer");
+            if (r != null && r.contains(this.referer)) {
+                validReferer = true;
+            }
+        } else {
+            validReferer = true;
         }
-        this.logger.debug("http: {}", parameterMap);
-        //
-        String route = request.getPathInfo();
-        ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
-        if (serviceWorker == null) {
-            //route不存在,判断是否为comet请求
-            String comet = (String) parameterMap.get("comet");
-            if (comet != null && comet.equals("start")) {
-                //该请求为一个长轮询推送请求
-                String sid = (String) parameterMap.get("sid");
-                if (sid != null) {
-                    synchronized (this) {
-                        //同sid冲突检测
-                        AsyncContext ctx = this.asyncContextMap.get(sid);
-                        if (ctx != null) {
-                            String stopMessage = "{\"comet\":\"stop\"}";
-                            HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
-                            ctx.complete();
-                            this.asyncContextMap.remove(sid);
+        if (validReferer) {
+            //读取参数
+            Map<String, String> parameterMap;
+            String route = request.getPathInfo();
+            Enumeration<String> names = request.getParameterNames();
+            parameterMap = new HashMap(8, 1);
+            String name;
+            String value;
+            while (names.hasMoreElements()) {
+                name = names.nextElement();
+                value = request.getParameter(name);
+                value = StringUtils.trim(value);
+                parameterMap.put(name, value);
+            }
+            ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
+            if (serviceWorker == null) {
+                //route不存在,判断是否为comet请求
+                String comet = parameterMap.get("comet");
+                if (comet != null && comet.equals("start") && this.canComet) {
+                    //该请求为一个长轮询推送请求
+                    String sid = parameterMap.get("sid");
+                    if (sid != null) {
+                        //判断缓存中是否有消息
+                        String msgCache = null;
+                        MessageCache messageCache = this.messageCacheMap.get(sid);
+                        if (messageCache != null) {
+                            msgCache = messageCache.poll();
                         }
-                        ctx = request.startAsync(request, response);
-                        ctx.setTimeout(this.asyncTimeOut);
-                        ctx.addListener(this.asyncListener);
-                        this.asyncContextMap.put(sid, ctx);
+                        //
+                        if (msgCache != null) {
+                            //有缓存的消息,直接返回
+                            HttpUtils.toWrite(request, response, msgCache);
+                        } else {
+                            //没有缓存消息,当前请求加入长轮询
+                            synchronized (this) {
+                                //同sid冲突检测
+                                AsyncContext ctx = this.asyncContextMap.get(sid);
+                                if (ctx != null) {
+                                    String stopMessage = "{\"comet\":\"stop\"}";
+                                    HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), stopMessage);
+                                    ctx.complete();
+                                    this.asyncContextMap.remove(sid);
+                                }
+                                ctx = request.startAsync(request, response);
+                                ctx.setTimeout(this.asyncTimeOut);
+                                ctx.addListener(this.asyncListener);
+                                this.asyncContextMap.put(sid, ctx);
+                            }
+                        }
+                    } else {
+                        //无效的comet
+                        String result = "{\"comet\":\"invalid\",\"error\":\"push sid not exist\"}";
+                        HttpUtils.toWrite(request, response, result);
                     }
                 } else {
-                    //无效的comet
-                    result = "{\"comet\":\"invalid\",\"error\":\"push sid not exist\"}";
+                    //非特殊接口,放回提示route不存在
+                    String result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
                     HttpUtils.toWrite(request, response, result);
                 }
             } else {
-                //非特殊接口,放回提示route不存在
-                result = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
+                //route存在
+                long start = System.currentTimeMillis();
+                String sid = parameterMap.get("sid");
+                ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
+                String param = parameterMap.get("_json");
+                workerContext.initHttpParameter(parameterMap, param);
+                serviceWorker.doWork(workerContext);
+                String result = workerContext.getWorkerResponse().getResponseMessage();
                 HttpUtils.toWrite(request, response, result);
+                //
+                if (param == null || param.isEmpty()) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    param = mapper.writeValueAsString(parameterMap);
+                }
+                if (serviceWorker.getServiceContext().isSaveLog()) {
+                    long time = System.currentTimeMillis() - start;
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                    accessLogger.log(route, sid, param, result, time);
+                }
             }
-        } else {
-            //route存在
-            String sid = (String) parameterMap.get("sid");
-            ServletWorkerContextImpl workerContext = new ServletWorkerContextImpl(this, sid, route, serviceWorker);
-            workerContext.initParameter(parameterMap);
-            serviceWorker.doWork(workerContext);
-            result = workerContext.getWorkerResponse().getResponseMessage();
-            HttpUtils.toWrite(request, response, result);
         }
+        //每个5分钟触发检查缓存消息过时的
+        long currentTime = System.currentTimeMillis();
+        if ((currentTime - this.lastCheckTime) >= 300000) {
+            this.lastCheckTime = currentTime;
+            this.checkMessageCache(currentTime);
+        }
+    }
+
+    private synchronized void checkMessageCache(long currentTime) {
+        Set<Entry<String, MessageCache>> entrySet = this.messageCacheMap.entrySet();
+        MessageCache messageCache;
+        long lastUpdateTime;
+        Set<String> expireSet = new HashSet();
+        for (Entry<String, MessageCache> entry : entrySet) {
+            messageCache = entry.getValue();
+            lastUpdateTime = messageCache.getLastUpdateTime();
+            if ((currentTime - lastUpdateTime) > 200000) {
+                expireSet.add(entry.getKey());
+            }
+        }
+        //
+        for (String sid : expireSet) {
+            this.messageCacheMap.remove(sid);
+        }
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -132,6 +214,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         processRequest(request, response);
     }
 
@@ -146,6 +229,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         processRequest(request, response);
     }
 
@@ -160,23 +244,33 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     @Override
-    public boolean asyncPush(String sid, String message) {
-        return this.push(sid, message);
+    public boolean asyncPush(String sid, String route, String message) {
+        return this.push(sid, route, message);
     }
 
     @Override
-    public boolean push(String sid, String message) {
-        this.logger.debug("async-servlet push message:{},{}", sid, message);
+    public boolean push(String sid, String route, String message) {
         boolean result = false;
         //同sid冲突检测
+        //
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
             result = true;
             HttpUtils.toWrite(ctx.getRequest(), ctx.getResponse(), message);
             ctx.complete();
             this.asyncContextMap.remove(sid);
+            accessLogger.log(route, sid, "", message, -1);
         } else {
-            this.logger.debug("async-servlet push message:sid not exist:{}", sid);
+            synchronized (this) {
+                MessageCache messageCache = this.messageCacheMap.get(sid);
+                if (messageCache == null) {
+                    messageCache = new MessageCache();
+                    this.messageCacheMap.put(sid, messageCache);
+                }
+                messageCache.offer(message);
+            }
+            accessLogger.log(sid, "http", "cache");
         }
         return result;
     }
@@ -215,11 +309,11 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
     }
 
     public void saveNewSession(String sid) {
-        this.logger.debug("async-servlet add session:{}", sid);
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "http", "add");
     }
 
     public void removeSession(String sid) {
-        this.logger.debug("async-servlet remove session:{}", sid);
         AsyncContext ctx = this.asyncContextMap.get(sid);
         if (ctx != null) {
             String stopMessage = "{\"comet\":\"stop\"}";
@@ -227,5 +321,7 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
             ctx.complete();
             this.asyncContextMap.remove(sid);
         }
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "http", "remove");
     }
 }

@@ -24,20 +24,16 @@ public final class LocalServiceBuilder {
      * @param clazz
      */
     public void build(final Class<Local> clazz) {
-        this.logger.info("--parsing local service {}--", clazz.getName());
+        this.logger.debug("--parsing local service {}--", clazz.getName());
         //判断是否实现Local接口
-            Class<? extends Local> clazzi = null;
-            Class<?>[] clazzInterfaces = clazz.getInterfaces();
-            for (Class<?> clazzInterface : clazzInterfaces) {
-                if (Local.class.isAssignableFrom(clazzInterface)) {
-                    clazzi = (Class<? extends Local>) clazzInterface;
-                    break;
-                }
+        Class<? extends Local> clazzi = null;
+        Class<?>[] clazzInterfaces = clazz.getInterfaces();
+        for (Class<?> clazzInterface : clazzInterfaces) {
+            if (Local.class.isAssignableFrom(clazzInterface)) {
+                clazzi = (Class<? extends Local>) clazzInterface;
+                break;
             }
-        //判断是否实现Local接口
-//            if (clazzi == null) {
-//                throw new RuntimeException("Error when parse class:" + clazz.getName() + ". Not implements Local");
-//            }
+        }
         //实例化该clazz
         Local local = null;
         try {

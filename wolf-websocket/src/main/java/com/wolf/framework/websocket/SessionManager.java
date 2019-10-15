@@ -1,23 +1,21 @@
 package com.wolf.framework.websocket;
 
-import com.wolf.framework.comet.CometHandler;
-import com.wolf.framework.config.FrameworkLogger;
-import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
+import com.wolf.framework.push.PushHandler;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.Session;
-import org.slf4j.Logger;
 
 /**
  *
  * @author jianying9
  */
-public class SessionManager implements CometHandler {
+public class SessionManager implements PushHandler {
 
     //保存session列表
     private final ConcurrentHashMap<String, Session> savedSessionMap = new ConcurrentHashMap<>(4096, 1);
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
 
     public Session remove(String sid) {
         return this.savedSessionMap.remove(sid);
@@ -30,27 +28,26 @@ public class SessionManager implements CometHandler {
     public Session put(String sid, Session session) {
         return this.savedSessionMap.put(sid, session);
     }
-    
+
     public Collection<Session> getSessions() {
         return savedSessionMap.values();
     }
 
     @Override
-    public boolean asyncPush(String sid, String message) {
+    public boolean asyncPush(String sid, String route, String message) {
         boolean result = false;
         Session session = this.savedSessionMap.get(sid);
         if (session != null && session.isOpen()) {
             result = true;
             session.getAsyncRemote().sendText(message);
-            this.logger.debug("websocket-push message:{},{}", sid, message);
-        } else {
-            this.logger.debug("websocket-push message:sid:{} not exist or closed", sid);
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }
 
     @Override
-    public boolean push(String sid, String message) {
+    public boolean push(String sid, String route, String message) {
         boolean result = false;
         Session session = this.savedSessionMap.get(sid);
         if (session != null && session.isOpen()) {
@@ -59,16 +56,14 @@ public class SessionManager implements CometHandler {
                 session.getBasicRemote().sendText(message);
             } catch (IOException ex) {
             }
-            this.logger.debug("websocket-push message:{},{}", sid, message);
-        } else {
-            this.logger.debug("websocket-push message:sid:{} not exist or closed", sid);
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }
 
     public void removSession(String sid) {
         this.savedSessionMap.remove(sid);
-        this.logger.debug("websocket-session remove sid:{}", sid);
     }
 
     public synchronized void putNewSession(String sid, Session session) {
@@ -77,10 +72,19 @@ public class SessionManager implements CometHandler {
             try {
                 other.close();
             } catch (IOException ex) {
-                this.logger.error("websocket-close sid:{} error:{}", sid, ex.getMessage());
             }
         }
         this.savedSessionMap.put(sid, session);
-        this.logger.debug("websocket-session add new sid:{}", sid);
+    }
+
+    @Override
+    public boolean contains(String sid) {
+        //ConcurrentHashMap已经remove某个key,通过get方法返回null,但是通过containsKey查询key是否存在,会返回true
+        boolean result = false;
+        Session session = this.savedSessionMap.get(sid);
+        if (session != null && session.isOpen()) {
+            result = true;
+        }
+        return result;
     }
 }

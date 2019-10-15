@@ -8,30 +8,7 @@ import com.wolf.framework.dao.Entity;
  * @author jianying9
  * @param <T>
  */
-public interface CCounterDao<T extends Entity> {
-    
-    /**
-     * 判断主键是否存在
-     *
-     * @param keyValue
-     * @return
-     */
-    public boolean exist(Object... keyValue);
-
-    /**
-     * 根据主键查询
-     *
-     * @param keyValue
-     * @return
-     */
-    public T inquireByKey(Object... keyValue);
-
-    /**
-     * 删除
-     *
-     * @param keyValue
-     */
-    public void delete(Object... keyValue);
+public interface CCounterDao<T extends Entity> extends CDao<T> {
 
     /**
      * 自增
@@ -42,4 +19,5 @@ public interface CCounterDao<T extends Entity> {
      * @return
      */
     public long increase(String columnName, long value, Object... keyValue);
+    
 }

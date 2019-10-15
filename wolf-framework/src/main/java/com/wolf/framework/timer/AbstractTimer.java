@@ -23,7 +23,7 @@ public class AbstractTimer {
                 logger.error("timer:Can not find route:".concat(route));
             } else {
                 LocalWorkerContextImpl workerContext = new LocalWorkerContextImpl(null, route, serviceWorker);
-                workerContext.initParameter(parameterMap);
+                workerContext.initLocalParameter(parameterMap);
                 serviceWorker.doWork(workerContext);
                 result = workerContext.getWorkerResponse().getResponseMessage();
             }

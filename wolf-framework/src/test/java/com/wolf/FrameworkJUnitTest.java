@@ -43,7 +43,7 @@ public class FrameworkJUnitTest {
 
 //    @Test
     public void hello() {
-        Map<String, String> parameterMap = new HashMap<>(8, 1);
+        Map<String, String> parameterMap = new HashMap(8, 1);
         parameterMap.put(FrameworkConfig.COMPILE_MODEL, FrameworkConfig.DEVELOPMENT);
         parameterMap.put(FrameworkConfig.ANNOTATION_SCAN_PACKAGES, "com.test");
         parameterMap.put(FrameworkConfig.TASK_CORE_POOL_SIZE, "10");
@@ -63,7 +63,7 @@ public class FrameworkJUnitTest {
         JsonNode rootNode = mapper.readValue(json, JsonNode.class);
         if (rootNode != null) {
             //读数据
-            parameterMap = new HashMap<>(8, 1);
+            parameterMap = new HashMap(8, 1);
             Map.Entry<String, JsonNode> entry;
             String name;
             String value;

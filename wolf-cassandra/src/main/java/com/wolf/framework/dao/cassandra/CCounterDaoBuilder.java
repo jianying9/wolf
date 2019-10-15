@@ -39,7 +39,7 @@ public final class CCounterDaoBuilder<T extends Entity> {
         this.table = tableName;
         this.keyHandlerList = keyHandlerList;
         if (columnHandlerList == null) {
-            this.columnHandlerList = new ArrayList<>(0);
+            this.columnHandlerList = new ArrayList(0);
         } else {
             this.columnHandlerList = columnHandlerList;
         }

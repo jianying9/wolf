@@ -7,6 +7,7 @@ import com.wolf.framework.reponse.ResponseImpl;
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.RequestImpl;
 import com.wolf.framework.request.WorkerRequest;
+import com.wolf.framework.utils.MapUtils;
 import com.wolf.framework.utils.StringUtils;
 import com.wolf.framework.worker.ServiceWorker;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,10 +31,11 @@ import org.slf4j.Logger;
 public abstract class AbstractWorkContext implements WorkerContext {
 
     //input
-    private Map<String, Object> parameterMap;
+    private Map<String, Object> parameterMap = null;
     private final String route;
     private String callback = null;
     private String md5 = null;
+    private boolean pretty = false;
     private final ServiceWorker serviceWorker;
     private final WorkerRequest request;
     private final WorkerResponse response;
@@ -44,22 +47,13 @@ public abstract class AbstractWorkContext implements WorkerContext {
         this.response = new ResponseImpl(this);
     }
 
-    public void initParameter(Map<String, Object> parameterMap) {
-        Map<String, Object> tempMap = new HashMap<>(parameterMap.size(), 1);
-        Set<String> keySet = parameterMap.keySet();
-        Object value;
-        for (String key : keySet) {
-            value = parameterMap.get(key);
-            if(Integer.class.isInstance(value)) {
-                long newValue = (int) value;
-                value = newValue;
-            } else if(Float.class.isInstance(value)) {
-                double newValue = (float) value;
-                value = newValue;
-            }
-            tempMap.put(key, value);
+    public void initLocalParameter(Map<String, Object> parameterMap) {
+        //
+        Boolean prettyObj = MapUtils.getBooleanValue(parameterMap, "pretty");
+        if (prettyObj != null) {
+            this.pretty = prettyObj;
         }
-        this.parameterMap = tempMap;
+        this.parameterMap = parameterMap;
     }
 
     private Object getValue(JsonNode jsonNode) {
@@ -84,7 +78,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     private Map<String, Object> initObject(JsonNode paramNode) {
-        Map<String, Object> paramMap = new HashMap<>(8, 1);
+        Map<String, Object> paramMap = new HashMap(8, 1);
         Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
         Map.Entry<String, JsonNode> entry;
         String name;
@@ -103,7 +97,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
     }
 
     private List<Object> initArray(ArrayNode paramNode) {
-        List<Object> paramList = new ArrayList<>();
+        List<Object> paramList = new ArrayList();
         Iterator<JsonNode> iterator = paramNode.getElements();
         JsonNode jsonNode;
         Object value;
@@ -117,7 +111,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
         return paramList;
     }
 
-    public void initParameter(String json) {
+    public void initWebsocketParameter(String json) {
         if (json.isEmpty() == false) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = null;
@@ -132,40 +126,96 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 //读取公共数据
                 //callback
                 JsonNode globalNode = rootNode.get("callback");
-                if(globalNode != null) {
+                if (globalNode != null) {
                     this.callback = globalNode.getTextValue();
                 }
                 //md5
                 globalNode = rootNode.get("md5");
-                if(globalNode != null) {
+                if (globalNode != null) {
                     this.md5 = globalNode.getTextValue();
+                }
+                //
+                globalNode = rootNode.get("pretty");
+                if (globalNode != null) {
+                    this.pretty = globalNode.getBooleanValue();
                 }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
-                if (paramNode.isNull() == false) {
-                    this.parameterMap = new HashMap<>(4, 1);
-                    Map.Entry<String, JsonNode> entry;
-                    String name;
-                    Object value;
-                    JsonNode jsonNode;
-                    Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
-                    while (iterator.hasNext()) {
-                        entry = iterator.next();
-                        name = entry.getKey();
-                        jsonNode = entry.getValue();
-                        if (jsonNode.isNull() == false) {
-                            value = this.getValue(jsonNode);
-                            this.parameterMap.put(name, value);
-                        }
+                if (paramNode == null || paramNode.isNull()) {
+                    paramNode = rootNode;
+                }
+                this.parameterMap = new HashMap(8, 1);
+                Map.Entry<String, JsonNode> entry;
+                String name;
+                Object value;
+                JsonNode jsonNode;
+                Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+                while (iterator.hasNext()) {
+                    entry = iterator.next();
+                    name = entry.getKey();
+                    jsonNode = entry.getValue();
+                    if (jsonNode.isNull() == false) {
+                        value = this.getValue(jsonNode);
+                        this.parameterMap.put(name, value);
                     }
-                } else {
-                    this.parameterMap = Collections.emptyMap();
                 }
             } else {
                 this.parameterMap = Collections.emptyMap();
             }
         } else {
             this.parameterMap = Collections.emptyMap();
+        }
+    }
+
+    public void initHttpParameter(Map<String, String> parameterMap, String json) {
+        //读取公共数据
+        //callback
+        this.callback = parameterMap.get("callback");
+        //
+        this.md5 = parameterMap.get("md5");
+        //
+        String prettyStr = parameterMap.get("pretty");
+        if (prettyStr != null && prettyStr.toLowerCase().equals("true")) {
+            this.pretty = true;
+        }
+        if (json != null && json.isEmpty() == false) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = null;
+            try {
+                rootNode = mapper.readValue(json, JsonNode.class);
+            } catch (IOException e) {
+                Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
+                logger.error("error json message:{}", json);
+                logger.error("parse json error:", e);
+            }
+            if (rootNode != null) {
+                //读数据
+                this.parameterMap = new HashMap(8, 1);
+                Map.Entry<String, JsonNode> entry;
+                String name;
+                Object value;
+                JsonNode jsonNode;
+                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
+                while (iterator.hasNext()) {
+                    entry = iterator.next();
+                    name = entry.getKey();
+                    jsonNode = entry.getValue();
+                    if (jsonNode.isNull() == false) {
+                        value = this.getValue(jsonNode);
+                        this.parameterMap.put(name, value);
+                    }
+                }
+            }
+        }
+        if (this.parameterMap == null) {
+            this.parameterMap = new HashMap(parameterMap.size(), 1);
+        }
+        //两类参数合并
+        Set<Entry<String, String>> entrySet = parameterMap.entrySet();
+        for (Entry<String, String> entry : entrySet) {
+            if (this.parameterMap.containsKey(entry.getKey()) == false) {
+                this.parameterMap.put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
@@ -213,5 +263,10 @@ public abstract class AbstractWorkContext implements WorkerContext {
     public String getMd5() {
         return md5;
     }
-    
+
+    @Override
+    public boolean isPretty() {
+        return pretty;
+    }
+
 }

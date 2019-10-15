@@ -20,6 +20,8 @@ public interface WorkerContext {
     
     public String getMd5();
     
+    public boolean isPretty();
+    
     public String getRoute();
 
     public String getSessionId();

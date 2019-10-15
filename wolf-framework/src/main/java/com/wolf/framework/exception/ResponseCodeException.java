@@ -6,8 +6,8 @@ package com.wolf.framework.exception;
  */
 public final class ResponseCodeException extends RuntimeException {
 
-    private static final long serialVersionUID = -8389962280396248534L;
     private final String code;
+    private String desc;
 
     public ResponseCodeException(final String code) {
         super(code);
@@ -17,4 +17,13 @@ public final class ResponseCodeException extends RuntimeException {
     public String getCode() {
         return this.code;
     }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.wolf.framework.service;
 
-import com.wolf.framework.service.parameter.PushConfig;
 import com.wolf.framework.service.parameter.RequestConfig;
 import com.wolf.framework.service.parameter.ResponseConfig;
 import java.lang.annotation.ElementType;
@@ -25,6 +24,20 @@ public @interface ServiceConfig {
     public String route();
 
     /**
+     * 分组
+     *
+     * @return route
+     */
+    public String group() default "default";
+
+    /**
+     * 是否保存日志
+     *
+     * @return
+     */
+    public boolean saveLog() default true;
+
+    /**
      * 请求的参数
      *
      * @return String[]
@@ -32,17 +45,25 @@ public @interface ServiceConfig {
     public RequestConfig[] requestConfigs() default {};
 
     /**
+     * 是否响应
+     *
+     * @return
+     */
+    public boolean response() default true;
+
+    /**
      * 返回的参数
      *
      * @return String[]
      */
     public ResponseConfig[] responseConfigs() default {};
-    
+
     /**
      * 推送配置
-     * @return 
+     *
+     * @return
      */
-    public PushConfig[] pushConfigs() default {};
+    public String[] pushRoutes() default {};
 
     /**
      * 事务类型 需要事务控制--true 不需要事务控制--false
@@ -66,13 +87,6 @@ public @interface ServiceConfig {
     public boolean validateSecurity() default false;
 
     /**
-     * 是否分页
-     *
-     * @return
-     */
-    public boolean page() default false;
-
-    /**
      * 是否设置session(用于保持连接)
      *
      * @return
@@ -92,5 +106,12 @@ public @interface ServiceConfig {
      * @return
      */
     public ResponseCode[] responseCodes() default {};
+
+    /**
+     * 直接响应文本
+     *
+     * @return
+     */
+    public boolean responseText() default false;
 
 }

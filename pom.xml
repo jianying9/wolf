@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolf</groupId>
     <artifactId>wolf</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wolf</name>
   
@@ -16,17 +16,33 @@
     <!--远程资源库地址-->
     <repositories>
         <repository>
-             <!--外网maven中心库代理--> 
+            <id>elasticsearch-releases</id>
+            <url>https://artifacts.elastic.co/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
             <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
+        </repository>
+        <repository>
+            <!--maven第三方release库--> 
+            <id>local.maven.com-release</id>
+            <name>local internal maven repository</name>
+            <url>http://139.224.54.3:8081/nexus/content/repositories/releases</url>
         </repository>
     </repositories>
 
     <!--远程插件资源库地址-->
     <pluginRepositories>
         <pluginRepository>
-             <!--外网maven中心库代理--> 
+            <!--外网maven中心库代理--> 
             <id>local.maven.com-proxy</id>
             <name>local internal maven repository</name>
             <url>http://139.224.54.3:8081/nexus/content/repositories/central</url>
@@ -67,7 +83,7 @@
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache-core</artifactId>
-                <version>2.6.2</version>
+                <version>2.6.11</version>
             </dependency>
             <dependency>
                 <groupId>commons-fileupload</groupId>
@@ -144,7 +160,7 @@
             <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
-                <version>2.4.1</version>
+                <version>3.1.0</version>
                 <type>jar</type>
             </dependency>
             <dependency>
@@ -156,7 +172,7 @@
             <dependency>
                 <groupId>com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
-                <version>2.1.9</version>
+                <version>2.1.10.3</version>
             </dependency>
             <dependency>
                 <groupId>net.jpountz.lz4</groupId>
@@ -169,6 +185,31 @@
                 <artifactId>snappy-java</artifactId>
                 <version>1.1.1.6</version>
                 <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>cn.teaey.apns4j</groupId>
+                <artifactId>apns4j</artifactId>
+                <version>1.1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.4.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiaomi</groupId>
+                <artifactId>mi-push-server</artifactId>
+                <version>2.2.19</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>transport</artifactId>
+                <version>6.8.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>x-pack-transport</artifactId>
+                <version>6.8.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -235,5 +276,8 @@
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->
+        <module>wolf-push</module>
+        <module>wolf-http</module>
+        <module>wolf-elasticsearch</module>
     </modules>
 </project>

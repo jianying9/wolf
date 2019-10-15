@@ -4,8 +4,8 @@ import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.injecter.Injecter;
 import com.wolf.framework.interceptor.Interceptor;
 import com.wolf.framework.interceptor.InterceptorContext;
-import com.wolf.framework.service.parameter.RequestParameterHandler;
-import com.wolf.framework.service.parameter.request.LongRequestParameterHandlerImpl;
+import com.wolf.framework.service.parameter.ServiceExtendContext;
+import com.wolf.framework.service.parameter.ServicePushContext;
 import com.wolf.framework.worker.ServiceWorker;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,12 +19,12 @@ import java.util.Map;
  */
 public class WorkerBuildContextImpl implements WorkerBuildContext {
 
-    private final Map<String, String> existClassMap = new HashMap<>(1024);
+    private final Map<String, String> existClassMap = new HashMap(1024);
     private final Injecter injecter;
     private final ApplicationContext applicationContext;
-    private final RequestParameterHandler nextIndexHandler;
-    private final RequestParameterHandler nextSizeHandler;
     private final List<Interceptor> interceptorList;
+    private final ServiceExtendContext serviceExtendContext;
+    private final ServicePushContext servicePushContext;
     //服务集合
     private final Map<String, ServiceWorker> serviceWorkerMap;
 
@@ -46,20 +46,24 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     /**
      * 构造函数
      *
+     * @param serviceExtendContext
+     * @param servicePushContext
      * @param injecter
      * @param interceptorContext
      * @param applicationContext
      */
     public WorkerBuildContextImpl(
-            final Injecter injecter,
-            final InterceptorContext interceptorContext,
-            final ApplicationContext applicationContext) {
-        this.serviceWorkerMap = new HashMap<>(256, 1);
+            ServiceExtendContext serviceExtendContext,
+            ServicePushContext servicePushContext,
+            Injecter injecter,
+            InterceptorContext interceptorContext,
+            ApplicationContext applicationContext) {
+        this.serviceWorkerMap = new HashMap(2, 1);
+        this.serviceExtendContext = serviceExtendContext;
+        this.servicePushContext = servicePushContext;
         this.injecter = injecter;
         this.applicationContext = applicationContext;
         this.interceptorList = interceptorContext.getInterceptorList();
-        this.nextIndexHandler = new LongRequestParameterHandlerImpl("nextIndex", Long.MAX_VALUE, 0, true);
-        this.nextSizeHandler = new LongRequestParameterHandlerImpl("nextSize", 100, 1, true);
     }
 
     @Override
@@ -83,17 +87,17 @@ public class WorkerBuildContextImpl implements WorkerBuildContext {
     }
 
     @Override
-    public RequestParameterHandler getNextIndexHandler() {
-        return this.nextIndexHandler;
-    }
-
-    @Override
-    public RequestParameterHandler getNextSizeHandler() {
-        return this.nextSizeHandler;
-    }
-
-    @Override
     public List<Interceptor> getInterceptorList() {
         return this.interceptorList;
+    }
+
+    @Override
+    public ServiceExtendContext getServiceExtendContext() {
+        return this.serviceExtendContext;
+    }
+
+    @Override
+    public ServicePushContext getServicePushContext() {
+        return this.servicePushContext;
     }
 }

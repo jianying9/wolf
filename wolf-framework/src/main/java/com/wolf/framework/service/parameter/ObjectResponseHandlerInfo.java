@@ -9,9 +9,9 @@ import java.util.Map;
 public class ObjectResponseHandlerInfo {
     
     private final String[] parameter;
-    private final Map<String, ResponseParameterHandler> responseParameterHandlerMap;
+    private final Map<String, ResponseHandler> responseParameterHandlerMap;
 
-    public ObjectResponseHandlerInfo(String[] parameter, Map<String, ResponseParameterHandler> responseParameterHandlerMap) {
+    public ObjectResponseHandlerInfo(String[] parameter, Map<String, ResponseHandler> responseParameterHandlerMap) {
         this.parameter = parameter;
         this.responseParameterHandlerMap = responseParameterHandlerMap;
     }
@@ -20,7 +20,7 @@ public class ObjectResponseHandlerInfo {
         return parameter;
     }
 
-    public Map<String, ResponseParameterHandler> getResponseParameterHandlerMap() {
+    public Map<String, ResponseHandler> getResponseParameterHandlerMap() {
         return responseParameterHandlerMap;
     }
 

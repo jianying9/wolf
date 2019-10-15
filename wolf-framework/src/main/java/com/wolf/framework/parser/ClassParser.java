@@ -23,7 +23,7 @@ public final class ClassParser {
     final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     public List<String> findClass(final ClassLoader classloader, final List<String> packageNameList) {
-        final List<String> classNameList = new ArrayList<>(200);
+        final List<String> classNameList = new ArrayList(200);
         Enumeration<URL> eUrl;
         try {
             for (String packageName : packageNameList) {

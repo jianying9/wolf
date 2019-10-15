@@ -19,7 +19,7 @@ public class ValidateSessionWorkHandlerImpl implements WorkHandler {
     @Override
     public void execute(WorkerContext workerContext) {
         String sid = workerContext.getSessionId();
-        if (sid == null) {
+        if (sid == null || sid.isEmpty()) {
             //返回未登录提示，关闭连接
             WorkerResponse response = workerContext.getWorkerResponse();
             response.unlogin();

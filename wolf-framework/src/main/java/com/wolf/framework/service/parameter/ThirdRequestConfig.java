@@ -63,4 +63,10 @@ public @interface ThirdRequestConfig {
      * @return
      */
     public String desc();
+    
+    /**
+     * 第四级参数
+     * @return 
+     */
+    public FourthRequestConfig[] fourthRequestConfigs() default {};
 }

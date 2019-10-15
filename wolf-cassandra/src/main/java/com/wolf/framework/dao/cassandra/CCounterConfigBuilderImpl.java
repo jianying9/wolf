@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBuilder {
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
-    private final List<Class<T>> cEntityClassList = new ArrayList<>();
+    private final List<Class<T>> cEntityClassList = new ArrayList();
     private CassandraAdminContext cassandraAdminContext;
     private Map<Class<?>, List<ColumnHandler>> entityInfoMap;
 
@@ -83,21 +83,27 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
         if (this.cEntityClassList.isEmpty() == false) {
             this.logger.info("parsing annotation CCounterConfig...");
             for (Class<T> clazz : this.cEntityClassList) {
-                this.logger.info("--parsing cassandra CCounterDao {}--", clazz.getName());
+                this.logger.debug("--parsing cassandra CCounterDao {}--", clazz.getName());
                 if (clazz.isAnnotationPresent(CCounterConfig.class)) {
                     //获取注解RDaoConfig
                     final CCounterConfig cDaoConfig = clazz.getAnnotation(CCounterConfig.class);
                     //表空间
-                    final String keyspace = cDaoConfig.keyspace();
-                    //表
+                    String keyspace = cDaoConfig.keyspace();
+                    //如果表空间为空,则取默认的表空间
+                    String defaultKeyspace = this.cassandraAdminContext.getDefaultKeyspace();
+                    if (keyspace.isEmpty()) {
+                        keyspace = defaultKeyspace;
+                    } else {
+                        keyspace = keyspace.replace("${default}", defaultKeyspace);
+                    }
                     final String table = cDaoConfig.table();
                     String dataMap;
                     //获取该实体所有字段集合
                     Field[] fieldTemp = clazz.getDeclaredFields();
                     //ColumnHandler
-                    List<ColumnHandler> keyHandlerList = new ArrayList<>(1);
+                    List<ColumnHandler> keyHandlerList = new ArrayList(1);
                     //column
-                    List<ColumnHandler> columnHandlerList = new ArrayList<>(0);
+                    List<ColumnHandler> columnHandlerList = new ArrayList(0);
                     ColumnHandler columnHandler;
                     int modifier;
                     String fieldName;
@@ -133,7 +139,7 @@ public class CCounterConfigBuilderImpl<T extends Entity> implements DaoConfigBui
                     allColumnHandlerList.addAll(columnHandlerList);
                     this.entityInfoMap.put(clazz, allColumnHandlerList);
                     //
-                    CCounterDaoBuilder<T> entityDaoBuilder = new CCounterDaoBuilder<>(
+                    CCounterDaoBuilder<T> entityDaoBuilder = new CCounterDaoBuilder(
                             keyspace,
                             table,
                             keyHandlerList,

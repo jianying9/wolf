@@ -42,14 +42,11 @@ public class WebSocketWorkerContextImpl extends AbstractWorkContext {
                 this.session.getUserProperties().put(WebsocketConfig.SID_NAME, newSid);
                 //保存socket
                 this.sessionManager.putNewSession(newSid, this.session);
-            } else //当前socket session存在，判断是和新session属于同一个session
-            {
-                if (sid.equals(newSid) == false) {
-                    //切换用户,改变socket session,改变socket的集合id
-                    this.sessionManager.removSession(sid);
-                    this.session.getUserProperties().put(WebsocketConfig.SID_NAME, newSid);
-                    this.sessionManager.putNewSession(newSid, this.session);
-                }
+            } else if (sid.equals(newSid) == false) {
+                //切换用户,改变socket session,改变socket的集合id
+                this.sessionManager.removSession(sid);
+                this.session.getUserProperties().put(WebsocketConfig.SID_NAME, newSid);
+                this.sessionManager.putNewSession(newSid, this.session);
             }
         }
     }
