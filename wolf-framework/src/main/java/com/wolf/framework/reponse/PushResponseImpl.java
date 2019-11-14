@@ -1,12 +1,12 @@
 package com.wolf.framework.reponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushHandler;
 import com.wolf.framework.utils.EntityUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
 import java.util.Collections;
 

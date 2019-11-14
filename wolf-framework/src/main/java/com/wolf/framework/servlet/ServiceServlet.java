@@ -1,5 +1,6 @@
 package com.wolf.framework.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.push.CometHandler;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
@@ -27,7 +28,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 /**

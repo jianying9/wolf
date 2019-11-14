@@ -1,5 +1,6 @@
 package com.wolf.framework.dao.elasticsearch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.logger.LogFactory;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequest;

@@ -1,6 +1,7 @@
 package com.wolf.framework.context;
 
 import com.wolf.framework.cache.DefaultCacheConfiguration;
+import com.wolf.framework.cache.EhcacheResourceImpl;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
@@ -117,6 +118,8 @@ public class ApplicationContextBuilder<T extends Entity> {
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
         ApplicationContext.CONTEXT.setCache(cache);
+        EhcacheResourceImpl ehcacheResourceImpl = new EhcacheResourceImpl(cacheManager);
+        ApplicationContext.CONTEXT.addResource(ehcacheResourceImpl);
         //动态查找需要搜索的dao注解创建对象
         //实体信息存储对象
         final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap(2, 1);

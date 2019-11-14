@@ -1,6 +1,7 @@
 package com.wolf.thirdparty.push;
 
-import com.wolf.framework.config.FrameworkConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.Resource;
@@ -16,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
 /**
@@ -40,6 +39,14 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
     //
     @InjectLocalService
     private HttpLocal httpLocal;
+
+    public void setHttpLocal(HttpLocal httpLocal) {
+        this.httpLocal = httpLocal;
+    }
+
+    public void addChannel(String name, HuaweiChannel huaweiChannel) {
+        this.channelMap.put(name, huaweiChannel);
+    }
 
     @Override
     public void init() {
@@ -70,26 +77,13 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
             HuaweiChannel huaweiChannel = new HuaweiChannel(this.defaultChannelName, appId, appSecret, packageName);
             this.channelMap.put(this.defaultChannelName, huaweiChannel);
         }
-        //
-        String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
-        if (compileModel.equals(FrameworkConfig.UNIT_TEST) == false) {
-            //启动更新一次token
-            this.updateAccessToken();
-        } else {
-            System.out.println("unit模式不初始化huawei push");
-        }
     }
 
     @Override
     public void destory() {
     }
 
-    @Override
-    public void updateAccessToken() {
-        this.updateAccessToken(this.defaultChannelName);
-    }
-
-    private void updateAccessToken(String channelName) {
+    private synchronized void updateAccessToken(String channelName) {
         HuaweiChannel huaweiChannel = this.channelMap.get(channelName);
         if (huaweiChannel != null) {
             //获取token
@@ -115,10 +109,10 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
             if (rootNode != null) {
                 JsonNode accessTokenNode = rootNode.get("access_token");
                 if (accessTokenNode != null) {
-                    String accessToken = accessTokenNode.getTextValue();
+                    String accessToken = accessTokenNode.asText();
                     //
                     JsonNode expiresInNode = rootNode.get("expires_in");
-                    long expiresIn = expiresInNode.getLongValue();
+                    long expiresIn = expiresInNode.asLong();
                     long tokenExpiredTime = System.currentTimeMillis() + expiresIn * 900l;
                     huaweiChannel.update(accessToken, tokenExpiredTime);
                     this.logger.info("huawei update accesstoken success:{},{}", channelName, accessToken);
@@ -244,7 +238,11 @@ public class HuaweiLocalImpl implements HuaweiLocal, Resource {
                     }
 
                     String postUrl = this.apiUrl + "?nsp_ctx=" + nsp_ctx;
+                    System.out.println(postUrl);
+                    System.out.println(paramterMap);
+                    System.out.println(headerMap);
                     String json = this.httpLocal.doPost(postUrl, paramterMap, headerMap);
+                    System.out.println(json);
                     //处理返回结果
                     JsonNode rootNode = null;
                     if (json != null && json.isEmpty() == false) {

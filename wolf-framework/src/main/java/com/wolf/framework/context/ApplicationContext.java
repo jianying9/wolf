@@ -101,6 +101,7 @@ public final class ApplicationContext {
     void contextDestroyed() {
         for (Resource resource : this.resourceList) {
             resource.destory();
+            
         }
     }
 

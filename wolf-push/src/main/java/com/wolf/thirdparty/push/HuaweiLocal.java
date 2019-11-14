@@ -8,10 +8,8 @@ import com.wolf.framework.local.Local;
  * @author jianying9
  */
 public interface HuaweiLocal extends Local {
-    
-    public void add(HuaweiChannel huaweiChannel);
 
-    public void updateAccessToken();
+    public void add(HuaweiChannel huaweiChannel);
 
     public void push(String deviceToken, ThirdPushMessage thirdPushMessage);
 

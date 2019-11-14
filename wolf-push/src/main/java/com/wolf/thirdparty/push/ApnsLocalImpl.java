@@ -50,9 +50,6 @@ public class ApnsLocalImpl implements ApnsLocal, Resource {
             ApnsGateway apnsGateway = ApnsGateway.PRODUCTION;
             String compileModel = ApplicationContext.CONTEXT.getParameter(FrameworkConfig.COMPILE_MODEL);
             if (compileModel.equals(FrameworkConfig.UNIT_TEST) == false) {
-                if (compileModel.equals(FrameworkConfig.DEVELOPMENT)) {
-                    apnsGateway = ApnsGateway.DEVELOPMENT;
-                }
                 //获取apns信息文件
                 ClassLoader classLoader = getClass().getClassLoader();
                 URL url = classLoader.getResource(apnsFileName);
