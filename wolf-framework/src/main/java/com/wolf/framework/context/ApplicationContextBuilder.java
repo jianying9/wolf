@@ -1,6 +1,6 @@
 package com.wolf.framework.context;
 
-import com.wolf.framework.cache.DefaultCacheConfiguration;
+import com.wolf.framework.cache.EhcacheTools;
 import com.wolf.framework.cache.EhcacheResourceImpl;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
@@ -49,6 +49,7 @@ import java.util.HashMap;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -113,10 +114,13 @@ public class ApplicationContextBuilder<T extends Entity> {
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList();
         //初始化缓存管理器
-        CacheConfiguration cacheConfiguration = DefaultCacheConfiguration.getDefault();
-        CacheManager cacheManager = new CacheManager();
+        Configuration configuration = EhcacheTools.getDefaultConfiguration();
+        CacheManager cacheManager = new CacheManager(configuration);
+        //
+        CacheConfiguration cacheConfiguration = EhcacheTools.getDefaultCacheConfiguration();
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
+        //
         ApplicationContext.CONTEXT.setCache(cache);
         EhcacheResourceImpl ehcacheResourceImpl = new EhcacheResourceImpl(cacheManager);
         ApplicationContext.CONTEXT.addResource(ehcacheResourceImpl);

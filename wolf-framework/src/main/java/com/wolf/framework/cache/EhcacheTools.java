@@ -2,6 +2,7 @@ package com.wolf.framework.cache;
 
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.TransactionalMode;
+import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
@@ -11,9 +12,16 @@ import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
  *
  * @author aladdin
  */
-public class DefaultCacheConfiguration {
+public class EhcacheTools {
 
-    public static CacheConfiguration getDefault() {
+    public static Configuration getDefaultConfiguration() {
+        final String name = "wolf-manager-" + Long.toString(System.currentTimeMillis());
+        Configuration configuration = new Configuration();
+        configuration.setName(name);
+        return configuration;
+    }
+
+    public static CacheConfiguration getDefaultCacheConfiguration() {
         final String name = "wolf-cache-" + Long.toString(System.currentTimeMillis());
         final int maxEntriesLocalHeap = 100000;
         final MemoryStoreEvictionPolicy memoryStoreEvictionPolicy = MemoryStoreEvictionPolicy.LRU;
