@@ -55,7 +55,7 @@ public class WebsocketEndPoint implements Resource {
         Matcher matcher = this.routePattern.matcher(text);
         String responseMesssage;
         String sid = "";
-        String route = "";
+        String route;
         if (matcher.find()) {
             route = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
@@ -115,6 +115,7 @@ public class WebsocketEndPoint implements Resource {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
+        System.out.println(text);
         //记录首次时间
         session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);
