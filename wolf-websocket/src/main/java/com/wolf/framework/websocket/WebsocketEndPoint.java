@@ -115,7 +115,6 @@ public class WebsocketEndPoint implements Resource {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
-        System.out.println(text);
         //记录首次时间
         session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);
