@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @LocalServiceConfig
 public class HuaweiLocalImpl implements HuaweiLocal, Resource {
 
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.XIAOMI);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.HUAWEI);
 
     private String defaultChannelName = "defaultChannel";
 
