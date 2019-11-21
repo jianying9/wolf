@@ -58,7 +58,7 @@ import net.sf.ehcache.config.Configuration;
  * @param <T>
  */
 public class ApplicationContextBuilder<T extends Entity> {
-
+    
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList(0);
     protected final List<Class<Service>> serviceClassList = new ArrayList(0);
@@ -69,15 +69,15 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final List<Class<?>> servicePushClassList = new ArrayList(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
-
+    
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
     }
-
+    
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
-
+    
     private boolean checkException(Throwable e) {
         boolean result = true;
         String error = e.getMessage();
@@ -88,7 +88,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         return result;
     }
-
+    
     private Class<?> loadClass(ClassLoader classloader, String className) {
         Class<?> clazz = null;
         try {
@@ -99,10 +99,10 @@ public class ApplicationContextBuilder<T extends Entity> {
                 this.logger.error(className, ex);
             }
         }
-
+        
         return clazz;
     }
-
+    
     public final void build() {
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
@@ -257,6 +257,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         for (Class<Service> clazzs : this.serviceClassList) {
             workerBuilder.build(clazzs);
         }
+        ApplicationContext.CONTEXT.setServicePushContext(servicePushContext);
         ApplicationContext.CONTEXT.setPushInfoMap(servicePushContext.getPushInfoMap());
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");

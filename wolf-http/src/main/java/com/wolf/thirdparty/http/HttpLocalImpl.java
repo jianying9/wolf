@@ -99,7 +99,7 @@ public class HttpLocalImpl implements HttpLocal {
 
     @Override
     public String doPost(String url, Map<String, String> parameterMap) {
-        return this.doPost(url, parameterMap, null);
+        return this.doPost(url, parameterMap, Collections.EMPTY_MAP);
     }
 
     @Override
