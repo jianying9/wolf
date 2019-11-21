@@ -17,6 +17,6 @@ public final class LogFactory {
      * @return
      */
     public static Logger getLogger(LoggerType loggerType) {
-        return LoggerFactory.getLogger(loggerType.getLoggerName());
+        return LoggerFactory.getLogger("java.util.logging.ConsoleHandler." + loggerType.getLoggerName());
     }
 }
