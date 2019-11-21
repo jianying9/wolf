@@ -49,7 +49,7 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
                 if (paraValue != null) {
                     responseParameterHandler = parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    if(paraValue != null) {
+                    if (paraValue != null) {
                         resultMap.put(paraName, paraValue);
                     }
                 }
@@ -92,6 +92,15 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         } catch (IOException ex) {
         }
         return responseMsg;
+    }
+
+    @Override
+    public Map<String, Object> getPushMap() {
+        Map<String, Object> responseMap = new HashMap(8, 1);
+        //核心返回数据
+        responseMap.put("route", this.pushHandler.getRoute());
+        responseMap.put("data", this.dataMap);
+        return responseMap;
     }
 
     @Override
