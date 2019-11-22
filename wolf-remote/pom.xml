@@ -4,7 +4,7 @@
     <parent>
         <artifactId>wolf</artifactId>
         <groupId>com.wolf</groupId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.8-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wolf</groupId>

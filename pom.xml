@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wolf</groupId>
     <artifactId>wolf</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>wolf</name>
   
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <wolf.version>5.7-SNAPSHOT</wolf.version>
+        <wolf.version>5.8-SNAPSHOT</wolf.version>
     </properties>
     
     <!--远程资源库地址-->
