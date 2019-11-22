@@ -21,6 +21,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 
 /**
@@ -115,6 +117,13 @@ public class WebsocketEndPoint implements Resource {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
+        //解密
+        char[] charArray = text.toCharArray();
+        try {
+            byte[] byteArray = Hex.decodeHex(charArray);
+            text = new String(byteArray);
+        } catch (DecoderException ex) {
+        }
         //记录首次时间
         session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);
