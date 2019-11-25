@@ -2,8 +2,10 @@ package com.wolf.framework.dao.elasticsearch;
 
 import com.wolf.framework.dao.Entity;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -40,7 +42,9 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
         }
         //删除多余的列名
-        for (String columnName : entityMap.keySet()) {
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
             if (this.allColumnNameSet.contains(columnName) == false) {
                 entityMap.remove(columnName);
             }
@@ -64,7 +68,9 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
                 throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
             }
             //删除多余的列名
-            for (String columnName : entityMap.keySet()) {
+            Set<String> keySet = new HashSet();
+            keySet.addAll(entityMap.keySet());
+            for (String columnName : keySet) {
                 if (this.allColumnNameSet.contains(columnName) == false) {
                     entityMap.remove(columnName);
                 }
@@ -85,7 +91,9 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
         }
         //删除多余的列名
-        for (String columnName : entityMap.keySet()) {
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
             if (this.allColumnNameSet.contains(columnName) == false) {
                 entityMap.remove(columnName);
             }
@@ -109,7 +117,9 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
                 throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
             }
             //删除多余的列名
-            for (String columnName : entityMap.keySet()) {
+            Set<String> keySet = new HashSet();
+            keySet.addAll(entityMap.keySet());
+            for (String columnName : keySet) {
                 if (this.allColumnNameSet.contains(columnName) == false) {
                     entityMap.remove(columnName);
                 }
