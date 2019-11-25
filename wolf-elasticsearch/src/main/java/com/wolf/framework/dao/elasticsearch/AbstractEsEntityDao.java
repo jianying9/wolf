@@ -7,8 +7,10 @@ import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.dao.ColumnHandler;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -29,6 +31,7 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
 
     protected final EsColumnHandler keyHandler;
     protected final List<EsColumnHandler> columnHandlerList;
+    protected final Set<String> allColumnNameSet;
     protected final Class<T> clazz;
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     protected final String index;
@@ -48,6 +51,11 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
         this.type = type;
         this.transportClient = transportClient;
         this.clazz = clazz;
+        this.allColumnNameSet = new HashSet();
+        this.allColumnNameSet.add(this.keyHandler.getColumnName());
+        for (EsColumnHandler esColumnHandler : this.columnHandlerList) {
+            this.allColumnNameSet.add(esColumnHandler.getColumnName());
+        }
     }
 
     protected final String getKeyValue(Object value) {

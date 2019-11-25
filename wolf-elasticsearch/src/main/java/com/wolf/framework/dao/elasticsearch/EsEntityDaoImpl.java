@@ -39,6 +39,12 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
         }
+        //删除多余的列名
+        for (String columnName : entityMap.keySet()) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
+        }
         String id = this.getKeyValue(keyValue);
         this.transportClient.prepareIndex(index, type, id).setSource(entityMap).get();
         //
@@ -57,6 +63,12 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             if (keyValue == null) {
                 throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
             }
+            //删除多余的列名
+            for (String columnName : entityMap.keySet()) {
+                if (this.allColumnNameSet.contains(columnName) == false) {
+                    entityMap.remove(columnName);
+                }
+            }
             id = this.getKeyValue(keyValue);
             indexRequest = this.transportClient.prepareIndex(index, type, id).setSource(entityMap).request();
             bulkRequestBuilder.add(indexRequest);
@@ -71,6 +83,12 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+        }
+        //删除多余的列名
+        for (String columnName : entityMap.keySet()) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
         }
         String id = this.getKeyValue(keyValue);
         this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).get();
@@ -89,6 +107,12 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             keyValue = entityMap.get(this.keyHandler.getColumnName());
             if (keyValue == null) {
                 throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+            }
+            //删除多余的列名
+            for (String columnName : entityMap.keySet()) {
+                if (this.allColumnNameSet.contains(columnName) == false) {
+                    entityMap.remove(columnName);
+                }
             }
             id = this.getKeyValue(keyValue);
             updateRequest = this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).request();
