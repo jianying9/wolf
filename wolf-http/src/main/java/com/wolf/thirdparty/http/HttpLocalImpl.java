@@ -1,6 +1,8 @@
 package com.wolf.thirdparty.http;
 
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.local.LocalServiceConfig;
+import com.wolf.framework.logger.LogFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -19,6 +21,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
 
 /**
  *
@@ -28,6 +31,8 @@ import org.apache.http.message.BasicNameValuePair;
 public class HttpLocalImpl implements HttpLocal {
 
     private final CloseableHttpClient client;
+
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTPCLIENT);
 
     public HttpLocalImpl() {
         HttpClientBuilder builder = HttpClientBuilder.create();
@@ -92,7 +97,7 @@ public class HttpLocalImpl implements HttpLocal {
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
         } catch (IOException ex) {
-            System.err.println(ex);
+            this.logger.error("httpclient get error", ex);
         }
         return responseBody;
     }
@@ -129,7 +134,7 @@ public class HttpLocalImpl implements HttpLocal {
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
         } catch (IOException ex) {
-            System.err.println(ex);
+            this.logger.error("httpclient post error", ex);
         }
         return responseBody;
     }
