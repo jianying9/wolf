@@ -356,7 +356,7 @@
         <!--<module>wolf-demo</module>-->
         <module>wolf-framework-test</module>
         <!--<module>wolf-cache</module>-->
-        <module>wolf-push</module>
+        <!--<module>wolf-push</module>-->
         <module>wolf-http</module>
         <module>wolf-elasticsearch</module>
     </modules>
