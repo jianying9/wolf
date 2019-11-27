@@ -1,6 +1,8 @@
 package com.wolf.framework.dao.elasticsearch;
 
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.Entity;
+import com.wolf.framework.logger.LogFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,10 +15,12 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.slf4j.Logger;
 
 /**
  *
@@ -24,6 +28,8 @@ import org.elasticsearch.search.sort.SortBuilder;
  * @param <T>
  */
 public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T> {
+
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
 
     public EsEntityDaoImpl(
             TransportClient transportClient,
@@ -99,8 +105,32 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
             }
         }
         String id = this.getKeyValue(keyValue);
-        this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).get();
+        try {
+            this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).get();
+            this.refresh();
+        } catch (DocumentMissingException e) {
+            this.logger.warn("elasticsearch update doc miss:{}:{}", this.index, id);
+        }
         //
+        return id;
+    }
+
+    @Override
+    public String upsert(Map<String, Object> entityMap) {
+        Object keyValue = entityMap.get(this.keyHandler.getColumnName());
+        if (keyValue == null) {
+            throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
+        }
+        //删除多余的列名
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
+        }
+        String id = this.getKeyValue(keyValue);
+        this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).setDocAsUpsert(true).get();
         this.refresh();
         return id;
     }

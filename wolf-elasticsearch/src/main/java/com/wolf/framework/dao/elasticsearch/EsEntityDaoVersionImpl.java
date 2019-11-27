@@ -119,6 +119,11 @@ public class EsEntityDaoVersionImpl<T extends Entity> extends AbstractEsEntityDa
     }
 
     @Override
+    public String upsert(Map<String, Object> entityMap) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public void batchUpdate(List<Map<String, Object>> entityMapList) {
         BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
         String id;

@@ -135,6 +135,14 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public String update(Map<String, Object> entityMap);
+    
+    /**
+     * 更新,返回keyValue
+     *
+     * @param entityMap
+     * @return
+     */
+    public String upsert(Map<String, Object> entityMap);
 
     /**
      * 批量更新
