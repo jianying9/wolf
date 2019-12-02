@@ -17,7 +17,6 @@ import com.wolf.framework.task.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceBuilder;
-import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
@@ -58,7 +57,7 @@ import net.sf.ehcache.config.Configuration;
  * @param <T>
  */
 public class ApplicationContextBuilder<T extends Entity> {
-    
+
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     protected final List<Class<T>> rEntityClassList = new ArrayList(0);
     protected final List<Class<Service>> serviceClassList = new ArrayList(0);
@@ -69,15 +68,15 @@ public class ApplicationContextBuilder<T extends Entity> {
     protected final List<Class<?>> servicePushClassList = new ArrayList(0);
     protected WorkerBuildContext workerBuildContext;
     private final Map<String, String> parameterMap;
-    
+
     public ApplicationContextBuilder(Map<String, String> parameterMap) {
         this.parameterMap = parameterMap;
     }
-    
+
     public final String getParameter(String name) {
         return this.parameterMap.get(name);
     }
-    
+
     private boolean checkException(Throwable e) {
         boolean result = true;
         String error = e.getMessage();
@@ -88,7 +87,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         return result;
     }
-    
+
     private Class<?> loadClass(ClassLoader classloader, String className) {
         Class<?> clazz = null;
         try {
@@ -99,10 +98,10 @@ public class ApplicationContextBuilder<T extends Entity> {
                 this.logger.error(className, ex);
             }
         }
-        
+
         return clazz;
     }
-    
+
     public final void build() {
         //将运行参数保存至全局上下文对象
         ApplicationContext.CONTEXT.setParameterMap(this.parameterMap);
@@ -201,14 +200,20 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         //解析LocalService
         this.logger.debug("parsing annotation LocalServiceConfig...");
-        final LocalServiceContext localServiceContext = LocalServiceContextImpl.getInstance();
-        final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContext);
+        final LocalServiceContextImpl localServiceContextImpl = LocalServiceContextImpl.getInstance();
+        //是否需要初始化local service init
+        String localInitStr = this.getParameter(FrameworkConfig.LOCAL_SERVICE_INIT);
+        if (localInitStr != null) {
+            boolean localInit = Boolean.valueOf(localInitStr);
+            localServiceContextImpl.setInit(localInit);
+        }
+        final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContextImpl);
         for (Class<Local> clazzl : this.localServiceClassList) {
             localServiceBuilder.build(clazzl);
         }
         this.logger.info("parse annotation LocalServiceConfig finished.");
         //LocalService注入管理对象
-        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContext);
+        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextImpl);
         //TaskExecutor注入管理对象
         final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
@@ -221,7 +226,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
-        localServiceContext.inject(injecterList);
+        localServiceContextImpl.inject(injecterList);
         //
         //解析InterceptorConfig
         this.logger.debug("parsing annotation InterceptorConfig...");

@@ -22,6 +22,24 @@ public final class LocalServiceContextImpl implements LocalServiceContext {
         return INSTANCE;
     }
 
+    private boolean init = true;
+
+    public static LocalServiceContextImpl getINSTANCE() {
+        return INSTANCE;
+    }
+
+    public static void setINSTANCE(LocalServiceContextImpl INSTANCE) {
+        LocalServiceContextImpl.INSTANCE = INSTANCE;
+    }
+
+    public boolean isInit() {
+        return init;
+    }
+
+    public void setInit(boolean init) {
+        this.init = init;
+    }
+
     private final Map<Class<? extends Local>, Local> localServiceMap;
 
     private LocalServiceContextImpl() {
@@ -48,8 +66,10 @@ public final class LocalServiceContextImpl implements LocalServiceContext {
         for (Local local : localServiceMap.values()) {
             injecter.parse(local);
         }
-        for (Local local : localServiceMap.values()) {
-            local.init();
+        if (this.init) {
+            for (Local local : localServiceMap.values()) {
+                local.init();
+            }
         }
     }
 }

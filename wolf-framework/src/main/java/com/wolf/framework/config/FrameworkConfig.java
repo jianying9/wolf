@@ -21,6 +21,8 @@ public class FrameworkConfig {
     public final static String UNIT_TEST = "UNIT_TEST";
     //
     public final static String OSS_TEST = "oss.test";
+    //
+    public final static String LOCAL_SERVICE_INIT = "local.service.init";
     //----------------------------------------------------------
     //扫描注解包名集合
     public final static String ANNOTATION_SCAN_PACKAGES = "annotation.scan.packages";
