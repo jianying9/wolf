@@ -166,8 +166,13 @@ public class ServiceServlet extends HttpServlet implements CometHandler {
                 }
                 if (serviceWorker.getServiceContext().isSaveLog()) {
                     long time = System.currentTimeMillis() - start;
+                    String code = workerContext.getWorkerResponse().getCode();
                     AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
-                    accessLogger.log(route, sid, param, result, time);
+                    if (code.equals(ResponseCodeConfig.SUCCESS)) {
+                        accessLogger.log(route, sid, param, result, time);
+                    } else {
+                        accessLogger.error(route, sid, param, result, time);
+                    }
                 }
             }
         }
