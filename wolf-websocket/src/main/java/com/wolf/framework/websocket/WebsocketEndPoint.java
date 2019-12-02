@@ -77,6 +77,12 @@ public class WebsocketEndPoint implements Resource {
                     long time = System.currentTimeMillis() - start;
                     AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
                     accessLogger.log(route, sid, text, responseMesssage, time);
+                    String code = workerContext.getWorkerResponse().getCode();
+                    if (code.equals(ResponseCodeConfig.SUCCESS)) {
+                        accessLogger.log(route, sid, text, responseMesssage, time);
+                    } else {
+                        accessLogger.error(route, sid, text, responseMesssage, time);
+                    }
                 }
             }
         } else {
