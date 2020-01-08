@@ -24,14 +24,6 @@ public final class LocalServiceContextImpl implements LocalServiceContext {
 
     private boolean init = true;
 
-    public static LocalServiceContextImpl getINSTANCE() {
-        return INSTANCE;
-    }
-
-    public static void setINSTANCE(LocalServiceContextImpl INSTANCE) {
-        LocalServiceContextImpl.INSTANCE = INSTANCE;
-    }
-
     public boolean isInit() {
         return init;
     }
