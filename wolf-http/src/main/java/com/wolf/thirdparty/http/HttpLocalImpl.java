@@ -15,12 +15,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 
 /**
@@ -131,8 +134,26 @@ public class HttpLocalImpl implements HttpLocal {
             //
             HttpEntity postBodyEntity = new UrlEncodedFormEntity(urlParameterList, "UTF-8");
             request.setEntity(postBodyEntity);
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            responseBody = this.client.execute(request, responseHandler);
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
+        } catch (IOException ex) {
+            this.logger.error("httpclient post error", ex);
+        }
+        return responseBody;
+    }
+
+    @Override
+    public String doPost(String url, String xml) {
+        String responseBody = "";
+        try {
+            HttpPost request = new HttpPost(url);
+            request.addHeader("Content-Type", "text/xml");
+            //
+            request.setEntity(new StringEntity(xml, "UTF-8"));
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
         } catch (IOException ex) {
             this.logger.error("httpclient post error", ex);
         }

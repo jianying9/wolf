@@ -17,5 +17,7 @@ public interface HttpLocal extends Local {
     public String doPost(String url, Map<String, String> parameterMap);
 
     public String doPost(String url, Map<String, String> parameterMap, Map<String, String> headerMap);
+    
+    public String doPost(String url, String xml);
 
 }
