@@ -39,4 +39,6 @@ public interface WorkerContext {
     public ServiceWorker getServiceWorker();
     
     public ApplicationContext getApplicationContext();
+    
+    public String getIp();
 }

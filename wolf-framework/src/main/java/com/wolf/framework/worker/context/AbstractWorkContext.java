@@ -39,12 +39,14 @@ public abstract class AbstractWorkContext implements WorkerContext {
     private final ServiceWorker serviceWorker;
     private final WorkerRequest request;
     private final WorkerResponse response;
+    private final String ip;
 
-    public AbstractWorkContext(String route, ServiceWorker serviceWorker) {
+    public AbstractWorkContext(String route, ServiceWorker serviceWorker, String ip) {
         this.route = route;
         this.serviceWorker = serviceWorker;
         this.request = new RequestImpl(this);
         this.response = new ResponseImpl(this);
+        this.ip = ip;
     }
 
     public void initLocalParameter(Map<String, Object> parameterMap) {
@@ -267,6 +269,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
     @Override
     public boolean isPretty() {
         return pretty;
+    }
+
+    @Override
+    public String getIp() {
+        return this.ip;
     }
 
 }

@@ -44,4 +44,6 @@ public interface Request {
     public String getRoute();
     
     public String getSessionId();
+    
+    public String getIp();
 }

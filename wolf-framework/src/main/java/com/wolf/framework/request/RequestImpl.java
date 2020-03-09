@@ -238,4 +238,9 @@ public class RequestImpl implements WorkerRequest {
         return (List<Map<String, Object>>) value;
     }
 
+    @Override
+    public String getIp() {
+        return this.workerContext.getIp();
+    }
+
 }
