@@ -159,4 +159,21 @@ public class HttpLocalImpl implements HttpLocal {
         }
         return responseBody;
     }
+
+    @Override
+    public String doPostJson(String url, String json) {
+        String responseBody = "";
+        try {
+            HttpPost request = new HttpPost(url);
+            request.addHeader("Content-Type", "application/json");
+            //
+            request.setEntity(new StringEntity(json, "UTF-8"));
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
+        } catch (IOException ex) {
+            this.logger.error("httpclient post error", ex);
+        }
+        return responseBody;
+    }
 }
