@@ -43,6 +43,8 @@ public class ServiceContextImpl implements ServiceContext {
     private final SessionHandleType sessionHandleType;
     private final String[] requiredParameter;
     private final String[] unrequiredParameter;
+    private final boolean response;
+    private final boolean responseText;
     private final String[] returnParameter;
     private final Map<String, RequestHandler> requestParameterHandlerMap;
     private final Map<String, ResponseHandler> responseParameterHandlerMap;
@@ -52,6 +54,7 @@ public class ServiceContextImpl implements ServiceContext {
     private final ResponseCode[] responseCodes;
     private final List<PushInfo> pushInfoList;
     private final boolean hasAsyncResponse;
+    private final boolean saveLog;
 
     /**
      * 保留字段集合
@@ -115,7 +118,7 @@ public class ServiceContextImpl implements ServiceContext {
         }
         return resultList;
     }
-    
+
     private List<ResponseInfo> executeResponseExtend(ServiceExtendContext serviceExtend, List<ResponseInfo> responseInfoList) {
         List<ResponseInfo> resultList = Collections.EMPTY_LIST;
         if (responseInfoList.isEmpty() == false) {
@@ -143,8 +146,6 @@ public class ServiceContextImpl implements ServiceContext {
         }
         return resultList;
     }
-    
-    
 
     public ServiceContextImpl(ServiceConfig serviceConfig, WorkerBuildContext workerBuildContext) {
         this.route = serviceConfig.route();
@@ -155,6 +156,8 @@ public class ServiceContextImpl implements ServiceContext {
         this.validateSession = serviceConfig.validateSession();
         this.validateSecurity = serviceConfig.validateSecurity();
         this.responseCodes = serviceConfig.responseCodes();
+        this.response = serviceConfig.response();
+        this.responseText = serviceConfig.responseText();
         final ServiceExtendContext serviceExtendContext = workerBuildContext.getServiceExtendContext();
         //
         List<RequestInfo> requestInfoResultList = new ArrayList(serviceConfig.requestConfigs().length);
@@ -178,7 +181,7 @@ public class ServiceContextImpl implements ServiceContext {
         PushHandler pushHandler;
         for (String pushRoute : serviceConfig.pushRoutes()) {
             pushInfo = servicePushContext.getPushInfo(pushRoute);
-            if(pushInfo == null) {
+            if (pushInfo == null) {
                 throw new RuntimeException("Can not find push route:" + pushRoute);
             }
             pushInfo.addService(this.route);
@@ -271,6 +274,8 @@ public class ServiceContextImpl implements ServiceContext {
         }
         this.returnParameter = returnNames;
         this.responseParameterHandlerMap = returnParameterMap;
+        //
+        this.saveLog = serviceConfig.saveLog();
     }
 
     @Override
@@ -334,6 +339,11 @@ public class ServiceContextImpl implements ServiceContext {
     }
 
     @Override
+    public boolean isResponse() {
+        return this.response;
+    }
+
+    @Override
     public List<ResponseInfo> responseConfigs() {
         return this.responseInfoList;
     }
@@ -341,6 +351,11 @@ public class ServiceContextImpl implements ServiceContext {
     @Override
     public ResponseCode[] responseCodes() {
         return this.responseCodes;
+    }
+
+    @Override
+    public boolean isResponseText() {
+        return this.responseText;
     }
 
     @Override
@@ -367,4 +382,10 @@ public class ServiceContextImpl implements ServiceContext {
     public String group() {
         return this.group;
     }
+
+    @Override
+    public boolean isSaveLog() {
+        return saveLog;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.wolf.framework.reponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.ResponseCode;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
@@ -31,6 +31,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
     private String newSessionId = null;
     private final Map<String, String> customCodeMap;
     private Map<String, Object> dataMap = Collections.EMPTY_MAP;
+    private String responseText = "";
 
     public ResponseImpl(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -90,7 +91,14 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
             this.msg = codeDesc;
         } else {
             this.code = ResponseCodeConfig.UNKNOWN;
+            this.msg = code;
         }
+    }
+
+    @Override
+    public void setCode(String code, String desc) {
+        this.code = code;
+        this.msg = desc;
     }
 
     @Override
@@ -100,49 +108,62 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
 
     @Override
     public final String getResponseMessage() {
-        String responseMsg = "{}";
-        Map<String, Object> responseMap = new HashMap(8, 1);
-        //核心返回数据
-        responseMap.put("code", this.code);
-        responseMap.put("msg", this.msg);
-        responseMap.put("route", this.workerContext.getRoute());
-        responseMap.put("data", this.dataMap);
-        //md5判断本次返回数据是否没有变化
-        String md5 = workerContext.getMd5();
-        ObjectMapper mapper = new ObjectMapper();
-        if (md5 != null) {
-            String thisData = "{}";
-            try {
-                thisData = mapper.writeValueAsString(responseMap);
-            } catch (IOException ex) {
-            }
-            //判断数据是否有变化
-            String newMd5 = SecurityUtils.encryptByMd5(thisData);
-            if (md5.equals(newMd5)) {
-                //数据没有变化
-                responseMap.put("code", ResponseCodeConfig.UNMODIFYED);
-                responseMap.put("data", Collections.EMPTY_MAP);
-            } else {
-                md5 = newMd5;
-            }
-            responseMap.put("md5", md5);
-        }
-        //
+        String responseMsg = "";
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
-        if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
-            responseMap.put("sid", this.newSessionId);
-        }
-        //
-        if (this.error.isEmpty() == false) {
-            responseMap.put("error", this.error);
-        }
-        String callback = workerContext.getCallback();
-        if (callback != null) {
-            responseMap.put("callback", callback);
-        }
-        try {
-            responseMsg = mapper.writeValueAsString(responseMap);
-        } catch (IOException ex) {
+        if (serviceContext.isResponse()) {
+            if (serviceContext.isResponseText()) {
+                responseMsg = this.responseText;
+            } else {
+                Map<String, Object> responseMap = new HashMap(8, 1);
+                //核心返回数据
+                responseMap.put("code", this.code);
+                if (this.msg.isEmpty() == false) {
+                    responseMap.put("msg", this.msg);
+                }
+                responseMap.put("route", this.workerContext.getRoute());
+                responseMap.put("data", this.dataMap);
+                //md5判断本次返回数据是否没有变化
+                String md5 = workerContext.getMd5();
+                ObjectMapper mapper = new ObjectMapper();
+                if (md5 != null) {
+                    String thisData = "{}";
+                    try {
+                        thisData = mapper.writeValueAsString(responseMap);
+                    } catch (IOException ex) {
+                    }
+                    //判断数据是否有变化
+                    String newMd5 = SecurityUtils.encryptByMd5(thisData);
+                    if (md5.equals(newMd5)) {
+                        //数据没有变化
+                        responseMap.put("code", ResponseCodeConfig.UNMODIFYED);
+                        responseMap.put("data", Collections.EMPTY_MAP);
+                    } else {
+                        md5 = newMd5;
+                    }
+                    responseMap.put("md5", md5);
+                }
+                //
+                if (this.newSessionId != null && serviceContext.sessionHandleType() == SessionHandleType.SAVE) {
+                    responseMap.put("sid", this.newSessionId);
+                }
+                //
+                if (this.error.isEmpty() == false) {
+                    responseMap.put("error", this.error);
+                }
+                String callback = workerContext.getCallback();
+                if (callback != null) {
+                    responseMap.put("callback", callback);
+                }
+                boolean pretty = this.workerContext.isPretty();
+                try {
+                    if (pretty) {
+                        responseMsg = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+                    } else {
+                        responseMsg = mapper.writeValueAsString(responseMap);
+                    }
+                } catch (IOException ex) {
+                }
+            }
         }
         return responseMsg;
     }
@@ -177,7 +198,9 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
                 if (paraValue != null) {
                     responseParameterHandler = parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    resultMap.put(paraName, paraValue);
+                    if (paraValue != null) {
+                        resultMap.put(paraName, paraValue);
+                    }
                 }
             }
         }
@@ -204,6 +227,11 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
     }
 
     @Override
+    public void setResponseText(String text) {
+        this.responseText = text;
+    }
+
+    @Override
     public PushResponse getPushResponse(String route) {
         PushResponse pushResponse = null;
         ServiceContext serviceContext = this.workerContext.getServiceWorker().getServiceContext();
@@ -213,6 +241,11 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
             pushResponse = new PushResponseImpl(pushHandler);
         }
         return pushResponse;
+    }
+
+    @Override
+    public Map<String, Object> getDataMap() {
+        return this.dataMap;
     }
 
 }

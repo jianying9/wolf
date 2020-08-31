@@ -5,7 +5,6 @@ package com.wolf.framework.request;
  * @author jianying9
  */
 public interface WorkerRequest extends Request {
-
     
     public void putParameter(String name , Object value);
     

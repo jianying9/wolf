@@ -6,7 +6,7 @@ package com.wolf.framework.service.parameter;
  * @author jianying9
  */
 public enum RequestDataType {
-    EXTEND, 
+    EXTEND,
     //
     LONG,
     //
@@ -27,6 +27,10 @@ public enum RequestDataType {
     EMAIL,
     //布尔
     BOOLEAN,
+    //
+    JSON_OBJECT,
+    //
+    JSON_ARRAY,
     //
     OBJECT,
     //

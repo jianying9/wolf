@@ -9,6 +9,24 @@ import java.util.Map;
  */
 public final class MapUtils {
 
+    public static Integer getIntValue(Map<String, Object> object, String name) {
+        Object value = object.get(name);
+        Integer result = null;
+        if (value != null) {
+            if (Integer.class.isInstance(value)) {
+                result = (Integer) value;
+            } else if (String.class.isInstance(value)) {
+                result = Integer.parseInt((String) value);
+            } else if (Long.class.isInstance(value)) {
+                Long l = (Long) value;
+                result = l.intValue();
+            } else if (Double.class.isInstance(value)) {
+                result = ((Double) value).intValue();
+            }
+        }
+        return result;
+    }
+
     public static Long getLongValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
         Long result = null;
@@ -17,6 +35,8 @@ public final class MapUtils {
                 result = (Long) value;
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).longValue();
+            } else if (Double.class.isInstance(value)) {
+                result = ((Double) value).longValue();
             } else if (String.class.isInstance(value)) {
                 result = Long.parseLong((String) value);
             }
@@ -55,8 +75,22 @@ public final class MapUtils {
     public static String getStringValue(Map<String, Object> object, String name) {
         String result = null;
         Object value = object.get(name);
-        if (value != null && String.class.isInstance(value)) {
-            result = (String) value;
+        if (value != null) {
+            if (String.class.isInstance(value)) {
+                result = (String) value;
+            } else if (Double.class.isInstance(value)) {
+                Double d = (Double) value;
+                result = Double.toString(d);
+            } else if (Long.class.isInstance(value)) {
+                Long l = (Long) value;
+                result = Long.toString(l);
+            } else if (Integer.class.isInstance(value)) {
+                Integer i = (Integer) value;
+                result = Integer.toString(i);
+            } else if (Boolean.class.isInstance(value)) {
+                Boolean b = (Boolean) value;
+                result = Boolean.toString(b);
+            }
         }
         return result;
     }

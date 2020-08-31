@@ -1,12 +1,12 @@
 package com.wolf.framework.reponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.parameter.PushHandler;
 import com.wolf.framework.utils.EntityUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
 import java.util.Collections;
 
@@ -49,7 +49,9 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
                 if (paraValue != null) {
                     responseParameterHandler = parameterHandlerMap.get(paraName);
                     paraValue = responseParameterHandler.getResponseValue(paraValue);
-                    resultMap.put(paraName, paraValue);
+                    if (paraValue != null) {
+                        resultMap.put(paraName, paraValue);
+                    }
                 }
             }
         }
@@ -90,6 +92,15 @@ public class PushResponseImpl<T extends Entity> implements PushResponse<T> {
         } catch (IOException ex) {
         }
         return responseMsg;
+    }
+
+    @Override
+    public Map<String, Object> getPushMap() {
+        Map<String, Object> responseMap = new HashMap(8, 1);
+        //核心返回数据
+        responseMap.put("route", this.pushHandler.getRoute());
+        responseMap.put("data", this.dataMap);
+        return responseMap;
     }
 
     @Override

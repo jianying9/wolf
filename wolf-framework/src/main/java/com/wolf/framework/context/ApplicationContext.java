@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.wolf.framework.push.PushContext;
+import com.wolf.framework.service.parameter.ServicePushContext;
 import net.sf.ehcache.Cache;
 
 /**
@@ -28,6 +29,7 @@ public final class ApplicationContext {
     private final Map<String, PushInfo> pushInfoMap = new HashMap(2, 1);
     private final List<Resource> resourceList = new ArrayList(2);
     private final PushContext pushContext = new PushContextImpl();
+    private ServicePushContext servicePushContext = null;
     private String appContextPath = "/";
     private final FilterFactory filterFactory = new FilterFactoryImpl();
     private Cache cache;
@@ -115,4 +117,13 @@ public final class ApplicationContext {
     void setAppContextPath(String appContextPath) {
         this.appContextPath = appContextPath;
     }
+
+    public ServicePushContext getServicePushContext() {
+        return servicePushContext;
+    }
+
+    void setServicePushContext(ServicePushContext servicePushContext) {
+        this.servicePushContext = servicePushContext;
+    }
+
 }

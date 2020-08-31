@@ -14,6 +14,8 @@ public interface Response<T extends Entity> {
     
     public void setCode(String code);
     
+    public void setCode(String code, String desc);
+    
     public void success();
     
     public void exception();
@@ -32,7 +34,11 @@ public interface Response<T extends Entity> {
     
     public void setDataMap(Map<String, Object> dataMap);
     
+    public Map<String, Object> getDataMap();
+    
     public void setData(String name, Object value);
+    
+    public void setResponseText(String text);
     
     public void setEntity(T t);
     

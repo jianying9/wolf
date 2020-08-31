@@ -4,6 +4,8 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.Resource;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.WebSocketWorkerContextImpl;
@@ -19,6 +21,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 
 /**
@@ -32,7 +36,7 @@ import org.slf4j.Logger;
 public class WebsocketEndPoint implements Resource {
 
     private final SessionManager sessionManager;
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
     private final Pattern routePattern = Pattern.compile("(?:\"route\":\")([a-zA-Z/\\d]+)(?:\")");
     private final long expireTime;
 
@@ -49,35 +53,52 @@ public class WebsocketEndPoint implements Resource {
     }
 
     private void exec(String text, Session session, boolean isAsync) {
-        this.logger.debug("wobsocket-on message:{}", text);
+        long start = System.currentTimeMillis();
         Matcher matcher = this.routePattern.matcher(text);
         String responseMesssage;
+        String sid = "";
+        String route;
         if (matcher.find()) {
-            String route = matcher.group(1);
+            route = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
             if (serviceWorker == null) {
                 //无效的route
                 responseMesssage = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
             } else {
                 //创建消息对象并执行服务
-                WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker);
+                WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker, "");
                 workerContext.initWebsocketParameter(text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
                 responseMesssage = workerContext.getWorkerResponse().getResponseMessage();
+                sid = workerContext.getSessionId();
+                //
+                if (serviceWorker.getServiceContext().isSaveLog()) {
+                    long time = System.currentTimeMillis() - start;
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                    accessLogger.log(route, sid, text, responseMesssage, time);
+                    String code = workerContext.getWorkerResponse().getCode();
+                    if (code.equals(ResponseCodeConfig.SUCCESS)) {
+                        accessLogger.log(route, sid, text, responseMesssage, time);
+                    } else {
+                        accessLogger.error(route, sid, text, responseMesssage, time);
+                    }
+                }
             }
         } else {
             responseMesssage = "{\"code\":\"" + ResponseCodeConfig.INVALID + "\",\"error\":\"route is null\"}";
         }
-        if (isAsync) {
-            session.getAsyncRemote().sendText(responseMesssage);
-        } else {
-            try {
-                session.getBasicRemote().sendText(responseMesssage);
-            } catch (IOException ex) {
+        if (responseMesssage.isEmpty() == false) {
+            if (isAsync) {
+                session.getAsyncRemote().sendText(responseMesssage);
+            } else {
+                try {
+                    session.getBasicRemote().sendText(responseMesssage);
+                } catch (IOException ex) {
+                }
             }
         }
-        this.logger.debug("wobsocket-send message:{}", responseMesssage);
+        //
         Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
         Object l = session.getUserProperties().get(WebsocketConfig.LAST_TIME_NAME);
         if (s == null || l == null) {
@@ -92,6 +113,8 @@ public class WebsocketEndPoint implements Resource {
                 try {
                     session.getBasicRemote().sendText("{\"code\":\"" + ResponseCodeConfig.TIMEOUT + "\"}");
                     session.close();
+                    AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+                    accessLogger.log(sid, "wobsocket", ResponseCodeConfig.TIMEOUT);
                 } catch (IOException ex) {
                 }
             }
@@ -100,9 +123,24 @@ public class WebsocketEndPoint implements Resource {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
+        //解密
+        char[] charArray = text.toCharArray();
+        try {
+            byte[] byteArray = Hex.decodeHex(charArray);
+            text = new String(byteArray);
+        } catch (DecoderException ex) {
+        }
         //记录首次时间
         session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);
+        //
+        String sid = "no sid";
+        Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
+        if (s != null) {
+            sid = (String) s;
+        }
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "wobsocket", "onOpen");
     }
 
     @OnMessage
@@ -139,13 +177,21 @@ public class WebsocketEndPoint implements Resource {
             sid = (String) s;
             this.sessionManager.remove(sid);
         }
-        this.logger.debug("wobsocket-on close:{}", sid);
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "wobsocket", "onClose");
     }
 
     @OnError
     public void onError(Throwable t, Session session) throws IOException {
+        String sid = "no sid";
+        Object s = session.getUserProperties().get(WebsocketConfig.SID_NAME);
+        if (s != null) {
+            sid = (String) s;
+        }
         session.close();
-        this.logger.error("wobsocket-on onerror", t);
+        //
+        AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+        accessLogger.log(sid, "wobsocket", "onError");
     }
 
     @Override

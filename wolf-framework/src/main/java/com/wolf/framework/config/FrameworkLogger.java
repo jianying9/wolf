@@ -6,12 +6,15 @@ import com.wolf.framework.logger.LoggerType;
  *
  * @author aladdin
  */
-public enum FrameworkLogger implements LoggerType{
+public enum FrameworkLogger implements LoggerType {
     FRAMEWORK,
+    ACCESS,
     DAO,
     LUCENE,
-    HTTP,
-    WEBSOCKET;
+    XIAOMI,
+    HUAWEI,
+    APNS,
+    HTTPCLIENT;
 
     @Override
     public String getLoggerName() {

@@ -33,13 +33,16 @@ public final class StringResponseHandlerImpl implements ResponseHandler {
 
     @Override
     public Object getResponseValue(Object value) {
-        String result = "";
+        String result = null;
         if (String.class.isInstance(value)) {
-            result = (String) value;
-            if (this.filters != null) {
-                for (Filter filter : filters) {
-                    result = filter.doFilter(result);
+            String text = (String) value;
+            if (text.isEmpty() == false) {
+                if (this.filters != null) {
+                    for (Filter filter : filters) {
+                        text = filter.doFilter(text);
+                    }
                 }
+                result = text;
             }
         } else {
             String errMsg = "response:" + this.name + "'s type is not " + this.responseDataType.name();

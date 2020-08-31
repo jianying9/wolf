@@ -91,7 +91,14 @@ public class CEntityConfigBuilderImpl<T extends Entity> implements DaoConfigBuil
                     //获取注解RDaoConfig
                     final CEntityConfig cDaoConfig = clazz.getAnnotation(CEntityConfig.class);
                     //表空间
-                    final String keyspace = cDaoConfig.keyspace();
+                    String keyspace = cDaoConfig.keyspace();
+                    //如果表空间为空,则取默认的表空间
+                    String defaultKeyspace = this.cassandraAdminContext.getDefaultKeyspace();
+                    if (keyspace.isEmpty()) {
+                        keyspace = defaultKeyspace;
+                    } else {
+                        keyspace = keyspace.replace("${default}", defaultKeyspace);
+                    }
                     //表
                     final String table = cDaoConfig.table();
                     //缓存

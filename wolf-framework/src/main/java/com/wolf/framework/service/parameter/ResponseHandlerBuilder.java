@@ -6,6 +6,8 @@ import com.wolf.framework.service.parameter.filter.FilterFactory;
 import com.wolf.framework.service.parameter.filter.FilterType;
 import com.wolf.framework.service.parameter.response.BooleanResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.DoubleResponseHandlerImpl;
+import com.wolf.framework.service.parameter.response.JsonArrayResponseHandlerImpl;
+import com.wolf.framework.service.parameter.response.JsonObjectResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.LongArrayResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.LongResponseHandlerImpl;
 import com.wolf.framework.service.parameter.response.ObjectArrayResponseHandlerImpl;
@@ -104,16 +106,22 @@ public class ResponseHandlerBuilder {
             case STRING_ARRAY:
                 responseHandler = new StringArrayResponseHandlerImpl(fieldName, filters);
                 break;
+            case JSON_OBJECT:
+                responseHandler = new JsonObjectResponseHandlerImpl(fieldName);
+                break;
+            case JSON_ARRAY:
+                responseHandler = new JsonArrayResponseHandlerImpl(fieldName);
+                break;
             case OBJECT:
                 List<ResponseInfo> childResponseInfoList = this.responseInfo.getChildList();
-                if(childResponseInfoList.isEmpty() == false) {
+                if (childResponseInfoList.isEmpty() == false) {
                     ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(childResponseInfoList);
                     responseHandler = new ObjectResponseHandlerImpl(fieldName, objectHandlerInfo);
                 }
                 break;
             case OBJECT_ARRAY:
                 childResponseInfoList = this.responseInfo.getChildList();
-                if(childResponseInfoList.isEmpty() == false) {
+                if (childResponseInfoList.isEmpty() == false) {
                     ObjectResponseHandlerInfo objectHandlerInfo = this.createObjectHandlerInfo(childResponseInfoList);
                     responseHandler = new ObjectArrayResponseHandlerImpl(fieldName, objectHandlerInfo);
                 }

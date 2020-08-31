@@ -27,7 +27,7 @@ public class CCounterDaoImpl<T extends Entity> extends AbstractCDao<T> implement
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
             Class<T> clazz) {
-        super(session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
+        super(true, session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
     }
 
     @Override

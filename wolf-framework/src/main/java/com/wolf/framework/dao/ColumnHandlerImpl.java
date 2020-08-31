@@ -1,7 +1,11 @@
 package com.wolf.framework.dao;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -12,8 +16,10 @@ public class ColumnHandlerImpl implements ColumnHandler {
     private final String columnName;
     private final String dataMap;
     private final ColumnType columnType;
-    private final ColumnDataType columnDataType;
-    private final Field field;
+    protected final ColumnDataType columnDataType;
+    private ColumnDataType firstParameterDataType = null;
+    private ColumnDataType secondParameterDataType = null;
+    protected final Field field;
     private final String desc;
     private final Object defaultValue;
 
@@ -23,58 +29,57 @@ public class ColumnHandlerImpl implements ColumnHandler {
         this.columnType = columnType;
         this.field = field;
         String type = this.field.getType().getName();
-        switch (type) {
-            case "long":
-            case "java.lang.Long":
-                this.columnDataType = ColumnDataType.LONG;
+        this.columnDataType = FieldUtils.getColumnDataType(type);
+        switch (this.columnDataType) {
+            case LONG:
                 if (defaultValue.isEmpty()) {
                     this.defaultValue = 0l;
                 } else {
                     this.defaultValue = Long.parseLong(defaultValue);
                 }
                 break;
-            case "int":
-            case "java.lang.Integer":
-                this.columnDataType = ColumnDataType.INT;
+            case INT:
                 if (defaultValue.isEmpty()) {
                     this.defaultValue = 0;
                 } else {
                     this.defaultValue = Integer.parseInt(defaultValue);
                 }
                 break;
-            case "boolean":
-            case "java.lang.Boolean":
-                this.columnDataType = ColumnDataType.BOOLEAN;
+            case BOOLEAN:
                 if (defaultValue.isEmpty()) {
                     this.defaultValue = false;
                 } else {
                     this.defaultValue = Boolean.parseBoolean(defaultValue);
                 }
                 break;
-            case "double":
-            case "java.lang.Double":
-                this.columnDataType = ColumnDataType.DOUBLE;
+            case DOUBLE:
                 if (defaultValue.isEmpty()) {
                     this.defaultValue = 0.0;
                 } else {
                     this.defaultValue = Double.parseDouble(defaultValue);
                 }
                 break;
-            case "java.lang.String":
-                this.columnDataType = ColumnDataType.STRING;
+            case STRING:
                 this.defaultValue = defaultValue;
                 break;
-            case "java.util.List":
-                this.columnDataType = ColumnDataType.LIST;
+            case LIST:
                 this.defaultValue = Collections.EMPTY_LIST;
+                ParameterizedType listGenericType = (ParameterizedType) this.field.getGenericType();
+                Type[] listActualTypeArguments = listGenericType.getActualTypeArguments();
+                this.firstParameterDataType = FieldUtils.getColumnDataType(listActualTypeArguments[0].getTypeName());
                 break;
-            case "java.util.Set":
-                this.columnDataType = ColumnDataType.SET;
+            case SET:
                 this.defaultValue = Collections.EMPTY_SET;
+                ParameterizedType setGenericType = (ParameterizedType) this.field.getGenericType();
+                Type[] setActualTypeArguments = setGenericType.getActualTypeArguments();
+                this.firstParameterDataType = FieldUtils.getColumnDataType(setActualTypeArguments[0].getTypeName());
                 break;
-            case "java.util.Map":
-                this.columnDataType = ColumnDataType.MAP;
+            case MAP:
                 this.defaultValue = Collections.EMPTY_MAP;
+                ParameterizedType mapGenericType = (ParameterizedType) this.field.getGenericType();
+                Type[] mapActualTypeArguments = mapGenericType.getActualTypeArguments();
+                this.firstParameterDataType = FieldUtils.getColumnDataType(mapActualTypeArguments[0].getTypeName());
+                this.secondParameterDataType = FieldUtils.getColumnDataType(mapActualTypeArguments[1].getTypeName());
                 break;
             default:
                 throw new RuntimeException("Entity not support this type:" + type);
@@ -127,12 +132,41 @@ public class ColumnHandlerImpl implements ColumnHandler {
 
     @Override
     public void setFieldValue(Object object, Object value) {
+        //如果是集合,并且是long型,则需要判断转换
+        if (this.columnDataType.equals(ColumnDataType.LIST) && this.firstParameterDataType != null && this.firstParameterDataType.equals(ColumnDataType.LONG)) {
+            List list = (List) value;
+            if (list.isEmpty() == false) {
+                Object o = list.get(0);
+                if (Integer.class.isInstance(o)) {
+                    //需要转换
+                    List<Long> valueList = new ArrayList();
+                    int v;
+                    long l;
+                    for (Object objValue : list) {
+                        v = (Integer) objValue;
+                        l = v;
+                        valueList.add(l);
+                    }
+                    value = valueList;
+                }
+            }
+        }
         try {
             this.field.setAccessible(true);
             this.field.set(object, value);
             this.field.setAccessible(false);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
         }
+    }
+
+    @Override
+    public ColumnDataType getFirstParameterDataType() {
+        return firstParameterDataType;
+    }
+
+    @Override
+    public ColumnDataType getSecondParameterDataType() {
+        return secondParameterDataType;
     }
 
 }

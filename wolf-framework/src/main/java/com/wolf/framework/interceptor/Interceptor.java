@@ -1,7 +1,5 @@
 package com.wolf.framework.interceptor;
 
-
-
 import com.wolf.framework.reponse.WorkerResponse;
 import com.wolf.framework.request.WorkerRequest;
 
@@ -12,4 +10,8 @@ import com.wolf.framework.request.WorkerRequest;
 public interface Interceptor {
 
     public boolean execute(WorkerRequest workerRequest, WorkerResponse workerResponse);
+
+    public int getSort();
+
+    public boolean isAfter();
 }

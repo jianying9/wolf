@@ -1,6 +1,7 @@
 package com.wolf.framework.context;
 
-import com.wolf.framework.cache.DefaultCacheConfiguration;
+import com.wolf.framework.cache.EhcacheTools;
+import com.wolf.framework.cache.EhcacheResourceImpl;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.dao.ColumnHandler;
@@ -16,7 +17,6 @@ import com.wolf.framework.task.TaskExecutorInjecterImpl;
 import com.wolf.framework.local.Local;
 import com.wolf.framework.local.LocalServiceConfig;
 import com.wolf.framework.local.LocalServiceBuilder;
-import com.wolf.framework.local.LocalServiceContext;
 import com.wolf.framework.local.LocalServiceContextImpl;
 import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.module.Module;
@@ -48,6 +48,7 @@ import java.util.HashMap;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.Configuration;
 
 /**
  * 全局上下文对象构造函数抽象类
@@ -112,11 +113,16 @@ public class ApplicationContextBuilder<T extends Entity> {
         final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         List<String> packageNameList = new ArrayList();
         //初始化缓存管理器
-        CacheConfiguration cacheConfiguration = DefaultCacheConfiguration.getDefault();
-        CacheManager cacheManager = new CacheManager();
+        Configuration configuration = EhcacheTools.getDefaultConfiguration();
+        CacheManager cacheManager = new CacheManager(configuration);
+        //
+        CacheConfiguration cacheConfiguration = EhcacheTools.getDefaultCacheConfiguration();
         Cache cache = new Cache(cacheConfiguration);
         cacheManager.addCache(cache);
+        //
         ApplicationContext.CONTEXT.setCache(cache);
+        EhcacheResourceImpl ehcacheResourceImpl = new EhcacheResourceImpl(cacheManager);
+        ApplicationContext.CONTEXT.addResource(ehcacheResourceImpl);
         //动态查找需要搜索的dao注解创建对象
         //实体信息存储对象
         final Map<Class<?>, List<ColumnHandler>> entityInfoMap = new HashMap(2, 1);
@@ -148,6 +154,8 @@ public class ApplicationContextBuilder<T extends Entity> {
             String[] packageNames = packages.split(",");
             packageNameList.addAll(Arrays.asList(packageNames));
         }
+        //其它module
+        packageNameList.add("com.wolf.thirdparty");
         //如果是开发模式,则加入接口文档接口
         if (compileModel.equals(FrameworkConfig.DEVELOPMENT) || compileModel.equals(FrameworkConfig.UNIT_TEST)) {
             packageNameList.add("com.wolf.framework.doc");
@@ -163,7 +171,11 @@ public class ApplicationContextBuilder<T extends Entity> {
         //初始化任务处理对象
         this.logger.info("Start task executer...");
         TaskExecutor taskExecutor;
-        if (compileModel.equals(FrameworkConfig.UNIT_TEST)) {
+        String taskSync = this.getParameter(FrameworkConfig.TASK_SYNC);
+        if (taskSync == null) {
+            taskSync = "false";
+        }
+        if (taskSync.equals("true")) {
             taskExecutor = new TaskExecutorUnitTestImpl();
         } else {
             int corePoolSize;
@@ -188,14 +200,20 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         //解析LocalService
         this.logger.debug("parsing annotation LocalServiceConfig...");
-        final LocalServiceContext localServiceContext = LocalServiceContextImpl.getInstance();
-        final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContext);
+        final LocalServiceContextImpl localServiceContextImpl = LocalServiceContextImpl.getInstance();
+        //是否需要初始化local service init
+        String localInitStr = this.getParameter(FrameworkConfig.LOCAL_SERVICE_INIT);
+        if (localInitStr != null) {
+            boolean localInit = Boolean.valueOf(localInitStr);
+            localServiceContextImpl.setInit(localInit);
+        }
+        final LocalServiceBuilder localServiceBuilder = new LocalServiceBuilder(localServiceContextImpl);
         for (Class<Local> clazzl : this.localServiceClassList) {
             localServiceBuilder.build(clazzl);
         }
         this.logger.info("parse annotation LocalServiceConfig finished.");
         //LocalService注入管理对象
-        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContext);
+        final Injecter localServiceInjecter = new LocalServiceInjecterImpl(localServiceContextImpl);
         //TaskExecutor注入管理对象
         final Injecter taskExecutorInjecter = new TaskExecutorInjecterImpl(taskExecutor);
         //创建复合注入解析对象
@@ -208,7 +226,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         }
         final Injecter injecterList = injecterListImpl;
         //对LocalService进行注入
-        localServiceContext.inject(injecterList);
+        localServiceContextImpl.inject(injecterList);
         //
         //解析InterceptorConfig
         this.logger.debug("parsing annotation InterceptorConfig...");
@@ -244,6 +262,7 @@ public class ApplicationContextBuilder<T extends Entity> {
         for (Class<Service> clazzs : this.serviceClassList) {
             workerBuilder.build(clazzs);
         }
+        ApplicationContext.CONTEXT.setServicePushContext(servicePushContext);
         ApplicationContext.CONTEXT.setPushInfoMap(servicePushContext.getPushInfoMap());
         ApplicationContext.CONTEXT.setServiceWorkerMap(this.workerBuildContext.getServiceWorkerMap());
         this.logger.info("parse annotation ServiceConfig finished.");

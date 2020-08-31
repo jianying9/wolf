@@ -1,13 +1,12 @@
 package com.wolf.framework.websocket;
 
-import com.wolf.framework.config.FrameworkLogger;
-import com.wolf.framework.logger.LogFactory;
+import com.wolf.framework.logger.AccessLogger;
+import com.wolf.framework.logger.AccessLoggerFactory;
 import com.wolf.framework.push.PushHandler;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.Session;
-import org.slf4j.Logger;
 
 /**
  *
@@ -17,10 +16,8 @@ public class SessionManager implements PushHandler {
 
     //保存session列表
     private final ConcurrentHashMap<String, Session> savedSessionMap = new ConcurrentHashMap<>(4096, 1);
-    private final Logger logger = LogFactory.getLogger(FrameworkLogger.WEBSOCKET);
 
     public Session remove(String sid) {
-        this.logger.debug("websocket-session remove sid:{}", sid);
         return this.savedSessionMap.remove(sid);
     }
 
@@ -37,21 +34,20 @@ public class SessionManager implements PushHandler {
     }
 
     @Override
-    public boolean asyncPush(String sid, String message) {
+    public boolean asyncPush(String sid, String route, String message) {
         boolean result = false;
         Session session = this.savedSessionMap.get(sid);
         if (session != null && session.isOpen()) {
             result = true;
             session.getAsyncRemote().sendText(message);
-            this.logger.debug("websocket-push message:{},{}", sid, message);
-        } else {
-            this.logger.debug("websocket-push message:sid:{} not exist or closed", sid);
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }
 
     @Override
-    public boolean push(String sid, String message) {
+    public boolean push(String sid, String route, String message) {
         boolean result = false;
         Session session = this.savedSessionMap.get(sid);
         if (session != null && session.isOpen()) {
@@ -60,9 +56,8 @@ public class SessionManager implements PushHandler {
                 session.getBasicRemote().sendText(message);
             } catch (IOException ex) {
             }
-            this.logger.debug("websocket-push message:{},{}", sid, message);
-        } else {
-            this.logger.debug("websocket-push message:sid:{} not exist or closed", sid);
+            AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
+            accessLogger.log(route, sid, "", message, -1);
         }
         return result;
     }
@@ -77,11 +72,9 @@ public class SessionManager implements PushHandler {
             try {
                 other.close();
             } catch (IOException ex) {
-                this.logger.error("websocket-close sid:{} error:{}", sid, ex.getMessage());
             }
         }
         this.savedSessionMap.put(sid, session);
-        this.logger.debug("websocket-session add new sid:{}", sid);
     }
 
     @Override

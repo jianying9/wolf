@@ -7,6 +7,8 @@ import com.wolf.framework.service.parameter.request.DateTimeRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.DoubleRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.EmailRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.EnumRequestHandlerImpl;
+import com.wolf.framework.service.parameter.request.JsonArrayRequestHandlerImpl;
+import com.wolf.framework.service.parameter.request.JsonObjectRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.LongArrayRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.LongRequestHandlerImpl;
 import com.wolf.framework.service.parameter.request.ObjectArrayRequestHandlerImpl;
@@ -116,6 +118,12 @@ public class RequestHandlerBuilder {
                 break;
             case STRING_ARRAY:
                 requestHandler = new StringArrayRequestHandlerImpl(fieldName, ignoreEmpty);
+                break;
+            case JSON_OBJECT:
+                requestHandler = new JsonObjectRequestHandlerImpl(fieldName, ignoreEmpty);
+                break;
+            case JSON_ARRAY:
+                requestHandler = new JsonArrayRequestHandlerImpl(fieldName, ignoreEmpty);
                 break;
             case OBJECT:
                 List<RequestInfo> childRequestInfoList = this.requestInfo.getChildList();

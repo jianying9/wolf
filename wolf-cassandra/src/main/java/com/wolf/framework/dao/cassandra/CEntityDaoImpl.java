@@ -34,7 +34,7 @@ public class CEntityDaoImpl<T extends Entity> extends AbstractCDao<T> implements
             List<ColumnHandler> keyHandlerList,
             List<ColumnHandler> columnHandlerList,
             Class<T> clazz) {
-        super(session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
+        super(false, session, keyspace, table, keyHandlerList, columnHandlerList, clazz);
         StringBuilder cqlBuilder = new StringBuilder(128);
         //count
         cqlBuilder.setLength(0);

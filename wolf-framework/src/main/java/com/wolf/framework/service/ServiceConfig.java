@@ -22,13 +22,20 @@ public @interface ServiceConfig {
      * @return route
      */
     public String route();
-    
+
     /**
      * 分组
      *
      * @return route
      */
     public String group() default "default";
+
+    /**
+     * 是否保存日志
+     *
+     * @return
+     */
+    public boolean saveLog() default true;
 
     /**
      * 请求的参数
@@ -38,15 +45,23 @@ public @interface ServiceConfig {
     public RequestConfig[] requestConfigs() default {};
 
     /**
+     * 是否响应
+     *
+     * @return
+     */
+    public boolean response() default true;
+
+    /**
      * 返回的参数
      *
      * @return String[]
      */
     public ResponseConfig[] responseConfigs() default {};
-    
+
     /**
      * 推送配置
-     * @return 
+     *
+     * @return
      */
     public String[] pushRoutes() default {};
 
@@ -91,5 +106,12 @@ public @interface ServiceConfig {
      * @return
      */
     public ResponseCode[] responseCodes() default {};
+
+    /**
+     * 直接响应文本
+     *
+     * @return
+     */
+    public boolean responseText() default false;
 
 }

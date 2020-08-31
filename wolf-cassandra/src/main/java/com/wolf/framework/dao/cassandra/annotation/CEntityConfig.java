@@ -19,7 +19,7 @@ public @interface CEntityConfig {
      *
      * @return
      */
-    public String keyspace();
+    public String keyspace() default "";
 
     /**
      * 表
