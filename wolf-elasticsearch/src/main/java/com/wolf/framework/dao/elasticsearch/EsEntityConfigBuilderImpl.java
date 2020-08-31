@@ -16,10 +16,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
 import com.wolf.framework.dao.elasticsearch.annotation.EsEntityConfig;
 import com.wolf.framework.dao.elasticsearch.annotation.EsVersionConfig;
 import java.util.Map;
+import org.apache.logging.log4j.Logger;
 
 /**
  *

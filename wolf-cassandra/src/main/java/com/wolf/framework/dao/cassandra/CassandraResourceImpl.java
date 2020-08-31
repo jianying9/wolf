@@ -5,7 +5,7 @@ import com.datastax.driver.core.Session;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.Resource;
 import com.wolf.framework.logger.LogFactory;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *

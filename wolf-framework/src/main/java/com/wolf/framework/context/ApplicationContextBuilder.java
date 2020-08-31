@@ -42,13 +42,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
 import com.wolf.framework.worker.build.WorkerBuildContext;
 import java.util.HashMap;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 全局上下文对象构造函数抽象类

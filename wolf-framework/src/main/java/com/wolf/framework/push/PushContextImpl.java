@@ -2,7 +2,7 @@ package com.wolf.framework.push;
 
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
