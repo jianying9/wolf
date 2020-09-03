@@ -15,6 +15,8 @@ public class EsConfig {
     public static final String ELASTICSEARCH_USER = "elasticsearch.user";
 
     public static final String ELASTICSEARCH_PASSWORD = "elasticsearch.password";
+    
+    public static final String ELASTICSEARCH_HTTP_CERTIFICATE = "elasticsearch.http.certificate";
 
     public static final String ELASTICSEARCH_SSL_KEY = "elasticsearch.ssl.key";
 

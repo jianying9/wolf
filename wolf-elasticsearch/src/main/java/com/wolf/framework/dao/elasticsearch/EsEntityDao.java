@@ -4,9 +4,8 @@ import com.wolf.framework.dao.Dao;
 import com.wolf.framework.dao.Entity;
 import java.util.List;
 import java.util.Map;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
+import com.wolf.elasticsearch.index.query.QueryBuilder;
+import com.wolf.elasticsearch.search.sort.SortBuilder;
 
 /**
  * elasticsearch entity dao
@@ -14,11 +13,18 @@ import org.elasticsearch.search.sort.SortBuilder;
  * @author jianying9
  * @param <T>
  */
-public interface EsEntityDao<T extends Entity> extends Dao {
+public interface EsEntityDao<T extends Entity> extends Dao
+{
 
     public String getIndex();
 
     public String getType();
+    
+    public Map<String, Object> getFieldMap(EsColumnHandler esColumnHandler);
+    
+    public EsColumnHandler getKeyHandler();
+
+    public List<EsColumnHandler> getColumnHandlerList();
 
     /**
      * 判断主键是否存在
@@ -27,6 +33,12 @@ public interface EsEntityDao<T extends Entity> extends Dao {
      * @return
      */
     public boolean exist(Object keyValue);
+    
+    /**
+     * 总记录数
+     * @return 
+     */
+    public long total();
 
     /**
      * 根据主键查询
@@ -85,15 +97,6 @@ public interface EsEntityDao<T extends Entity> extends Dao {
     /**
      *
      * @param queryBuilder
-     * @param from
-     * @param size
-     * @return
-     */
-    public SearchResponse searcResponse(QueryBuilder queryBuilder, int from, int size);
-
-    /**
-     *
-     * @param queryBuilder
      * @return
      */
     public List<T> search(QueryBuilder queryBuilder);
@@ -122,20 +125,13 @@ public interface EsEntityDao<T extends Entity> extends Dao {
     public T insertAndInquire(Map<String, Object> entityMap);
 
     /**
-     * 批量插入，无缓存
-     *
-     * @param entityMapList
-     */
-    public void batchInsert(List<Map<String, Object>> entityMapList);
-
-    /**
      * 更新,返回keyValue
      *
      * @param entityMap
      * @return
      */
     public String update(Map<String, Object> entityMap);
-    
+
     /**
      * 更新,返回keyValue
      *
@@ -145,25 +141,11 @@ public interface EsEntityDao<T extends Entity> extends Dao {
     public String upsert(Map<String, Object> entityMap);
 
     /**
-     * 批量更新
-     *
-     * @param entityMapList
-     */
-    public void batchUpdate(List<Map<String, Object>> entityMapList);
-
-    /**
      * 更新并返回更新结果
      *
      * @param entityMap
      * @return
      */
     public T updateAndInquire(Map<String, Object> entityMap);
-
-    /**
-     * 批量删除
-     *
-     * @param keyValues
-     */
-    public void batchDelete(List<Object> keyValues);
 
 }

@@ -3,28 +3,35 @@ package com.wolf.framework.dao.elasticsearch;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.Resource;
 import com.wolf.framework.logger.LogFactory;
+import java.io.IOException;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestClient;
 
 /**
  *
  * @author jianying9
  */
-public class EsResourceImpl implements Resource {
+public class EsResourceImpl implements Resource
+{
 
-    private final TransportClient transportClient;
+    private final RestClient restClient;
 
     private final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
 
-    public EsResourceImpl(TransportClient transportClient) {
-        this.transportClient = transportClient;
+    public EsResourceImpl(RestClient restClient)
+    {
+        this.restClient = restClient;
     }
 
     @Override
-    public void destory() {
+    public void destory()
+    {
         this.logger.info("elasticsearch client shutdown...");
-        if (this.transportClient != null) {
-            this.transportClient.close();
+        if (this.restClient != null) {
+            try {
+                this.restClient.close();
+            } catch (IOException ex) {
+            }
         }
     }
 }

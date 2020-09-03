@@ -310,7 +310,6 @@ public class CEntityCacheDaoImpl<T extends Entity> implements CEntityDao<T> {
         this.cache.remove(entityKey);
     }
 
-    @Override
     public String check() {
         return this.cEntityDaoImpl.check();
     }

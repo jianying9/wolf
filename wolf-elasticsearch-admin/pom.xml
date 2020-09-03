@@ -6,17 +6,17 @@
         <artifactId>wolf</artifactId>
         <version>5.9-SNAPSHOT</version>
     </parent>
-    <artifactId>wolf-elasticsearch</artifactId>
+    <artifactId>wolf-elasticsearch-admin</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>com.wolf</groupId>
-            <artifactId>wolf-framework</artifactId>
+            <artifactId>wolf-elasticsearch</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-client</artifactId>
+            <artifactId>x-pack-transport</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

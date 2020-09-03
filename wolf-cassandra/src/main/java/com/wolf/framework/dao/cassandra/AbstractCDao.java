@@ -195,7 +195,6 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         this.check();
     }
 
-    @Override
     public String check() {
         String result = "";
         try {
