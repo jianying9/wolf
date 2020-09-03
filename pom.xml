@@ -194,6 +194,11 @@
                 <version>2.2.19</version>
             </dependency>
             <dependency>
+                <groupId>com.googlecode.json-simple</groupId>
+                <artifactId>json-simple</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>x-pack-transport</artifactId>
                 <version>6.8.3</version>
