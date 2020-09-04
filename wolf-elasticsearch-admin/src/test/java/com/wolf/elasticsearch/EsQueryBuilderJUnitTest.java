@@ -7,12 +7,11 @@ import com.wolf.framework.dao.elasticsearch.EsAdminContextImpl;
 import com.wolf.framework.dao.elasticsearch.EsConfig;
 import com.wolf.framework.test.TestHandler;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -83,13 +82,19 @@ public class EsQueryBuilderJUnitTest
 //                .setVersion(false);
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
+//        boolQueryBuilder.must(QueryBuilders.termQuery("aa", "33"));
+//        boolQueryBuilder.must(QueryBuilders.termQuery("bb", "44"));
+//        boolQueryBuilder.mustNot(QueryBuilders.termQuery("cc", "55"));
+//        boolQueryBuilder.mustNot(QueryBuilders.termQuery("dd", "66"));
+        //
         
-        boolQueryBuilder.must(QueryBuilders.termQuery("aa", "33"));
-        boolQueryBuilder.must(QueryBuilders.termQuery("bb", "44"));
-        boolQueryBuilder.mustNot(QueryBuilders.termQuery("cc", "55"));
-        boolQueryBuilder.mustNot(QueryBuilders.termQuery("dd", "66"));
-        searchRequestBuilder.setQuery(boolQueryBuilder);
-        
+        boolQueryBuilder.must(QueryBuilders.termQuery("appArray.appId", 1));
+        boolQueryBuilder.must(QueryBuilders.termQuery("appArray.create", false));
+        NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("appArray", boolQueryBuilder, ScoreMode.None);
+
+        searchRequestBuilder.setQuery(nestedQueryBuilder);
+
         //
         SortBuilder sortBuilder = SortBuilders.fieldSort("tt").order(SortOrder.DESC);
         searchRequestBuilder.addSort(sortBuilder);

@@ -32,5 +32,17 @@ public class QueryBuilders
     public static MatchQueryBuilder matchQuery(String name, String text) {
         return new MatchQueryBuilder(name, text);
     }
+    
+    public static ExistsQueryBuilder existsQuery(String name) {
+        return new ExistsQueryBuilder(name);
+    }
+    
+    public static MultiMatchQueryBuilder multiMatchQuery(String text, String... fieldNames) {
+        return new MultiMatchQueryBuilder(text, fieldNames);
+    }
+    
+    public static NestedQueryBuilder nestedQuery(String path, QueryBuilder query) {
+        return new NestedQueryBuilder(path, query);
+    }
 
 }

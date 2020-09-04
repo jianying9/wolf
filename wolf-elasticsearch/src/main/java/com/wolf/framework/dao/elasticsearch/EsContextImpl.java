@@ -67,10 +67,6 @@ public class EsContextImpl<T extends Entity> implements EsContext<T>
             db = "";
         }
         this.database = db;
-        String clusterName = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_CLUSTER_NAME);
-        if (clusterName == null) {
-            clusterName = "";
-        }
         //
         String user = ApplicationContext.CONTEXT.getParameter(EsConfig.ELASTICSEARCH_USER);
         if (user == null) {
