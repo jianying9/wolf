@@ -6,7 +6,7 @@ import com.wolf.framework.logger.LogFactory;
 import com.wolf.framework.reponse.Response;
 import com.wolf.framework.service.Service;
 import com.wolf.framework.worker.context.WorkerContext;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 默认处理类

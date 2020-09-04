@@ -13,9 +13,9 @@ import java.lang.reflect.Type;
  */
 public class EsEntityDaoInjecterImpl extends AbstractInjecter<InjectEsEntityDao> implements Injecter {
 
-    private final EsAdminContext esAdminContext;
+    private final EsContext esAdminContext;
 
-    public EsEntityDaoInjecterImpl(final EsAdminContext esAdminContext) {
+    public EsEntityDaoInjecterImpl(final EsContext esAdminContext) {
         this.esAdminContext = esAdminContext;
     }
 

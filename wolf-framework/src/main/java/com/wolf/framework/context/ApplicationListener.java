@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import org.slf4j.Logger;
 import javax.servlet.annotation.WebListener;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 应用程序全局信息初始化
