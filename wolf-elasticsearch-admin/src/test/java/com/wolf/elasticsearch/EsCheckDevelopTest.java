@@ -4,8 +4,8 @@ import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.dao.elasticsearch.EsAdminContextImpl;
 import com.wolf.framework.dao.elasticsearch.EsConfig;
-import com.wolf.framework.dao.elasticsearch.EsEntityDao;
 import com.wolf.framework.test.TestHandler;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.After;
@@ -18,7 +18,8 @@ import org.junit.Test;
  *
  * @author jianying9
  */
-public class EsCheckDevelopTest {
+public class EsCheckDevelopTest
+{
 
     protected static TestHandler testHandler;
 
@@ -36,33 +37,36 @@ public class EsCheckDevelopTest {
         testHandler = new TestHandler(parameterMap);
     }
 
-    public EsCheckDevelopTest() {
+    public EsCheckDevelopTest()
+    {
     }
 
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass()
+    {
     }
 
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass()
+    {
     }
 
     @Before
-    public void setUp() {
+    public void setUp()
+    {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown()
+    {
     }
 
     //
     @Test
-    public void check() {
-        EsAdminContextImpl ctx = EsAdminContextImpl.getInstance(ApplicationContext.CONTEXT);
-        Map<String, EsEntityDao> cEntityDaomap = ctx.getEsEntityDao();
-        for (EsEntityDao esEntityDao : cEntityDaomap.values()) {
-            esEntityDao.check();
-        }
+    public void check()
+    {
+        EsAdminContextImpl ctx = new EsAdminContextImpl(ApplicationContext.CONTEXT);
+        ctx.check(Collections.EMPTY_SET);
 //
     }
 }

@@ -11,23 +11,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
-import org.slf4j.Logger;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
+import com.wolf.elasticsearch.index.query.QueryBuilder;
+import com.wolf.elasticsearch.search.sort.SortBuilder;
 
 /**
  *
  * @author jianying9
  * @param <T>
  */
-public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityDao<T> {
+public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityDao<T>
+{
 
     protected final EsColumnHandler keyHandler;
     protected final List<EsColumnHandler> columnHandlerList;
@@ -36,29 +34,31 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
     protected final Logger logger = LogFactory.getLogger(FrameworkLogger.DAO);
     protected final String index;
     protected final String type;
-    protected final TransportClient transportClient;
+    protected final RestClient restClient;
 
     public AbstractEsEntityDao(
-            TransportClient transportClient,
+            RestClient restClient,
             String index,
             String type,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
-            Class<T> clazz) {
+            Class<T> clazz)
+    {
         this.columnHandlerList = columnHandlerList;
         this.keyHandler = keyHandler;
         this.index = index;
         this.type = type;
-        this.transportClient = transportClient;
+        this.restClient = restClient;
         this.clazz = clazz;
         this.allColumnNameSet = new HashSet();
         this.allColumnNameSet.add(this.keyHandler.getColumnName());
-        for (EsColumnHandler esColumnHandler : this.columnHandlerList) {
+        this.columnHandlerList.forEach((esColumnHandler) -> {
             this.allColumnNameSet.add(esColumnHandler.getColumnName());
-        }
+        });
     }
 
-    protected final String getKeyValue(Object value) {
+    protected final String getKeyValue(Object value)
+    {
         String v = "";
         if (String.class.isInstance(value)) {
             v = (String) value;
@@ -78,66 +78,76 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
         return v;
     }
 
-    protected final void refresh() {
-        this.transportClient.admin().indices().prepareRefresh(index).get();
-    }
-
     @Override
-    public String getIndex() {
+    public String getIndex()
+    {
         return index;
     }
 
     @Override
-    public String getType() {
+    public String getType()
+    {
         return type;
     }
 
     @Override
-    public final T insertAndInquire(Map<String, Object> entityMap) {
+    public EsColumnHandler getKeyHandler()
+    {
+        return keyHandler;
+    }
+
+    @Override
+    public List<EsColumnHandler> getColumnHandlerList()
+    {
+        return columnHandlerList;
+    }
+
+    @Override
+    public final T insertAndInquire(Map<String, Object> entityMap)
+    {
         String id = this.insert(entityMap);
         return this.inquireByKey(id);
     }
 
     @Override
-    public final T updateAndInquire(Map<String, Object> entityMap) {
+    public final T updateAndInquire(Map<String, Object> entityMap)
+    {
         String id = this.update(entityMap);
         return this.inquireByKey(id);
     }
 
     @Override
-    public final void delete(Object keyValue) {
+    public final void delete(Object keyValue)
+    {
         String id = this.getKeyValue(keyValue);
-        this.transportClient.prepareDelete(index, type, id).get();
-        this.refresh();
-    }
-
-    @Override
-    public final void batchDelete(List<Object> keyValues) {
-        BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
-        String id;
-        DeleteRequest deleteRequest;
-        for (Object keyValue : keyValues) {
-            id = this.getKeyValue(keyValue);
-            deleteRequest = this.transportClient.prepareDelete(index, type, id).request();
-            bulkRequestBuilder.add(deleteRequest);
+        String path = "/" + index + "/" + type + "/" + id + "?refresh=true";
+        try {
+            Request request = new Request("DELETE", path);
+            restClient.performRequest(request);
+        } catch (IOException ex) {
         }
-        bulkRequestBuilder.get();
-        //
-        this.refresh();
     }
 
     @Override
-    public final boolean exist(Object keyValue) {
+    public final boolean exist(Object keyValue)
+    {
         boolean exist = false;
         String id = this.getKeyValue(keyValue);
-        GetResponse getResponse = this.transportClient.prepareGet(index, type, id).get();
-        if (getResponse != null && getResponse.isExists()) {
-            exist = true;
+        String path = "/" + index + "/" + type + "/" + id;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Request request = new Request("GET", path);
+            Response response = restClient.performRequest(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            exist = responseMap.containsKey("_source");
+        } catch (IOException ex) {
         }
         return exist;
     }
 
-    protected final T parseMap(Map<String, Object> entityMap) {
+    protected final T parseMap(Map<String, Object> entityMap)
+    {
         T t = null;
         if (entityMap != null) {
             Object value;
@@ -166,18 +176,21 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
      * @return
      */
     @Override
-    public final List<T> search(QueryBuilder queryBuilder, int from, int size) {
+    public final List<T> search(QueryBuilder queryBuilder, int from, int size)
+    {
         SortBuilder sort = null;
         return this.search(queryBuilder, sort, from, size);
     }
 
     @Override
-    public final List<T> search(SortBuilder sort, int from, int size) {
+    public final List<T> search(SortBuilder sort, int from, int size)
+    {
         return this.search(null, sort, from, size);
     }
 
     @Override
-    public final List<T> search(int from, int size) {
+    public final List<T> search(int from, int size)
+    {
         SortBuilder sort = null;
         return this.search(null, sort, from, size);
     }
@@ -188,14 +201,17 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
      * @return
      */
     @Override
-    public final List<T> search(QueryBuilder queryBuilder) {
+    public final List<T> search(QueryBuilder queryBuilder)
+    {
         int size = 100;
         int from = 0;
         SortBuilder sort = null;
         return this.search(queryBuilder, sort, from, size);
     }
 
-    protected final Map<String, Object> getFieldMap(EsColumnHandler esColumnHandler) {
+    @Override
+    public final Map<String, Object> getFieldMap(EsColumnHandler esColumnHandler)
+    {
         Map<String, Object> filedMap = new HashMap(2, 1);
         EsColumnDataType esColumnDataType = esColumnHandler.getEsColumnDataType();
         String fieldType = esColumnDataType.name().toLowerCase();
@@ -206,51 +222,6 @@ public abstract class AbstractEsEntityDao<T extends Entity> implements EsEntityD
             }
         }
         return filedMap;
-    }
-
-    @Override
-    public final String check() {
-        String result = "";
-        //创建index
-        IndicesExistsResponse indicesExistsResponse = this.transportClient.admin().indices().prepareExists(this.index).get();
-        if (indicesExistsResponse.isExists() == false) {
-            System.out.println("创建index:" + this.index);
-            transportClient.admin().indices().prepareCreate(this.index).get();
-        }
-        //
-        Map<String, Object> typeMap = new HashMap();
-        //构造属性
-        Map<String, Object> propertyMap = new HashMap();
-        Map<String, Object> keyMap = this.getFieldMap(keyHandler);
-        propertyMap.put(keyHandler.getColumnName(), keyMap);
-        //
-        Map<String, Object> fieldMap;
-        for (EsColumnHandler esColumnHandler : columnHandlerList) {
-            fieldMap = this.getFieldMap(esColumnHandler);
-            propertyMap.put(esColumnHandler.getColumnName(), fieldMap);
-        }
-        typeMap.put("properties", propertyMap);
-        //关闭_all
-        Map<String, Object> allMap = new HashMap(2, 1);
-        allMap.put("enabled", false);
-        typeMap.put("_all", allMap);
-        //
-        Map<String, Object> indexMap = new HashMap();
-        indexMap.put(type, typeMap);
-        //
-        ObjectMapper mapper = new ObjectMapper();
-        String json = "{}";
-        try {
-            json = mapper.writeValueAsString(indexMap);
-        } catch (IOException ex) {
-        }
-        System.out.println("更新index:" + this.index);
-        System.out.println(json);
-        AcknowledgedResponse response = this.transportClient.admin().indices().preparePutMapping(index)
-                .setType(this.type)
-                .setSource(json, XContentType.JSON)
-                .get();
-        return result;
     }
 
 }

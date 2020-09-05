@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.wolf</groupId>
         <artifactId>wolf</artifactId>
-        <version>5.8-SNAPSHOT</version>
+        <version>5.9-SNAPSHOT</version>
     </parent>
     <artifactId>wolf-elasticsearch</artifactId>
     <packaging>jar</packaging>
@@ -16,13 +16,7 @@
         </dependency>
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>x-pack-transport</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>elasticsearch-rest-client</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

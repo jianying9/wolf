@@ -4,7 +4,7 @@ import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *

@@ -22,7 +22,7 @@ import com.wolf.framework.worker.workhandler.SaveNewSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.TransactionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.ValidateSessionWorkHandlerImpl;
 import com.wolf.framework.worker.workhandler.WorkHandler;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 负责解析annotation ServiceConfig
