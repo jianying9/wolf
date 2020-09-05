@@ -15,10 +15,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
 import com.wolf.framework.dao.cassandra.annotation.CEntityConfig;
 import java.util.Map;
 import net.sf.ehcache.Cache;
+import org.apache.logging.log4j.Logger;
 
 /**
  *

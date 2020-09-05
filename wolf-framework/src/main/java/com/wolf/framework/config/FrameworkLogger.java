@@ -13,7 +13,8 @@ public enum FrameworkLogger implements LoggerType {
     LUCENE,
     XIAOMI,
     HUAWEI,
-    APNS;
+    APNS,
+    HTTPCLIENT;
 
     @Override
     public String getLoggerName() {

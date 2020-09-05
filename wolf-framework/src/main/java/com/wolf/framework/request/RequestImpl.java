@@ -52,7 +52,12 @@ public class RequestImpl implements WorkerRequest {
         } else if (Integer.class.isInstance(value)) {
             result = ((Integer) value).longValue();
         } else if (String.class.isInstance(value)) {
-            result = Long.valueOf((String) value);
+            String s = (String) value;
+            if (s.isEmpty()) {
+                result = 0l;
+            } else {
+                result = Long.parseLong(s);
+            }
         }
         return result;
     }
@@ -64,7 +69,12 @@ public class RequestImpl implements WorkerRequest {
         if (Boolean.class.isInstance(value)) {
             result = (Boolean) value;
         } else if (String.class.isInstance(value)) {
-            result = Boolean.valueOf((String) value);
+            String s = (String) value;
+            if (s.isEmpty()) {
+                result = false;
+            } else {
+                result = Boolean.parseBoolean(s);
+            }
         }
         return result;
     }
@@ -81,7 +91,12 @@ public class RequestImpl implements WorkerRequest {
         } else if (Double.class.isInstance(value)) {
             result = (Double) value;
         } else if (String.class.isInstance(value)) {
-            result = Double.valueOf((String) value);
+            String s = (String) value;
+            if (s.isEmpty()) {
+                result = 0d;
+            } else {
+                result = Double.parseDouble(s);
+            }
         }
         return result;
     }
@@ -142,7 +157,12 @@ public class RequestImpl implements WorkerRequest {
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).longValue();
             } else if (String.class.isInstance(value)) {
-                result = Long.parseLong((String) value);
+                String s = (String) value;
+                if (s.isEmpty()) {
+                    result = 0l;
+                } else {
+                    result = Long.parseLong(s);
+                }
             }
         }
         return result;
@@ -155,7 +175,12 @@ public class RequestImpl implements WorkerRequest {
         if (Boolean.class.isInstance(value)) {
             result = (Boolean) value;
         } else if (String.class.isInstance(value)) {
-            result = Boolean.parseBoolean((String) value);
+            String s = (String) value;
+            if (s.isEmpty()) {
+                result = false;
+            } else {
+                result = Boolean.parseBoolean(s);
+            }
         }
         return result;
     }
@@ -172,7 +197,12 @@ public class RequestImpl implements WorkerRequest {
             } else if (Integer.class.isInstance(value)) {
                 result = ((Integer) value).doubleValue();
             } else if (String.class.isInstance(value)) {
-                result = Double.parseDouble((String) value);
+                String s = (String) value;
+                if (s.isEmpty()) {
+                    result = 0d;
+                } else {
+                    result = Double.parseDouble(s);
+                }
             }
         }
         return result;
@@ -206,6 +236,11 @@ public class RequestImpl implements WorkerRequest {
     public List<Map<String, Object>> getObjectListValue(Map<String, Object> object, String name) {
         Object value = object.get(name);
         return (List<Map<String, Object>>) value;
+    }
+
+    @Override
+    public String getIp() {
+        return this.workerContext.getIp();
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -195,7 +195,6 @@ public abstract class AbstractCDao<T extends Entity> implements CDao<T> {
         this.check();
     }
 
-    @Override
     public String check() {
         String result = "";
         try {

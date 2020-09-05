@@ -11,7 +11,7 @@ public class LocalWorkerContextImpl extends AbstractWorkContext {
     private String sid;
 
     public LocalWorkerContextImpl(String sid, String act, ServiceWorker serviceWorker) {
-        super(act, serviceWorker);
+        super(act, serviceWorker, "127.0.0.1");
         this.sid = sid;
     }
 

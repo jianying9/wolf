@@ -1,5 +1,6 @@
 package com.wolf.framework.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.context.ApplicationContextBuilder;
@@ -12,8 +13,7 @@ import com.wolf.framework.worker.ServiceWorker;
 import com.wolf.framework.worker.context.LocalWorkerContextImpl;
 import java.io.IOException;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *

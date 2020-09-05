@@ -1,6 +1,8 @@
 package com.wolf.thirdparty.http;
 
+import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.local.LocalServiceConfig;
+import com.wolf.framework.logger.LogFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,12 +15,16 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -28,6 +34,8 @@ import org.apache.http.message.BasicNameValuePair;
 public class HttpLocalImpl implements HttpLocal {
 
     private final CloseableHttpClient client;
+
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.HTTPCLIENT);
 
     public HttpLocalImpl() {
         HttpClientBuilder builder = HttpClientBuilder.create();
@@ -92,14 +100,14 @@ public class HttpLocalImpl implements HttpLocal {
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             responseBody = this.client.execute(request, responseHandler);
         } catch (IOException ex) {
-            System.err.println(ex);
+            this.logger.error("httpclient get error", ex);
         }
         return responseBody;
     }
 
     @Override
     public String doPost(String url, Map<String, String> parameterMap) {
-        return this.doPost(url, parameterMap, null);
+        return this.doPost(url, parameterMap, Collections.EMPTY_MAP);
     }
 
     @Override
@@ -126,10 +134,45 @@ public class HttpLocalImpl implements HttpLocal {
             //
             HttpEntity postBodyEntity = new UrlEncodedFormEntity(urlParameterList, "UTF-8");
             request.setEntity(postBodyEntity);
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            responseBody = this.client.execute(request, responseHandler);
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
         } catch (IOException ex) {
-            System.err.println(ex);
+            this.logger.error("httpclient post error", ex);
+        }
+        return responseBody;
+    }
+
+    @Override
+    public String doPost(String url, String xml) {
+        String responseBody = "";
+        try {
+            HttpPost request = new HttpPost(url);
+            request.addHeader("Content-Type", "text/xml");
+            //
+            request.setEntity(new StringEntity(xml, "UTF-8"));
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
+        } catch (IOException ex) {
+            this.logger.error("httpclient post error", ex);
+        }
+        return responseBody;
+    }
+
+    @Override
+    public String doPostJson(String url, String json) {
+        String responseBody = "";
+        try {
+            HttpPost request = new HttpPost(url);
+            request.addHeader("Content-Type", "application/json");
+            //
+            request.setEntity(new StringEntity(json, "UTF-8"));
+            CloseableHttpResponse response = this.client.execute(request);
+            HttpEntity httpEntity = response.getEntity();
+            responseBody = EntityUtils.toString(httpEntity, "UTF-8");
+        } catch (IOException ex) {
+            this.logger.error("httpclient post error", ex);
         }
         return responseBody;
     }

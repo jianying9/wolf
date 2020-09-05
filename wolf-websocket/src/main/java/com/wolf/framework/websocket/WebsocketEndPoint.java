@@ -21,7 +21,9 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
-import org.slf4j.Logger;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -55,7 +57,7 @@ public class WebsocketEndPoint implements Resource {
         Matcher matcher = this.routePattern.matcher(text);
         String responseMesssage;
         String sid = "";
-        String route = "";
+        String route;
         if (matcher.find()) {
             route = matcher.group(1);
             ServiceWorker serviceWorker = ApplicationContext.CONTEXT.getServiceWorker(route);
@@ -64,7 +66,7 @@ public class WebsocketEndPoint implements Resource {
                 responseMesssage = "{\"code\":\"" + ResponseCodeConfig.NOTFOUND + "\",\"route\":\"" + route + "\"}";
             } else {
                 //创建消息对象并执行服务
-                WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker);
+                WebSocketWorkerContextImpl workerContext = new WebSocketWorkerContextImpl(this.getSessionManager(), session, route, serviceWorker, "");
                 workerContext.initWebsocketParameter(text);
                 serviceWorker.doWork(workerContext);
                 //返回消息
@@ -75,6 +77,12 @@ public class WebsocketEndPoint implements Resource {
                     long time = System.currentTimeMillis() - start;
                     AccessLogger accessLogger = AccessLoggerFactory.getAccessLogger();
                     accessLogger.log(route, sid, text, responseMesssage, time);
+                    String code = workerContext.getWorkerResponse().getCode();
+                    if (code.equals(ResponseCodeConfig.SUCCESS)) {
+                        accessLogger.log(route, sid, text, responseMesssage, time);
+                    } else {
+                        accessLogger.error(route, sid, text, responseMesssage, time);
+                    }
                 }
             }
         } else {
@@ -115,6 +123,13 @@ public class WebsocketEndPoint implements Resource {
 
     @OnOpen
     public void onOpen(@PathParam("text") String text, Session session) {
+        //解密
+        char[] charArray = text.toCharArray();
+        try {
+            byte[] byteArray = Hex.decodeHex(charArray);
+            text = new String(byteArray);
+        } catch (DecoderException ex) {
+        }
         //记录首次时间
         session.getUserProperties().put(WebsocketConfig.LAST_TIME_NAME, System.currentTimeMillis());
         this.exec(text, session, false);

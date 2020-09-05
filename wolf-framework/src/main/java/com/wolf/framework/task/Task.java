@@ -1,10 +1,16 @@
 package com.wolf.framework.task;
 
+import com.wolf.framework.config.FrameworkLogger;
+import com.wolf.framework.logger.LogFactory;
+import org.apache.logging.log4j.Logger;
+
 /**
  *
  * @author aladdin
  */
 public abstract class Task implements Runnable {
+
+    private final Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
 
     public abstract void doWhenRejected();
 
@@ -15,7 +21,7 @@ public abstract class Task implements Runnable {
         try {
             this.execute();
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            this.logger.error(this.getClass().getName(), e);
         }
     }
 }

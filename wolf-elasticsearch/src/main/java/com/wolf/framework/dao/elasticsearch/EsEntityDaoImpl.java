@@ -1,112 +1,169 @@
 package com.wolf.framework.dao.elasticsearch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.dao.Entity;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilder;
+import java.util.Set;
+import org.apache.http.util.EntityUtils;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
+import com.wolf.elasticsearch.index.query.QueryBuilder;
+import com.wolf.elasticsearch.search.sort.SortBuilder;
 
 /**
  *
  * @author jianying9
  * @param <T>
  */
-public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T> {
+public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> implements EsEntityDao<T>
+{
 
     public EsEntityDaoImpl(
-            TransportClient transportClient,
+            RestClient restClient,
             String index,
             String type,
             EsColumnHandler keyHandler,
             List<EsColumnHandler> columnHandlerList,
-            Class<T> clazz) {
-        super(transportClient, index, type, keyHandler, columnHandlerList, clazz);
+            Class<T> clazz)
+    {
+        super(restClient, index, type, keyHandler, columnHandlerList, clazz);
     }
 
     @Override
-    public String insert(Map<String, Object> entityMap) {
+    public long total()
+    {
+        long result = 0;
+        String path = "/" + index + "/" + type + "/_search";
+        Map<String, Object> requestMap = new HashMap();
+        requestMap.put("from", 0);
+        requestMap.put("size", 1);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Request request = new Request("POST", path);
+            String searchJson = objectMapper.writeValueAsString(requestMap);
+            request.setJsonEntity(searchJson);
+            Response response = restClient.performRequest(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> hitsMap = (Map<String, Object>) responseMap.get("hits");
+            result = (Integer) hitsMap.get("total");
+        } catch (IOException ex) {
+        }
+        return result;
+    }
+
+    @Override
+    public String insert(Map<String, Object> entityMap)
+    {
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
         }
+        //删除多余的列名
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
+        }
         String id = this.getKeyValue(keyValue);
-        this.transportClient.prepareIndex(index, type, id).setSource(entityMap).get();
-        //
-        this.refresh();
+        String path = "/" + index + "/" + type + "/" + id + "?refresh=true";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Request request = new Request("PUT", path);
+            String jsonStr = objectMapper.writeValueAsString(entityMap);
+            request.setJsonEntity(jsonStr);
+            restClient.performRequest(request);
+        } catch (IOException ex) {
+        }
         return id;
     }
 
     @Override
-    public void batchInsert(List<Map<String, Object>> entityMapList) {
-        BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
-        String id;
-        IndexRequest indexRequest;
-        Object keyValue;
-        for (Map<String, Object> entityMap : entityMapList) {
-            keyValue = entityMap.get(this.keyHandler.getColumnName());
-            if (keyValue == null) {
-                throw new RuntimeException("Can not find keyValue when insert:" + entityMap.toString());
-            }
-            id = this.getKeyValue(keyValue);
-            indexRequest = this.transportClient.prepareIndex(index, type, id).setSource(entityMap).request();
-            bulkRequestBuilder.add(indexRequest);
-        }
-        bulkRequestBuilder.get();
-        //
-        this.refresh();
-    }
-
-    @Override
-    public String update(Map<String, Object> entityMap) {
+    public String update(Map<String, Object> entityMap)
+    {
         Object keyValue = entityMap.get(this.keyHandler.getColumnName());
         if (keyValue == null) {
             throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
         }
+        //删除多余的列名
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> postMap = new HashMap();
+        postMap.put("doc", entityMap);
         String id = this.getKeyValue(keyValue);
-        this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).get();
+        String path = "/" + index + "/" + type + "/" + id + "/_update?refresh=true";
+        try {
+            Request request = new Request("POST", path);
+            String jsonStr = objectMapper.writeValueAsString(postMap);
+            request.setJsonEntity(jsonStr);
+            restClient.performRequest(request);
+        } catch (IOException ex) {
+        }
         //
-        this.refresh();
         return id;
     }
 
     @Override
-    public void batchUpdate(List<Map<String, Object>> entityMapList) {
-        BulkRequestBuilder bulkRequestBuilder = this.transportClient.prepareBulk();
-        String id;
-        UpdateRequest updateRequest;
-        Object keyValue;
-        for (Map<String, Object> entityMap : entityMapList) {
-            keyValue = entityMap.get(this.keyHandler.getColumnName());
-            if (keyValue == null) {
-                throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
-            }
-            id = this.getKeyValue(keyValue);
-            updateRequest = this.transportClient.prepareUpdate(index, type, id).setDoc(entityMap).request();
-            bulkRequestBuilder.add(updateRequest);
+    public String upsert(Map<String, Object> entityMap)
+    {
+        Object keyValue = entityMap.get(this.keyHandler.getColumnName());
+        if (keyValue == null) {
+            throw new RuntimeException("Can not find keyValue when update:" + entityMap.toString());
         }
-        bulkRequestBuilder.get();
-        //
-        this.refresh();
+        //删除多余的列名
+        Set<String> keySet = new HashSet();
+        keySet.addAll(entityMap.keySet());
+        for (String columnName : keySet) {
+            if (this.allColumnNameSet.contains(columnName) == false) {
+                entityMap.remove(columnName);
+            }
+        }
+        String id = this.getKeyValue(keyValue);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> postMap = new HashMap();
+        postMap.put("doc", entityMap);
+        postMap.put("doc_as_upsert", true);
+        String path = "/" + index + "/" + type + "/" + id + "/_update?refresh=true";
+        try {
+            Request request = new Request("POST", path);
+            String jsonStr = objectMapper.writeValueAsString(postMap);
+            request.setJsonEntity(jsonStr);
+            restClient.performRequest(request);
+        } catch (IOException ex) {
+        }
+        return id;
     }
 
     @Override
-    public T inquireByKey(Object keyValue) {
+    public T inquireByKey(Object keyValue)
+    {
         T t = null;
         String id = this.getKeyValue(keyValue);
-        GetResponse getResponse = this.transportClient.prepareGet(index, type, id).get();
-        if (getResponse != null && getResponse.isExists()) {
-            Map<String, Object> entityMap = getResponse.getSourceAsMap();
+        String path = "/" + index + "/" + type + "/" + id;
+        try {
+            Request request = new Request("GET", path);
+            Response response = restClient.performRequest(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> entityMap = (Map<String, Object>) responseMap.get("_source");
             t = this.parseMap(entityMap);
+        } catch (IOException ex) {
         }
         return t;
     }
@@ -120,70 +177,81 @@ public class EsEntityDaoImpl<T extends Entity> extends AbstractEsEntityDao<T> im
      * @return
      */
     @Override
-    public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size) {
-        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
-                .setTypes(type)
-                .setFrom(from)
-                .setSize(size)
-                .setVersion(false);
+    public List<T> search(QueryBuilder queryBuilder, SortBuilder sort, int from, int size)
+    {
+        List<T> tList = Collections.EMPTY_LIST;
+        String path = "/" + index + "/" + type + "/_search";
+        Map<String, Object> requestMap = new HashMap();
         if (queryBuilder != null) {
-            searchRequestBuilder.setQuery(queryBuilder);
+            requestMap.put("query", queryBuilder.toMap());
         }
+        requestMap.put("from", from);
+        requestMap.put("size", size);
         if (sort != null) {
-            searchRequestBuilder.addSort(sort);
+            List<Map<String, Object>> sortMapList = new ArrayList();
+            sortMapList.add(sort.toMap());
+            requestMap.put("sort", sortMapList);
         }
-        SearchResponse response = searchRequestBuilder.get();
-        SearchHits searchHits = response.getHits();
-        SearchHit[] searchHitArray = searchHits.getHits();
-        List<T> tList = new ArrayList(searchHitArray.length);
-        Map<String, Object> entityMap;
-        T t;
-        for (SearchHit searchHit : searchHitArray) {
-            entityMap = searchHit.getSourceAsMap();
-            t = this.parseMap(entityMap);
-            tList.add(t);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Request request = new Request("POST", path);
+            String searchJson = objectMapper.writeValueAsString(requestMap);
+            request.setJsonEntity(searchJson);
+            Response response = restClient.performRequest(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> hitsMap = (Map<String, Object>) responseMap.get("hits");
+            List<Map<String, Object>> hitsMapList = (List<Map<String, Object>>) hitsMap.get("hits");
+            tList = new ArrayList(hitsMapList.size());
+            T t;
+            Map<String, Object> entityMap;
+            for (Map<String, Object> dataMap : hitsMapList) {
+                entityMap = (Map<String, Object>) dataMap.get("_source");
+                t = this.parseMap(entityMap);
+                tList.add(t);
+            }
+        } catch (IOException ex) {
         }
         return tList;
     }
 
     @Override
-    public SearchResponse searcResponse(QueryBuilder queryBuilder, int from, int size) {
-        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
-                .setTypes(type)
-                .setFrom(from)
-                .setSize(size)
-                .setVersion(false);
+    public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size)
+    {
+        List<T> tList = Collections.EMPTY_LIST;
+        String path = "/" + index + "/" + type + "/_search";
+        Map<String, Object> requestMap = new HashMap();
         if (queryBuilder != null) {
-            searchRequestBuilder.setQuery(queryBuilder);
+            requestMap.put("query", queryBuilder.toMap());
         }
-        return searchRequestBuilder.get();
-    }
-
-    @Override
-    public List<T> search(QueryBuilder queryBuilder, List<SortBuilder> sortList, int from, int size) {
-        SearchRequestBuilder searchRequestBuilder = this.transportClient.prepareSearch(index)
-                .setTypes(type)
-                .setFrom(from)
-                .setSize(size)
-                .setVersion(false);
-        if (queryBuilder != null) {
-            searchRequestBuilder.setQuery(queryBuilder);
-        }
-        if (sortList != null) {
+        requestMap.put("from", from);
+        requestMap.put("size", size);
+        if (sortList != null && sortList.isEmpty() == false) {
+            List<Map<String, Object>> sortMapList = new ArrayList();
             for (SortBuilder sortBuilder : sortList) {
-                searchRequestBuilder.addSort(sortBuilder);
+                sortMapList.add(sortBuilder.toMap());
             }
+            requestMap.put("sort", sortMapList);
         }
-        SearchResponse response = searchRequestBuilder.get();
-        SearchHits searchHits = response.getHits();
-        SearchHit[] searchHitArray = searchHits.getHits();
-        List<T> tList = new ArrayList(searchHitArray.length);
-        Map<String, Object> entityMap;
-        T t;
-        for (SearchHit searchHit : searchHitArray) {
-            entityMap = searchHit.getSourceAsMap();
-            t = this.parseMap(entityMap);
-            tList.add(t);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Request request = new Request("POST", path);
+            String searchJson = objectMapper.writeValueAsString(requestMap);
+            request.setJsonEntity(searchJson);
+            Response response = restClient.performRequest(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            Map<String, Object> hitsMap = (Map<String, Object>) responseMap.get("hits");
+            List<Map<String, Object>> hitsMapList = (List<Map<String, Object>>) hitsMap.get("hits");
+            tList = new ArrayList(hitsMapList.size());
+            T t;
+            Map<String, Object> entityMap;
+            for (Map<String, Object> dataMap : hitsMapList) {
+                entityMap = (Map<String, Object>) dataMap.get("_source");
+                t = this.parseMap(entityMap);
+                tList.add(t);
+            }
+        } catch (IOException ex) {
         }
         return tList;
     }

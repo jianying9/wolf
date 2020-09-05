@@ -1,5 +1,6 @@
 package com.wolf.framework.reponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.ResponseCodeConfig;
 import com.wolf.framework.dao.Entity;
 import com.wolf.framework.service.ResponseCode;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import com.wolf.framework.service.parameter.ResponseHandler;
 
 /**
@@ -98,12 +98,7 @@ public class ResponseImpl<T extends Entity> implements WorkerResponse<T> {
     @Override
     public void setCode(String code, String desc) {
         this.code = code;
-        String codeDesc = this.customCodeMap.get(code);
-        if (codeDesc != null) {
-            this.msg = codeDesc;
-        } else {
-            this.msg = desc;
-        }
+        this.msg = desc;
     }
 
     @Override

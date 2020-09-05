@@ -1,5 +1,8 @@
 package com.wolf.framework.worker.context;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.context.ApplicationContext;
 import com.wolf.framework.logger.LogFactory;
@@ -19,10 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -39,12 +39,14 @@ public abstract class AbstractWorkContext implements WorkerContext {
     private final ServiceWorker serviceWorker;
     private final WorkerRequest request;
     private final WorkerResponse response;
+    private final String ip;
 
-    public AbstractWorkContext(String route, ServiceWorker serviceWorker) {
+    public AbstractWorkContext(String route, ServiceWorker serviceWorker, String ip) {
         this.route = route;
         this.serviceWorker = serviceWorker;
         this.request = new RequestImpl(this);
         this.response = new ResponseImpl(this);
+        this.ip = ip;
     }
 
     public void initLocalParameter(Map<String, Object> parameterMap) {
@@ -63,23 +65,23 @@ public abstract class AbstractWorkContext implements WorkerContext {
         } else if (jsonNode.isArray()) {
             value = this.initArray((ArrayNode) jsonNode);
         } else if (jsonNode.isBoolean()) {
-            value = jsonNode.getBooleanValue();
+            value = jsonNode.asBoolean();
         } else if (jsonNode.isDouble()) {
-            value = jsonNode.getDoubleValue();
+            value = jsonNode.asDouble();
         } else if (jsonNode.isInt()) {
-            long num = jsonNode.getIntValue();
+            long num = jsonNode.asInt();
             value = num;
         } else if (jsonNode.isLong()) {
-            value = jsonNode.getLongValue();
+            value = jsonNode.asLong();
         } else {
-            value = StringUtils.trim(jsonNode.getTextValue());
+            value = StringUtils.trim(jsonNode.asText());
         }
         return value;
     }
 
     private Map<String, Object> initObject(JsonNode paramNode) {
         Map<String, Object> paramMap = new HashMap(8, 1);
-        Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+        Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.fields();
         Map.Entry<String, JsonNode> entry;
         String name;
         Object value;
@@ -98,7 +100,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
 
     private List<Object> initArray(ArrayNode paramNode) {
         List<Object> paramList = new ArrayList();
-        Iterator<JsonNode> iterator = paramNode.getElements();
+        Iterator<JsonNode> iterator = paramNode.elements();
         JsonNode jsonNode;
         Object value;
         while (iterator.hasNext()) {
@@ -127,17 +129,17 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 //callback
                 JsonNode globalNode = rootNode.get("callback");
                 if (globalNode != null) {
-                    this.callback = globalNode.getTextValue();
+                    this.callback = globalNode.asText();
                 }
                 //md5
                 globalNode = rootNode.get("md5");
                 if (globalNode != null) {
-                    this.md5 = globalNode.getTextValue();
+                    this.md5 = globalNode.asText();
                 }
                 //
                 globalNode = rootNode.get("pretty");
                 if (globalNode != null) {
-                    this.pretty = globalNode.getBooleanValue();
+                    this.pretty = globalNode.asBoolean();
                 }
                 //读数据
                 JsonNode paramNode = rootNode.get("param");
@@ -149,7 +151,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 String name;
                 Object value;
                 JsonNode jsonNode;
-                Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.getFields();
+                Iterator<Map.Entry<String, JsonNode>> iterator = paramNode.fields();
                 while (iterator.hasNext()) {
                     entry = iterator.next();
                     name = entry.getKey();
@@ -195,7 +197,7 @@ public abstract class AbstractWorkContext implements WorkerContext {
                 String name;
                 Object value;
                 JsonNode jsonNode;
-                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.getFields();
+                Iterator<Map.Entry<String, JsonNode>> iterator = rootNode.fields();
                 while (iterator.hasNext()) {
                     entry = iterator.next();
                     name = entry.getKey();
@@ -267,6 +269,11 @@ public abstract class AbstractWorkContext implements WorkerContext {
     @Override
     public boolean isPretty() {
         return pretty;
+    }
+
+    @Override
+    public String getIp() {
+        return this.ip;
     }
 
 }

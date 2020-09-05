@@ -1,5 +1,7 @@
 package com.wolf.framework.context;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolf.framework.config.FrameworkConfig;
 import com.wolf.framework.config.FrameworkLogger;
 import com.wolf.framework.logger.LogFactory;
@@ -11,10 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
 import javax.servlet.annotation.WebListener;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 应用程序全局信息初始化
@@ -52,7 +52,7 @@ public class ApplicationListener implements ServletContextListener {
             Entry<String, JsonNode> entry;
             String name;
             String value;
-            Iterator<Entry<String, JsonNode>> iterator = rootNode.getFields();
+            Iterator<Entry<String, JsonNode>> iterator = rootNode.fields();
             JsonNode jsonNode;
             while (iterator.hasNext()) {
                 entry = iterator.next();
@@ -61,7 +61,7 @@ public class ApplicationListener implements ServletContextListener {
                 if (jsonNode == null) {
                     value = "";
                 } else {
-                    value = jsonNode.getTextValue();
+                    value = jsonNode.asText();
                 }
                 parameterMap.put(name, value);
             }
@@ -76,6 +76,8 @@ public class ApplicationListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        Logger logger = LogFactory.getLogger(FrameworkLogger.FRAMEWORK);
         ApplicationContext.CONTEXT.contextDestroyed();
+        logger.info("wolf Resource destroyed...");
     }
 }

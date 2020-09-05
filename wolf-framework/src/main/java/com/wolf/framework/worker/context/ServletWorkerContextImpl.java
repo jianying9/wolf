@@ -8,13 +8,13 @@ import com.wolf.framework.worker.ServiceWorker;
  * @author aladdin
  */
 public class ServletWorkerContextImpl extends AbstractWorkContext {
-    
+
     private final ServiceServlet serviceServlet;
 
     private String sid;
 
-    public ServletWorkerContextImpl(ServiceServlet serviceServlet, String sid, String act, ServiceWorker serviceWorker) {
-        super(act, serviceWorker);
+    public ServletWorkerContextImpl(ServiceServlet serviceServlet, String sid, String act, ServiceWorker serviceWorker, String ip) {
+        super(act, serviceWorker, ip);
         this.sid = sid;
         this.serviceServlet = serviceServlet;
     }
